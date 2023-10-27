@@ -1,0 +1,263 @@
+/* Run to edit wd_composed_style.css
+ npx tailwindcss build public/css/wd_style.css -o public/css/wd_composed_style.css --watch 
+ npx tailwindcss build public/css/wd_style.css -o public/css/wd_composed_style.css --jit */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+
+.content {
+    /* Ajoutez vos styles pour le contenu ici */
+    bottom: 6vh;
+    margin: 0 auto;
+
+}
+  /* Styles pour les écrans de taille PC */
+@media screen and (min-width: 1024px) {
+    /* Vos styles PC ici */
+    .content {
+        width: 70%;
+
+    }
+}
+
+/* Styles pour les tablettes */
+@media screen and (max-width: 1023px) and (min-width: 990px) {
+    /* Vos styles tablette ici */
+    .content {
+        width: 90%;
+    }
+}
+
+/* Styles pour les mobiles */
+@media screen and (max-width: 989px) {
+    /* Vos styles mobile ici */
+    .content {
+        width: 99%;
+    }
+}
+#calendar {
+    height: 94vh;
+    width: 100%;
+    z-index: 0;
+}
+
+
+#closeModal {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+
+  
+#ListEventModal, #DetailsEventModal, #addEventModal, #SearchListEventModal {
+  background: transparent;
+  z-index: 50;
+  position: fixed;
+  width: 100%;
+  max-height: 100vh;
+  overflow-y: auto; /* Pour activer le défilement vertical */
+  display: none;     /* Cachez-le par défaut */
+}
+
+.modal-title-details::first-letter{
+  text-transform: uppercase;
+}
+
+
+/* Classe pour l'animation */
+.animate {
+  animation: slideUp 0.5s forwards; /* Applique l'animation slideUp */
+  display: block; /* Rend le modal visible */
+  opacity: 1;
+}
+.close-animate {
+  animation: slideDown 0.3s forwards; /* Applique l'animation slideDown */
+  display: none; /* Rend le modal visible */
+}
+
+
+.svg-delete{
+  color:red;
+  cursor:pointer;
+}
+.svg-delete:hover{
+  color:rgb(181, 66, 66);
+}
+.custom-event{
+  position: relative;
+  bottom:0;
+}
+.event-dot {
+  position: absolute;
+  left: 50%;
+  
+  /* Ratio et taille minimale */
+
+  min-width: 10px;   /* taille minimale */
+  min-height: 10px;  /* taille minimale */
+  max-width: 15px;   /* taille max */
+  max-height: 15px;  /* taille max */
+  
+  /* Apparence */
+  background-color: rgb(197, 197, 197);
+  border-radius: 50%;
+}
+.event-dot:hover {
+  background-color: rgb(0, 136, 255);
+}
+
+
+.has-shadow {
+    box-shadow: 0px 0px 5px #252525;
+}
+
+.shadow-footer {
+  box-shadow: 0px -2px 10px rgb(192, 192, 192);
+}
+
+  /** SURCHARGER FullCalendar -  START   ***/
+
+  .fc-event {
+    background: none;
+    border: none;
+}
+.fc-theme-standard td, .fc-theme-standard th{
+  border: 0;
+  border-bottom: 1px solid #DBDBDB;
+}
+.fc-event-title {
+    display: none;
+}
+.fc-daygrid-day {
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+.fc-daygrid-day-top .fc-daygrid-day-number {
+    font-size: 3vh; /* Augmentez la taille des chiffres du jour si nécessaire */
+}
+
+.fc-daygrid-day-top .fc-daygrid-day-top-month {
+    display: none; /* Cachez le nom du mois */
+}
+
+
+  /** SURCHARGER FullCalendar -  END   ***/
+
+
+
+/* ANNIMATION */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+@keyframes slideUp {
+    from {
+      bottom: -50%; /* Part du bas, hors de l'écran */
+      opacity: 0;
+    }
+    to {
+      bottom: 6vh; /* Arrive à la position finale */
+      opacity: 1;
+    }
+  }
+  @keyframes slideDown {
+    from {
+      bottom: 6vh; /* Départ de la position actuelle */
+      opacity: 1;
+    }
+    to {
+      bottom: -50%; /* Descend en dehors de l'écran */
+      opacity: 0;
+    }
+  }
+  @keyframes bannerslideup {
+    from {
+      top: 4vh;
+      opacity: 1;
+    }
+    to {
+      top: -100%;
+      opacity: 0.5;
+    }
+  }
+  @keyframes bannerslidedown {
+    from {
+      top: -10%;
+      opacity: 0.5;
+    }
+    to {
+      top: 4vh; 
+      opacity: 1;
+    }
+  }
+
+
+  .notification-hidden {
+    display: none;
+  }
+  
+  .notification-visible {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    color: white;
+    padding: 20px;
+    z-index: 999;  
+  }
+
+.banner_update-exit {
+    animation: bannerslideup 0.5s ease-in-out forwards;
+  }
+  
+  .banner_update-visible {
+    display: flex;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    left: 5%;
+    color: white;
+    z-index: 999;
+    opacity: 1;  /* Valeur finale de l'animation */
+    animation: bannerslidedown 0.5s ease-in-out forwards;  /* Ajout de "forwards" */
+  }
+
+  
+
+  /* TOUCH MENU */
+
+  .delete-event {
+    transition: all 0.3s ease-in-out;
+    width: 0;
+    overflow: hidden;
+  }
+  
+  .delete-event.open {
+    width: 200px;
+  }
+  
+  .delete-event-content {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .delete-event-content.shift {
+    margin-left: 200px;
+  }
