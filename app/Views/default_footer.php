@@ -50,6 +50,9 @@ console.log(footerLinks);
     }
   });
 });
+
+let baseurl = <?= json_encode($baseurl); ?>;
+
 </script>
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>

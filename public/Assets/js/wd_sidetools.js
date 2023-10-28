@@ -124,7 +124,7 @@ async function showUpdateCustomer(id) {
     let customer;
     try {
         let response = await $.ajax({
-          url: `/kkl/public/customer/get_customer_info?customer_id=${id}`,
+          url: baseurl + `/customer/get_customer_info?customer_id=${id}`,
           method: "GET",
           dataType: "json"
         });
@@ -159,7 +159,7 @@ async function showUpdateCustomer(id) {
     let button_update = document.getElementById('update_customer_submit_form');
     button_update.onclick = function() {
         $.ajax({
-            url: '/kkl/public/customer/update',
+            url: baseurl + '/customer/update',
             method: 'POST',
             data: {
                 customer_info: {
@@ -184,7 +184,7 @@ async function showUpdateCustomer(id) {
     let button_delete = document.getElementById('delete_customer_submit_form');
     button_delete.onclick = function() {
         $.ajax({
-            url: '/kkl/public/customer/update',
+            url: baseurl + '/customer/update',
             method: 'POST',
             data: {
                 customer_info: {
@@ -212,7 +212,7 @@ async function showBookingDetailsFromID(id) {
     let event;
     try {
         let response = await $.ajax({
-          url: "/kkl/public/booking/getBookingFromID?id=" + id,
+          url: baseurl + 'booking/getBookingFromID?id=' + id,
           method: "GET",
         });
         if (response && response.id == id) {  // Assurez-vous que cette condition est correcte
@@ -348,7 +348,7 @@ function showBookingDetails_fromhistory(response) {
 function get_service_list() {
   return new Promise((resolve, reject) => {
     $.ajax({
-      url: "/kkl/public/booking/getServicesBookings", // URL de mise à jour
+      url: baseurl + '/booking/getServicesBookings', // URL de mise à jour
       method: "GET",
       success: function (response) {
         if (response) {
@@ -393,7 +393,7 @@ function get_booking_list_from_customer(data) {
   let totalPrice = 0;
 
   $.ajax({
-    url: "/kkl/public/booking/getBookingsFromCustomer",
+    url: baseurl + 'booking/getBookingsFromCustomer',
     method: "GET",
     data: {
       customer_id: customer_id,

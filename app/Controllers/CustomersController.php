@@ -28,7 +28,7 @@ class CustomersController extends BaseController
     {
         $data = [
             'title' => 'TITTRE',
-            'description' => 'description',
+            'baseurl' => base_url(),
             'customers_list' => ($customers_list = $this->CustomerModel->get_customer_list()) ? $customers_list : [],
             'services_list' => ($services_list = $this->ServiceModel->get_services_list()) ? $services_list : [],
             'bookins_list' => $this->BookingModel->getAllBookings(),
@@ -37,10 +37,8 @@ class CustomersController extends BaseController
         
         
         $view1 = view('Customer_view', $data);
-        
-        
-        $view_fusion = $view1 ;
-        $datas['contents_views'] = $view_fusion;
+
+        $datas['contents_views'] = $view1;
 
         echo view('default_layout', $datas);
     }

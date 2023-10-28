@@ -25,7 +25,7 @@ class ConfigurationController extends BaseController
 
         $data = [
             'title' => 'TITTRE',
-            'description' => 'description',
+            'baseurl' => base_url(),
             'services_list' => ($services_list = $this->ServiceModel->get_services_list()) ? $services_list : [],
             'totalServices' => $this->ServiceModel->getTotalServices(),
             'All_config' => $this->getAll(),

@@ -27,7 +27,7 @@ class BookingController extends BaseController
     {
         $data = [
             'title' => 'TITTRE',
-            'description' => 'description',
+            'baseurl' => base_url(),
             'customers_list' => ($customers_list = $this->CustomerModel->get_customer_list()) ? $customers_list : [],
             'services_list' => ($services_list = $this->ServiceModel->get_services_list()) ? $services_list : [],
             'bookins_list' => $this->BookingModel->getAllBookings(),

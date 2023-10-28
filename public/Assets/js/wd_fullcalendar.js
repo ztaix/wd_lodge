@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
        
         eventSources: [
             {
-                url: '/kkl/public/booking/', // Votre URL pour récupérer les événements
+                url: baseurl+'/booking/', // Votre URL pour récupérer les événements
                 method: 'GET',
                 failure: function() {
                     alert('Il y a eu une erreur lors du chargement des événements.');
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'utilisateur a cliqué
             // Faire une requête AJAX pour obtenir les événements de cette date
             $.ajax({
-                url: '/kkl/public/booking/getBookingsFromDate', // Votre URL pour récupérer les événements
+                url: baseurl + '/booking/getBookingsFromDate', // Votre URL pour récupérer les événements
                 method: 'POST',
                 data: { date: clickedDate },
                 success: function(response) {
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const clickedDate = info.dateStr; // Récupère la date sur laquelle l'utilisateur a cliqué
             // Faire une requête AJAX pour obtenir les événements de cette date
             $.ajax({
-            url: '/kkl/public/booking/getBookingsFromDate', // Votre URL pour récupérer les événements
+            url: baseurl + '/booking/getBookingsFromDate', // Votre URL pour récupérer les événements
             method: 'POST',
             data: { date: clickedDate },
             success: function(response) {
@@ -337,7 +337,7 @@ function updateEvent(event, info) {
     };
 
     $.ajax({
-        url: '/kkl/public/booking/updateBooking', // URL de mise à jour
+        url: baseurl + '/booking/updateBooking', // URL de mise à jour
         method: 'POST',
         data: formData,
         success: function(response) {
@@ -366,7 +366,7 @@ function updateEventFromDetails() {
         end:  format_date_toSql(document.getElementById('eventEnd').value),
     };
     $.ajax({
-        url: '/kkl/public/booking/updateBooking', // URL de mise à jour
+        url: baseurl + '/booking/updateBooking', // URL de mise à jour
         method: 'POST',
         data: formData,
         success: function(response) {
@@ -412,7 +412,7 @@ function addEvent() {
 if(eventData['start'] && eventData['end']){
     // Envoi de la requête AJAX
   $.ajax({
-    url: '/kkl/public/booking/addBooking',  // URL du contrôleur
+    url: baseurl + '/booking/addBooking',  // URL du contrôleur
     type: 'POST',  // Méthode HTTP
     data: eventData,  // Données à envoyer
     success: function(response) {
@@ -447,7 +447,7 @@ function deleteEvent(event_id,modal_id) {
 
     yesconfirmButton.onclick = function() { 
       $.ajax({
-                  url: '/kkl/public/booking/deleteBooking', // URL de mise à jour
+                  url: baseurl + '/booking/deleteBooking', // URL de mise à jour
                   method: 'POST',
                   data: {
                       id: event_id
