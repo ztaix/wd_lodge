@@ -122,16 +122,35 @@ var isClosingModal = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
-     calendar = new FullCalendar.Calendar(calendarEl, {
-        locale: 'fr',
-        firstDay: 1,
-        initialView: 'multiMonthYear',
-        multiMonthMaxColumns: 1, // force a single column
-        editable: false,
-        eventResizableFromStart: false,  // Permet le redimensionnement à partir du début
-        timeZone: 'Pacific/Tahiti', // Spécifiez le fuseau horaire de Tahiti
-        customButtons: {
-            myCustomTodayButton: {
+    calendar = new FullCalendar.Calendar(calendarEl, {
+      locale: 'fr',
+      firstDay: 1,
+      initialView: 'multiMonthYear',
+      multiMonthMaxColumns: 1, // force a single column
+      editable: false,
+      eventResizableFromStart: false,  // Permet le redimensionnement à partir du début
+      timeZone: 'Pacific/Tahiti', // Spécifiez le fuseau horaire de Tahiti
+      eventSources: [
+          {
+              url: baseurl+'/booking/', // Votre URL pour récupérer les événements
+              method: 'GET',
+              failure: function() {
+                  alert('Il y a eu une erreur lors du chargement des événements.');
+              },
+              success: function(events) {
+              }
+          }
+      ],
+      viewDidMount: function(view, element) {
+          var cellWidth = $('.fc-daygrid-day').width();
+          $('.fc-daygrid-day').css('height', cellWidth + 'px');
+      },
+      windowResize: function(view, element) {
+          var cellWidth = $('.fc-daygrid-day').width();
+          $('.fc-daygrid-day').css('height', cellWidth + 'px');
+      },
+      customButtons: {
+        myCustomTodayButton: {
                 text: 'Aujourd\'hui',
                 click: function() {
                     let view = calendar.view.type; // Obtient la vue actuelle
@@ -213,18 +232,6 @@ document.addEventListener('DOMContentLoaded', function() {
             day:      'Jour',
             list:     'Liste'
         },
-       
-        eventSources: [
-            {
-                url: baseurl+'/booking/', // Votre URL pour récupérer les événements
-                method: 'GET',
-                failure: function() {
-                    alert('Il y a eu une erreur lors du chargement des événements.');
-                },
-                success: function(events) {
-                }
-            }
-        ],
         eventContent: function(args) {
             let count = args.event.extendedProps.count;
             let colors = args.event.extendedProps.colors;
