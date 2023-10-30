@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use DateTime;
 use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class BookingController extends BaseController
 {
@@ -226,7 +227,7 @@ class BookingController extends BaseController
     }
 
 
-    public function generatePDF($origine = 'booking', $id)
+    public function generatePDF($origine = 'booking', $id = 1)
     {
         if ($origine == 'booking') {
             $bookingData = $this->BookingModel->getBookingFromID($id); // Vos données de réservation
@@ -245,9 +246,19 @@ class BookingController extends BaseController
         ];
         // Charger la vue et passer les données de réservation
         $html = view('pdf/document', ['data' => $data, 'seller' => $seller]);
-
-        // Instancier Dompdf
-        $dompdf = new Dompdf();
+        
+        $contxt = stream_context_create([ 
+            'ssl' => [ 
+                'verify_peer' => false, 
+                'verify_peer_name' => false,
+                'allow_self_signed'=> true
+            ] 
+        ]);
+        $options = new Options();
+        $options->set('isRemoteEnabled',true);
+        $options->set('HttpContext',$contxt);
+         
+        $dompdf = new Dompdf($options);
 
         // Charger le HTML dans Dompdf
         $dompdf->loadHtml($html);
