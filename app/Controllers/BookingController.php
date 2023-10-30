@@ -268,12 +268,16 @@ class BookingController extends BaseController
 
         // Rendu du PDF (génère le PDF en mémoire)
         $dompdf->render();
-        
+
         // Envoyer les en-têtes HTTP appropriés
         header('Content-Type: application/pdf');
         header('Content-Disposition: inline; filename="' . "$origine-$id.pdf" . '"');
 
         // Envoyer le PDF au navigateur
         $dompdf->stream("$origine-$id.pdf", array("Attachment" => false, 'mime' => 'application/pdf'));
+        $pdfOutput = $dompdf->output();
+        return $this->response->setStatusCode(200)
+                              ->setContentType('application/pdf')
+                              ->setBody($pdfOutput);
     }
 }
