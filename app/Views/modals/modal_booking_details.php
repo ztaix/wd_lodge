@@ -88,7 +88,7 @@ $modal_id = "DetailsEventModal";
                     </div>
                 </div>
 
-                <div class="fixed bottom-0 pb-10 pb-10 flex justify-between w-9/12">
+                <div class="fixed bottom-0 pb-10 flex justify-between w-9/12">
                     <button id="booking_details_delete_button" class="inline-flex middle none center rounded-lg bg-red-500 py-2 px-4 font-sans text-md font-bold uppercase text-white shadow-md shadow-red-500/20 transition-all hover:shadow-lg hover:shadow-red-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true">
                         Supprimer
                         <svg class="w-4 h-4 ml-2 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">

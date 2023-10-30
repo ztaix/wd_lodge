@@ -259,6 +259,6 @@ class BookingController extends BaseController
         $dompdf->render();
 
         // Envoyer le PDF au navigateur
-        $dompdf->stream("$origine-$id.pdf");
+        $dompdf->stream("$origine-$id.pdf", array("Attachment" => false, 'mime' => 'application/pdf'));
     }
 }

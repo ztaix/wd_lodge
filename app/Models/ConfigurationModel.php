@@ -34,4 +34,12 @@ class ConfigurationModel extends Model
         return $discountrules;
     }
 
+    public function saveConfigurations($data_array)
+    {
+        foreach ($data_array as $data) {
+            $this->db->table('wd_config')
+                     ->where('config_id', $data['config_id'])
+                     ->update(['Data' => $data['Data']]);
+        }
+    }
 }

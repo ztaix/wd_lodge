@@ -24,14 +24,14 @@ function showBanner(message, isSuccess) {
   setTimeout(() => {
     banner.classList.remove('banner_update-visible');
     banner.classList.add('banner_update-exit');
-  }, 5000); 
+  }, 3000); 
 }
 
 function showSearch() {
   const banner = document.getElementById('SearchListEventModal');
+  banner.classList.add('banner_search-visible');
   banner.classList.remove('hidden');  // Supprimer la classe "hidden"
   banner.style.display = 'flex';  // Modifier la propriété "display"
-  banner.classList.add('banner_search-visible');
 
 }
 // La pile pour garder une trace des fenêtres modales ouvertes
@@ -136,33 +136,22 @@ document.addEventListener('DOMContentLoaded', function() {
               method: 'GET',
               failure: function() {
                   alert('Il y a eu une erreur lors du chargement des événements.');
-              },
-              success: function(events) {
               }
           }
       ],
       viewDidMount: function(view, element) {
           var cellWidth = $('.fc-daygrid-day').width();
           $('.fc-daygrid-day').css('height', cellWidth + 'px');
+          let buttonAddEvent = document.querySelector('.fc-AddEventButton-button');  // Assurez-vous que la classe correspond à votre bouton
+          let buttonSearchInput = document.querySelector('.fc-SearchIpunt-button');  // Assurez-vous que la classe correspond à votre bouton
+          buttonAddEvent.innerHTML = '<svg viewBox="0 0 16 16" class="w-6 h-6 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3H4.5a.5.5 0 0 1 0-1H7V4.5a.5.5 0 0 1 .5-.5z"/></svg>';
+          buttonSearchInput.innerHTML = '<svg viewBox="0 0 24 24" class="w-6 h-6 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>';
+        
       },
       windowResize: function(view, element) {
           var cellWidth = $('.fc-daygrid-day').width();
           $('.fc-daygrid-day').css('height', cellWidth + 'px');
       },
-      customButtons: {
-        myCustomTodayButton: {
-                text: 'Aujourd\'hui',
-                click: function() {
-                    let view = calendar.view.type; // Obtient la vue actuelle
-                    if(view === 'multiMonthYear') {
-                        let today = new Date();
-                        calendar.gotoDate(today); // Va à la date d'aujourd'hui
-                    } else {
-                        calendar.today(); // Comportement par défaut pour les autres vues
-                    }
-                }
-            }
-        },
         headerToolbar: {
           left: 'prev,next', // Ajoutez ici les boutons personnalisés
           center: 'title',
@@ -170,15 +159,13 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       customButtons: {
         AddEventButton: {
-              text: '+',
+              text: ' ',
               click: function() {
-                  // Votre logique pour ajouter un nouvel événement
-                  // Par exemple, ouvrir une modale
                   openModal('addEventModal', false);
               }
           },
           SearchIpunt: {
-              text: 'S',
+              text: ' ',
               click: function() {
                 openModal('SearchListEventModal', false);
 

@@ -34,7 +34,7 @@ $modal_id = "addEventModal";
                     
                     <div>
                         <!-- Votre liste déroulante des clients -->
-                        <label for="eventCustomer_id" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Customer :</label>
+                        <label for="eventCustomer_id" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Client :</label>
                         <select id="eventCustomer_id" name="eventCustomer_id" class="block w-full text-md text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <?php foreach ($options_customers_id as $id => $Name): ?>
                                 <option value="<?php echo $id; ?>"><?php echo $Name; ?></option>

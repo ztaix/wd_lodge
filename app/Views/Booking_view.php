@@ -1,13 +1,7 @@
 
+<script type="module" src="<?= $baseurl?>/Assets/js/import_flowbite_datepicker.js"></script>
+
 <script>
-
-import Datepicker from 'flowbite-datepicker/Datepicker';
-
-const datepickerEl = document.getElementById('datepickerId');
-new Datepicker(datepickerEl, {
-    // options
-});
-
 var totalServices = <?= $totalServices; ?>;
 </script>
 

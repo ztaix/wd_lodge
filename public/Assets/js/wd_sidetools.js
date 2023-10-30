@@ -251,6 +251,7 @@ async function showBookingDetailsFromID(id) {
       document.getElementById("booking_details_progress_div").style.width  = Math.min(Math.round((event.Paid / event.Price) * 10000) / 100, 100)+'%';
       document.getElementById("booking_details_progress_div").innerText  = Math.min(Math.round((event.Paid / event.Price) * 10000) / 100, 100) +'%';
       document.getElementById('booking_details_customer_name_span').innerText = event.customer_name;
+      document.getElementById('booking_details_customer_name_span').innerText = event.customer_name;
       document.getElementById('booking_details_type_doc_div').innerHTML = (event.Type_doc === 'Facture' ? lock_ico : unlock_ico) + ' ' +event.Type_doc;
       document.getElementById('booking_details_created_span').innerHTML = created_ico + event.created;
       document.getElementById('booking_details_updated_span').innerHTML = updated_ico + event.updated;
@@ -275,6 +276,7 @@ function update_add_formEvent(data){
         if(data){
             console.log(data);
         document.getElementById('addEventModal_title').innerText = `Modifier #${data.id}`    
+        updateDate(data.start);
         let form = document.getElementById('eventForm');
         form.elements['id'].value = data.id;
         form.elements['eventCustomer_id'].value = data.Customer_id;
