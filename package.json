@@ -32,6 +32,10 @@
 
   "dependencies": {
 
+    "@easepick/core": "^1.2.1",
+
+    "@easepick/range-plugin": "^1.2.1",
+
     "flowbite": "^1.8.1",
 
     "flowbite-datepicker": "^1.2.2",

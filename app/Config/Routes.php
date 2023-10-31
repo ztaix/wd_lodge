@@ -31,7 +31,7 @@ $routes->group('/booking', function($routes)
     $routes->get('getBookingsFromCustomer', 'BookingController::getBookingsFromCustomer');
     $routes->get('getServicesBookings', 'BookingController::getServicesBookings');
     $routes->get('generatePDF/(:any)/(:num)', 'BookingController::generatePDF/$1/$2');
-    $routes->get('sendmail/(:num)', 'BookingController::generatePDF/$1/$2');
+    $routes->get('sendmail/(:num)', 'BookingController::Sendmail/$1/$2');
 
 });
 

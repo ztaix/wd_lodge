@@ -416,8 +416,9 @@ function update_add_formEvent(data){
       document.getElementById('eventPaid').value = data.Paid;
       document.getElementById('eventType_doc').value = data.Type_doc;
       document.getElementById('eventComment').value = data.Comment;
-      document.getElementById('startEvent').value = data.start;
-      document.getElementById('eventEnd').value = data.end;
+      picker.setStartDate(data.start);
+      picker.setEndDate(data.end);
+
   }
 }
 

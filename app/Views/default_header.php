@@ -12,5 +12,5 @@
 <!-- Responsive design : system css viewport et utilisation des unités vh et vw) -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
+<script src="Assets/js/wd_datepicker.js"></script>
 </header>

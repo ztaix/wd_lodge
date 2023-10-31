@@ -257,8 +257,8 @@ async function showBookingDetailsFromID(id) {
       document.getElementById('booking_details_comment_span').innerText = event.Comment;
       document.getElementById('booking_details_pdf').href =  baseUrl + "booking/generatePDF/booking/" + event.id;
       document.getElementById('booking_details_pdf').innerHTML = download_ico + " Télécharger " + event.Type_doc;
-      document.getElementById('booking_details_sendmail').innerHTML =  send_ico + "Envoyer " + event.Type_doc;
-      document.getElementById('booking_details_sendmail').href =  baseUrl + "booking/sendmail/" + event.id;
+      document.getElementById('booking_details_sendmail').innerHTML =  send_ico + "Envoyer " + event.Type_doc + '/ EN CONSTRUCTION';
+      document.getElementById('booking_details_sendmail').href =  '#' //baseUrl + "booking/sendmail/" + event.id;
           
   
       let button_update = document.getElementById('booking_details_update_button');

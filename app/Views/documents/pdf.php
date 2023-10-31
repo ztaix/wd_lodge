@@ -29,7 +29,10 @@ if(isset($seller[0]) && isset($data)){
     $s_paid = $data['booking_info']['Paid'];
     $s_price = $data['booking_info']['Price'];
     $s_service = $data['booking_info']['service_title'];
+    $s_comment = $data['booking_info']['Comment'];
     $s_qt = $data['booking_info']['qt'];
+	
+    $u_price = $s_price/$s_qt;
 
     if(isset($denomination) && isset($telephone) && isset($adresse) && isset($mail) &&
     isset($rib) && isset($iban) && isset($logo)){
@@ -56,6 +59,7 @@ else{
 }
 $dateOrigine = str_replace('/', '-', $s_created);
 $date = new DateTime($dateOrigine);
+$created_date = $date->format('d/m/Y');
 $date->add(new DateInterval('P1M'));
 $due_date = $date->format('d/m/Y');
 
@@ -106,7 +110,7 @@ $due_date = $date->format('d/m/Y');
 			}
 
 			.invoice-box table tr.information table td {
-                line-height: 0.8;
+                line-height: 0.5;
 			}
             .invoice-box table .header p{
                 margin: 0;
@@ -198,9 +202,10 @@ $due_date = $date->format('d/m/Y');
                 margin : 0;
                 }
             .footer_wayzdigital {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0 0 0;
+			position: absolute;
+			width: 100%;
+            text-align: center;
+			bottom: 0;
             color: #d6dbdf  ;
             }
 		</style>
@@ -225,8 +230,8 @@ $due_date = $date->format('d/m/Y');
 
 								<td>
 									<p><?=$s_type?> #: <?=$s_id?></p>
-                                  <p>Date: <?=$s_created?></p>
-									<p>Validité du document jusqu'au: <?= $due_date?></p>
+                                  <p>Date: <?=$created_date?></p>
+									<p>Valide jusqu'au: <?= $due_date?></p>
 								</td>
 							</tr>
 						</table>
@@ -256,17 +261,17 @@ $due_date = $date->format('d/m/Y');
 
 
 				<tr class="heading">
-					<td>Item</td>
+					<td>Intitulé</td>
 					<td>Prix unitaire</td>
-					<td>Qt</td>
 					<td>Taxe</td>
+					<td>Qt</td>
 					<td>Tarif</td>
 				</tr>
 <?php 		$tax_bool = $seller[15]['Data'];
-			$tax = ($tax_bool)? round(((100*$s_price)/(100+$tax_value))*($tax_value/100)): 0;
-			$total = $s_price*$s_qt;
+			$tax = ($tax_bool)? round(((100*$u_price)/(100+$tax_value))*($tax_value/100)): 0;
+			$total_tax = ($tax_bool)? round(((100*$s_price)/(100+$tax_value))*($tax_value/100)): 0;
 			?>
-				<tr class='item'><td><?=$s_service?></td><td><?=$s_price?></td><td><?=$s_qt?></td><td><?=$tax?></td><td><?=$total?> Fr</td></tr>            
+				<tr class='item'><td><?='<b>'.$s_service.'</b><br>'.$s_comment?></td><td><?=$u_price?></td><td><?=$tax?></td><td><?=$s_qt?></td><td><?=$s_price?> Fr</td></tr>            
 				<tr class="total">
 					<?php if($tax_bool == true){
 						echo "<td colspan='4'>
@@ -281,8 +286,8 @@ $due_date = $date->format('d/m/Y');
 					
 					} ?>	
 					<td>
-						<p><?= $tax?></p>
-						<p><?=$total?></p>
+						<p><?= $total_tax?> Fr</p>
+						<p><?=$s_price?> Fr</p>
 					</td>
 				</tr>
 		
@@ -290,9 +295,9 @@ $due_date = $date->format('d/m/Y');
 					<td colspan="2">
                         <table cellpadding="0" cellspacing="0">
                             <tr class="heading">
-                                <td colspan="2">Paiements</td>
+                                <td colspan="2">Encaissé</td>
                             </tr>
-                            <tr><td>Mode paiment</td><td><?=$s_paid?> Fr</span>
+                            <tr><td colspan="2"><?=$s_paid?> Fr</span></td></tr>
         
 
                         </table>

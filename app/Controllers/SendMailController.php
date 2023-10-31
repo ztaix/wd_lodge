@@ -17,23 +17,9 @@ class SendMail extends Controller
 
     }
 
-    public function index($to,$origine, $id)
+    public function index($to,$seller,$data)
     {
 
-
-        if ($origine == 'booking') {
-            $bookingData = $this->BookingModel->getBookingFromID($id); // Vos données de réservation
-            if (isset($bookingData['Customer_id'])) {
-                $customerData = $this->CustomerModel->get_customer_info($bookingData['Customer_id']);
-                $data = [
-                    'booking_info' => $bookingData,
-                    'customer_info' => $customerData
-                ];
-            }
-        } else {
-            $data = $this->BookingModel->getBookingsFromCustomer($id); // Vos données de réservation
-        }
-        $seller = [ $this->ConfigModel->get_all_config()];
         // Charger le service de messagerie
         $email = \Config\Services::email();
         

@@ -29,8 +29,10 @@
             </svg>
             <span class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Réglage</span>
         </a>
+        
     </div>
 </div>
+
 
 
 </footer>
@@ -53,9 +55,30 @@ console.log(footerLinks);
 
 let baseurl = <?= json_encode($baseurl); ?>;
 
+// DATE PICKER
+const picker = new easepick.create({
+    element: document.getElementById('startEvent'),
+    css: [
+      'css/wd_datepicker.css',
+    ],
+    plugins: ['RangePlugin'],
+    RangePlugin: {        
+        elementEnd: "#eventEnd",
+      tooltipNumber(num) {
+        return num -1;
+      },
+      locale: {
+        one: 'Nuit',
+        other: 'Nuits',
+      }
+    },
+    zIndex: 50,
+    lang: "fr-FR",
+    format: "DD-MM-YYYY",
+});
+
 </script>
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
-<script src="Assets/js/datepicker.flowbite.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
 <script src="Assets/js/wd_fullcalendar.js?v="<?= time()?>></script>
 <script src="Assets/js/wd_sidetools.js?v="<?= time()?>></script>
