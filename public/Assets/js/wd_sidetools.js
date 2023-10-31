@@ -1,24 +1,16 @@
-const download_ico = `<svg class="w-4 h-4 text-pink-200 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
-<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"/>
-</svg>`;
-const sendmail_ico = `<svg class="w-4 h-4 mr-1 text-emerald-200 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
-<path d="M14 7h-1.5V4.5a4.5 4.5 0 1 0-9 0V7H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Zm-5 8a1 1 0 1 1-2 0v-3a1 1 0 1 1 2 0v3Zm1.5-8h-5V4.5a2.5 2.5 0 1 1 5 0V7Z"/>
-</svg>`;
-const lock_ico = `<svg class="w-4 h-4 mr-1 text-gray-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
-<path d="M14 7h-1.5V4.5a4.5 4.5 0 1 0-9 0V7H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Zm-5 8a1 1 0 1 1-2 0v-3a1 1 0 1 1 2 0v3Zm1.5-8h-5V4.5a2.5 2.5 0 1 1 5 0V7Z"/>
-</svg>`;
-const unlock_ico = `<svg class="w-3 h-3 mr-1 text-gray-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 8V4.5a3.5 3.5 0 1 0-7 0V8M8 12.167v3M2 8h12a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/>
-</svg>`;
-const created_ico = `<svg class="w-3 h-3 text-slate-300  dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
-<path d="M19 0H1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1ZM2 6v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6H2Zm11 3a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V8a1 1 0 0 1 2 0h2a1 1 0 0 1 2 0v1Z"/>
-</svg>`;
-const updated_ico = `<svg class="w-3 h-3 text-slate-300  dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-<path d="M12.687 14.408a3.01 3.01 0 0 1-1.533.821l-3.566.713a3 3 0 0 1-3.53-3.53l.713-3.566a3.01 3.01 0 0 1 .821-1.533L10.905 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V11.1l-3.313 3.308Zm5.53-9.065.546-.546a2.518 2.518 0 0 0 0-3.56 2.576 2.576 0 0 0-3.559 0l-.547.547 3.56 3.56Z"/>
-<path d="M13.243 3.2 7.359 9.081a.5.5 0 0 0-.136.256L6.51 12.9a.5.5 0 0 0 .59.59l3.566-.713a.5.5 0 0 0 .255-.136L16.8 6.757 13.243 3.2Z"/>
+// Liste des mois en français
+var moisFrancais = ["janvier", "février", "mars", "avril", "mai", "juin","juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
+let info_ico = `<svg class="w-4 h-4 mt-1 mr-1 text-slate-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+<path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
 </svg>`;
 
-
+let send_ico =`<svg class="w-4 h-4 mr-2 text-slate-400 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
+</svg>`;
+let download_ico = `<svg class="w-4 h-4 mr-2 text-slate-400 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 19">
+<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15h.01M4 12H2a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-3M9.5 1v10.93m4-3.93-4 4-4-4"/>
+</svg>`; 
 
 function generateBookingElement(booking) {
 
@@ -220,11 +212,16 @@ async function showBookingDetailsFromID(id) {
                 id: response.id,
                 Customer_id: response.Customer_id,
                 Pdf_url: response.Pdf_url,
+                qt: response.qt,
                 Paid: response.Paid,
                 Price: response.Price,
                 Service_id: response.Service_id,
                 Type_doc: response.Type_doc,
                 customer_name: response.customer_name,
+                customer_phone: response.customer_phone,
+                customer_mail: response.customer_mail,
+                customer_created: response.customer_created,
+                customer_comment: response.customer_comment,
                 Comment: response.Comment,
                 service_color: response.service_color,
                 service_title: response.service_title,
@@ -242,23 +239,26 @@ async function showBookingDetailsFromID(id) {
     }
 
   
-      document.getElementById('booking_details_title_h5').innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${event.service_color}"># ${event.id}</span> ` + event.service_title;
+      document.getElementById('booking_details_id_h5').innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${event.service_color}">${event.Type_doc} # ${event.id}</span> `;
+      document.getElementById('booking_details_service_h5').innerText = event.service_title;
+      document.getElementById('booking_details_qt_span').innerText = event.qt;
       document.getElementById('booking_details_start_span').innerText = event.start;
       document.getElementById('booking_details_end_span').innerText = event.end;
-      document.getElementById('booking_details_paid_span').innerText = event.Paid + ' Fr';
-      document.getElementById('booking_details_price_mark').innerText = event.Price + ' Fr';
-      document.getElementById("booking_details_price_mark").style.backgroundColor  = event.service_color;
-      document.getElementById("booking_details_progress_div").style.width  = Math.min(Math.round((event.Paid / event.Price) * 10000) / 100, 100)+'%';
-      document.getElementById("booking_details_progress_div").innerText  = Math.min(Math.round((event.Paid / event.Price) * 10000) / 100, 100) +'%';
+      document.getElementById('booking_details_price_span').innerText =  event.Price + ' Fr';
+      document.getElementById("booking_details_progress_div").style.width = event.Paid > 0 ? Math.min(Math.round((event.Paid / event.Price) * 10000) / 100, 100) + '%' : '0';
+      document.getElementById("booking_details_progress_div").innerText  = event.Paid > 0 ? event.Paid + ' Fr' : '';
       document.getElementById('booking_details_customer_name_span').innerText = event.customer_name;
-      document.getElementById('booking_details_customer_name_span').innerText = event.customer_name;
-      document.getElementById('booking_details_type_doc_div').innerHTML = (event.Type_doc === 'Facture' ? lock_ico : unlock_ico) + ' ' +event.Type_doc;
-      document.getElementById('booking_details_created_span').innerHTML = created_ico + event.created;
-      document.getElementById('booking_details_updated_span').innerHTML = updated_ico + event.updated;
+      document.getElementById('booking_details_customer_phone_span').innerText = event.customer_phone;
+      document.getElementById('booking_details_customer_mail_span').innerText = event.customer_mail;
+      document.getElementById('booking_details_customer_comment_span').innerHTML = info_ico +  event.customer_comment;
+      document.getElementById('booking_details_customer_created_span').innerText = 'Depuis ' + new Date(event.customer_created).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' }).replace(/^\w/, (c) => c.toUpperCase());
+      document.getElementById('booking_details_created_span').innerHTML = 'Créé le: ' + event.created;
+      document.getElementById('booking_details_updated_span').innerHTML = 'Modifié le: ' +event.updated;
       document.getElementById('booking_details_comment_span').innerText = event.Comment;
-      document.getElementById('booking_details_pdf').href =  baseUrl + "generatePDF/booking/" + event.id;
-      document.getElementById('booking_details_pdf').innerHTML =  download_ico + "Télécharger " + event.Type_doc;
-      document.getElementById('booking_details_sendmail').innerHTML =  sendmail_ico + "Envoyer " + event.Type_doc;
+      document.getElementById('booking_details_pdf').href =  baseUrl + "booking/generatePDF/booking/" + event.id;
+      document.getElementById('booking_details_pdf').innerHTML = download_ico + " Télécharger " + event.Type_doc;
+      document.getElementById('booking_details_sendmail').innerHTML =  send_ico + "Envoyer " + event.Type_doc;
+      document.getElementById('booking_details_sendmail').href =  baseUrl + "booking/sendmail/" + event.id;
           
   
       let button_update = document.getElementById('booking_details_update_button');
@@ -267,84 +267,7 @@ async function showBookingDetailsFromID(id) {
       button_delete.onclick = function() { deleteEvent(event.id,'DetailsEventModal'); };
   }
 
-function update_add_formEvent(data){
 
-        openModal('addEventModal',false);
-        // Changer le texte du bouton et son action pour l'ajout
-        let submitButton = document.getElementById('add_submit_form');
-        submitButton.onclick = function() { updateEventFromDetails(); }; // Ajouter un nouvel événement
-        if(data){
-            console.log(data);
-        document.getElementById('addEventModal_title').innerText = `Modifier #${data.id}`    
-        updateDate(data.start);
-        let form = document.getElementById('eventForm');
-        form.elements['id'].value = data.id;
-        form.elements['eventCustomer_id'].value = data.Customer_id;
-        form.elements['eventService_id'].value = data.Service_id;
-        form.elements['eventPrice'].value = data.Price;
-        form.elements['eventPaid'].value = data.Paid;
-        form.elements['eventType_doc'].value = data.Type_doc;
-        form.elements['eventComment'].value = data.Comment;
-        form.elements['startEvent'].value = data.start;
-        form.elements['eventEnd'].value = data.end;
-        }
-}
-
-function showBookingDetails_fromhistory(response) {
-  let id = response.getAttribute("data-id");
-  let serviceTitle = response.getAttribute("data-service_title");
-  let serviceId = response.getAttribute("data-Service_id");
-  let start = response.getAttribute("data-start");
-  let end = response.getAttribute("data-end");
-  let customerId = response.getAttribute("data-Customer_id");
-  let customerName = response.getAttribute("data-customer_name");
-  let paid = response.getAttribute("data-Paid");
-  let price = response.getAttribute("data-Price");
-  let typeDoc = response.getAttribute("data-Type_doc");
-  let pdfUrl = response.getAttribute("data-Pdf_url");
-  let service_color = response.getAttribute("data-service_color");
-
-  openModal("DetailsEventModal");
-
-
-  // Ajout du titre et de la couleur
-  let titleElement = document.getElementById("modal-title_details_booking");
-  titleElement.innerHTML = `<span style="border-radius: 10px; background-color:${service_color}">&nbsp;</span>`;
-  titleElement.innerHTML += `<a href="#" class="hover:underline;">${customerName}</a>`;
-  titleElement.innerHTML += `<span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">`;
-  titleElement.innerHTML += `${format_date(
-    start
-  )}<svg class="w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/></svg> ${format_date(
-    end
-  )}</span>`;
-
-  // Créer un nouvel élément div pour contenir les détails de la réservation
-
-  let newRow = document.createElement("tr");
-        newRow.classList.add(
-          "bg-white",
-          "border-b",
-          "dark:bg-gray-800",
-          "dark:border-gray-700"
-        );
-        newRow.innerHTML = `
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">${
-                    serviceTitle
-                }</th>
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">${format_date(
-                    typeDoc
-                )} - ${format_date(booking.end)}</td>
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">${
-                    paid
-                }</td>
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">${
-                    price
-                }</td>
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">Action</td>
-            `;
-        tbody.appendChild(newRow);
-
-}
 // SIDEBOX //////
 
 function get_service_list() {
@@ -388,6 +311,16 @@ function get_booking_list_from_customer(data) {
   let customer_id = data.getAttribute("data-id");
   let Name = data.getAttribute("data-Name");
   let tbody = document.getElementById("CustomerDetailsContainer");
+  // Gestionnaire d'événements délégués pour les lignes de tableau avec la classe "booking-row"
+tbody.addEventListener("click", function(event) {
+  if (event.target.classList.contains("booking-row")) {
+    // Récupérer l'ID de la réservation depuis l'attribut data-booking-id
+    const bookingId = event.target.getAttribute("data-booking-id");
+    
+    // Appeler la fonction showBookingDetailsFromID avec l'ID de la réservation
+    showBookingDetailsFromID(bookingId);
+  }
+});
   tbody.innerHTML = "";
 
   // Variables pour stocker les sommes totales
@@ -442,8 +375,12 @@ function get_booking_list_from_customer(data) {
           "bg-white",
           "border-b",
           "dark:bg-gray-800",
-          "dark:border-gray-700"
+          "dark:border-gray-700",
+          "booking-row" // Ajout de la classe spécifique
+
         );
+        newRow.setAttribute("data-booking-id", booking.id); // Ajout de l'ID de la réservation comme attribut
+
         newRow.innerHTML = `
                 <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">${
                   booking.service_title
@@ -460,6 +397,10 @@ function get_booking_list_from_customer(data) {
                   booking.Price
                 }</td>
             `;
+        // Ajouter un événement onclick
+        newRow.onclick = function () {
+          showBookingDetailsFromID(booking.id);
+        };
         tbody.appendChild(newRow);
       });
 

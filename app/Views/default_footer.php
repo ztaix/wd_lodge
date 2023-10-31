@@ -55,8 +55,8 @@ let baseurl = <?= json_encode($baseurl); ?>;
 
 </script>
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
-<script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
 <script src="Assets/js/datepicker.flowbite.min.js"></script>
+<script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
 <script src="Assets/js/wd_fullcalendar.js?v="<?= time()?>></script>
 <script src="Assets/js/wd_sidetools.js?v="<?= time()?>></script>
 

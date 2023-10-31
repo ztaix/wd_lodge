@@ -313,38 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
   
-// Mettre à jour l'événement dans la base de données
-function updateEvent(event, info) {
-    // Si 'event' ou 'info' est fourni, utilisez son ID. Sinon, ce sera 'undefined'.
-    let id = event ? event.id : (info ? info.event.id : undefined);
-    // Récupérer toutes les valeurs du formulaire
-    let formData = {
-        id: id,
-        customer_id: document.getElementById('eventCustomer_id').value,
-        service_id: document.getElementById('eventService_id').value,
-        price: document.getElementById('eventPrice').value,
-        paid: document.getElementById('eventPaid').value,
-        type_doc: document.getElementById('eventType_doc').value,
-        comment: document.getElementById('eventComment').value,
-        start: document.getElementById('startEvent').value,
-        end: document.getElementById('eventEnd').value
-    };
 
-    $.ajax({
-        url: baseurl + '/booking/updateBooking', // URL de mise à jour
-        method: 'POST',
-        data: formData,
-        success: function(response) {
-            if (response.status === 'success') {
-                calendar.refetchEvents();
-            } else {
-                alert('Échec de la mise à jour');
-            }
-        }
-    });
-
-    closeModal();
-}
 // Mettre à jour l'événement depuis la !!! vue détaillé !!! dans la base de données
 function updateEventFromDetails() {
    
@@ -352,6 +321,7 @@ function updateEventFromDetails() {
         id:  document.getElementById('id').value,
         Customer_id: document.getElementById('eventCustomer_id').value,
         Service_id:  document.getElementById('eventService_id').value,
+        qt:  document.getElementById('eventQt').value,
         Price:  document.getElementById('eventPrice').value,
         Paid:  document.getElementById('eventPaid').value,
         Type_doc:  document.getElementById('eventType_doc').value,
@@ -368,7 +338,7 @@ function updateEventFromDetails() {
               showBanner('Événement mise à jour avec succès !', true);
                 //closeModalById('addEventModal');
                 showBookingDetailsFromID(response.id);
-                calendar.refetchEvents();
+                if(calendar) {calendar.refetchEvents();}
             } else {
               showBanner('Echec de la mise à jour !', false);
               console.log(response);
@@ -414,7 +384,7 @@ if(eventData['start'] && eventData['end']){
       showBanner('Evènement ajouté avec succés',true);
       closeModalById('addEventModal')
       console.log("Success:", response);
-      calendar.refetchEvents();    
+      if(calendar){calendar.refetchEvents();}    
     },
     error: function(error) {
       // Traitez l'erreur ici
@@ -429,6 +399,29 @@ else{
 }
 
 }
+
+function update_add_formEvent(data){
+
+  openModal('addEventModal',false);
+  // Changer le texte du bouton et son action pour l'ajout
+  let submitButton = document.getElementById('add_submit_form');
+  submitButton.onclick = function() { updateEventFromDetails(); }; // Ajouter un nouvel événement
+  if(data){
+      document.getElementById('addEventModal_title').innerText = `Modifier #${data.id}`    
+      document.getElementById('id').value = data.id;
+      document.getElementById('eventCustomer_id').value = data.Customer_id;
+      document.getElementById('eventService_id').value = data.Service_id;
+      document.getElementById('eventQt').value = data.qt;
+      document.getElementById('eventPrice').value = data.Price;
+      document.getElementById('eventPaid').value = data.Paid;
+      document.getElementById('eventType_doc').value = data.Type_doc;
+      document.getElementById('eventComment').value = data.Comment;
+      document.getElementById('startEvent').value = data.start;
+      document.getElementById('eventEnd').value = data.end;
+  }
+}
+
+
 
 // Fonction pour ajouter un événement
 function deleteEvent(event_id,modal_id) {
@@ -447,7 +440,7 @@ function deleteEvent(event_id,modal_id) {
                       id: event_id
                   }
               });
-              calendar.refetchEvents();   
+              if(calendar){calendar.refetchEvents();   }
               closeModalById('ConfirmDeleteModal');
               closeModalById(modal_id );    
      }; // Ajouter un nouvel événement

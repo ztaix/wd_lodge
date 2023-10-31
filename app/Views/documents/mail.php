@@ -67,6 +67,7 @@ $due_date = $date->format('d/m/Y');
 		<meta charset="utf-8" />
 		<title>Facture/Devis KAIPEKA LODGE PDF</title>
 
+
 		<style>
 			.invoice-box {
 				max-width: 800px;
@@ -198,114 +199,21 @@ $due_date = $date->format('d/m/Y');
                 margin : 0;
                 }
             .footer_wayzdigital {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0 0 0;
-            color: #d6dbdf  ;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: center;
+                min-height: 100vh; /* Assure que le conteneur prend au moins toute la hauteur de la fenêtre */
+                margin: 10px 0 0 0;
+                color: #d6dbdf  ;
             }
 		</style>
 	</head>
 
 	<body>
 		<div class="invoice-box">
-			<table cellpadding="0" cellspacing="0">
-				<tr class="top">
-					<td colspan="5">
-						<table class="header">
-							<tr>
-								<td class="title">
-									<img
-										src="<?= $logo ?>"
-										style="  max-width: 200px;
-  max-height: 150px;
-  width: auto;
-  height: auto;"
-									/>
-								</td>
 
-								<td>
-									<p><?=$s_type?> #: <?=$s_id?></p>
-                                  <p>Date: <?=$s_created?></p>
-									<p>Validité du document jusqu'au: <?= $due_date?></p>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-
-				<tr class="information">
-					<td colspan="5">
-						<table>
-							<tr>
-								<td>
-									<p><?= $denomination?></p>
-									<p><?= $adresse?></p>
-                                  <p><?= $telephone?></p>
-                                  <p><?= $mail?></p>
-								</td>
-
-								<td>
-									<p><?= $s_client_nom?></p>
-									<p><?= $s_client_telephone?></p>
-                                  <p><?= $s_client_mail?></p>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-
-
-				<tr class="heading">
-					<td>Item</td>
-					<td>Prix unitaire</td>
-					<td>Qt</td>
-					<td>Taxe</td>
-					<td>Tarif</td>
-				</tr>
-<?php 		$tax_bool = $seller[15]['Data'];
-			$tax = ($tax_bool)? round(((100*$s_price)/(100+$tax_value))*($tax_value/100)): 0;
-			$total = $s_price*$s_qt;
-			?>
-				<tr class='item'><td><?=$s_service?></td><td><?=$s_price?></td><td><?=$s_qt?></td><td><?=$tax?></td><td><?=$total?> Fr</td></tr>            
-				<tr class="total">
-					<?php if($tax_bool == true){
-						echo "<td colspan='4'>
-						<p>Taxes $tax_value% </p>
-						<p>Total</p>
-					</td>	";
-					}
-					else{
-						echo "<td colspan='4'>";
-						echo "<p>Total</p>";
-						echo "</td";
-					
-					} ?>	
-					<td>
-						<p><?= $tax?></p>
-						<p><?=$total?></p>
-					</td>
-				</tr>
-		
-				<tr >
-					<td colspan="2">
-                        <table cellpadding="0" cellspacing="0">
-                            <tr class="heading">
-                                <td> Payment Method</td>
-                                <td >Check #</td>
-                            </tr>
-                            <tr><td>Mode paiment</td><td ><?=$s_paid?> Fr</span>
-        
-
-                        </table>
-                   
-
-				
-                <tr class="invoice-footer">
-					<td colspan="5"><p>Politque de retour</p></td>
-				</tr>
-
-			</table>
-		</div>
+        </div>	
        <div class="footer_wayzdigital"> wayz.digital, logiciel de gestion pour entreprise et développement personnalisé - <?= date('Y');?></div>
 	</body>
 </html>

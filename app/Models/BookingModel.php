@@ -16,8 +16,8 @@ class BookingModel extends Model
     protected $useAutoIncrement = true;
 
     protected $allowedFields = [
-        'Customer_id', 'start', 'end', 'Service_id', 'Price', 
-        'Paid', 'Type_doc', 'Pdf_url', 'Comment', 'Deleted_at'
+        'Customer_id', 'start', 'end', 'Service_id', 'qt','Price', 
+        'Paid', 'Type_doc', 'Pdf_url', 'Comment', 'Created_at', 'Deleted_at'
     ]; // les champs autorisés pour l'insertion ou la mise à jour
 
     // Pas de champ pour la date de modification, donc on ne définit pas `$updatedField`
@@ -27,6 +27,7 @@ class BookingModel extends Model
         'start'   => 'required',
         'end'     => 'required',
         'Service_id'   => 'required|integer',
+        'qt'        => 'required|integer',
         'Price'        => 'required|integer',
         'Paid'         => 'permit_empty|integer',
         'Type_doc'     => 'required|in_list[Devis,Facture]',
@@ -76,8 +77,8 @@ class BookingModel extends Model
 
     public function getBookingFromID($id)
     {
-        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, wd_services.Color as service_color');
-        $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
+        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_customers.Phone as customer_phone, wd_customers.Email as customer_mail, wd_customers.Comment as customer_comment, wd_customers.Created_at as customer_created,  wd_services.Title as service_title, wd_services.Color as service_color', false);
+        $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
         $this->where("id", $id);
         $result = $this->first(); // Utilisez first si vous attendez un seul enregistrement

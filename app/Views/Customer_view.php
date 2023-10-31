@@ -1,13 +1,4 @@
-
 <script>
-
-import Datepicker from 'flowbite-datepicker/Datepicker';
-
-const datepickerEl = document.getElementById('datepickerId');
-new Datepicker(datepickerEl, {
-    // options
-});
-
 var totalServices = <?= $totalServices; ?>;
 </script>
 
@@ -103,7 +94,7 @@ $data['options_customers_id'] = $options_customers_id;
                                 data-Name="<?= $customer['Name']; ?>" 
                                 data-Email="<?= $customer['Email']; ?>" 
                                 data-Phone="<?= $customer['Phone']; ?>" 
-                                onclick="get_booking_list_from_customer(this)">
+                                onclick="get_booking_list_from_customer(this)" >
                                 <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white service_<?= $customer['Customer_id']; ?>"><?= $customer['Name']; ?></th>
                                 <td class="px-3 py-3"><?= $customer['Email']; ?></td>
                                 <td class="px-3 py-3"><?= sql_date_to_dmY($customer['Phone']); ?></td>

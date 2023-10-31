@@ -1,9 +1,4 @@
 <?php
-/*
-echo view('modals/modal_update_add_service', $id); */
-
-
-
 
 
 $html_form = '';

@@ -1,6 +1,4 @@
 
-<script type="module" src="<?= $baseurl?>/Assets/js/import_flowbite_datepicker.js"></script>
-
 <script>
 var totalServices = <?= $totalServices; ?>;
 </script>

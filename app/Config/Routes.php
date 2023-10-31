@@ -30,6 +30,8 @@ $routes->group('/booking', function($routes)
     $routes->get('getBookingFromID', 'BookingController::getBookingFromID');
     $routes->get('getBookingsFromCustomer', 'BookingController::getBookingsFromCustomer');
     $routes->get('getServicesBookings', 'BookingController::getServicesBookings');
+    $routes->get('generatePDF/(:any)/(:num)', 'BookingController::generatePDF/$1/$2');
+    $routes->get('sendmail/(:num)', 'BookingController::generatePDF/$1/$2');
 
 });
 
@@ -43,6 +45,5 @@ $routes->get('/file/(:any)', 'FilesController::getFilePath/$1');
 $routes->get('/uploads/(:any)', 'FilesController::passthrough/$1');
 
 $routes->post('/Config/save', 'ConfigurationController::saveConfigurations');
-$routes->get('generatePDF/(:any)/(:num)', 'BookingController::generatePDF/$1/$2');
 
 

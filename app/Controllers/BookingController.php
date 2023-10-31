@@ -33,6 +33,7 @@ class BookingController extends BaseController
             'services_list' => ($services_list = $this->ServiceModel->get_services_list()) ? $services_list : [],
             'bookins_list' => $this->BookingModel->getAllBookings(),
             'totalServices' => $this->ServiceModel->getTotalServices(),
+            'discountRules' => ($rule = $this->ConfigModel->DiscountRules())? DiscountToArray($rule['Data']): '' ,
         ];
 
 
@@ -134,18 +135,8 @@ class BookingController extends BaseController
     public function updateBooking()
     {
 
-        $data = [
-            'Customer_id' => $this->request->getPost('Customer_id'),
-            'start' => $this->request->getPost('start'),
-            'end' => $this->request->getPost('end'),
-            'Service_id' => $this->request->getPost('Service_id'),
-            'qt' => $this->request->getPost('qt'),
-            'Price' => $this->request->getPost('Price'),
-            'Paid' => $this->request->getPost('Paid'),
-            'Type_doc' => $this->request->getPost('Type_doc'),
-            'Comment' => $this->request->getPost('Comment')
-        ];
-
+        $data = $this->request->getPost();
+        
         $id = $this->request->getPost('id');
 
         if ($this->BookingModel->validate($data)) {  // Utilisez les règles de validation définies dans le modèle
@@ -242,10 +233,9 @@ class BookingController extends BaseController
             $data = $this->BookingModel->getBookingsFromCustomer($id); // Vos données de réservation
         }
 
-        $seller = [ $this->ConfigModel->get_all_config()
-        ];
+        $seller = [ $this->ConfigModel->get_all_config()];
         // Charger la vue et passer les données de réservation
-        $html = view('pdf/document', ['data' => $data, 'seller' => $seller]);
+        $html = view('documents/pdf', ['data' => $data, 'seller' => $seller]);
         
         $contxt = stream_context_create([ 
             'ssl' => [ 
