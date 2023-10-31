@@ -17,7 +17,7 @@ foreach ($All_config as $row) {
                         <div class="flex flex-col items-center justify-center p-5">
                         <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Mettre en ligne ton LOGO </span></p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF</p>
-                        <p class="text-xs text-center text-gray-500 dark:text-gray-400">' . $row['Data'] . '</p>
+                        <p break-word class="w-auto text-xs text-center text-gray-500 dark:text-gray-400" style="word-break: break-word;">' . $row['Data'] . '</p>
                         </div>
                     </div>
                     <input name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '-dropzone-file" type="file" class="hidden" />
@@ -55,9 +55,9 @@ foreach ($All_config as $row) {
                         <label for="discount" class="sr-only">Règles</label>
                         <textarea name="' . $row['config_id'] . '" id="discount" rows="4" class="w-full border-0 bg-white px-0 text-sm text-gray-900 focus:ring-0 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400" required>' . $row['Data'] . '</textarea>
                     </div>
-                    <div class="flex flex-col  border-t px-3 py-2 dark:border-gray-600">
-                        <p class="px-4  text-xs font-bold text-slate-400">1 règle = 1 ligne:</p>
-                        <p class="px-4 py-2.5  text-xs font-medium text-slate-400"><i>Nombre de nuit : Pourcentage de réduction</i></br>
+                    <div class="flex flex-col  border-t px-2 py-2 dark:border-gray-600">
+                        <p class="text-xs font-bold text-slate-400">1 règle = 1 ligne:</p>
+                        <p class="py-2.5  text-xs font-medium text-slate-400"><i>Nombre de nuit : Pourcentage de réduction</i></br>
                         <b>5:15%</b> (exemple: À partir de la 5ᵉ nuit, le client obtient 15% de réduction)</p>
                     </div>
                 </div>
@@ -117,7 +117,7 @@ foreach ($All_config as $row) {
                 <h1 class="pt-3 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
                     Liste des services
                 </h1>
-
+                <h2 class="pt-3 mb-4 text-2xl text-center font-extrabold leading-none tracking-tight text-red-900 md:text-5xl lg:text-6xl dark:text-white"> EN CONSTRUCTION </h2>
                 <?php
                 foreach ($services_list as $key => $value) {
                 ?>
