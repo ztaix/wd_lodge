@@ -25,7 +25,7 @@ $data['options_customers_id'] = $options_customers_id;
 <script>
     var prices = <?php echo json_encode($prices); ?>;
 </script>
-
+<?php echo view('modals/modal_customer_update', $data); ?>
 <?php echo view('modals/modal_add_event', $data); ?>
 <?php echo view('modals/modal_booking_details', $data); ?>
 <?php echo view('modals/modal_bookings_list', $data); ?>

@@ -11,6 +11,7 @@ $routes->group('/customer', function($routes)
 {
     $routes->get('get_customer_info', 'CustomersController::get_customer_info');
     
+    $routes->post('create', 'CustomersController::create_customer');
     $routes->post('update', 'CustomersController::update_customerFromID');
 });
 

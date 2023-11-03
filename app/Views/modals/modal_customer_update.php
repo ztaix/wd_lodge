@@ -2,10 +2,11 @@
 $modal_id = "updateCustomerModal";
 ?>
 <!-- ADD EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed inset-0 hidden w-full h-full z-50">
-    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 ">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full inset-0 hidden z-50 overflow-auto ">
+    <div class="relative h-full bg-white rounded-lg shadow dark:bg-gray-700  flex justify-center ">
+
         <!-- Modal content -->
-        <div class=" overflow-auto h-[calc(100vh)]">
+        <div class="max-w-4xl">
 
 
             <!-- Modal Header -->
@@ -16,7 +17,7 @@ $modal_id = "updateCustomerModal";
                     </svg>
                 </div>
                 <div class="flex-grow text-center">
-                    <h3 id="Update_customer_Modal_title" class="text-center text-2xl font-bold text-gray-800 dark:text-white">Modifier Client</h3>
+                    <h3 id="Update_customer_Modal_title" class="text-center text-2xl font-bold text-gray-800 dark:text-white">Client</h3>
                 </div>    
                 <div>
                     <button type="button" class=" text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal" onclick="closeModalById('<?= $modal_id ?>')">
@@ -50,10 +51,8 @@ $modal_id = "updateCustomerModal";
                         <label for="customer_comment" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Commentaire</label>
                     </div>
                     <div class="flex justify-between ">
-                        <button id="update_customer_submit_form" type="button"  class="w-full mr-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  text-xl px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Enregistrer</button>
-                        <button id="cancel_customer_submit_form" type="button" class="w-full ml-2 text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  text-xl px-5 py-2.5 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">Annuler</button>
-                        <button id="delete_customer_submit_form" type="button" class="w-full ml-2 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg  text-xl px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Supprimer</button>
-                    </div>
+                        <button id="cancel_customer_submit_form" onclick="closeModalById('updateCustomerModal')"type="button" class="w-full ml-2 text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  text-xl px-5 py-2.5 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">Annuler</button>                    </div>
+                        <button id="update_customer_submit_form" onclick="CreateCustomer()" type="button"  class="w-full mr-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  text-xl px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Enregistrer</button>
                 </form>
             </div>
         </div>

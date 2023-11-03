@@ -69,6 +69,25 @@ class CustomersController extends BaseController
         }
     }
     
+    public function create_customer() {
+        $customer_info = $this->request->getPost(); 
+        if($this->CustomerModel->validate($customer_info)){
+            $this->CustomerModel->create_customer($customer_info);
+            $inserted_id = $this->CustomerModel->insertID();  // Récupère l'ID de la dernière ligne insérée
+            return $this->response->setJSON([
+                'status' => 'success', 
+                'id' => $inserted_id,
+                'Name' => $customer_info['Name'],
+                'Phone' => $customer_info['Phone'],
+                'Email' => $customer_info['Email'],
+                'Comment' => $customer_info['Comment']
+            ]); 
+        } else {
+            $errors = $this->CustomerModel->errors();
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Les données envoyées ne correspondent pas aux exigences. Vérifiez les champs.', 'errors' => $errors]);
+        }
+    }
+    
 
     public function update_customerFromID()
     {

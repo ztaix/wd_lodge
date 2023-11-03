@@ -38,21 +38,29 @@ function showSearch() {
 let modalStack = [];
 
 // Ouvre une nouvelle fenêtre modale
-function openModal(modalId,overlay = true, lastoff = true) {
+function openModal(modalId) {
 
   let modalElement = document.getElementById(modalId);
   // Vérifie si la pile modalStack a déjà des éléments
-  if (modalStack.length > 0 && lastoff == true) {
+  if (modalStack.length > 0) {
     // Prend la dernière fenêtre modale de la pile et la cache
     let lastModal = modalStack[modalStack.length - 1];
-    lastModal.style.display = "none";
+    var currentZIndex = parseInt(lastModal.style.zIndex, 10);
+
+    lastModal.style.zIndex = currentZIndex -1;
   }
 
     if (modalElement) {
-        modalElement.style.display = "block";
-        modalElement.classList.add('animate');  
-
-        modalStack.push(modalElement); // Ajoute la fenêtre modale à la pile
+      // Obtenir la valeur actuelle du zIndex
+      var currentZIndex = parseInt(modalElement.style.zIndex, 10) || 50;
+console.log(currentZIndex);
+      // Augmenter la valeur du zIndex de 1
+      modalElement.style.zIndex = currentZIndex + 1;
+      modalElement.style.display = "block";
+      modalElement.classList.add('animate');  
+      
+      modalStack.push(modalElement); // Ajoute la fenêtre modale à la pile
+  
     }
 
 }
@@ -260,6 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         dateClick: function(info) {
             //const clickedDate = info.date;  // Récupère la date cliquée
             const clickedDate = info.dateStr; // Récupère la date sur laquelle l'utilisateur a cliqué
+            console.log(clickedDate);
             // Faire une requête AJAX pour obtenir les événements de cette date
             $.ajax({
             url: baseurl + '/booking/getBookingsFromDate', // Votre URL pour récupérer les événements
@@ -287,9 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('eventCustomer_id').value;
                 document.getElementById('eventComment').value = '';
 
-                // Changer le texte du bouton et son action pour l'ajout
-                let cancelButton = document.getElementById('cancel_submit_form');
-                cancelButton.onclick = function() { closeModalById('addEventModal'); }; // Ajouter un nouvel événement
+
                 let submitButton = document.getElementById('add_submit_form');
                 submitButton.onclick = function() { addEvent(); }; // Ajouter un nouvel événement
                 // Afficher le popup
@@ -359,6 +366,7 @@ function addEvent() {
   let eventService_id = document.getElementById('eventService_id').value;
   let eventPrice = document.getElementById('eventPrice').value;
   let eventPaid = document.getElementById('eventPaid').value;
+  let eventQt = document.getElementById('eventQt').value;
   let eventType_doc = document.getElementById('eventType_doc').value;
   let eventComment = document.getElementById('eventComment').value;
   let eventStart = format_date_toSql(document.getElementById('startEvent').value);
@@ -368,6 +376,7 @@ function addEvent() {
   'Service_id': eventService_id,
   'Price': eventPrice,
   'Paid': eventPaid,
+  'qt': eventQt,
   'Type_doc': eventType_doc,
   'Comment': eventComment,
   'start': eventStart,
@@ -383,7 +392,7 @@ if(eventData['start'] && eventData['end']){
       // Traitez la réponse ici
       showBanner('Evènement ajouté avec succés',true);
       closeModalById('addEventModal')
-      console.log("Success:", response);
+      console.log("Success:", response, "DATE START:",eventStart, "DATE EDN: ",eventEnd);
       if(calendar){calendar.refetchEvents();}    
     },
     error: function(error) {
@@ -402,7 +411,7 @@ else{
 
 function update_add_formEvent(data){
 
-  openModal('addEventModal',false);
+  openModal('addEventModal');
   // Changer le texte du bouton et son action pour l'ajout
   let submitButton = document.getElementById('add_submit_form');
   submitButton.onclick = function() { updateEventFromDetails(); }; // Ajouter un nouvel événement

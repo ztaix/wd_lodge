@@ -149,6 +149,12 @@
 
 
 /* ANNIMATION */
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -206,6 +212,10 @@
     }
   }
 
+  .blinking {
+    animation: blink 0.5s linear infinite;
+  }
+    
 
   .notification-hidden {
     display: none;
@@ -261,3 +271,12 @@
   .delete-event-content.shift {
     margin-left: 200px;
   }
+
+  .customer_comment {
+    max-width: 150px;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0.5;
+    transition: max-width 0.4s ease-in-out, opacity 0.6s ease-in-out, overflow 0.4s ease-in-out, white-space 0.4s ease-in-out;
+}

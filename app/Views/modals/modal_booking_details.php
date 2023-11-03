@@ -32,10 +32,10 @@ $modal_id = "DetailsEventModal";
             </div>
 
             <!-- Modal Body -->
-            <div class="flex justify-center h-full overflow-scroll px-4 py-2 0bg-slate-20">
+            <div class="flex justify-center h-full overflow-scroll px-4 py-2 mb-14 bg-slate-200">
                 <h3 id="modal-title_details_booking" class="flex items-center text-lg leading-6 font-medium"><!-- JavaScript print Date du jour --></h3>
 
-                <div class="relative overflow-x-auto rounded-lg">
+                <div class="relative overflow-x-auto rounded-lg ">
 
                     <p class="text-xs text-slate-400 flex justify-between m-2">
                         <span id="booking_details_created_span" class="flex items-center">créer le :</span>
@@ -118,16 +118,16 @@ $modal_id = "DetailsEventModal";
                     </div>
                 </div>
 
-                <div class="fixed bottom-0 pb-10 flex justify-between w-9/12">
+                <div class="fixed bottom-0  pb-10 flex justify-between w-9/12">
                     <button id="booking_details_delete_button" class="inline-flex middle none center rounded-lg bg-red-500 py-2 px-4 font-sans text-md font-bold uppercase text-white shadow-md shadow-red-500/20 transition-all hover:shadow-lg hover:shadow-red-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true">
                         Supprimer
-                        <svg class="w-4 h-4 ml-2 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <svg class="w-4 h-4 ml-2 mt-1 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                         </svg>
                     </button>
                     <button id="booking_details_update_button" class="inline-flex middle none center rounded-lg bg-blue-500 py-2 px-4 font-sans text-md font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true">
                         Modifier
-                        <svg class="w-4 h-4 ml-2 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                        <svg class="w-4 h-4 ml-2 mt-1 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                             <path d="M12.687 14.408a3.01 3.01 0 0 1-1.533.821l-3.566.713a3 3 0 0 1-3.53-3.53l.713-3.566a3.01 3.01 0 0 1 .821-1.533L10.905 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V11.1l-3.313 3.308Zm5.53-9.065.546-.546a2.518 2.518 0 0 0 0-3.56 2.576 2.576 0 0 0-3.559 0l-.547.547 3.56 3.56Z" />
                             <path d="M13.243 3.2 7.359 9.081a.5.5 0 0 0-.136.256L6.51 12.9a.5.5 0 0 0 .59.59l3.566-.713a.5.5 0 0 0 .255-.136L16.8 6.757 13.243 3.2Z" />
                         </svg>

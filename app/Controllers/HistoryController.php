@@ -34,6 +34,7 @@ class HistoryController extends BaseController
             'bookings_list' => $this->BookingModel->getAllBookings(),
             'totalServices' => $this->ServiceModel->getTotalServices(),
             'discountRules' => ($rule = $this->ConfigModel->DiscountRules())? DiscountToArray($rule['Data']): '' ,
+
         ];
         
         

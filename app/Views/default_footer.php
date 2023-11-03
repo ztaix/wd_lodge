@@ -61,6 +61,7 @@ const picker = new easepick.create({
     css: [
       'css/wd_datepicker.css',
     ],
+    opens: 'top',
     plugins: ['RangePlugin'],
     RangePlugin: {        
         elementEnd: "#eventEnd",
