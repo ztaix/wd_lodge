@@ -24,8 +24,8 @@ foreach ($All_config as $row) {
                 </div>
                 ';
             } else {
-                $html_form .= '<div class="relative mb-5"><input name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '" type="text" value="' . $row['Data'] . '" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
-            <label for="floating_outlined" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-gray-50 dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">' . $row['Title'] . '</label></div>';
+                $html_form .= '<div class="relative mb-5"><input name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '" type="text" value="' . $row['Data'] . '" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1  appearance-none dark:text-white bg-white border-blue-300 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
+            <label for="floating_outlined" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] bg-transparent dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-3 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">' . $row['Title'] . '</label></div>';
             }
             break;
         case "textarea":
@@ -79,7 +79,7 @@ foreach ($All_config as $row) {
                 $html_form .= '<div class="relative mb-5">
 
 <textarea name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >' . $row['Data'] . '</textarea>
-<label for="' . FreetextToVartext($row['Title']) . '" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-gray-50 dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">' . $row['Title'] . '</label>
+<label for="' . FreetextToVartext($row['Title']) . '" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] bg-transparent dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-3 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">' . $row['Title'] . '</label>
 </div>
 ';
             }
@@ -91,22 +91,11 @@ foreach ($All_config as $row) {
 ?>
 <form method="post" action="<?= base_url('/Config/save') ?>" enctype="multipart/form-data">
 
-    <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5" style="padding-bottom: 7rem;">
-        <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
-
-            <!--  Header -->
-            <div class="px-6 py-6 lg:px-8 flex">
-                <div class="flex-grow">
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M18 7.5h-.423l-.452-1.09.3-.3a1.5 1.5 0 0 0 0-2.121L16.01 2.575a1.5 1.5 0 0 0-2.121 0l-.3.3-1.089-.452V2A1.5 1.5 0 0 0 11 .5H9A1.5 1.5 0 0 0 7.5 2v.423l-1.09.452-.3-.3a1.5 1.5 0 0 0-2.121 0L2.576 3.99a1.5 1.5 0 0 0 0 2.121l.3.3L2.423 7.5H2A1.5 1.5 0 0 0 .5 9v2A1.5 1.5 0 0 0 2 12.5h.423l.452 1.09-.3.3a1.5 1.5 0 0 0 0 2.121l1.415 1.413a1.5 1.5 0 0 0 2.121 0l.3-.3 1.09.452V18A1.5 1.5 0 0 0 9 19.5h2a1.5 1.5 0 0 0 1.5-1.5v-.423l1.09-.452.3.3a1.5 1.5 0 0 0 2.121 0l1.415-1.414a1.5 1.5 0 0 0 0-2.121l-.3-.3.452-1.09H18a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 18 7.5Zm-8 6a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" />
-                    </svg>
-                </div>
-                <div class="flex-grow-0">
-                    <h3 class="text-center text-2xl font-bold text-gray-800 dark:text-white">Configuration</h3>
-                </div>
-                <div class="flex-grow">
-                </div>
-            </div>
+    <section class="bg-slate-300 dark:bg-gray-900 p-3 sm:p-5" style="padding-bottom: 7rem;">
+    <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+        <h1 class="pt-3 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+            Réglages
+        </h1>
 
             <div class="mb-10">
 
@@ -124,7 +113,7 @@ foreach ($All_config as $row) {
                     <div class="relative w-full pb-2 <?= ($key < $totalServices - 1) ? 'border-b-2' : '' ?> ">
                         <div class="flex items-center pb-4">
                             <div class="w-3/12 flex-shrink-0 overflow-hidden rounded-full" style="border:4px solid <?= $value['Color'] ?>">
-                                <img src="<?= isset($value['Image_url']) ? $value['Image_url'] : 'img/lodge.jpeg'; ?>" id="img_<?= $value['Service_id'] ?>" alt="<?= $value['Title'] ?>" style="object-fit: cover;" />
+                                <img src="<?= isset($value['Image_url']) ? $value['Image_url'] : ''; ?>" id="img_<?= $value['Service_id'] ?>" alt="<?= $value['Title'] ?>" style="object-fit: cover;" />
                             </div>
                             <div class="ml-4 flex flex-grow items-center ">
                                 <span class="w-2/3">

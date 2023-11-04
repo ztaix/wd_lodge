@@ -110,7 +110,7 @@ class CustomersController extends BaseController
                     return $this->response->setJSON(['status' => 'error', 'errors' => $errors]);
                 }
                 
-                return $this->response->setJSON(['status' => 'success']);
+                return $this->response->setJSON(['status' => 'success', 'id' => $customer_info['Customer_id']]);
                 
             } catch (\Exception $e) {
                 log_message('error', "Exception lors de la mise à jour: Message: " . $e->getMessage() .

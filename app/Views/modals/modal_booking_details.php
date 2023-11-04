@@ -35,7 +35,7 @@ $modal_id = "DetailsEventModal";
             <div class="flex justify-center h-full overflow-scroll px-4 py-2 mb-14 bg-slate-200">
                 <h3 id="modal-title_details_booking" class="flex items-center text-lg leading-6 font-medium"><!-- JavaScript print Date du jour --></h3>
 
-                <div class="relative overflow-x-auto rounded-lg ">
+                <div class="relative rounded-lg ">
 
                     <p class="text-xs text-slate-400 flex justify-between m-2">
                         <span id="booking_details_created_span" class="flex items-center">créer le :</span>
@@ -43,16 +43,16 @@ $modal_id = "DetailsEventModal";
                     </p>
 
                     <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                        
+
                         <h5 id="booking_details_id_h5" class="absolute p-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Titre du service</h5>
                         <a href="#">
                             <img class="rounded-t-lg" src="./img/lodge.jpeg" alt="" />
                         </a>
 
                         <div class="px-4">
-                            
-                            <div class="flex items-center space-x-4 my-2">
-                                <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+
+                            <div class="flex space-x-4 my-2">
+                                <div class="relative w-12 h-10 overflow-hidden justify-start bg-gray-100 rounded-full dark:bg-gray-600">
                                     <svg class="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
                                     </svg>
@@ -66,20 +66,20 @@ $modal_id = "DetailsEventModal";
                                         <div id="booking_details_customer_created_span" class="text-sm text-gray-500 dark:text-gray-400">Created at Month YEAR</div>
                                         <span id="booking_details_customer_mail_span" class="text-sm text-gray-500 dark:text-gray-400">customer_mail</span>
                                     </div>
-                                    <div class="flex">
-                                        <span id="booking_details_customer_comment_span" class="text-md inline-flex text-slate-500 dark:text-slate-200 ">Commentaire client</span>
-                                    </div>
+                                </div>
                             </div>
+                            <div class="flex text-sm p-2 border-l-4 border-slate-200 bg-slate-50 rounded-lg">
+                                <span id="booking_details_customer_comment_span" class="text-md inline-flex text-slate-500 dark:text-slate-200 ">Commentaire client</span>
                             </div>
-
-                            <hr>
                             
+                     
+
                             <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
-                                <h5 id="booking_details_service_h5" class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Titre du service</h5>
+                            <h5 id="booking_details_service_h5" class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Titre du service</h5>
                             </p>
                             <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
                                 <span class="font-bold">Quatité</span>
-                                <span id="booking_details_qt_span" class="text-md font-medium mr-2" >Qt</span>
+                                <span id="booking_details_qt_span" class="text-md font-medium mr-2">Qt</span>
                             </p>
                             <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
                                 <span class="font-bold">Tarif</span>

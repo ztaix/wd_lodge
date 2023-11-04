@@ -34,6 +34,8 @@ class BookingController extends BaseController
             'bookins_list' => $this->BookingModel->getAllBookings(),
             'totalServices' => $this->ServiceModel->getTotalServices(),
             'discountRules' => ($rule = $this->ConfigModel->DiscountRules())? DiscountToArray($rule['Data']): '' ,
+            'All_config' => $this->ConfigModel->get_all_config(),
+
         ];
 
 

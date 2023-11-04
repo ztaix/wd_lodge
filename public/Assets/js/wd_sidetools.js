@@ -83,31 +83,37 @@ function showBookingList(response, clickedDate) {
     dateComponents[0],
   ].join("/");
   document.getElementById("modal-title").innerHTML = newDateStr;
+  count_row_found = 0;
   response.forEach((booking) => {
+    count_row_found++;
     /*encodeURIComponent(
         JSON.stringify(booking)
         )*/
     let bookingElement = `
-        <div class="flex space-x-4 mt-1" >
+        <div id="booking_list_row_${booking.id}" class="flex space-x-4 mt-1" >
           <!-- Colonne 1 -->
           <div class="flex-grow">
-            <div class="rounded-md text-white font-bold text-sm px-1 inline " style="background-color: ${
+            <div class="rounded-md text-white font-bold text-sm px-1 mx-1 inline " style="background-color: ${
               booking.service_color
-            }; ">#${booking.id}</div>
+            }; ">
+              # ${booking.id}
+            </div>
             
             <a href="#" onclick="showBookingDetailsFromID('${
               booking.id
-            }');" class="text-blue-500 hover:underline ">${
-      booking.customer_name + " - " + booking.service_title
-    }</a>
-            <div class="flex">${getDayOfWeek(
-              format_date(booking.start)
-            )} ${format_date(booking.start)} 
-                <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                </svg>${getDayOfWeek(format_date(booking.end))} ${format_date(
+            }');" class="text-blue-500 hover:underline ">
+              ${booking.customer_name + " - " + booking.service_title}
+            </a>
+            <div class="flex">
+              ${getDayOfWeek(format_date(booking.start))} ${format_date(
+      booking.start
+    )} 
+              <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+              </svg>${getDayOfWeek(format_date(booking.end))} ${format_date(
       booking.end
-    )}</div>
+    )}
+            </div>
           </div>
           <!-- Colonne 2 -->
           <div class="flex flex-wrap justify-end font-bold">
@@ -118,14 +124,24 @@ function showBookingList(response, clickedDate) {
             </div>
           </div>
         </div>
-        <hr class="my-2">
+        <hr id="booking_list_row_hr_${booking.id}" class="my-2">
       `;
     container.innerHTML += bookingElement;
   });
+  container.innerHTML += `          <div class="flex flex-wrap justify-end font-bold">
+  <div id="booking_list_row_found" class="text-slate-400 inline-flex" >Réservation trouvé : ${count_row_found}</div></div>`;
+}
+
+function ShowCreateCustomer() {
+  openModal("updateCustomerModal");
+  document.getElementById("customer_id").value = "";
+  document.getElementById("customer_name").value = "";
+  document.getElementById("customer_phone").value = "";
+  document.getElementById("customer_email").value = "";
+  document.getElementById("customer_comment").value = "";
 }
 
 function CreateCustomer() {
-  
   var customerData = {
     Name: $("#customer_name").val(),
     Phone: $("#customer_phone").val(),
@@ -140,18 +156,40 @@ function CreateCustomer() {
     success: function (response) {
       try {
         if (response.status === "success") {
-          if(modalStack[0].id == 'addEventModal'){
-            var newCustomerId = response.id;
-            $('#eventCustomer_id').append(new Option(customerData['Name'], newCustomerId, true, true));
-            closeModalById('updateCustomerModal');
-            console.log('OK:',modalStack);
-            
-          }
-          else{
-            window.location.href = baseUrl + "Customers";
-          }
-          showBanner(`Le client ${response.Name} à été créé avec succès`, true);
-        
+          var newCustomerId = response.id;
+          $("#eventCustomer_id").append(
+            new Option(customerData["Name"], newCustomerId, true, true)
+          );
+
+          // Génère la nouvelle ligne HTML
+          var newCustomerRow = `<tr class="border-b dark:border-gray-700 row_booking service_${newCustomerId}" data-id="${newCustomerId}" data-Name="${
+            customerData["Name"]
+          }" data-Comment="${customerData["Comment"]}" data-Email="${
+            customerData["Email"]
+          }" data-Phone="${
+            customerData["Phone"]
+          }" onclick="get_booking_list_from_customer(this)">
+                  <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white service_${newCustomerId} cursor-pointer"><b>${
+            customerData["Name"]
+          }</b></th>
+                      <td class="px-3 py-3">${customerData["Email"]}</td>
+                      <td class="px-3 py-3">${customerData["Phone"]}</td>
+                      <td class="px-3 py-3 max-w-[150px] overflow-hidden overflow-ellipsis whitespace-nowrap customer_comment" id="comment_${newCustomerId}" onclick="toggleComment(event,  ${
+            "comment_" + newCustomerId
+          })">${customerData["Comment"]}</td>
+                      <td class="px-3 py-3" onclick="DeleteCustomer(event, ${newCustomerId})">
+                          <svg class="w-4 h-4 text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                          </svg>
+                      </td>
+                  </tr>`;
+          // Ajoute la nouvelle ligne au début du tbody
+          $(newCustomerRow)
+            .addClass("blinking")
+            .insertBefore("#items-container tr:first");
+
+          closeModal();
+          showBanner(`Le client ${response.Name} a été créé avec succès`, true);
         } else {
           alert("Erreur : " + response.message);
           console.error("Erreurs de validation de données:", response.errors);
@@ -164,10 +202,8 @@ function CreateCustomer() {
       }
     },
   });
-  if(modalStack[0].id == 'addEventModal'){
-
-  }
 }
+
 async function showUpdateCustomer(id) {
   openModal("updateCustomerModal", false);
   let customer;
@@ -198,6 +234,7 @@ async function showUpdateCustomer(id) {
 
     return;
   }
+
   // Met à jour les champs du formulaire avec les données récupérées
   document.getElementById("customer_id").value = customer.customer_id;
   document.getElementById("customer_name").value = customer.name;
@@ -224,7 +261,11 @@ async function showUpdateCustomer(id) {
       },
       success: function (response) {
         if (response.status === "success") {
-          window.location.href = baseUrl + "Customers";
+          console.log(response.id);
+
+          setTimeout(function () {
+            window.location.href = baseUrl + "Customers";
+          }, 1200);
           showBanner("Modification réalisée avec succès", true);
         } else {
           showBanner("Échec de la modification", false);
@@ -273,7 +314,7 @@ function DeleteCustomer(event, id) {
         showBanner("Suppression réalisée avec succès", true);
         closeModalById("updateCustomerModal");
         closeModalById("CustomerInfoModal");
-        $(".row_booking.service_" + id).hide();
+        $(".row_customer_" + id).hide();
 
         // window.location.href = baseUrl +  "Customers";
       } else {
@@ -345,12 +386,18 @@ async function showBookingDetailsFromID(id) {
     event.Paid > 0 ? event.Paid + " Fr" : "";
   document.getElementById("booking_details_customer_name_span").innerText =
     event.customer_name;
+  console.log(event.Customer_id);
+  document.getElementById("booking_details_customer_name_span").onclick =
+    function (event) {
+      showUpdateCustomer(event.Customer_id);
+    };
+
   document.getElementById("booking_details_customer_phone_span").innerText =
     event.customer_phone;
   document.getElementById("booking_details_customer_mail_span").innerText =
     event.customer_mail;
   document.getElementById("booking_details_customer_comment_span").innerHTML =
-    info_ico + event.customer_comment;
+    event.customer_comment;
   document.getElementById("booking_details_customer_created_span").innerText =
     "Depuis " +
     new Date(event.customer_created)
@@ -451,50 +498,7 @@ function get_booking_list_from_customer(data) {
         // Mise à jour des sommes totales
         totalPaid += parseFloat(booking.Paid);
         totalPrice += parseFloat(booking.Price);
-        let current_pourc_paid = Math.min(
-          Math.round((totalPaid / totalPrice) * 10000) / 100,
-          100
-        );
 
-        // Mise à jour du titre du modal avec les sommes totales
-        //     <a href="#" onclick="showBookingDetailsFromID('${booking.id}');" class="text-blue-500 hover:underline ">${
-
-        let customer_finance_total = document.getElementById(
-          "modal-title_customer_finance_total"
-        );
-        customer_finance_total.innerHTML = `
-        <div class="text-center py-4 lg:px-4 w-full">
-        <div class="customer-container w-full inline-flex items-center justify-between px-1 py-1 pr-4 text-gray-700 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 mb-2">
-        <a onclick="showUpdateCustomer(${customer_id})" class="customer-link text-blue-500 hover:underline">
-            <span class="customer-name text-md flex bg-blue-600 rounded-full text-white px-3 py-1.5 mr-3">
-                <span class="mr-2">Modifier</span>
-                <svg class="w-5 h-5 mr-2 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 18">
-                    <path d="M7 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm2 1H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-                </svg> 
-                ${Name}
-            </span>
-        </a>
-        <span class="text-md font-bold text-blue-700 dark:text-white">Total ${totalPrice} Fr</span>
-    </div>
-    
-              <div class="flex justify-between font-bold text-xs" >
-              <div class="flex flex-grow-0 mr-3 text-slate-500"> 
-              <svg class="w-3 h-3 text-slate-700  dark:text-white mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.905 1.316 15.633 6M18 10h-5a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h5m0-5a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1m0-5V7a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-3m-6.367-9L7.905 1.316 2.352 6h9.281Z"/>
-              </svg>
-              Total encaissé 
-              </div>
-              <div class="grow bg-slate-300 rounded-full dark:bg-gray-700">
-              <div class=" text-white bg-blue-600  rounded-full" style="width: ${current_pourc_paid}%">${
-          totalPaid > 0 ? totalPaid + " Fr" : 0
-        } </div>
-              </div>
-              
-              </div>
-              
-              <div class="flex w-full text-slate-400  my-4 text-left">
-              ${Comment}</div>
-            </div>`;
         let newRow = document.createElement("tr");
         newRow.classList.add(
           "bg-white",
@@ -525,14 +529,53 @@ function get_booking_list_from_customer(data) {
                 }</td>
             `;
 
-      
-
         // Ajouter un événement onclick
         newRow.onclick = function () {
           showBookingDetailsFromID(booking.id);
         };
         tbody.appendChild(newRow);
       });
+
+      let current_pourc_paid = Math.min(
+        Math.round((totalPaid / totalPrice) * 10000) / 100,
+        100
+      );
+      let customer_finance_total = document.getElementById(
+        "modal-title_customer_finance_total"
+      );
+      customer_finance_total.innerHTML = `
+        <div class="text-center py-4 lg:px-4 w-full">
+        <div class="customer-container w-full inline-flex items-center justify-between px-1 py-1 pr-4 text-gray-700 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 mb-2">
+        <a onclick="showUpdateCustomer(${customer_id})" class="customer-link text-blue-500 hover:underline">
+            <span class="customer-name text-md flex bg-blue-600 rounded-full text-white px-3 py-1.5 mr-3">
+                <span class="mr-2">Modifier</span>
+                <svg class="w-5 h-5 mr-2 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 18">
+                    <path d="M7 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm2 1H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+                </svg> 
+                ${Name}
+            </span>
+        </a>
+        <span class="text-md font-bold text-blue-700 dark:text-white">Total ${totalPrice} Fr</span>
+        </div>
+    
+              <div class="flex justify-between font-bold text-xs" >
+              <div class="flex flex-grow-0 mr-3 text-slate-500"> 
+              <svg class="w-3 h-3 text-slate-700  dark:text-white mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.905 1.316 15.633 6M18 10h-5a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h5m0-5a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1m0-5V7a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-3m-6.367-9L7.905 1.316 2.352 6h9.281Z"/>
+              </svg>
+              Total encaissé 
+              </div>
+              <div class="grow bg-slate-300 rounded-full dark:bg-gray-700">
+              <div class=" text-white bg-blue-600  rounded-full" style="width: ${current_pourc_paid}%">${
+        totalPaid > 0 ? totalPaid + " Fr" : 0
+      } </div>
+              </div>
+              
+              </div>
+              
+              <div class="flex w-full text-slate-400  my-4 text-left">
+              ${Comment}</div>
+            </div>`;
     },
   });
 }
@@ -564,7 +607,7 @@ function format_date(input_date, daysToAdd = 0, shorter = false) {
   dateObj.setHours(dateObj.getHours() - 10);
 
   // Ajoute des jours si nécessaire
-  dateObj.setDate(dateObj.getDate() + daysToAdd +1);
+  dateObj.setDate(dateObj.getDate() + daysToAdd + 1);
 
   // Récupère le jour, le mois et l'année
   let day = String(dateObj.getDate()).padStart(2, "0");
@@ -572,15 +615,14 @@ function format_date(input_date, daysToAdd = 0, shorter = false) {
   let year = dateObj.getFullYear();
 
   if (shorter == true) {
-      result = shortenYearInDate(`${day}-${month}-${year}`);
+    result = shortenYearInDate(`${day}-${month}-${year}`);
   } else {
-      result = `${day}-${month}-${year}`;
+    result = `${day}-${month}-${year}`;
   }
 
   // Formatte la date en JJ-MM-AA'AA'
   return result;
 }
-
 
 function format_date_toSql(input_date) {
   // Découpe la date en ses composantes (jour, mois, année)

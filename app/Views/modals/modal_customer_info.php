@@ -30,7 +30,7 @@ $modal_id= "CustomerInfoModal";
             <!-- Modal Body -->
             <div class="h-full overflow-scroll px-4 py-2 bg-slate-200">
                 <h3 id="modal-title_customer_finance_total" class="flex items-center text-lg leading-6 font-medium"><!-- JavaScript print Date du jour --></h3>
-                <div class="relative overflow-x-auto shadow rounded-lg mb-3">
+                <div class="relative  shadow rounded-lg mb-3">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>

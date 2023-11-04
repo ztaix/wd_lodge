@@ -2,12 +2,7 @@
 <div id="<?= $modal_id; ?>" tabindex="-1" class="text-white hidden rounded-full">
 
     <div class="px-3 py-3 lg:px-8 flex justify-between items-center ">
-        <div class="hidden">
-            <a href="https://flowbite.com/" class="flex items-center mb-2 border-gray-200 md:pr-4 md:mr-4 md:border-r md:mb-0 dark:border-gray-600">
-                <img src="https://flowbite.com/docs/images/logo.svg" class="h-6 mr-2" alt="Flowbite Logo">
-                <span class="self-center text-lg font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
-            </a>
-        </div>
+
         <div class="flex-grow text-center">
             <p id="banner_update-text" class="flex items-center text-sm font-normal">Message banner</p>
         </div>

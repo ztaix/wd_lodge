@@ -1,4 +1,5 @@
 
+var count_row_found = 0;
 
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") {
@@ -10,7 +11,7 @@ function showBanner(message, isSuccess) {
   const banner = document.getElementById('banner_update');
   const banner_txt = document.getElementById('banner_update-text');
 
-  banner_txt.textContent = message;
+  banner_txt.innerHTML = message;
 
   if (isSuccess) {
     banner.style.backgroundColor = 'rgba(0, 128, 0)'; //green 50%
@@ -24,7 +25,7 @@ function showBanner(message, isSuccess) {
   setTimeout(() => {
     banner.classList.remove('banner_update-visible');
     banner.classList.add('banner_update-exit');
-  }, 3000); 
+  }, 4000); 
 }
 
 function showSearch() {
@@ -80,7 +81,7 @@ function closeModal(overlay_off = true) {
         lastModal.style.display = "none";
 
 
-    },300); // Correspond à la durée de l'animation slideDown
+    },3000); // Correspond à la durée de l'animation slideDown
   }
 }
 function closeModalById(modalId) {
@@ -297,8 +298,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('eventComment').value = '';
 
 
-                let submitButton = document.getElementById('add_submit_form');
-                submitButton.onclick = function() { addEvent(); }; // Ajouter un nouvel événement
                 // Afficher le popup
                 openModal('addEventModal',false);
 
@@ -361,7 +360,6 @@ function updateEventFromDetails() {
 
 // Fonction pour ajouter un événement
 function addEvent() {
-
   let eventCustomer_id = document.getElementById('eventCustomer_id').value;
   let eventService_id = document.getElementById('eventService_id').value;
   let eventPrice = document.getElementById('eventPrice').value;
@@ -390,9 +388,12 @@ if(eventData['start'] && eventData['end']){
     data: eventData,  // Données à envoyer
     success: function(response) {
       // Traitez la réponse ici
-      showBanner('Evènement ajouté avec succés',true);
+      showBanner(`<div class="flex flex-col">Evènement ajouté avec succès !</div>
+      <div class="text-center">
+          Du <b>${document.getElementById('startEvent').value}</b> au <b>${document.getElementById('eventEnd').value}</b>
+      </div>
+      `,true);
       closeModalById('addEventModal')
-      console.log("Success:", response, "DATE START:",eventStart, "DATE EDN: ",eventEnd);
       if(calendar){calendar.refetchEvents();}    
     },
     error: function(error) {
@@ -434,7 +435,9 @@ function update_add_formEvent(data){
 
 
 // Fonction pour ajouter un événement
-function deleteEvent(event_id,modal_id) {
+function deleteEvent(event_id,modal_id = false, event = false) {
+  event.stopPropagation();
+
     openModal('ConfirmDeleteModal',true,false);
 
     // Changer le texte du bouton et son action pour l'ajout
@@ -450,9 +453,20 @@ function deleteEvent(event_id,modal_id) {
                       id: event_id
                   }
               });
-              if(calendar){calendar.refetchEvents();   }
+              if(calendar){
+                document.getElementById(`booking_list_row_${event_id}`).classList.add('fade_out');
+                document.getElementById(`booking_list_row_hr_${event_id}`).classList.add('fade_out');
+                count_row_found --;
+                document.getElementById("booking_list_row_found").innerText = `Réservation trouvé : ${count_row_found}`;
+                calendar.refetchEvents();
+              }    
+              showBanner("Suppression réalisée avec succès", true);
+              console.log('data to delete',event_id);
+              $(".row_booking_" + event_id).hide();
               closeModalById('ConfirmDeleteModal');
-              closeModalById(modal_id );    
+              if(modal_id){
+                closeModalById(modal_id);
+              }    
      }; // Ajouter un nouvel événement
      let noconfirmButton = document.getElementById('ConfirmDeleteModal_no_button');
      noconfirmButton.onclick = function() { closeModalById('ConfirmDeleteModal'); };

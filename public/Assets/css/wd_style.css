@@ -6,34 +6,35 @@
 @import 'tailwindcss/utilities';
 
 
-.content {
+.content, .content-calendar {
     /* Ajoutez vos styles pour le contenu ici */
     bottom: 6vh;
     margin: 0 auto;
-
+    height: 100vh;
 }
+
   /* Styles pour les écrans de taille PC */
 @media screen and (min-width: 1024px) {
     /* Vos styles PC ici */
-    .content {
-        width: 70%;
+    .content-calendar {
+        width: 70vh;
 
     }
 }
 
 /* Styles pour les tablettes */
-@media screen and (max-width: 1023px) and (min-width: 990px) {
+@media screen and (max-width: 1023px) and (min-width: 751px) {
     /* Vos styles tablette ici */
-    .content {
-        width: 90%;
+    .content-calendar {
+        width: 85vh;
     }
 }
 
 /* Styles pour les mobiles */
-@media screen and (max-width: 989px) {
+@media screen and (max-width: 750px) {
     /* Vos styles mobile ici */
-    .content {
-        width: 99%;
+    .content-calendar {
+        width: 100%;
     }
 }
 #calendar {
@@ -212,10 +213,13 @@
     }
   }
 
-  .blinking {
-    animation: blink 0.5s linear infinite;
+  .fade_out {
+    display: none;
+    animation: fadeOut 0.5s linear ease-out;
   }
-    
+  .blinking {
+    animation: blink 0.5s linear 6;
+  }
 
   .notification-hidden {
     display: none;

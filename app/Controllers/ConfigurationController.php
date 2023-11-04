@@ -48,6 +48,7 @@ class ConfigurationController extends BaseController
         return $this->ConfigurationModel->get_all_config();
     }
 
+
     public function DiscountRules()
     {
         return $this->ConfigurationModel->DiscountRules();

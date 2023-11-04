@@ -30,7 +30,7 @@ $data['options_customers_id'] = $options_customers_id;
 <?php echo view('modals/modal_booking_details', $data); ?>
 <?php echo view('modals/modal_bookings_list', $data); ?>
 <?php echo view('modals/modal_delete_confirm'); ?>
-<div tabindex="-1" aria-hidden="true" class="relative inset-0 w-full mb-24">
+<div tabindex="-1" aria-hidden="true" class="content-calendar relative inset-0 w-full mb-24">
     <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 ">
 
         <div id='calendar'></div>

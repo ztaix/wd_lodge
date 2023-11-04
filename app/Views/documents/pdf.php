@@ -1,6 +1,6 @@
 <?php			
 $tax_value = 13;
-
+$currency = '<span style="font-size:10px"> Fr</span>';
 if(isset($seller[0]) && isset($data)){
 	$seller = $seller[0];
     $denomination = $seller[0]['Data'];
@@ -30,7 +30,7 @@ if(isset($seller[0]) && isset($data)){
     $s_price = $data['booking_info']['Price'];
     $s_service = $data['booking_info']['service_title'];
     $s_comment = $data['booking_info']['Comment'];
-    $s_qt = $data['booking_info']['qt'];
+    $s_qt = $data['booking_info']['qt'] == 0 ? 1: $data['booking_info']['qt'] ;
 	
     $u_price = $s_price/$s_qt;
 
@@ -99,9 +99,6 @@ $due_date = $date->format('d/m/Y');
 				text-align: right;
 			}
 
-			.invoice-box table tr.top table td {
-				padding-bottom: 20px;
-			}
 
 			.invoice-box table tr.top table td.title {
 				font-size: 45px;
@@ -110,7 +107,8 @@ $due_date = $date->format('d/m/Y');
 			}
 
 			.invoice-box table tr.information table td {
-                line-height: 0.5;
+				font-size: 14px;
+				line-height: 5px;
 			}
             .invoice-box table .header p{
                 margin: 0;
@@ -193,8 +191,8 @@ $due_date = $date->format('d/m/Y');
             .invoice-footer td {
 				width: 100%;
 				border: 1px solid #eee;
-				font-size: 16px;
-				line-height: 24px;
+				font-size: 10px;
+				line-height: 12px;
 				font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
 				color: grey;
 			}
@@ -243,14 +241,14 @@ $due_date = $date->format('d/m/Y');
 						<table>
 							<tr>
 								<td>
-									<p><?= $denomination?></p>
+									<p><b><?= $denomination?></b></p>
 									<p><?= $adresse?></p>
                                   <p><?= $telephone?></p>
                                   <p><?= $mail?></p>
 								</td>
 
 								<td>
-									<p><?= $s_client_nom?></p>
+									<p><b><?= $s_client_nom?></b></p>
 									<p><?= $s_client_telephone?></p>
                                   <p><?= $s_client_mail?></p>
 								</td>
@@ -262,17 +260,17 @@ $due_date = $date->format('d/m/Y');
 
 				<tr class="heading">
 					<td>Intitulé</td>
-					<td>Prix unitaire</td>
+					<td style="white-space: nowrap;">Prix unitaire</td>
 					<td>Taxe</td>
-					<td>Qt</td>
+					<td>Nuits</td>
 					<td>Tarif</td>
 				</tr>
 <?php 		$tax_bool = $seller[15]['Data'];
 			$tax = ($tax_bool)? round(((100*$u_price)/(100+$tax_value))*($tax_value/100)): 0;
-			$total_tax = ($tax_bool)? round(((100*$s_price)/(100+$tax_value))*($tax_value/100)): 0;
+			$total_tax = ($tax_bool)? round(((100*$s_price)/(100+$tax_value))*($tax_value/100)) .$currency: 0;
 			?>
-				<tr class='item'><td><?='<b>'.$s_service.'</b><br>'.$s_comment?></td><td><?=$u_price?></td><td><?=$tax?></td><td><?=$s_qt?></td><td><?=$s_price?> Fr</td></tr>            
-				<tr class="total">
+				<tr class='item'><td><?='<b>'.$s_service.'</b><br>'.$s_comment?></td><td style="white-space: nowrap;"><?=$u_price.$currency?></td><td style="white-space: nowrap;"><?=$tax.$currency?></td><td><?=$s_qt?></td><td style="white-space: nowrap;"><?=$s_price.$currency?></td></tr>            
+				<tr class="total" style="white-space: nowrap;">
 					<?php if($tax_bool == true){
 						echo "<td colspan='4'>
 						<p>Taxes $tax_value% </p>
@@ -286,8 +284,8 @@ $due_date = $date->format('d/m/Y');
 					
 					} ?>	
 					<td>
-						<p><?= $total_tax?> Fr</p>
-						<p><?=$s_price?> Fr</p>
+						<p><?= $total_tax?></p>
+						<p><?=$s_price.$currency?></p>
 					</td>
 				</tr>
 		
@@ -297,7 +295,7 @@ $due_date = $date->format('d/m/Y');
                             <tr class="heading">
                                 <td colspan="2">Encaissé</td>
                             </tr>
-                            <tr><td colspan="2"><?=$s_paid?> Fr</span></td></tr>
+                            <tr><td colspan="2"><?=$s_paid.$currency?></span></td></tr>
         
 
                         </table>
@@ -305,7 +303,15 @@ $due_date = $date->format('d/m/Y');
 
 				
                 <tr class="invoice-footer">
-					<td colspan="5"><p><?= (strtolower($s_type) == "facture")?$txt_bas_facture : $txt_bas_devis; ?></p></td>
+					<td colspan="5"><p><?php 
+					if(strtolower($s_type) == "facture"){
+						echo $txt_bas_facture;
+						}
+						else{ echo $txt_bas_devis;} ?>
+						</p>
+					<p><b>Banque:</b><?= $banque?></p>
+					<p><b>RIB:</b><?= $rib?></p>
+					<p><b>IBAN:</b><?= $iban?></p></td>
 				</tr>
 
 			</table>

@@ -110,8 +110,8 @@ $modal_id = "addEventModal";
                     </div>
 
                     <div class="flex justify-between ">
-                        <button id="add_submit_form" type="button" class="w-full mr-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  text-xl px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Enregistrer</button>
-                        <button id="cancel_submit_form" onclic="closeModalById('addEventModal')" type="submit" class="w-full ml-2 text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  text-xl px-5 py-2.5 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">Annuler</button>
+                        <button id="add_submit_form" onclick="addEvent();" type="button" class="w-full mr-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  text-xl px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Enregistrer</button>
+                        <button id="cancel_submit_form" onclick="closeModalById('addEventModal'); console.log(count_row_found);" type="submit" class="w-full ml-2 text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  text-xl px-5 py-2.5 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">Annuler</button>
                     </div>
                 </form>
             </div>
