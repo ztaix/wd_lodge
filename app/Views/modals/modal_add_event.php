@@ -122,7 +122,6 @@ $modal_id = "addEventModal";
 $discountRulesJSON  = json_encode($discountRules);  ?>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
         var discountRules = <?= $discountRulesJSON ?>;
         var qtInput = document.getElementById("eventQt");
         var serviceSelect = document.getElementById("eventService_id");
@@ -180,10 +179,9 @@ $discountRulesJSON  = json_encode($discountRules);  ?>
         qtInput.addEventListener("input", function() {
             userChangedPrice = false; // Réinitialiser le flag si l'utilisateur modifie la quantité
             updatePrice();
+
         });
-        // Écouteurs d'événements pour les changements
-        qtInput.addEventListener("input", updatePrice);
 
 
-    });
+
 </script>
