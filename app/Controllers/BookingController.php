@@ -400,7 +400,6 @@ class BookingController extends BaseController
         $pdfFilePath = $this->generatePDF('booking', $booking_id, false);
 
         $html = view('documents/mail', ['data' => $data, 'seller' => $seller]);
-        echo $html;
         $email = \Config\Services::email(); // Charge la bibliothèque d'emails
         $email->setFrom($seller[0][3]['Data'], $seller[0][0]['Data']); // Définissez l'adresse de l'expéditeur
         $email->setTo($customerData['Email']); // Définissez le destinataire
@@ -411,12 +410,13 @@ class BookingController extends BaseController
         $email->attach($pdfFilePath);
         if ($email->send()) {
             unlink($pdfFilePath);
-
+            return redirect()->to('/')->with('message', 'Email envoyé avec succès.');
             return [
                 'success' => true
             ];
         } else {
             unlink($pdfFilePath);
+            return redirect()->to('/')->with('message', 'Email non envoyé.');
             $error = $email->printDebugger(['headers']); // Récupérez les informations d'erreur
             log_message('error', 'Email sending failed: ' . $error);
             return [

@@ -12,7 +12,7 @@
 <!-- Responsive design : system css viewport et utilisation des unités vh et vw) -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="Assets/js/r.js"></script>
+<script src="Assets/js/wd_datepicker.js"></script>
 </header>
 <!-- DARK MODE SWITCH -->
 <div class="container-darkmode bg-white dark:bg-black shadow-xl border-2 border-slate-300 dark:border-slate-800">
