@@ -55,41 +55,106 @@ class BookingController extends BaseController
         foreach ($bookings as $booking) {
             $startDate = new DateTime($booking['start']);
             $endDate = new DateTime($booking['end']);
-
+    
             while ($startDate <= $endDate) {
                 $date = $startDate->format('Y-m-d');
-
+    
                 if (!isset($grouped[$date])) {
                     $grouped[$date] = [
                         'count' => 0,
-                        'colors' => []
+                        'colors' => [] // Ceci stockera toutes les couleurs de la journée
                     ];
                 }
                 $grouped[$date]['count']++;
-                $grouped[$date]['colors'][] = $booking['service_color'];
-
+                // Assurez-vous que la couleur est unique pour la date donnée
+                if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
+                    $grouped[$date]['colors'][] = $booking['service_color'];
+                }
+    
                 $startDate->modify('+1 day'); // Passer au jour suivant
             }
         }
-
+    
         // Générer les événements
         $events = [];
         foreach ($grouped as $date => $data) {
-            if ($data['colors'] == null) {
-                $data['colors'] = '#bcbcbc';
-            } elseif (count($data['colors']) > 1) {
-                $data['colors'] = $data['colors'][0];
-            }
             $events[] = [
-                'title' => '',
+                'title' => $data['count'] . ' réservations',
                 'start' => $date,
-                'count' => $data['count'],
-                'backgroundColor' => $data['colors']
+                'bookings' => array_map(function($color) {
+                    return ['color' => $color, 'title' => 'Réservation']; // Le titre pourrait être plus descriptif
+                }, $data['colors'])
             ];
         }
 
         return $this->response->setJSON($events);
     }
+        
+
+    public function getBookingsFromService($service_id)
+    {
+        $bookings = $this->BookingModel->getAllBookingsFromService($service_id);
+        // Regroupez les réservations par jour
+        $grouped = [];
+        foreach ($bookings as $booking) {
+            $startDate = new DateTime($booking['start']);
+            $endDate = (new DateTime($booking['end']))->modify('+1 day'); // Inclure le jour de fin
+            $type_doc = $booking['Type_doc']; // Assurez-vous que la clé 'type_doc' est correcte dans votre tableau $booking
+            $price = $booking['Price']; // Assurez-vous que la clé 'Price' est correcte dans votre tableau $booking
+            $paid = $booking['Paid']; // Assurez-vous que la clé 'Paid' est correcte dans votre tableau $booking
+    
+            while ($startDate < $endDate) { // Utilisez < au lieu de <= pour exclure la date de fin
+                $date = $startDate->format('Y-m-d');
+    
+                if (!isset($grouped[$date])) {
+                    $grouped[$date] = [
+                        'colors' => [], // Peut-être prévoir un tableau pour toutes les couleurs
+                        'type_doc' => [], // Stockez 'type_doc' dans un tableau
+                        'prices' => [], // Stockez 'Price' dans un tableau
+                        'paids' => [], // Stockez 'Paid' dans un tableau
+                    ];
+                }
+    
+                if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
+                    $grouped[$date]['colors'][] = $booking['service_color'] ?: '#bcbcbc'; // Couleur par défaut si null
+                }
+                if (!in_array($type_doc, $grouped[$date]['type_doc'])) {
+                    $grouped[$date]['type_doc'][] = $type_doc; // Ajoutez 'type_doc' s'il n'est pas déjà dans le tableau
+                }
+                if (!in_array($price, $grouped[$date]['prices'])) {
+                    $grouped[$date]['prices'][] = $price; // Ajoutez 'Price' s'il n'est pas déjà dans le tableau
+                }
+                if (!in_array($paid, $grouped[$date]['paids'])) {
+                    $grouped[$date]['paids'][] = $paid; // Ajoutez 'Paid' s'il n'est pas déjà dans le tableau
+                }
+    
+                $startDate->modify('+1 day'); // Passer au jour suivant
+            }
+        }
+    
+        // Générer les événements
+        $events = [];
+        foreach ($grouped as $date => $data) {
+            // Gérer ici la logique pour déterminer la couleur à afficher si plusieurs couleurs pour une date
+            $color = count($data['colors']) === 1 ? $data['colors'][0] : '#bcbcbc'; // Exemple : couleur par défaut si plusieurs couleurs
+            $eventPrice = array_sum($data['prices']); // Calculez le total des prix pour la date
+            $eventPaidPrice = array_sum($data['paids']); // Calculez le total des prix pour la date
+            $eventPaid = $eventPaidPrice == $eventPrice ? '<b>Payé</b>' : 'Impayé'; // Déterminez si un paiement a été effectué
+    
+            $events[] = [
+                'start' => $date,
+                'type_doc' => $data['type_doc'][0], // Utilisez le premier 'type_doc' trouvé
+                'backgroundColor' => $color, // Utilisez la couleur déterminée ci-dessus
+                'status' => $eventPaid, // 'Paid' si payé, sinon 'Unpaid'
+                'price' => $eventPrice, // Le total des prix pour la date
+                'paid' => $eventPaidPrice, // 'Paid' si payé, sinon 'Unpaid'
+            ];
+        }
+    
+        return $this->response->setJSON($events);
+    }
+    
+
 
 
     public function getBookingsFromDate()

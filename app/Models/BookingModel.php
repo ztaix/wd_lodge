@@ -54,6 +54,15 @@ class BookingModel extends Model
 
         return $result;
     }
+    public function getAllBookingsFromService($service){
+        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, wd_services.Color as service_color');
+        $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
+        $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
+        $this->where('wd_bookings.Service_id', $service);
+        $result = $this->findAll();
+
+        return $result;
+    }
 
     public function getBookingsFromDate($date){
         try {

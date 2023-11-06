@@ -36,38 +36,28 @@ function showSearch() {
 
 }
 // La pile pour garder une trace des fenêtres modales ouvertes
-let modalStack = [];
+var modalStack = [];  // Pile pour stocker les fenêtres modales ouvertes
+var currentZIndex = 50;  // Valeur initiale du zIndex
 
-// Ouvre une nouvelle fenêtre modale
 function openModal(modalId) {
-
-  let modalElement = document.getElementById(modalId);
-  // Vérifie si la pile modalStack a déjà des éléments
-  if (modalStack.length > 0) {
-    // Prend la dernière fenêtre modale de la pile et la cache
-    let lastModal = modalStack[modalStack.length - 1];
-    var currentZIndex = parseInt(lastModal.style.zIndex, 10);
-
-    lastModal.style.zIndex = currentZIndex -1;
-  }
+    let modalElement = document.getElementById(modalId);
 
     if (modalElement) {
-      // Obtenir la valeur actuelle du zIndex
-      var currentZIndex = parseInt(modalElement.style.zIndex, 10) || 50;
-console.log(currentZIndex);
-      // Augmenter la valeur du zIndex de 1
-      modalElement.style.zIndex = currentZIndex + 1;
-      modalElement.style.display = "block";
-      modalElement.classList.add('animate');  
-      
-      modalStack.push(modalElement); // Ajoute la fenêtre modale à la pile
-  
-    }
+        // Augmenter la valeur globale du zIndex
+        currentZIndex += 1;
 
+        // Appliquer le zIndex et afficher la fenêtre modale
+        modalElement.style.zIndex = currentZIndex;
+        modalElement.style.display = "block";
+        modalElement.classList.add('animate');  
+
+        modalStack.push(modalElement); // Ajoute la fenêtre modale à la pile
+    }
 }
 
+
 // Ferme la dernière fenêtre modale ouverte
-function closeModal(overlay_off = true) {
+function closeModal() {
 
   if (modalStack.length > 0) {
 
@@ -81,7 +71,7 @@ function closeModal(overlay_off = true) {
         lastModal.style.display = "none";
 
 
-    },3000); // Correspond à la durée de l'animation slideDown
+    },2000); // Correspond à la durée de l'animation slideDown
   }
 }
 function closeModalById(modalId) {
@@ -107,7 +97,6 @@ function closeModalById(modalId) {
       }
 
   }
-
       
 }
 
@@ -122,7 +111,12 @@ function closex(modalId) {
   });
 }
 
-
+function ModalInStack(modalId) {
+  // Vérifie si une fenêtre modale contenant 'booking' est dans la pile
+  return modalStack.some(function(modal) {
+      return modal.id.includes(modalId);
+  });
+}
 
 var calendar;  // Déclaration dans la portée globale
 var clickedDate = null;  // Défini dans la portée globale
@@ -229,23 +223,22 @@ document.addEventListener('DOMContentLoaded', function() {
             list:     'Liste'
         },
         eventContent: function(args) {
-            let count = args.event.extendedProps.count;
-            let colors = args.event.extendedProps.colors;
-            let dotsHtml = '';
-            // Ajoutez la première pastille avec le count
-            dotsHtml += `<span class="event-dot" title="${count}"></span>`;
-
-            // Créez un élément HTML pour représenter l'événement
-            let eventElement = document.createElement("div");
-            eventElement.className = "custom-event"; // Ajoutez une classe personnalisée
-            eventElement.innerHTML = dotsHtml;
-            //args.el.style.backgroundColor = colors;
+          let bookings = args.event.extendedProps.bookings; // Utilisez 'bookings' au lieu de 'colors'
+          let dotsHtml = '';
         
-            return {
-                domNodes: [eventElement] // Retournez l'élément HTML dans un tableau
-            };
-
- 
+          // Ajouter une pastille pour chaque réservation avec la couleur du service
+          bookings.forEach(function(booking) {
+            dotsHtml += `<span class="event-dot" style="background-color: ${booking.color}" title="${booking.title}"></span>`;
+          });
+        
+          // Créez un élément HTML pour représenter l'événement
+          let eventElement = document.createElement("div");
+          eventElement.className = "custom-event";
+          eventElement.innerHTML = dotsHtml;
+        
+          return {
+            domNodes: [eventElement]
+          };
         },
         eventClick: function(info) {
             const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'utilisateur a cliqué
@@ -393,7 +386,20 @@ if(eventData['start'] && eventData['end']){
           Du <b>${document.getElementById('startEvent').value}</b> au <b>${document.getElementById('eventEnd').value}</b>
       </div>
       `,true);
-      closeModalById('addEventModal')
+      closeModalById('addEventModal');
+      // GESTIONNAIRE DE RETOUR D'AFFICHAGE
+      if(ModalInStack('ListEventModal')){
+        row_type = 'booking_list_row_'; 
+        document.getElementById(`booking_list_row_hr_${event_id.id}`).classList.add('fade_out');
+        count_row_found --;
+        document.getElementById("booking_list_row_found").innerText = `Réservation trouvé : ${count_row_found}`;
+      }
+      setTimeout(() => {
+        $("." + row_type + event_id.id).addClass('fade_out');
+        }, 200);
+        setTimeout(() => {
+          $("." + row_type + event_id.id).css('display', 'none');
+        }, 700);
       if(calendar){calendar.refetchEvents();}    
     },
     error: function(error) {
@@ -426,8 +432,8 @@ function update_add_formEvent(data){
       document.getElementById('eventPaid').value = data.Paid;
       document.getElementById('eventType_doc').value = data.Type_doc;
       document.getElementById('eventComment').value = data.Comment;
-      picker.setStartDate(data.start);
-      picker.setEndDate(data.end);
+      fromServicepicker.setStartDate(data.start);
+      fromServicepicker.setEndDate(data.end);
 
   }
 }
@@ -436,13 +442,12 @@ function update_add_formEvent(data){
 
 // Fonction pour ajouter un événement
 function deleteEvent(event_id,modal_id = false, event = false) {
-  event.stopPropagation();
 
     openModal('ConfirmDeleteModal',true,false);
 
     // Changer le texte du bouton et son action pour l'ajout
     let modal = document.getElementById('ConfirmDeleteModal');
-    modal.style.zIndex = "60";
+    modal.style.zIndex = "999";
     let yesconfirmButton = document.getElementById('ConfirmDeleteModal_yes_button');
 
     yesconfirmButton.onclick = function() { 
@@ -454,15 +459,25 @@ function deleteEvent(event_id,modal_id = false, event = false) {
                   }
               });
               if(calendar){
-                document.getElementById(`booking_list_row_${event_id}`).classList.add('fade_out');
-                document.getElementById(`booking_list_row_hr_${event_id}`).classList.add('fade_out');
+                calendar.refetchEvents();
+              }
+              // GESTIONNAIRE DE RETOUR D'AFFICHAGE
+              if(ModalInStack('ListEventModal')){
+                row_type = 'booking_list_row_'; 
+                document.getElementById(`booking_list_row_hr_${event_id.id}`).classList.add('fade_out');
                 count_row_found --;
                 document.getElementById("booking_list_row_found").innerText = `Réservation trouvé : ${count_row_found}`;
-                calendar.refetchEvents();
-              }    
+              }
+              else{
+                row_type = 'row_booking_';
+              }
+              setTimeout(() => {
+                $("." + row_type + event_id.id).addClass('fade_out');
+                }, 200);
+                setTimeout(() => {
+                  $("." + row_type + event_id.id).css('display', 'none');
+                }, 700);
               showBanner("Suppression réalisée avec succès", true);
-              console.log('data to delete',event_id);
-              $(".row_booking_" + event_id).hide();
               closeModalById('ConfirmDeleteModal');
               if(modal_id){
                 closeModalById(modal_id);

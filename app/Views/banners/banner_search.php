@@ -19,7 +19,7 @@
             </button>
         </div>
     </div>
-    <div id="searchResults" class=" text-slate-400 rounded-xl m-5 p-5 overflow-scroll">
+    <div id="searchResults" class=" text-slate-400 rounded-xl m-5 p-5">
             <!-- Les résultats de la recherche seront insérés ici -->
     </div>
 </div>

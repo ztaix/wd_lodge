@@ -53,7 +53,7 @@ function generateBookingElement(booking) {
             <div class="svg-delete text-right">
                 <svg onclick="deleteEvent(${
                   booking.id
-                },'ListEventModal')" class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                },'ListEventModal',event)" class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
                 </svg>
             </div>
@@ -139,6 +139,8 @@ function ShowCreateCustomer() {
   document.getElementById("customer_phone").value = "";
   document.getElementById("customer_email").value = "";
   document.getElementById("customer_comment").value = "";
+  document.getElementById("update_customer_submit_form").onclick = CreateCustomer;
+
 }
 
 function CreateCustomer() {
@@ -162,7 +164,7 @@ function CreateCustomer() {
           );
 
           // Génère la nouvelle ligne HTML
-          var newCustomerRow = `<tr class="border-b dark:border-gray-700 row_booking service_${newCustomerId}" data-id="${newCustomerId}" data-Name="${
+          var newCustomerRow = `<tr class="border-b dark:border-gray-700 row_customer_${newCustomerId}" data-id="${newCustomerId}" data-Name="${
             customerData["Name"]
           }" data-Comment="${customerData["Comment"]}" data-Email="${
             customerData["Email"]
@@ -209,7 +211,7 @@ async function showUpdateCustomer(id) {
   let customer;
   try {
     let response = await $.ajax({
-      url: baseurl + `/customer/get_customer_info?customer_id=${id}`,
+      url: baseurl + `customer/get_customer_info?customer_id=${id}`,
       method: "GET",
       dataType: "json",
     });
@@ -248,7 +250,7 @@ async function showUpdateCustomer(id) {
   let button_update = document.getElementById("update_customer_submit_form");
   button_update.onclick = function () {
     $.ajax({
-      url: baseurl + "/customer/update",
+      url: baseurl + "customer/update",
       method: "POST",
       data: {
         customer_info: {
@@ -261,11 +263,10 @@ async function showUpdateCustomer(id) {
       },
       success: function (response) {
         if (response.status === "success") {
-          console.log(response.id);
 
           setTimeout(function () {
             window.location.href = baseUrl + "Customers";
-          }, 1200);
+          }, 1000);
           showBanner("Modification réalisée avec succès", true);
         } else {
           showBanner("Échec de la modification", false);
@@ -274,21 +275,28 @@ async function showUpdateCustomer(id) {
     });
   };
   let button_delete = document.getElementById("delete_customer_submit_form");
+  var data = {
+    Customer_id: document.getElementById("customer_id").value,
+    delete: true,
+  };
   button_delete.onclick = function () {
     $.ajax({
       url: baseurl + "/customer/update",
       method: "POST",
       data: {
-        customer_info: {
-          Customer_id: document.getElementById("customer_id").value,
-          delete: true,
+        customer_info: data,  // Utilisez la variable locale ici
         },
-      },
       success: function (response) {
         if (response.status === "success") {
           showBanner("Suppression réalisée avec succès", true);
           closeModalById("updateCustomerModal");
           closeModalById("CustomerInfoModal");
+          setTimeout(() => {
+            $(".row_customer_" + data.Customer_id).addClass('fade_out');
+            }, 200);
+            setTimeout(() => {
+              $(".row_customer_" + data.Customer_id).css('display', 'none');
+            }, 700);
         } else {
           showBanner("Échec de la suppression", false);
         }
@@ -299,28 +307,32 @@ async function showUpdateCustomer(id) {
 
 function DeleteCustomer(event, id) {
   event.stopPropagation();
-
+  var data = {
+    Customer_id: id,
+    delete: true,
+  };
   $.ajax({
-    url: baseurl + "/customer/update",
+    url: baseurl + "customer/update",
     method: "POST",
     data: {
-      customer_info: {
-        Customer_id: id,
-        delete: true,
-      },
+      customer_info: data,  // Utilisez la variable locale ici
+
     },
     success: function (response) {
       if (response.status === "success") {
         showBanner("Suppression réalisée avec succès", true);
         closeModalById("updateCustomerModal");
         closeModalById("CustomerInfoModal");
-        $(".row_customer_" + id).hide();
-
-        // window.location.href = baseUrl +  "Customers";
+        setTimeout(() => {
+          $(".row_customer_" + data.Customer_id).addClass('fade_out');
+          }, 200);
+          setTimeout(() => {
+            $(".row_customer_" + data.Customer_id).css('display', 'none');
+          }, 700);
       } else {
         showBanner("Échec de la suppression", false);
       }
-    },
+    }
   });
 }
 
@@ -386,7 +398,6 @@ async function showBookingDetailsFromID(id) {
     event.Paid > 0 ? event.Paid + " Fr" : "";
   document.getElementById("booking_details_customer_name_span").innerText =
     event.customer_name;
-  console.log(event.Customer_id);
   document.getElementById("booking_details_customer_name_span").onclick =
     function (event) {
       showUpdateCustomer(event.Customer_id);
@@ -399,7 +410,7 @@ async function showBookingDetailsFromID(id) {
   document.getElementById("booking_details_customer_comment_span").innerHTML =
     event.customer_comment;
   document.getElementById("booking_details_customer_created_span").innerText =
-    "Depuis " +
+    "Client depuis " +
     new Date(event.customer_created)
       .toLocaleDateString("fr-FR", { year: "numeric", month: "long" })
       .replace(/^\w/, (c) => c.toUpperCase());
@@ -423,7 +434,7 @@ async function showBookingDetailsFromID(id) {
   };
   let button_delete = document.getElementById("booking_details_delete_button");
   button_delete.onclick = function () {
-    deleteEvent(event.id, "DetailsEventModal");
+    deleteEvent(event, "DetailsEventModal");
   };
 }
 
@@ -579,7 +590,110 @@ function get_booking_list_from_customer(data) {
     },
   });
 }
+// Fonction pour charger et initialiser le datepicker avec des dates réservées
+function loadAndInitDatepicker(service_id) {
+  
+  $.ajax({
+    url: baseurl + 'booking/available/'+service_id,
+    method: 'GET',
+    success: function (bookings) {
+      const bookedDates = bookings.map(booking => {
+        const start = booking.start
+        const color = booking.backgroundColor
+        const type_doc = booking.type_doc
+        const status = booking.status
+        const paid = booking.paid
+        const price = booking.price
+        return [start, color, type_doc,status,paid,price];
+        
+      });
+     const bookedDatesFormatted = bookedDates.map(dateArr => {
+       const [day, month, year] = dateArr[0].split('-');
+       return `${year}-${month}-${day}`;
+      });
+      // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
+      fromServicepicker = new easepick.create({
+        element: document.getElementById('startEvent'),
+        css: [
+          'css/wd_datepicker.css',
+        ],
+        firstDay: 1, // 0 - Sunday, 1 - Monday, 2 - Tuesday
+        grid: 1, // Number of calendar columns
+        calendars: 1, // Number of visible months.
+        opens: 'top',
+        plugins: ['RangePlugin','LockPlugin'],
+        RangePlugin: {        
+            elementEnd: "#eventEnd",
+          tooltipNumber(num) {
+            return num -1;
+          },
+          locale: {
+            one: 'Nuit',
+            other: 'Nuits',
+          }
+        },
+        zIndex: 99,
+        lang: "fr-FR",
+        format: "DD-MM-YYYY",
+        LockPlugin: {
+          minDate: new Date(), // Les réservations ne peuvent pas être faites dans le passé.
+          minDays: 2, // Nombre minimum de jours pouvant être sélectionnés.
+          inseparable: true, // Les jours sélectionnés doivent former une plage continue.
+          filter(date, picked) {
+            return bookedDatesFormatted.includes(date.format('DD-MM-YYYY'));
+          },
+        },
+        setup(fromServicepicker) {
+          // Création d'un objet pour stocker le type de document par date
+          const status = {};
+          bookedDates.forEach(([Date,Color ,TypeDoc ,Status,Paid,Price]) => {
+            status[Date] = Status; // Stocker "Devis" ou "Facture"
+          });
+        
+          // Ajouter le type de document à l'élément du jour
+          fromServicepicker.on('view', (evt) => {
+            const { view, date, target } = evt.detail;
+            const formattedDate = date ? date.format('YYYY-MM-DD') : null;
+        
+            if (view === 'CalendarDay' && status[formattedDate]) {
+              const span = target.querySelector('.day-docType') || document.createElement('span');
+              span.className = 'day-docType';
+              span.innerHTML = status[formattedDate]; // Afficher "Devis" ou "Facture"
+              target.append(span);
+            }
+          });
+        }
+        
+        
+        
+      });
 
+      fromServicepicker.on('select', function(event) {
+        // Récupérer les dates de début et de fin
+        const startDate = new Date(event.detail.start); // Adaptez ces lignes en fonction de la structure de `event.detail`
+        const endDate = new Date(event.detail.end); // Adaptez ces lignes en fonction de la structure de `event.detail`
+
+        // Calculer la différence en jours
+        const timeDifference = endDate.getTime() - startDate.getTime();
+        const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+        // Mettre à jour le champ 'eventQt'
+        document.getElementById('eventQt').value = dayDifference;
+
+        // Réinitialiser le flag puisque la mise à jour vient du datepicker et non de l'utilisateur
+        userChangedPrice = false;
+
+        updatePrice();
+    });
+
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.error('Erreur lors de la récupération des dates réservées: ' + textStatus, errorThrown);
+    }
+  });
+}
+
+// TOOLBOX
 function getDayOfWeek(dateString) {
   let [day, month, year] = dateString.split("-");
   let date = new Date(year, month - 1, day);

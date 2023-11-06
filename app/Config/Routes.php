@@ -27,6 +27,7 @@ $routes->group('/booking', function($routes)
     $routes->post('addBooking', 'BookingController::addBooking');
     
     $routes->get('/', 'BookingController::getBookings');
+    $routes->get('available/(:num)', 'BookingController::getBookingsFromService/$1');
     $routes->get('search', 'BookingController::getBookingsFromSearch');
     $routes->get('getBookingFromID', 'BookingController::getBookingFromID');
     $routes->get('getBookingsFromCustomer', 'BookingController::getBookingsFromCustomer');

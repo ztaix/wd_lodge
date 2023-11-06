@@ -32,7 +32,7 @@ $data['options_customers_id'] = $options_customers_id;
 <?php echo view('modals/modal_bookings_list', $data); ?>
 <?php echo view('modals/modal_customer_info', $data); ?>
 
-<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 h-full" >
+<section class="pb-4 p-3 sm:p-5 bg-gray-50 dark:bg-gray-900">
 <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
         <h1 class="pt-3 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
             Clients
@@ -88,7 +88,7 @@ $data['options_customers_id'] = $options_customers_id;
                         $customers_list_reversed = array_reverse($customers_list);
                         foreach ($customers_list_reversed as $customer) {
                         ?>
-                            <tr class="hover:bg-gray-50 border-b dark:border-gray-700 cursor-pointer whitespace-nowrap row_customer_<?= $customer['Customer_id']; ?>" data-id="<?= $customer['Customer_id']; ?>" data-Name="<?= $customer['Name']; ?>" data-Comment="<?= $customer['Comment']; ?>" data-Email="<?= $customer['Email']; ?>" data-Phone="<?= $customer['Phone']; ?>" onclick="get_booking_list_from_customer(this)">
+                            <tr class="ROW hover:bg-gray-50 border-b dark:border-gray-700 cursor-pointer whitespace-nowrap row_customer_<?= $customer['Customer_id']; ?>" data-id="<?= $customer['Customer_id']; ?>" data-Name="<?= $customer['Name']; ?>" data-Comment="<?= $customer['Comment']; ?>" data-Email="<?= $customer['Email']; ?>" data-Phone="<?= $customer['Phone']; ?>" onclick="get_booking_list_from_customer(this)">
 
                                 <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white service_<?= $customer['Customer_id']; ?> cursor-pointer"><b><?= $customer['Name']; ?></b></th>
                                 <td class="px-3 py-3"><?= $customer['Email']; ?></td>
@@ -118,9 +118,10 @@ $data['options_customers_id'] = $options_customers_id;
     //pagination système
     let currentPage = 1;
     const itemsPerPage = 8;
-    const all_bookings = Array.from(document.querySelectorAll('.row_booking')); // Chaque ligne du tableau a une classe 'row_booking'
+    const all_bookings = Array.from(document.querySelectorAll('.ROW'));
     const totalPages = Math.ceil(all_bookings.length / itemsPerPage);
 
+    console.log(all_bookings);
     function showPage(page) {
         const start = (page - 1) * itemsPerPage;
         const end = start + itemsPerPage;
@@ -132,7 +133,6 @@ $data['options_customers_id'] = $options_customers_id;
         all_bookings.slice(start, end).forEach(booking => booking.style.display = '');
 
         currentPage = page;
-        console.log("CURRENT Pages:", currentPage);
         updatePagination(); // Ajoutez cette ligne
 
     }

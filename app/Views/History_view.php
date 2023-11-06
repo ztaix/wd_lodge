@@ -25,18 +25,19 @@ $data['options_customers_id'] = $options_customers_id;
     var prices = <?php echo json_encode($prices); ?>;
 </script>
 
+<?php echo view('modals/modal_customer_update', $data); ?>
 <?php echo view('modals/modal_delete_confirm', $data); ?>
 <?php echo view('modals/modal_add_event', $data); ?>
 <?php echo view('modals/modal_booking_details', $data); ?>
 <?php echo view('modals/modal_bookings_list', $data); ?>
 
-<section class="w-full bg-gray-50 dark:bg-gray-900 p-3 sm:p-5" style="padding-bottom: 7rem; width: 100% !important">
+<div class="pb-4 p-3 sm:p-5 bg-gray-50 dark:bg-gray-900">
     <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
         <h1 class="pt-3 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
             Historique
         </h1>
         <!-- Start Container -->
-        <div class="bg-white dark:bg-gray-800 relative shadow-md rounded-lg ">
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg ">
             <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                 <div class="w-full md:w-1/2">
                     <form class="flex items-center">
@@ -104,7 +105,7 @@ $data['options_customers_id'] = $options_customers_id;
 
                             <?php foreach ($bookings_list as $booking) {
                             ?>
-                                <tr class="hover:bg-gray-50 border-b dark:border-gray-700 cursor-pointer whitespace-nowrap row_booking_<?= $booking['id']; ?> service_<?= $booking['Service_id']; ?>" onclick="showBookingDetailsFromID(<?= $booking['id']; ?>)">
+                                <tr class="ROW row_booking_<?= $booking['id']; ?> service_<?= $booking['Service_id']; ?> hover:bg-gray-50 border-b dark:border-gray-700 cursor-pointer whitespace-nowrap" onclick="showBookingDetailsFromID(<?= $booking['id']; ?>)">
                                     <td class="px-4 py-3"><?= $booking['Type_doc']; ?></td>
                                     <td class=" py-3 text-xs"># <?= $booking['id']; ?></td>
                                     <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white service_<?= $booking['Customer_id']; ?>"><?= $booking['customer_name']; ?></th>
@@ -132,7 +133,7 @@ $data['options_customers_id'] = $options_customers_id;
 
         </div>
     </div>
-</section>
+</div>
 
 <script>
     //////////////////////////////////////////////////
@@ -174,7 +175,7 @@ $data['options_customers_id'] = $options_customers_id;
     //pagination système
     let currentPage = 1;
     const itemsPerPage = 8;
-    const all_bookings = Array.from(document.querySelectorAll('.row_booking')); // Chaque ligne du tableau a une classe 'row_booking'
+    const all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
     const totalPages = Math.ceil(all_bookings.length / itemsPerPage);
 
     function showPage(page) {
@@ -188,7 +189,6 @@ $data['options_customers_id'] = $options_customers_id;
         all_bookings.slice(start, end).forEach(booking => booking.style.display = '');
 
         currentPage = page;
-        console.log("CURRENT Pages:", currentPage);
         updatePagination(); // Ajoutez cette ligne
 
     }

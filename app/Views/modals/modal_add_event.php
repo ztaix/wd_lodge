@@ -51,7 +51,7 @@ $modal_id = "addEventModal";
                                         <option value="<?php echo $id; ?>"><?php echo $Name; ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                <button type="button" onclick="openModal('updateCustomerModal')" class="px-4 text-xl font-bold text-gray-900 border-l-0 border border-gray-300 rounded-r-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">+</button>
+                                <button type="button" onclick="ShowCreateCustomer()" class="px-4 text-xl font-bold text-gray-900 border-l-0 border border-gray-300 rounded-r-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">+</button>
                             </div>
                         </div>
                     </div>
@@ -128,27 +128,25 @@ $discountRulesJSON  = json_encode($discountRules);  ?>
         var serviceSelect = document.getElementById("eventService_id");
         var priceInput = document.getElementById("eventPrice");
         var numericIndicator = document.getElementById("numericIndicator");
+        var userChangedPrice = false; // Flag pour suivre si l'utilisateur a modifié le prix
+
 
         // Mettre à jour le prix initial
         priceInput.value = prices[serviceSelect.value];
 
         // Mettre à jour le prix lorsque le service sélectionné change
         serviceSelect.addEventListener("change", function() {
-            priceInput.value = prices[this.value];
-            updatePrice(); // Appeler la fonction de mise à jour du prix
-        });
-
-        // Réinitialiser le prix si le champ est vide ou non numérique
-        priceInput.addEventListener("input", function() {
-            if (this.value === "" || isNaN(this.value)) {
-                this.value = prices[serviceSelect.value];
-                numericIndicator.style.display = "inline"; // Montrer l'indicateur
-            } else {
-                numericIndicator.style.display = "none"; // Cacher l'indicateur
+            if (!userChangedPrice) { // Mettre à jour uniquement si l'utilisateur n'a pas modifié le prix
+                priceInput.value = prices[this.value];
                 updatePrice(); // Appeler la fonction de mise à jour du prix
             }
         });
 
+        // Lorsque l'utilisateur modifie manuellement le prix
+        priceInput.addEventListener("input", function() {
+            userChangedPrice = true; // Indiquer que l'utilisateur a changé le prix
+            numericIndicator.style.display = isNaN(this.value) ? "inline" : "none"; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
+        });
 
 
         // Fonction pour mettre à jour le prix en fonction de la quantité
@@ -178,20 +176,11 @@ $discountRulesJSON  = json_encode($discountRules);  ?>
                 priceInput.value = ""; // Effacez le champ de prix si la quantité n'est pas un nombre valide
             }
         }
-        picker.on('select', function(event) {
-            // Récupérer les dates de début et de fin
-            const startDate = new Date(event.detail.start); // Adaptez ces lignes en fonction de la structure de `event.detail`
-            const endDate = new Date(event.detail.end); // Adaptez ces lignes en fonction de la structure de `event.detail`
-
-            // Calculer la différence en jours
-            const timeDifference = endDate.getTime() - startDate.getTime();
-            const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
-
-            // Mettre à jour le champ 'eventQt'
-            document.getElementById('eventQt').value = dayDifference;
+        // Réinitialiser le flag lorsque la quantité change
+        qtInput.addEventListener("input", function() {
+            userChangedPrice = false; // Réinitialiser le flag si l'utilisateur modifie la quantité
             updatePrice();
         });
-
         // Écouteurs d'événements pour les changements
         qtInput.addEventListener("input", updatePrice);
 

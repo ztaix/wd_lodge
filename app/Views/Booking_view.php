@@ -31,7 +31,10 @@ $data['options_customers_id'] = $options_customers_id;
 <?php echo view('modals/modal_bookings_list', $data); ?>
 <?php echo view('modals/modal_delete_confirm'); ?>
 <div tabindex="-1" aria-hidden="true" class="content-calendar relative inset-0 w-full mb-24">
-    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 ">
+<h1 class="pt-3 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+<?= $All_config[0]['Data']; ?>
+        </h1>    
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 ">
 
         <div id='calendar'></div>
 

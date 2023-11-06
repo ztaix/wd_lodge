@@ -2,7 +2,7 @@
 
 <footer>
 
-<div class="fixed shadow-footer bottom-0 left-0 w-full max-h-24 h-24 z-30 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+<div  id="footer" class="fixed shadow-footer bottom-0 left-0 w-full z-30 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
     <div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
         <a href="<?= esc(base_url('/')) ?>" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group" onClick="window.location.reload();">
             <svg class="w-10 h-10 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -37,11 +37,60 @@
 
 </footer>
 <script>
+
+  svg_sun =`<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3V1m0 18v-2M5.05 5.05 3.636 3.636m12.728 12.728L14.95 14.95M3 10H1m18 0h-2M5.05 14.95l-1.414 1.414M16.364 3.636 14.95 5.05M14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/>
+  </svg>`;
+  svg_moon = `<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.509 5.75c0-1.493.394-2.96 1.144-4.25h-.081a8.5 8.5 0 1 0 7.356 12.746A8.5 8.5 0 0 1 8.509 5.75Z"/>
+  </svg>`; 
+  //DARKMODE
+  document.addEventListener('DOMContentLoaded', function() {
+    var body = document.body;
+    var isDarkMode = getCookie('darkMode') === '1';
+
+    if (isDarkMode) {
+        body.classList.add('dark');
+        document.getElementById('toggleDarkMode').checked = true;
+    }
+
+    document.getElementById('toggleDarkMode').addEventListener('change', function() {
+        var isDarkModeEnabled = body.classList.toggle('dark');
+        setCookie('darkMode', isDarkModeEnabled ? '1' : '0', 1);
+        (isDarkModeEnabled) ? document.getElementById('label_darkmode').innerHTML = svg_moon : document.getElementById('label_darkmode').innerHTML = svg_sun;
+
+    });
+    (isDarkMode) ? document.getElementById('label_darkmode').innerHTML = svg_moon : document.getElementById('label_darkmode').innerHTML = svg_sun;
+    
+});
+
+function setCookie(name, value, days) {
+    var expires = '';
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = '; expires=' + date.toUTCString();
+    }
+    document.cookie = name + '=' + (value || '') + expires + '; path=/';
+}
+
+function getCookie(name) {
+    var nameEQ = name + '=';
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+
+
 // Footer active page:
 document.addEventListener("DOMContentLoaded", function() {
   let currentPath = window.location.pathname.split('/').pop();
   let footerLinks = document.querySelectorAll('.grid a');
-console.log(footerLinks);
   footerLinks.forEach(link => {
     let linkPath = new URL(link.href).pathname.split('/').pop();
     if (currentPath === linkPath) {
@@ -55,34 +104,20 @@ console.log(footerLinks);
 
 let baseurl = <?= json_encode($baseurl); ?>;
 
-// DATE PICKER
-const picker = new easepick.create({
-    element: document.getElementById('startEvent'),
-    css: [
-      'css/wd_datepicker.css',
-    ],
-    opens: 'top',
-    plugins: ['RangePlugin'],
-    RangePlugin: {        
-        elementEnd: "#eventEnd",
-      tooltipNumber(num) {
-        return num -1;
-      },
-      locale: {
-        one: 'Nuit',
-        other: 'Nuits',
-      }
-    },
-    zIndex: 50,
-    lang: "fr-FR",
-    format: "DD-MM-YYYY",
-});
 
 </script>
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
 <script src="Assets/js/wd_fullcalendar.js?v="<?= time()?>></script>
 <script src="Assets/js/wd_sidetools.js?v="<?= time()?>></script>
+<script>
+  var fromServicepicker; // Déclare la variable à l'extérieur de la fonction pour qu'elle ait une portée globale.
+  document.addEventListener('DOMContentLoaded', function() {
+    // Obtenez l'élément select par son ID
+var selectedService_ID = document.getElementById('eventService_id').value;
 
+    loadAndInitDatepicker(selectedService_ID);
+  });
+</script>
 </body>
 </html>
