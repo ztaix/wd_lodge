@@ -721,7 +721,7 @@ function format_date(input_date, daysToAdd = 0, shorter = false) {
   dateObj.setHours(dateObj.getHours() - 10);
 
   // Ajoute des jours si nécessaire
-  dateObj.setDate(dateObj.getDate() + daysToAdd + 1);
+  dateObj.setDate(dateObj.getDate() + daysToAdd);
 
   // Récupère le jour, le mois et l'année
   let day = String(dateObj.getDate()).padStart(2, "0");

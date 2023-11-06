@@ -289,7 +289,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('eventEnd').value = enddate;
                 document.getElementById('eventCustomer_id').value;
                 document.getElementById('eventComment').value = '';
-
+                fromServicepicker.setStartDate(startdate);
+                fromServicepicker.setEndDate(enddate);
 
                 // Afficher le popup
                 openModal('addEventModal',false);
