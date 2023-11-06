@@ -33,7 +33,7 @@ class BookingController extends BaseController
             'services_list' => ($services_list = $this->ServiceModel->get_services_list()) ? $services_list : [],
             'bookins_list' => $this->BookingModel->getAllBookings(),
             'totalServices' => $this->ServiceModel->getTotalServices(),
-            'discountRules' => ($rule = $this->ConfigModel->DiscountRules())? DiscountToArray($rule['Data']): '' ,
+            'discountRules' => ($rule = $this->ConfigModel->DiscountRules()) ? DiscountToArray($rule['Data']) : '',
             'All_config' => $this->ConfigModel->get_all_config(),
 
         ];
@@ -55,10 +55,10 @@ class BookingController extends BaseController
         foreach ($bookings as $booking) {
             $startDate = new DateTime($booking['start']);
             $endDate = new DateTime($booking['end']);
-    
+
             while ($startDate <= $endDate) {
                 $date = $startDate->format('Y-m-d');
-    
+
                 if (!isset($grouped[$date])) {
                     $grouped[$date] = [
                         'count' => 0,
@@ -70,18 +70,18 @@ class BookingController extends BaseController
                 if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
                     $grouped[$date]['colors'][] = $booking['service_color'];
                 }
-    
+
                 $startDate->modify('+1 day'); // Passer au jour suivant
             }
         }
-    
+
         // Générer les événements
         $events = [];
         foreach ($grouped as $date => $data) {
             $events[] = [
                 'title' => $data['count'] . ' réservations',
                 'start' => $date,
-                'bookings' => array_map(function($color) {
+                'bookings' => array_map(function ($color) {
                     return ['color' => $color, 'title' => 'Réservation']; // Le titre pourrait être plus descriptif
                 }, $data['colors'])
             ];
@@ -89,7 +89,7 @@ class BookingController extends BaseController
 
         return $this->response->setJSON($events);
     }
-        
+
 
     public function getBookingsFromService($service_id)
     {
@@ -102,10 +102,10 @@ class BookingController extends BaseController
             $type_doc = $booking['Type_doc']; // Assurez-vous que la clé 'type_doc' est correcte dans votre tableau $booking
             $price = $booking['Price']; // Assurez-vous que la clé 'Price' est correcte dans votre tableau $booking
             $paid = $booking['Paid']; // Assurez-vous que la clé 'Paid' est correcte dans votre tableau $booking
-    
+
             while ($startDate < $endDate) { // Utilisez < au lieu de <= pour exclure la date de fin
                 $date = $startDate->format('Y-m-d');
-    
+
                 if (!isset($grouped[$date])) {
                     $grouped[$date] = [
                         'colors' => [], // Peut-être prévoir un tableau pour toutes les couleurs
@@ -114,7 +114,7 @@ class BookingController extends BaseController
                         'paids' => [], // Stockez 'Paid' dans un tableau
                     ];
                 }
-    
+
                 if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
                     $grouped[$date]['colors'][] = $booking['service_color'] ?: '#bcbcbc'; // Couleur par défaut si null
                 }
@@ -127,11 +127,11 @@ class BookingController extends BaseController
                 if (!in_array($paid, $grouped[$date]['paids'])) {
                     $grouped[$date]['paids'][] = $paid; // Ajoutez 'Paid' s'il n'est pas déjà dans le tableau
                 }
-    
+
                 $startDate->modify('+1 day'); // Passer au jour suivant
             }
         }
-    
+
         // Générer les événements
         $events = [];
         foreach ($grouped as $date => $data) {
@@ -140,7 +140,7 @@ class BookingController extends BaseController
             $eventPrice = array_sum($data['prices']); // Calculez le total des prix pour la date
             $eventPaidPrice = array_sum($data['paids']); // Calculez le total des prix pour la date
             $eventPaid = $eventPaidPrice == $eventPrice ? '<b>Payé</b>' : 'Impayé'; // Déterminez si un paiement a été effectué
-    
+
             $events[] = [
                 'start' => $date,
                 'type_doc' => $data['type_doc'][0], // Utilisez le premier 'type_doc' trouvé
@@ -150,10 +150,10 @@ class BookingController extends BaseController
                 'paid' => $eventPaidPrice, // 'Paid' si payé, sinon 'Unpaid'
             ];
         }
-    
+
         return $this->response->setJSON($events);
     }
-    
+
 
 
 
@@ -171,9 +171,14 @@ class BookingController extends BaseController
         // Créez un tableau associatif contenant à la fois les événements et la date cliquée
     }
 
-    public function getBookingFromID()
+    public function getBookingFromID($booking_id = false)
     {
-        $id = $this->request->getGet('id');
+        if($booking_id!== false){
+            $id = $booking_id;
+        }
+        else{ 
+            $id = $this->request->getGet('id');
+        }
         $response = $this->BookingModel->getBookingFromID($id);
         return $this->response->setJSON($response);
     }
@@ -203,7 +208,7 @@ class BookingController extends BaseController
     {
 
         $data = $this->request->getPost();
-        
+
         $id = $this->request->getPost('id');
 
         if ($this->BookingModel->validate($data)) {  // Utilisez les règles de validation définies dans le modèle
@@ -285,7 +290,7 @@ class BookingController extends BaseController
     }
 
 
-    public function generatePDF($origine = 'booking', $id = 1)
+    public function generatePDF($origine = 'booking', $id = 1, $show = true)
     {
         if ($origine == 'booking') {
             $bookingData = $this->BookingModel->getBookingFromID($id); // Vos données de réservation
@@ -300,21 +305,21 @@ class BookingController extends BaseController
             $data = $this->BookingModel->getBookingsFromCustomer($id); // Vos données de réservation
         }
 
-        $seller = [ $this->ConfigModel->get_all_config()];
+        $seller = [$this->ConfigModel->get_all_config()];
         // Charger la vue et passer les données de réservation
         $html = view('documents/pdf', ['data' => $data, 'seller' => $seller]);
-        
-        $contxt = stream_context_create([ 
-            'ssl' => [ 
-                'verify_peer' => false, 
+
+        $contxt = stream_context_create([
+            'ssl' => [
+                'verify_peer' => false,
                 'verify_peer_name' => false,
-                'allow_self_signed'=> true
-            ] 
+                'allow_self_signed' => true
+            ]
         ]);
         $options = new Options();
-        $options->set('isRemoteEnabled',true);
-        $options->set('HttpContext',$contxt);
-         
+        $options->set('isRemoteEnabled', true);
+        $options->set('HttpContext', $contxt);
+
         $dompdf = new Dompdf($options);
 
         // Charger le HTML dans Dompdf
@@ -330,11 +335,94 @@ class BookingController extends BaseController
         header('Content-Type: application/pdf');
         header('Content-Disposition: inline; filename="' . "$origine-$id.pdf" . '"');
 
-        // Envoyer le PDF au navigateur
-        $dompdf->stream("$origine-$id.pdf", array("Attachment" => false, 'mime' => 'application/pdf'));
-        $pdfOutput = $dompdf->output();
-        return $this->response->setStatusCode(200)
-                              ->setContentType('application/pdf')
-                              ->setBody($pdfOutput);
+        if ($show === true) {
+            // Envoyer le PDF au navigateur
+            $dompdf->stream("$origine-$id.pdf", array("Attachment" => false, 'mime' => 'application/pdf'));
+            $pdfOutput = $dompdf->output();
+            return $this->response->setStatusCode(200)
+                ->setContentType('application/pdf')
+                ->setBody($pdfOutput);
+        } else {
+            // Sauvegarder le PDF dans un fichier temporaire
+            $output = $dompdf->output();
+            $tempDir = WRITEPATH . 'uploads/temp/';
+            $fileName = uniqid("pdf_") . ".pdf"; // Générer un nom de fichier unique
+            $filePath = $tempDir . $fileName;
+
+            // Assurez-vous que le répertoire temporaire existe
+            if (!is_dir($tempDir)) {
+                mkdir($tempDir, 0777, true);
+            }
+
+            file_put_contents($filePath, $output); // Sauvegarde le PDF
+            return $filePath; // Retourne le chemin du fichier
+        }
+    }
+
+    public function Sendmail($booking_id)
+    {
+        helper(['text', 'email']); // Chargement des helpers nécessaires
+
+        $bookingData = $this->BookingModel->getBookingFromID($booking_id); // Vos données de réservation
+
+        if (!$bookingData) {
+            return [
+                'success' => false,
+                'message' => 'Réservation non trouvée.'
+            ];
+
+        }
+
+        if (isset($bookingData['Customer_id'])) {
+            $customerData = $this->CustomerModel->get_customer_info($bookingData['Customer_id']);
+            if (!$customerData) {
+                return [
+                    'success' => false,
+                    'message' => 'Informations client non trouvées.'
+                ];
+            }
+
+            $data = [
+                'booking_info' => $bookingData,
+                'customer_info' => $customerData
+            ];
+        } else {
+            log_message('non success', 'customer data = 0');
+
+            return [
+                'success' => false,
+                'message' => 'ID client non défini dans les données de réservation.'
+            ];
+        }
+
+        $seller = [$this->ConfigModel->get_all_config()];
+        // Générez le PDF et obtenez le chemin du fichier
+        $pdfFilePath = $this->generatePDF('booking', $booking_id, false);
+
+        $html = view('documents/mail', ['data' => $data, 'seller' => $seller]);
+        echo $html;
+        $email = \Config\Services::email(); // Charge la bibliothèque d'emails
+        $email->setFrom($seller[0][3]['Data'], $seller[0][0]['Data']); // Définissez l'adresse de l'expéditeur
+        $email->setTo($customerData['Email']); // Définissez le destinataire
+        $email->setSubject('Information de réservation : '.$bookingData['Type_doc']); // Définissez le sujet
+        $email->setMessage($html); // Ajoutez le corps de l'email
+        // Chemin vers le fichier que vous souhaitez joindre
+        // Attachez le PDF à l'e-mail
+        $email->attach($pdfFilePath);
+        if ($email->send()) {
+            unlink($pdfFilePath);
+
+            return [
+                'success' => true
+            ];
+        } else {
+            unlink($pdfFilePath);
+            $error = $email->printDebugger(['headers']); // Récupérez les informations d'erreur
+            log_message('error', 'Email sending failed: ' . $error);
+            return [
+                'success' => false,
+                'message' => 'Échec de l’envoi de l’email. ' . $error
+            ];
+        }
     }
 }

@@ -89,7 +89,7 @@ class BookingModel extends Model
         $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_customers.Phone as customer_phone, wd_customers.Email as customer_mail, wd_customers.Comment as customer_comment, wd_customers.Created_at as customer_created,  wd_services.Title as service_title, wd_services.Color as service_color', false);
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
-        $this->where("id", $id);
+        $this->where("wd_bookings.id", $id);
         $result = $this->first(); // Utilisez first si vous attendez un seul enregistrement
         return $result;
     }
@@ -98,7 +98,7 @@ class BookingModel extends Model
 
         $this->select('wd_bookings.*,  wd_services.Title as service_title, wd_services.Color as service_color');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');        
-        $this->where("Customer_id", $customer_id);
+        $this->where("wd_bookings.Customer_id", $customer_id);
         $result = $this->findAll();
         return $result;
     }
