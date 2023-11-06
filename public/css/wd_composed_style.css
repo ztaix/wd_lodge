@@ -5145,7 +5145,7 @@ input:checked + .toggle-bg {
   height: calc(100vh - 6rem);
   box-sizing: border-box;
   /* Assurez-vous que le padding et la bordure sont inclus dans la hauteur */
-  overflow:scroll;
+  overflow-y: scroll;
 }
 
 .content-calendar{

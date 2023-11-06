@@ -32,7 +32,7 @@ $data['options_customers_id'] = $options_customers_id;
 <?php echo view('modals/modal_bookings_list', $data); ?>
 <?php echo view('modals/modal_customer_info', $data); ?>
 
-<section class="pb-4 p-3 sm:p-5 bg-gray-50 dark:bg-gray-900">
+<div class="pb-4 p-3 sm:p-5 bg-gray-50 dark:bg-gray-900">
 <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
         <h1 class="pt-3 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
             Clients
@@ -108,7 +108,7 @@ $data['options_customers_id'] = $options_customers_id;
 
         </div>
     </div>
-</section>
+</div>
 
 <script>
     //////////////////////////////////////////////////
