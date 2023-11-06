@@ -401,6 +401,18 @@ class BookingController extends BaseController
 
         $html = view('documents/mail', ['data' => $data, 'seller' => $seller]);
         $email = \Config\Services::email(); // Charge la bibliothèque d'emails
+        $config['protocol'] = 'smtp';
+$config['SMTPHost'] = 'smtp.hostinger.com';
+$config['SMTPPort'] = 587; // ou 465 pour SSL
+$config['SMTPUser'] = 'mail@ztaix.me';
+$config['SMTPPass'] = 'Belcusar69';
+$config['SMTPCrypto'] = 'tls'; // ou 'ssl'
+$config['mailType'] = 'html';
+$config['charset']   = 'utf-8';
+$config['newline']   = "\r\n";
+
+$email->initialize($config);
+
         $email->setFrom($seller[0][3]['Data'], $seller[0][0]['Data']); // Définissez l'adresse de l'expéditeur
         $email->setTo($customerData['Email']); // Définissez le destinataire
         $email->setSubject('Information de réservation : '.$bookingData['Type_doc']); // Définissez le sujet
