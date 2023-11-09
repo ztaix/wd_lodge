@@ -24,8 +24,8 @@ foreach ($All_config as $row) {
                 </div>
                 ';
             } else {
-                $html_form .= '<div class="relative mb-5"><input name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '" type="text" value="' . $row['Data'] . '" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1  appearance-none dark:text-white bg-white border-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2 peer" placeholder=" " />
-            <label for="floating_outlined" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] bg-transparent dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-3 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">' . $row['Title'] . '</label></div>';
+                $html_form .= '<div class="relative mb-5"><input name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '" type="text" value="' . $row['Data'] . '" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1  appearance-none dark:text-white bg-white dark:bg-gray-700 border-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2 peer" placeholder=" " />
+            <label for="floating_outlined" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] bg-transparent px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-3 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">' . $row['Title'] . '</label></div>';
             }
             break;
         case "textarea":
@@ -63,7 +63,7 @@ foreach ($All_config as $row) {
                 </div>
             </div>
             <div class="w-1/2 py-2 ml-1">
-                <div class="bg-slate-100 rounded-lg shadow border text-center pb-2">
+                <div class="text-gray-900 dark:text-white bg-slate-50 dark:bg-slate-500 rounded-lg shadow border dark:border-slate-400 text-center pb-2">
                     <div class="flex items-start justify-between p-2 border-b dark:border-gray-600">
                         <h3 class="text-md font-semibold text-gray-600 dark:text-white">
                         Règles actives
@@ -76,26 +76,23 @@ foreach ($All_config as $row) {
     </div>
     ';
             } else {
-                $html_form .= '<div class="relative mb-5">
-
-<textarea name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '" rows="4" class="block p-3.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-500 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:border-2" >' . $row['Data'] . '</textarea>
-<label for="' . FreetextToVartext($row['Title']) . '" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] bg-transparent dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-3 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">' . $row['Title'] . '</label>
-</div>
-';
+                $html_form .= '
+                <div class="relative mb-5">
+                    <textarea name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '" rows="4" class="block p-3.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-500 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:border-2" >' . $row['Data'] . '</textarea>
+                    <label for="' . FreetextToVartext($row['Title']) . '" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] bg-transparent  px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-3 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">' . $row['Title'] . '</label>
+                </div>
+                ';
             }
             break;
         case "checkbox": //toogle
-        default:;
+        default:'';
     }
 }
 ?>
-<form method="post" action="<?= base_url('/Config/save') ?>" enctype="multipart/form-data">
-
-    <section class="bg-slate-300 dark:bg-gray-900 p-3 sm:p-5" style="padding-bottom: 7rem;">
-    <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
-        <h1 class="pt-3 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-            Réglages
-        </h1>
+<header>Configuration</header>
+<div id="config" class="max-w-screen-md bg-gray-50 dark:bg-gray-900">
+    <div class="mx-auto px-4">
+        <form method="post" action="<?= base_url('/Config/save') ?>" enctype="multipart/form-data">
 
             <div class="mb-10">
 
@@ -106,20 +103,32 @@ foreach ($All_config as $row) {
                 <h1 class="pt-3 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
                     Liste des services
                 </h1>
-                <h2 class="pt-3 mb-4 text-2xl text-center font-extrabold leading-none tracking-tight text-red-900 md:text-5xl lg:text-6xl dark:text-white"> EN CONSTRUCTION </h2>
-                <?php
+                                <?php
                 foreach ($services_list as $key => $value) {
                 ?>
                     <div id="containerService" class="relative w-full pb-2 <?= ($key < $totalServices - 1) ? 'border-b-2' : '' ?> ">
                         <div class="flex items-center pb-4">
+                            <input id="Service_id" name="Service_id_<?= $value['Service_id'] ?>" class="hidden" value="<?= $value['Service_id'] ?>" />
                             <div class="w-3/12 flex-shrink-0 overflow-hidden rounded-full" style="border:4px solid <?= $value['Color'] ?>">
                                 <img src="<?= isset($value['Image_url']) ? $value['Image_url'] : ''; ?>" id="img_<?= $value['Service_id'] ?>" alt="<?= $value['Title'] ?>" style="object-fit: cover;" />
                             </div>
                             <div class="ml-4 flex flex-grow items-center ">
                                 <span class="w-2/3">
                                     <div class="relative z-0">
-                                        <input type="text" id="title_<?= $value['Service_id'] ?>" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" value="<?= $value['Title'] ?>" placeholder=" " />
-                                        <label for="title_<?= $value['Service_id'] ?>" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Titre</label>
+                                        <input type="text" name="Title_<?= $value['Service_id'] ?>" id="Title_<?= $value['Service_id'] ?>" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" value="<?= $value['Title'] ?>" placeholder=" " />
+                                        <label for="Title_<?= $value['Service_id'] ?>" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Titre</label>
+                                    </div>
+                                </span>
+                                <span class="w-1/3 inline-flex">
+                                    <div class="relative z-0">
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="ml-4 flex flex-grow-0 ">
+                                <span class="w-2/3">
+                                    <div class="relative z-0">
+                                        <input name="Price_<?= $value['Service_id'] ?>" type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="Price_<?= $value['Service_id'] ?>" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" value=<?= $value['Price'] ?> />
+                                        <label for="Price_<?= $value['Service_id'] ?>" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Tarif</label>
                                     </div>
                                 </span>
                                 <span class="w-1/3 inline-flex">
@@ -131,52 +140,38 @@ foreach ($All_config as $row) {
                         <div class="flex items-center">
                             <div class="w-3/12 flex-shrink-0 rounded-full">
                                 <div class="relative text-white">
-                                    <input type="text" id="text_color_<?= $value['Service_id'] ?>" class="w-full px-1 p-2 rounded-full text-sm" value="<?= $value['Color'] ?>" style="background-color: <?= $value['Color'] ?>" placeholder="#" />
-                                    <input type="color" id="color_<?= $value['Service_id'] ?>" class="absolute top-0 left-0 h-full opacity-0 cursor-pointer" value="<?= $value['Color'] ?>" />
+                                    <input name="Color_<?= $value['Service_id'] ?>" type="color" id="Color_<?= $value['Service_id'] ?>" class="cursor-pointer" value="<?= $value['Color'] ?>" />
                                 </div>
                             </div>
                             <div class="ml-4 flex flex-grow ">
                                 <div class="relative z-0 ">
-                                    <input type="text" id="comment_<?= $value['Service_id'] ?>" class="block py-2.5 px-0 text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" value="<?= $value['Comment'] ?>" placeholder=" " />
-                                    <label for="comment_<?= $value['Service_id'] ?>" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Commentaire</label>
+                                    <input type="text" name="Comment_<?= $value['Service_id'] ?>" id="Comment_<?= $value['Service_id'] ?>" class="block py-2.5 px-0 text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" value="<?= $value['Comment'] ?>" placeholder=" " />
+                                    <label for="Comment_<?= $value['Service_id'] ?>" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Commentaire</label>
                                 </div>
                             </div>
                         </div>
                     </div>
+                <?php
+                        }
+                ?>
             </div>
-            
-        <?php
-                }
-        ?>
-        <button type="button" id="addService" class=" py-1.5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">+ Ajouter un service</button>
 
-        <button type="submit" class="fixed bottom-24 right-6 mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ">Enregistrer</button>
-        </div>
-        </div>
-    </section>
-</form>
+            <button type="button" id="addService" class=" py-1.5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">+ Ajouter un service</button>
+
+            <button type="submit" class="sticky bottom-10 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ">Enregistrer</button>
+        </form>
+    </div>
+</div>
 
 <script>
-// Ajout d'un écouteur d'événements 'input' à l'élément d'entrée de couleur
-document.getElementById('color_<?= $value["Service_id"] ?>').addEventListener('input', function(event) {
-    // Obtention de la nouvelle couleur
-    const newColor = event.target.value;
 
-    // Mise à jour de la couleur d'arrière-plan de l'élément d'entrée de texte
-    const textInput = document.getElementById('text_color_<?= $value["Service_id"] ?>');
-    textInput.style.backgroundColor = newColor;
+    document.querySelector('#addService').addEventListener('click', function() {
+        const servicesContainer = document.querySelector('#containerService');
+        const serviceCount = servicesContainer.children.length;
+        const newServiceId = `new_${serviceCount}`; // Crée un ID unique pour le nouveau service.
 
-    // Mise à jour de la valeur de l'élément d'entrée de texte
-    textInput.value = newColor;
-});
-
-document.querySelector('#addService').addEventListener('click', function() {
-    const servicesContainer = document.querySelector('#containerService');
-    const serviceCount = servicesContainer.children.length;
-    const newServiceId = `new_${serviceCount}`; // Crée un ID unique pour le nouveau service.
-
-    // Créez les champs pour un nouveau service, assurez-vous d'utiliser `newServiceId` pour créer des noms de champs uniques.
-    let NewserviceHtml = `
+        // Créez les champs pour un nouveau service, assurez-vous d'utiliser `newServiceId` pour créer des noms de champs uniques.
+        let NewserviceHtml = `
 <div class="flex items-center pb-4" id="service_${newServiceId}">
     <div class="w-3/12 flex-shrink-0 overflow-hidden rounded-full" style="border:4px solid #DEFAULTCOLOR">
         <img src="" id="img_${newServiceId}" alt="" style="object-fit: cover;" />
@@ -210,12 +205,13 @@ document.querySelector('#addService').addEventListener('click', function() {
 <button type="button" onclick="removeService('${newServiceId}')" class="mt-4">Supprimer</button>
 `;
 
-    // Ajoutez le HTML dans le conteneur de services.
-    servicesContainer.innerHTML += NewserviceHtml;
-});
+        // Ajoutez le HTML dans le conteneur de services.
+        servicesContainer.innerHTML += NewserviceHtml;
+    });
 
-function removeService(serviceId) {
-    // Supprime le champ de service correspondant.
-    const serviceElement = document.querySelector(`#service_${serviceId}`);
-    serviceElement.remove();
-}</script>
+    function removeService(serviceId) {
+        // Supprime le champ de service correspondant.
+        const serviceElement = document.querySelector(`#service_${serviceId}`);
+        serviceElement.remove();
+    }
+</script>

@@ -56,17 +56,47 @@ class ConfigurationController extends BaseController
 
     public function saveConfigurations()
     {
-        $data_to_save = [];  // Initialisez $data_to_save comme un tableau vide en dehors de la boucle
+        $data_config_to_save = []; 
+        $data_service_to_save = []; 
+        $serviceId = null; // Initialiser le service_id
 
         $postData = $this->request->getPost();
-        
-        foreach ($postData as $config_id => $data_value) {     
-            $data_to_save[] = [
-                'config_id' => $config_id,
-                'Data' => $data_value
-            ];
+        foreach ($postData as $config_id_key => $data_value) {
+            if(is_numeric($config_id_key)){  
+  
+                $data_config_to_save[] = [
+                    'config_id' => $config_id_key,
+                    'Data' => $data_value
+                ];
+            }
+            else{
+                echo'<pre>';
+                print_r($config_id_key.' : '.$data_value);
+            echo'</pre>';                // Extrait le numéro ID à la fin de la chaîne 'config_id_key' s'il y en a un
+                preg_match('/(\d+)$/', $config_id_key, $matches);
+                $id = $matches ? $matches[0] : null;
 
-        }
+                // Vérifie si la clé courante est 'Service_id'
+                if ($config_id_key === 'Service_id') {
+                    // Si 'Service_id' est trouvé, initialise ou ajoute à un tableau pour ce service
+                    $serviceId = $data_value;
+                    if (!isset($data_service_to_save[$serviceId])) {
+                        $data_service_to_save[$serviceId] = []; // Initialise si pas encore défini
+                    }
+                } else if (isset($serviceId)) {
+                    // Construit le nom de la clé sans l'identifiant numérique à la fin
+                    $key = strtolower(preg_replace('/_\d+$/', '', $config_id_key));
+                    // Ajoute les données au tableau pour le service ID correspondant
+                    $data_service_to_save[$serviceId][$key] = $data_value;
+                }
+                }   
+            }
+            
+            echo'<pre>';
+            var_dump($data_service_to_save);
+        echo'</pre>';
+            
+            exit;
         // Vérification et traitement de l'image téléchargée
         $uploadedImage = $this->request->getFile(2);
         $imagePath = '';
@@ -75,18 +105,28 @@ class ConfigurationController extends BaseController
             $uploadedImage->move(WRITEPATH . 'uploads', $newName);  // Déplace le fichier vers le dossier "uploads"
 
             $imagePath = base_url() . 'uploads/' . $newName;
-            $data_to_save[] = [
+            $data_config_to_save[] = [
                 'config_id' => 2, // Remplacez 'id_pour_image' par l'ID que vous utilisez pour le champ d'image dans la base de données
                 'Data' => $imagePath
             ];
         }
 
-        if (!$this->ConfigurationModel->saveConfigurations($data_to_save)) {
+       /* if (!$this->ConfigurationModel->saveConfigurations($data_config_to_save)) {
             // Enregistrement a échoué
+            
+             return redirect()->to('Config')->with('message', 'Erreur lors de l\'enregistrement de la configuration');
+        }*/
+        
+        if (!$this->ServiceModel->upsert($data_service_to_save)) {
+            // Enregistrement a échoué
+            
              return redirect()->to('Config')->with('message', 'Erreur lors de l\'enregistrement de la configuration');
         }
-        var_dump($data_to_save);
-       return redirect()->to('Config')->with('message', 'Configuration enregistrée avec succès');
+        else{
+            var_dump('reussi');
+        }
+
+      // return redirect()->to('Config')->with('message', 'Configuration enregistrée avec succès');
     }
     
 }

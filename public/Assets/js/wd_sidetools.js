@@ -152,7 +152,7 @@ function CreateCustomer() {
   };
 
   $.ajax({
-    url: baseurl + `/customer/create`,
+    url: baseurl + `customer/create`,
     method: "POST",
     data: customerData,
     success: function (response) {
@@ -190,7 +190,7 @@ function CreateCustomer() {
             .addClass("blinking")
             .insertBefore("#items-container tr:first");
 
-          closeModal();
+          closeModalById('updateCustomerModal');
           showBanner(`Le client ${response.Name} a été créé avec succès`, true);
         } else {
           alert("Erreur : " + response.message);
@@ -281,7 +281,7 @@ async function showUpdateCustomer(id) {
   };
   button_delete.onclick = function () {
     $.ajax({
-      url: baseurl + "/customer/update",
+      url: baseurl + "customer/update",
       method: "POST",
       data: {
         customer_info: data,  // Utilisez la variable locale ici
@@ -428,6 +428,7 @@ async function showBookingDetailsFromID(id) {
     send_ico + "Envoyer " + event.Type_doc + "/ EN CONSTRUCTION";
   document.getElementById("booking_details_sendmail").href = 
   baseUrl + "booking/sendmail/" + event.id;
+  //baseUrl + "booking/sendmail/" + event.id;
 
   let button_update = document.getElementById("booking_details_update_button");
   button_update.onclick = function () {
@@ -444,7 +445,7 @@ async function showBookingDetailsFromID(id) {
 function get_service_list() {
   return new Promise((resolve, reject) => {
     $.ajax({
-      url: baseurl + "/booking/getServicesBookings", // URL de mise à jour
+      url: baseurl + "booking/getServicesBookings", // URL de mise à jour
       method: "GET",
       success: function (response) {
         if (response) {

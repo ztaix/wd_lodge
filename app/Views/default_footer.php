@@ -2,7 +2,7 @@
 
 <footer>
 
-<div  id="footer" class="fixed shadow-footer bottom-0 left-0 w-full z-30 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+<div  id="footer" class="sticky bottom-0 left-0 w-full z-30 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
     <div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
         <a href="<?= esc(base_url('/')) ?>" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group" onClick="window.location.reload();">
             <svg class="w-10 h-10 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -11,7 +11,7 @@
             <span class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Calendrier</span>
         </a>
         <a href="<?= esc(base_url('Customers')) ?>" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
-            <svg class="w-10 h-10 mb-2 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-10 h-10 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
             </svg>
             <span class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Clients</span>
@@ -36,6 +36,7 @@
 
 
 </footer>
+</div>
 <script>
 
   svg_sun =`<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -44,27 +45,8 @@
   svg_moon = `<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.509 5.75c0-1.493.394-2.96 1.144-4.25h-.081a8.5 8.5 0 1 0 7.356 12.746A8.5 8.5 0 0 1 8.509 5.75Z"/>
   </svg>`; 
-  //DARKMODE
-  document.addEventListener('DOMContentLoaded', function() {
-    var body = document.body;
-    var isDarkMode = getCookie('darkMode') === '1';
-
-    if (isDarkMode) {
-        body.classList.add('dark');
-        document.getElementById('toggleDarkMode').checked = true;
-    }
-
-    document.getElementById('toggleDarkMode').addEventListener('change', function() {
-        var isDarkModeEnabled = body.classList.toggle('dark');
-        setCookie('darkMode', isDarkModeEnabled ? '1' : '0', 1);
-        (isDarkModeEnabled) ? document.getElementById('label_darkmode').innerHTML = svg_moon : document.getElementById('label_darkmode').innerHTML = svg_sun;
-
-    });
-    (isDarkMode) ? document.getElementById('label_darkmode').innerHTML = svg_moon : document.getElementById('label_darkmode').innerHTML = svg_sun;
-    
-});
-
-function setCookie(name, value, days) {
+  
+  function setCookie(name, value, days) {
     var expires = '';
     if (days) {
         var date = new Date();
@@ -89,17 +71,18 @@ function getCookie(name) {
 
 // Footer active page:
 document.addEventListener("DOMContentLoaded", function() {
-  let currentPath = window.location.pathname.split('/').pop();
-  let footerLinks = document.querySelectorAll('.grid a');
-  footerLinks.forEach(link => {
-    let linkPath = new URL(link.href).pathname.split('/').pop();
-    if (currentPath === linkPath) {
-      link.querySelector('svg').classList.add('text-blue-600');
-      link.querySelector('span').classList.add('text-blue-600');
-      link.querySelector('svg').classList.remove('text-gray-500');
-      link.querySelector('span').classList.remove('text-gray-500');
-    }
-  });
+    let currentPath = window.location.pathname.split('/').pop();
+    let footerLinks = document.querySelectorAll('.grid a');
+    footerLinks.forEach(link => {
+        let linkPath = new URL(link.href).pathname.split('/').pop();
+        if (currentPath === linkPath) {
+            
+            link.querySelector('svg').classList.add('text-blue-600');
+            link.querySelector('span').classList.add('text-blue-600');
+            link.querySelector('svg').classList.remove('text-gray-500');
+            link.querySelector('span').classList.remove('text-gray-500');
+        }
+    });
 });
 
 let baseurl = <?= json_encode($baseurl); ?>;
@@ -108,16 +91,65 @@ let baseurl = <?= json_encode($baseurl); ?>;
 </script>
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
+<script src="Assets/js/select2.min.js"></script>
 <script src="Assets/js/wd_fullcalendar.js?v="<?= time()?>></script>
 <script src="Assets/js/wd_sidetools.js?v="<?= time()?>></script>
 <script>
+    // Initialisation du select recherche
+    $(document).ready(function() {
+
+        $('#eventCustomer_id').select2({
+            tags: true,
+            tokenSeparators: [',', ' '],
+            placeholder: "Recherchez ou ajoutez un nouveau client",
+            createTag: function (params) {
+                return {
+                    id: params.term,
+                    text: params.term,
+                    newOption: true,
+                    width: 'resolve',
+
+                }
+            }
+        }).on("select2:select", function(e) {
+            if(e.params.data.newOption){
+                ShowCreateCustomer(); // Ouvrir le popup d'ajout avec le texte prérempli
+                document.getElementById('customer_name').value = e.params.data.text;
+            }
+        });
+    });
+
+
   var fromServicepicker; // Déclare la variable à l'extérieur de la fonction pour qu'elle ait une portée globale.
   document.addEventListener('DOMContentLoaded', function() {
-    // Obtenez l'élément select par son ID
-var selectedService_ID = document.getElementById('eventService_id').value;
+      // Obtenez l'élément select par son ID
+      var selectedService_ID = document.getElementById('eventService_id').value;
+      
+      loadAndInitDatepicker(selectedService_ID);
+    });
 
-    loadAndInitDatepicker(selectedService_ID);
-  });
+    //DARKMODE
+    document.addEventListener('DOMContentLoaded', function() {
+      var body = document.body;
+      var isDarkMode = getCookie('darkMode') === '1';
+
+      if (isDarkMode) {
+          body.classList.add('dark');
+          document.getElementById('toggleDarkMode').checked = true;
+      }
+      else{
+      }
+      
+      document.getElementById('toggleDarkMode').addEventListener('change', function() {
+          var isDarkModeEnabled = body.classList.toggle('dark');
+    
+          setCookie('darkMode', isDarkModeEnabled ? '1' : '0', 1);
+          
+          (isDarkModeEnabled) ? document.getElementById('label_darkmode').innerHTML = svg_moon : document.getElementById('label_darkmode').innerHTML = svg_sun;
+      });
+      (isDarkMode) ? document.getElementById('label_darkmode').innerHTML = svg_moon : document.getElementById('label_darkmode').innerHTML = svg_sun;
+      
+    });
 </script>
 </body>
 </html>

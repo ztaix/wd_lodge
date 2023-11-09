@@ -139,7 +139,11 @@ class BookingModel extends Model
             return true;
         } else {
             // Récupérer et retourner les erreurs de validation
-            return false;
+            $errors = $this->errors();
+            return [
+                'success' => false,
+                'errors' => $errors
+            ];
         }
     }
 

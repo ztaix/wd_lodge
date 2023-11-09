@@ -2,12 +2,6 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
-
-use CodeIgniter\CLI\Console;
-use DateTime;
-
-
 class CustomersController extends BaseController
 {
 /**
@@ -70,9 +64,17 @@ class CustomersController extends BaseController
     }
     
     public function create_customer() {
-        $customer_info = $this->request->getPost(); 
-        if($this->CustomerModel->validate($customer_info)){
-            $this->CustomerModel->create_customer($customer_info);
+        $customer_info = $this->request->getPost();
+   
+        if ($customer_info) {
+
+            $result = $this->CustomerModel->save($customer_info);
+            // Vérifiez si l'insertion a réussi
+            if ($result === false) {
+                $errors = $this->CustomerModel->errors();
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Erreur lors de l\'insertion des données.', 'errors' => $errors]);
+            }
+
             $inserted_id = $this->CustomerModel->insertID();  // Récupère l'ID de la dernière ligne insérée
             return $this->response->setJSON([
                 'status' => 'success', 
@@ -80,7 +82,7 @@ class CustomersController extends BaseController
                 'Name' => $customer_info['Name'],
                 'Phone' => $customer_info['Phone'],
                 'Email' => $customer_info['Email'],
-                'Comment' => $customer_info['Comment']
+                'Comment' => $customer_info['Comment'],
             ]); 
         } else {
             $errors = $this->CustomerModel->errors();

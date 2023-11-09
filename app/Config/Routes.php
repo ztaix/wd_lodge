@@ -6,8 +6,8 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'MainController::index');
-$routes->get('/Customers', 'MainController::Customers');
-$routes->group('/customer', function($routes)
+$routes->get('Customers', 'MainController::Customers');
+$routes->group('customer', function($routes)
 {
     $routes->get('get_customer_info', 'CustomersController::get_customer_info');
     
@@ -15,11 +15,11 @@ $routes->group('/customer', function($routes)
     $routes->post('update', 'CustomersController::update_customerFromID');
 });
 
-$routes->get('/History', 'MainController::History');
-$routes->get('/Config', 'MainController::Configuration');
+$routes->get('History', 'MainController::History');
+$routes->get('Config', 'MainController::Configuration');
 //$routes->get('/Phpinfo', 'Phpinfo::index');
 
-$routes->group('/booking', function($routes)
+$routes->group('booking', function($routes)
 {
     $routes->post('getBookingsFromDate', 'BookingController::getBookingsFromDate');
     $routes->post('deleteBooking', 'BookingController::deleteBooking');
@@ -38,14 +38,14 @@ $routes->group('/booking', function($routes)
 });
 
 /// OTHER NON PAGES ROUTES
-$routes->group('/services', function($routes)
+$routes->group('services', function($routes)
 {
     $routes->post('update', 'ServicesController::update');
 });
 
-$routes->get('/file/(:any)', 'FilesController::getFilePath/$1');
-$routes->get('/uploads/(:any)', 'FilesController::passthrough/$1');
+$routes->get('file/(:any)', 'FilesController::getFilePath/$1');
+$routes->get('uploads/(:any)', 'FilesController::passthrough/$1');
 
-$routes->post('/Config/save', 'ConfigurationController::saveConfigurations');
+$routes->post('Config/save', 'ConfigurationController::saveConfigurations');
 
 

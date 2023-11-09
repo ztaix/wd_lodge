@@ -31,13 +31,13 @@ $data['options_customers_id'] = $options_customers_id;
 <?php echo view('modals/modal_booking_details', $data); ?>
 <?php echo view('modals/modal_bookings_list', $data); ?>
 
-<div class="pb-4 p-3 sm:p-5 bg-gray-50 dark:bg-gray-900">
-    <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
-        <h1 class="pt-3 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-            Historique
-        </h1>
+
+<header>Historique</header>
+
+<div id="history" class="max-w-screen-md bg-gray-50 dark:bg-gray-900">
+    <div class="mx-auto px-4">
         <!-- Start Container -->
-        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg ">
+        <div class="bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 relative shadow-md rounded-lg overflow-hidden">
             <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                 <div class="w-full md:w-1/2">
                     <form class="flex items-center">
@@ -84,9 +84,7 @@ $data['options_customers_id'] = $options_customers_id;
                     </div>
                 </div>
             </div>
-            <div id="pagination-container">
-                <!-- INJECTION des boutons de pagination -->
-            </div>
+
             <div class="overflow-x-auto">
                 <table id="history_list" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -130,7 +128,9 @@ $data['options_customers_id'] = $options_customers_id;
                     </div>
                 </table>
             </div>
-
+            <div id="pagination-container">
+                <!-- INJECTION des boutons de pagination -->
+            </div>
         </div>
     </div>
 </div>
@@ -174,7 +174,7 @@ $data['options_customers_id'] = $options_customers_id;
 
     //pagination système
     let currentPage = 1;
-    const itemsPerPage = 8;
+    const itemsPerPage = 6;
     const all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
     const totalPages = Math.ceil(all_bookings.length / itemsPerPage);
 

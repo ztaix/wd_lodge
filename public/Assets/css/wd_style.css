@@ -6,26 +6,45 @@
 @import 'tailwindcss/utilities';
 
 
+header {
+  letter-spacing: -0.025rem;
+  font-weight: 800;
+  font-size: 45px;
+  margin: 0 auto;
+  padding-left: 20px;
+  height:4rem; 
+
+}
+
 .content {
     /* Ajoutez vos styles pour le contenu ici */
-    margin: 0 auto;
-    height: calc(100vh - 6rem);
     box-sizing: border-box;  /* Assurez-vous que le padding et la bordure sont inclus dans la hauteur */
-    overflow-y: scroll;
+ /*   height: 100vh;*/
 }
-.content-calendar{
+
+#calendar, #customer, #history, #config {
+  box-sizing: border-box;  /* Assurez-vous que le padding et la bordure sont inclus dans la hauteur */
+  height: calc(100vh - 10rem);
+  width: 100%;
   margin: 0 auto;
+  z-index: 0;
+  overflow-y: auto;
 }
+#calender {
+  overflow: none;
+}
+
+
 #footer {
   height: 6rem;
   max-height: 6rem;
-
+  bottom: 0;
 }
 
   /* Styles pour les écrans de taille PC */
 @media screen and (min-width: 1024px) {
     /* Vos styles PC ici */
-    .content-calendar {
+    #calendar, header {
         width: 70vh;
     }
 }
@@ -33,7 +52,7 @@
 /* Styles pour les tablettes */
 @media screen and (max-width: 1023px) and (min-width: 751px) {
     /* Vos styles tablette ici */
-    .content-calendar {
+    #calendar, header {
         width: 85vh;
     }
 }
@@ -41,15 +60,11 @@
 /* Styles pour les mobiles */
 @media screen and (max-width: 750px) {
     /* Vos styles mobile ici */
-    .content-calendar {
+    #calendar, header {
         width: 100%;
     }
 }
-#calendar {
-  height: calc(100vh - 6rem);
-  width: 100%;
-  z-index: 0;
-}
+
 
 
 #closeModal {
@@ -150,6 +165,43 @@
 
 .fc-daygrid-day-top .fc-daygrid-day-top-month {
     display: none; /* Cachez le nom du mois */
+}
+.fc-button-group {
+  padding: 0 10px;
+}
+/*** DARK MODE ***/
+.dark .fc-multimonth-title, .dark .fc-multimonth-header, .dark div.fc-view-harness.fc-view-harness-active div.fc-multiMonthYear-view.fc-view.fc-multimonth.fc-multimonth-singlecol div.fc-multimonth-month div.fc-multimonth-header table.fc-multimonth-header-table thead{
+  background-color: #1e293b;
+  border-color: #1e293b;
+  border: 0px;
+}
+.dark .fc-multimonth-daygrid-table, .dark .fc-multimonth-header-table {
+  background-color: #1e293b;
+  border: 0px;
+}
+.dark .fc-day-disabled{
+  background-color: #101825;
+  border: 0px;
+
+}
+.dark .fc-day-past {
+  background-color: #2a3e60;
+  border: 0px;
+}
+.dark .fc-day-future{
+  background-color: #2a3e60;
+  border: 0px;
+}
+.dark .fc-daygrid-day.fc-day-today {
+  background-color:#6e7e98;
+  color: black;
+  border: 0px;
+}
+.dark .fc-multimonth-compact{
+  border: 0;
+}
+.dark .fc-daygrid-day:hover {
+  background-color: rgb(42, 57, 82);
 }
 
 
@@ -320,3 +372,4 @@
   opacity: 1;
   right: 00px;
 }
+

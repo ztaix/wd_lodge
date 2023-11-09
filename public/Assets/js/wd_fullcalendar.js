@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'utilisateur a cliqué
             // Faire une requête AJAX pour obtenir les événements de cette date
             $.ajax({
-                url: baseurl + '/booking/getBookingsFromDate', // Votre URL pour récupérer les événements
+                url: baseurl + 'booking/getBookingsFromDate', // Votre URL pour récupérer les événements
                 method: 'POST',
                 data: { date: clickedDate },
                 success: function(response) {
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(clickedDate);
             // Faire une requête AJAX pour obtenir les événements de cette date
             $.ajax({
-            url: baseurl + '/booking/getBookingsFromDate', // Votre URL pour récupérer les événements
+            url: baseurl + 'booking/getBookingsFromDate', // Votre URL pour récupérer les événements
             method: 'POST',
             data: { date: clickedDate },
             success: function(response) {
@@ -330,7 +330,7 @@ function updateEventFromDetails() {
         end:  format_date_toSql(document.getElementById('eventEnd').value),
     };
     $.ajax({
-        url: baseurl + '/booking/updateBooking', // URL de mise à jour
+        url: baseurl + 'booking/updateBooking', // URL de mise à jour
         method: 'POST',
         data: formData,
         success: function(response) {
@@ -374,13 +374,15 @@ function addEvent() {
   'start': eventStart,
   'end': eventEnd
 };
+
 if(eventData['start'] && eventData['end']){
     // Envoi de la requête AJAX
   $.ajax({
-    url: baseurl + '/booking/addBooking',  // URL du contrôleur
+    url: baseurl + 'booking/addBooking',  // URL du contrôleur
     type: 'POST',  // Méthode HTTP
     data: eventData,  // Données à envoyer
     success: function(response) {
+      if (response.success) {
       // Traitez la réponse ici
       showBanner(`<div class="flex flex-col">Evènement ajouté avec succès !</div>
       <div class="text-center">
@@ -401,12 +403,37 @@ if(eventData['start'] && eventData['end']){
         setTimeout(() => {
           $("." + row_type + event_id.id).css('display', 'none');
         }, 700);
-      if(calendar){calendar.refetchEvents();}    
+        setTimeout(() => {
+          if(calendar){ calendar.refetchEvents(); }       
+         }, 200);
+        
+      } else {
+        // Gestion des erreurs de validation
+        let errorMessages = 'Erreur(s) lors de l\'ajout :<ul>';
+        for (let field in response.errors) {
+          errorMessages += `<li>${response.errors[field]}</li>`;
+        }
+        errorMessages += '</ul>';
+        showBanner(errorMessages, false);
+      }  
     },
-    error: function(error) {
-      // Traitez l'erreur ici
-      showBanner('Evènement n\'a pu être ajouter',false);
-      console.log("Error:", error);
+    error: function(jqXHR, textStatus, errorThrown) {
+      // Gestion de l'erreur
+      let errorMessage = 'Erreur lors de la requête. ';
+      if (jqXHR.status) {
+        errorMessage += 'Statut : ' + jqXHR.status + '. ';
+      }
+      if (textStatus) {
+        errorMessage += 'Statut du texte : ' + textStatus + '. ';
+      }
+      if (errorThrown) {
+        errorMessage += 'Erreur jetée : ' + errorThrown + '. ';
+      }
+      if (jqXHR.responseText) {
+        errorMessage += 'Réponse du texte : ' + jqXHR.responseText;
+      }
+      showBanner(errorMessage, false);
+      console.error("Error: ", jqXHR, textStatus, errorThrown);
     }
   });
 }
@@ -453,7 +480,7 @@ function deleteEvent(event_id,modal_id = false, event = false) {
 
     yesconfirmButton.onclick = function() { 
       $.ajax({
-                  url: baseurl + '/booking/deleteBooking', // URL de mise à jour
+                  url: baseurl + 'booking/deleteBooking', // URL de mise à jour
                   method: 'POST',
                   data: {
                       id: event_id

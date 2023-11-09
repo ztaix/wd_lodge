@@ -225,6 +225,7 @@ class BookingController extends BaseController
 
     public function addBooking()
     {
+
         // Vérifiez si la requête est une requête POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->response->setJSON(['status' => 'fail', 'error' => 'Only POST requests are allowed']);
