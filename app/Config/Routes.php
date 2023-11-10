@@ -26,7 +26,8 @@ $routes->group('booking', function($routes)
     $routes->post('updateBooking', 'BookingController::updateBooking');
     $routes->post('addBooking', 'BookingController::addBooking');
     
-    $routes->get('/', 'BookingController::getBookings');
+    $routes->get('', 'BookingController::getBookings');
+    $routes->get('service/(:num)/(:any)', 'BookingController::getBookings/$1/$2');
     $routes->get('available/(:num)', 'BookingController::getBookingsFromService/$1');
     $routes->get('search', 'BookingController::getBookingsFromSearch');
     $routes->get('getBookingFromID', 'BookingController::getBookingFromID');
@@ -41,6 +42,7 @@ $routes->group('booking', function($routes)
 $routes->group('services', function($routes)
 {
     $routes->post('update', 'ServicesController::update');
+$routes->get('drop/(:num)', 'ServicesController::delete/$1');
 });
 
 $routes->get('file/(:any)', 'FilesController::getFilePath/$1');

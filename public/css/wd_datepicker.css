@@ -333,25 +333,19 @@
   background-color: var(--color-bg-unavailable);
   color: var(--color-fg-locked);
   font-style: italic;
-  pointer-events: none;
+  pointer-events: pointer;
 }
 .container.lock-plugin .calendar > .days-grid > .day.locked {
   background-color: transparent;
   border: 1px solid var(--color-border-locked);
   color: var(--color-fg-locked);
-  pointer-events: none;
+  pointer-events: pointer;
 }
 .container.lock-plugin
   .calendar
   > .days-grid
   > .day.locked:not(.start):not(.end) {
-  background-image: repeating-linear-gradient(
-    135deg,
-    transparent,
-    var(--color-bg-locked) 2px,
-    transparent 2px,
-    transparent 4px
-  );
+    background-color: #ffcccc;
   font-style: italic;
 }
 .container.lock-plugin .preset-plugin-container > button:disabled {
@@ -661,4 +655,10 @@
     top: auto !important;
     bottom: 100% !important;
     margin-bottom: 10px; /* Ajustez la marge comme vous le souhaitez */
+}
+
+.day-unavailable {
+  font-size: 9px;
+  color: #171717;
+  padding: 2px;
 }

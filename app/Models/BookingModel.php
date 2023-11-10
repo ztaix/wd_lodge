@@ -17,7 +17,7 @@ class BookingModel extends Model
 
     protected $allowedFields = [
         'Customer_id', 'start', 'end', 'Service_id', 'qt','Price', 
-        'Paid', 'Type_doc', 'Pdf_url', 'Comment', 'Created_at', 'Deleted_at'
+        'Paid', 'Type_doc', 'Pdf_url', 'Comment', 'fullblocked', 'Created_at', 'Deleted_at'
     ]; // les champs autorisés pour l'insertion ou la mise à jour
 
     // Pas de champ pour la date de modification, donc on ne définit pas `$updatedField`
@@ -27,6 +27,7 @@ class BookingModel extends Model
         'start'   => 'required',
         'end'     => 'required',
         'Service_id'   => 'required|integer',
+        'fullblocked'   => 'permit_empty|integer',
         'qt'        => 'required|integer',
         'Price'        => 'required|integer',
         'Paid'         => 'permit_empty|integer',
@@ -46,10 +47,16 @@ class BookingModel extends Model
 /////////////////////////////////////
 
 
-    public function getAllBookings(){
+    public function getAllBookings($service_id=false,$fullblocked=false){
         $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, wd_services.Color as service_color');
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
+        if($service_id !== false){
+            $this->where('wd_bookings.Service_id', $service_id);
+        }
+        if($fullblocked == "true"){
+            $this->orWhere('wd_bookings.fullblocked', 1);
+        }
         $result = $this->findAll();
 
         return $result;
@@ -58,7 +65,10 @@ class BookingModel extends Model
         $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, wd_services.Color as service_color');
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
+        // Appliquer le filtre pour les réservations avec le service_id spécifié
         $this->where('wd_bookings.Service_id', $service);
+        // OU les réservations qui n'ont pas ce service_id mais avec fullblocked à true
+        $this->orWhere('wd_bookings.fullblocked', 1);
         $result = $this->findAll();
 
         return $result;

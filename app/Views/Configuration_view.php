@@ -106,9 +106,9 @@ foreach ($All_config as $row) {
                                 <?php
                 foreach ($services_list as $key => $value) {
                 ?>
-                    <div id="containerService" class="relative w-full pb-2 <?= ($key < $totalServices - 1) ? 'border-b-2' : '' ?> ">
+                    <div id="Container_Service_id_<?= $value['Service_id'] ?>" id="containerService" class="relative w-full pb-2 <?= ($key < $totalServices - 1) ? 'border-b-2' : '' ?> ">
                         <div class="flex items-center pb-4">
-                            <input id="Service_id" name="Service_id_<?= $value['Service_id'] ?>" class="hidden" value="<?= $value['Service_id'] ?>" />
+                            <input id="Service_id_<?= $value['Service_id'] ?>" name="Service_id_<?= $value['Service_id'] ?>" class="hidden" value="<?= $value['Service_id'] ?>" />
                             <div class="w-3/12 flex-shrink-0 overflow-hidden rounded-full" style="border:4px solid <?= $value['Color'] ?>">
                                 <img src="<?= isset($value['Image_url']) ? $value['Image_url'] : ''; ?>" id="img_<?= $value['Service_id'] ?>" alt="<?= $value['Title'] ?>" style="object-fit: cover;" />
                             </div>
@@ -149,6 +149,8 @@ foreach ($All_config as $row) {
                                     <label for="Comment_<?= $value['Service_id'] ?>" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Commentaire</label>
                                 </div>
                             </div>
+                            <button type="button" onclick="removeService('<?= $value['Service_id'] ?>')" class="text-white font-medium rounded-lg text-sm px-2 py-1  bg-red-300 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ">Supprimer</button>
+
                         </div>
                     </div>
                 <?php
@@ -166,7 +168,7 @@ foreach ($All_config as $row) {
 <script>
 
     document.querySelector('#addService').addEventListener('click', function() {
-        const servicesContainer = document.querySelector('#containerService');
+        const servicesContainer = document.querySelector('#Container_Service_id_');
         const serviceCount = servicesContainer.children.length;
         const newServiceId = `new_${serviceCount}`; // Crée un ID unique pour le nouveau service.
 
@@ -211,7 +213,18 @@ foreach ($All_config as $row) {
 
     function removeService(serviceId) {
         // Supprime le champ de service correspondant.
-        const serviceElement = document.querySelector(`#service_${serviceId}`);
-        serviceElement.remove();
+        var serviceElement = document.getElementById(`Container_Service_id_${serviceId}`);
+
+        $.ajax({
+        url: baseurl +  `services/drop/${serviceId}`, // URL de mise à jour
+        method: "GET",
+        success: function (response) {
+            if (response.status == 'success') {
+                serviceElement.remove();
+            } else {
+            reject("ECHEC de la suppression");
+            }
+        },
+        });
     }
 </script>

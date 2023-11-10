@@ -47,12 +47,17 @@ class BookingController extends BaseController
         echo view('default_layout', $datas);
     }
 
-    public function getBookings()
+    public function getBookings($service_id = false, $fullblocked = false)
     {
-        $bookings = $this->BookingModel->getAllBookings();
+
+        $bookings = $this->BookingModel->getAllBookings($service_id,$fullblocked);
         // Regroupez les réservations par jour
         $grouped = [];
         foreach ($bookings as $booking) {
+            if (!isset($booking['start'], $booking['end'])) {
+                continue; // Skip if required fields are missing
+            }
+
             $startDate = new DateTime($booking['start']);
             $endDate = new DateTime($booking['end']);
 
@@ -62,15 +67,39 @@ class BookingController extends BaseController
                 if (!isset($grouped[$date])) {
                     $grouped[$date] = [
                         'count' => 0,
-                        'colors' => [] // Ceci stockera toutes les couleurs de la journée
-                    ];
-                }
-                $grouped[$date]['count']++;
-                // Assurez-vous que la couleur est unique pour la date donnée
-                if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
-                    $grouped[$date]['colors'][] = $booking['service_color'];
+                        'fullblocked' => [],
+                        'colors' => [],
+                        'bookings' => []
+                        ];
                 }
 
+                if (!isset($grouped[$date]['bookings'][$booking['id']])) {
+                    $grouped[$date]['bookings'][$booking['id']] = [
+                        'colors' => $booking['service_color'], // Initialise avec la première couleur
+                        'services_titles' => $booking['service_title'], // Initialise avec le premier titre de service
+                        'prices' => $booking['Price'], // Initialise avec le premier prix
+                        'paids' => $booking['Paid'], // Initialise avec le premier paiement
+                        'types_docs' => $booking['Type_doc'], // Initialise avec le premier type de document
+                        'fullblockeds' => $booking['fullblocked'] // Initialise avec le premier statut fullblocked
+                    ];
+                    $grouped[$date]['count']++; // Incrémente le compteur uniquement lors de l'ajout d'une nouvelle réservation
+                } else {
+                    // Ajoutez les données uniquement si elles sont uniques pour cette réservation spécifique
+                    if (!in_array($booking['service_color'], $grouped[$date]['bookings'][$booking['id']]['colors'])) {
+                        $grouped[$date]['bookings'][$booking['id']]['colors'][] = $booking['service_color'];
+                    }
+                }
+
+
+
+                // Ajoutez les couleurs uniques à la liste globale des couleurs pour la date
+            if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
+                $grouped[$date]['colors'][] = $booking['service_color'];
+            }
+                // Ajoutez les couleurs uniques à la liste globale des couleurs pour la date
+            if (!in_array($booking['fullblocked'], $grouped[$date]['fullblocked'])) {
+                $grouped[$date]['fullblocked'][] = $booking['fullblocked'];
+            }
                 $startDate->modify('+1 day'); // Passer au jour suivant
             }
         }
@@ -81,11 +110,12 @@ class BookingController extends BaseController
             $events[] = [
                 'title' => $data['count'] . ' réservations',
                 'start' => $date,
-                'bookings' => array_map(function ($color) {
-                    return ['color' => $color, 'title' => 'Réservation']; // Le titre pourrait être plus descriptif
-                }, $data['colors'])
+                'colors' => $data['colors'],
+                'fullblocked' => $data['fullblocked'],
+                'bookings' => $data['bookings']
             ];
         }
+
 
         return $this->response->setJSON($events);
     }
@@ -102,16 +132,19 @@ class BookingController extends BaseController
             $type_doc = $booking['Type_doc']; // Assurez-vous que la clé 'type_doc' est correcte dans votre tableau $booking
             $price = $booking['Price']; // Assurez-vous que la clé 'Price' est correcte dans votre tableau $booking
             $paid = $booking['Paid']; // Assurez-vous que la clé 'Paid' est correcte dans votre tableau $booking
+            $service_title = $booking['service_title']; // Assurez-vous que la clé 'Paid' est correcte dans votre tableau $booking
+            $fullblocked = $booking['fullblocked']; // Assurez-vous que la clé 'fullblocked' est correcte dans votre tableau $booking
 
             while ($startDate < $endDate) { // Utilisez < au lieu de <= pour exclure la date de fin
                 $date = $startDate->format('Y-m-d');
 
                 if (!isset($grouped[$date])) {
                     $grouped[$date] = [
-                        'colors' => [], // Peut-être prévoir un tableau pour toutes les couleurs
-                        'type_doc' => [], // Stockez 'type_doc' dans un tableau
-                        'prices' => [], // Stockez 'Price' dans un tableau
-                        'paids' => [], // Stockez 'Paid' dans un tableau
+                        'colors' => [],
+                        'type_doc' => [],
+                        'prices' => [],
+                        'paids' => [],
+                        'fullblocked' => [],
                     ];
                 }
 
@@ -127,6 +160,9 @@ class BookingController extends BaseController
                 if (!in_array($paid, $grouped[$date]['paids'])) {
                     $grouped[$date]['paids'][] = $paid; // Ajoutez 'Paid' s'il n'est pas déjà dans le tableau
                 }
+                if (!in_array($fullblocked, $grouped[$date]['fullblocked'])) {
+                    $grouped[$date]['fullblocked'][] = $fullblocked; // Ajoutez 'fullblocked' s'il n'est pas déjà dans le tableau
+                }
 
                 $startDate->modify('+1 day'); // Passer au jour suivant
             }
@@ -139,15 +175,17 @@ class BookingController extends BaseController
             $color = count($data['colors']) === 1 ? $data['colors'][0] : '#bcbcbc'; // Exemple : couleur par défaut si plusieurs couleurs
             $eventPrice = array_sum($data['prices']); // Calculez le total des prix pour la date
             $eventPaidPrice = array_sum($data['paids']); // Calculez le total des prix pour la date
-            $eventPaid = $eventPaidPrice == $eventPrice ? '<b>Payé</b>' : 'Impayé'; // Déterminez si un paiement a été effectué
+            $eventPaid = $eventPaidPrice == $eventPrice ? 'Payé' : 'Impayé'; // Déterminez si un paiement a été effectué
 
             $events[] = [
                 'start' => $date,
                 'type_doc' => $data['type_doc'][0], // Utilisez le premier 'type_doc' trouvé
-                'backgroundColor' => $color, // Utilisez la couleur déterminée ci-dessus
-                'status' => $eventPaid, // 'Paid' si payé, sinon 'Unpaid'
-                'price' => $eventPrice, // Le total des prix pour la date
-                'paid' => $eventPaidPrice, // 'Paid' si payé, sinon 'Unpaid'
+                'backgroundColor' => $color,
+                'status' => $eventPaid,
+                'price' => $eventPrice,
+                'paid' => $eventPaidPrice,
+                'service_title' => $service_title,
+                'fullblocked' => $fullblocked,
             ];
         }
 
@@ -173,10 +211,9 @@ class BookingController extends BaseController
 
     public function getBookingFromID($booking_id = false)
     {
-        if($booking_id!== false){
+        if ($booking_id !== false) {
             $id = $booking_id;
-        }
-        else{ 
+        } else {
             $id = $this->request->getGet('id');
         }
         $response = $this->BookingModel->getBookingFromID($id);
@@ -215,7 +252,7 @@ class BookingController extends BaseController
             if ($this->BookingModel->update($id, $data)) {
                 return $this->response->setJSON(['status' => 'success', 'id' => $id]);
             } else {
-                return $this->response->setJSON(['status' => 'fail', 'message' => 'Une erreur inconnue s\'est produite']);
+                return $this->response->setJSON(['status' => 'fail', 'message' => 'Une erreur dans les données envoyées, vérifier la syntaxe des textes']);
             }
         } else {
             return $this->response->setJSON(['status' => 'fail', 'message' => $this->BookingModel->errors()]);
@@ -225,7 +262,7 @@ class BookingController extends BaseController
 
     public function addBooking()
     {
-
+        header("application/x-www-form-urlencoded; charset=UTF-8");
         // Vérifiez si la requête est une requête POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->response->setJSON(['status' => 'fail', 'error' => 'Only POST requests are allowed']);
@@ -371,7 +408,6 @@ class BookingController extends BaseController
                 'success' => false,
                 'message' => 'Réservation non trouvée.'
             ];
-
         }
 
         if (isset($bookingData['Customer_id'])) {
@@ -403,20 +439,20 @@ class BookingController extends BaseController
         $html = view('documents/mail', ['data' => $data, 'seller' => $seller]);
         $email = \Config\Services::email(); // Charge la bibliothèque d'emails
         $config['protocol'] = 'smtp';
-$config['SMTPHost'] = 'smtp.hostinger.com';
-$config['SMTPPort'] = 587; // ou 465 pour SSL
-$config['SMTPUser'] = 'mail@ztaix.me';
-$config['SMTPPass'] = 'Belcusar69';
-$config['SMTPCrypto'] = 'tls'; // ou 'ssl'
-$config['mailType'] = 'html';
-$config['charset']   = 'utf-8';
-$config['newline']   = "\r\n";
+        $config['SMTPHost'] = 'smtp.hostinger.com';
+        $config['SMTPPort'] = 587; // ou 465 pour SSL
+        $config['SMTPUser'] = 'mail@ztaix.me';
+        $config['SMTPPass'] = 'Belcusar69';
+        $config['SMTPCrypto'] = 'tls'; // ou 'ssl'
+        $config['mailType'] = 'html';
+        $config['charset']   = 'utf-8';
+        $config['newline']   = "\r\n";
 
-$email->initialize($config);
+        $email->initialize($config);
 
         $email->setFrom($seller[0][3]['Data'], $seller[0][0]['Data']); // Définissez l'adresse de l'expéditeur
         $email->setTo($customerData['Email']); // Définissez le destinataire
-        $email->setSubject('Information de réservation : '.$bookingData['Type_doc']); // Définissez le sujet
+        $email->setSubject('Information de réservation : ' . $bookingData['Type_doc']); // Définissez le sujet
         $email->setMessage($html); // Ajoutez le corps de l'email
         // Chemin vers le fichier que vous souhaitez joindre
         // Attachez le PDF à l'e-mail

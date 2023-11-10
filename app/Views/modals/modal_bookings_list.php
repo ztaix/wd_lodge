@@ -27,7 +27,7 @@ $modal_id = "ListEventModal";
         </div>
 
         <!-- Modal Body -->
-        <div class="flex justify-center px-4 py-2 mb-14 bg-slate-200">
+        <div class="flex justify-center px-4 py-2 mb-14 bg-slate-200 dark:bg-slate-700">
 
             <div class="max-w-xl bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                 <div class="px-4">

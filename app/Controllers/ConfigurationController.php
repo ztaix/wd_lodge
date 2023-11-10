@@ -70,33 +70,20 @@ class ConfigurationController extends BaseController
                 ];
             }
             else{
-                echo'<pre>';
-                print_r($config_id_key.' : '.$data_value);
-            echo'</pre>';                // Extrait le numéro ID à la fin de la chaîne 'config_id_key' s'il y en a un
-                preg_match('/(\d+)$/', $config_id_key, $matches);
-                $id = $matches ? $matches[0] : null;
-
-                // Vérifie si la clé courante est 'Service_id'
-                if ($config_id_key === 'Service_id') {
-                    // Si 'Service_id' est trouvé, initialise ou ajoute à un tableau pour ce service
-                    $serviceId = $data_value;
-                    if (!isset($data_service_to_save[$serviceId])) {
-                        $data_service_to_save[$serviceId] = []; // Initialise si pas encore défini
+              
+                    // Extrait le numéro ID à la fin de la chaîne 'Service_id_n'
+                    if (preg_match('/Service_id_(\d+)/', $config_id_key, $matches)) {
+                        $serviceId = $matches[1];
+                        // Pas besoin d'ajouter 'service_id' au tableau
+                    } elseif (preg_match('/(\w+)_(\d+)/', $config_id_key, $matches)) {
+                        $serviceId = $matches[2];
+                        $attribute = strtolower($matches[1]);
+                        // Ajoute les autres attributs au tableau de services sous le bon service ID
+                        $data_service_to_save[$serviceId][$attribute] = $data_value;
                     }
-                } else if (isset($serviceId)) {
-                    // Construit le nom de la clé sans l'identifiant numérique à la fin
-                    $key = strtolower(preg_replace('/_\d+$/', '', $config_id_key));
-                    // Ajoute les données au tableau pour le service ID correspondant
-                    $data_service_to_save[$serviceId][$key] = $data_value;
-                }
                 }   
             }
-            
-            echo'<pre>';
-            var_dump($data_service_to_save);
-        echo'</pre>';
-            
-            exit;
+
         // Vérification et traitement de l'image téléchargée
         $uploadedImage = $this->request->getFile(2);
         $imagePath = '';
@@ -111,11 +98,11 @@ class ConfigurationController extends BaseController
             ];
         }
 
-       /* if (!$this->ConfigurationModel->saveConfigurations($data_config_to_save)) {
+       if (!$this->ConfigurationModel->saveConfigurations($data_config_to_save)) {
             // Enregistrement a échoué
             
              return redirect()->to('Config')->with('message', 'Erreur lors de l\'enregistrement de la configuration');
-        }*/
+        }
         
         if (!$this->ServiceModel->upsert($data_service_to_save)) {
             // Enregistrement a échoué
@@ -126,7 +113,7 @@ class ConfigurationController extends BaseController
             var_dump('reussi');
         }
 
-      // return redirect()->to('Config')->with('message', 'Configuration enregistrée avec succès');
+       return redirect()->to('Config')->with('message', 'Configuration enregistrée avec succès');
     }
     
 }

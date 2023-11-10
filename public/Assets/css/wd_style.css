@@ -238,7 +238,7 @@ header {
       opacity: 0;
     }
     to {
-      bottom: 6vh; /* Arrive à la position finale */
+      bottom: 0; /* Arrive à la position finale */
       opacity: 1;
     }
   }
@@ -373,3 +373,6 @@ header {
   right: 00px;
 }
 
+.fullblocked-border {
+  border: 2px solid red; /* Exemple de bordure personnalisée */
+}

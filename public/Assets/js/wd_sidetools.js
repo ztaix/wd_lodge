@@ -34,9 +34,11 @@ function generateBookingElement(booking) {
               booking.service_color
             }; ">#${booking.id}</div>
             
-            <a href="#" onclick="showBookingDetailsFromID('${
+            <a href="#" id='booking_${
               booking.id
-            }');" class="text-blue-500 hover:underline ">${
+            }' onclick="showBookingDetailsFromID('${
+    booking.id
+  }');" class="text-blue-500 hover:underline ">${
     booking.customer_name + " - " + booking.service_title
   }</a>
             <div class="flex">${getDayOfWeek(
@@ -99,9 +101,11 @@ function showBookingList(response, clickedDate) {
               # ${booking.id}
             </div>
             
-            <a href="#" onclick="showBookingDetailsFromID('${
+            <a href="#" id='booking_${
               booking.id
-            }');" class="text-blue-500 hover:underline ">
+            }' onclick="showBookingDetailsFromID('${
+      booking.id
+    }');" class="text-blue-500 hover:underline ">
               ${booking.customer_name + " - " + booking.service_title}
             </a>
             <div class="flex">
@@ -139,8 +143,8 @@ function ShowCreateCustomer() {
   document.getElementById("customer_phone").value = "";
   document.getElementById("customer_email").value = "";
   document.getElementById("customer_comment").value = "";
-  document.getElementById("update_customer_submit_form").onclick = CreateCustomer;
-
+  document.getElementById("update_customer_submit_form").onclick =
+    CreateCustomer;
 }
 
 function CreateCustomer() {
@@ -190,7 +194,7 @@ function CreateCustomer() {
             .addClass("blinking")
             .insertBefore("#items-container tr:first");
 
-          closeModalById('updateCustomerModal');
+          closeModalById("updateCustomerModal");
           showBanner(`Le client ${response.Name} a été créé avec succès`, true);
         } else {
           alert("Erreur : " + response.message);
@@ -263,7 +267,6 @@ async function showUpdateCustomer(id) {
       },
       success: function (response) {
         if (response.status === "success") {
-
           setTimeout(function () {
             window.location.href = baseUrl + "Customers";
           }, 1000);
@@ -284,19 +287,19 @@ async function showUpdateCustomer(id) {
       url: baseurl + "customer/update",
       method: "POST",
       data: {
-        customer_info: data,  // Utilisez la variable locale ici
-        },
+        customer_info: data, // Utilisez la variable locale ici
+      },
       success: function (response) {
         if (response.status === "success") {
           showBanner("Suppression réalisée avec succès", true);
           closeModalById("updateCustomerModal");
           closeModalById("CustomerInfoModal");
           setTimeout(() => {
-            $(".row_customer_" + data.Customer_id).addClass('fade_out');
-            }, 200);
-            setTimeout(() => {
-              $(".row_customer_" + data.Customer_id).css('display', 'none');
-            }, 700);
+            $(".row_customer_" + data.Customer_id).addClass("fade_out");
+          }, 200);
+          setTimeout(() => {
+            $(".row_customer_" + data.Customer_id).css("display", "none");
+          }, 700);
         } else {
           showBanner("Échec de la suppression", false);
         }
@@ -315,8 +318,7 @@ function DeleteCustomer(event, id) {
     url: baseurl + "customer/update",
     method: "POST",
     data: {
-      customer_info: data,  // Utilisez la variable locale ici
-
+      customer_info: data, // Utilisez la variable locale ici
     },
     success: function (response) {
       if (response.status === "success") {
@@ -324,20 +326,19 @@ function DeleteCustomer(event, id) {
         closeModalById("updateCustomerModal");
         closeModalById("CustomerInfoModal");
         setTimeout(() => {
-          $(".row_customer_" + data.Customer_id).addClass('fade_out');
-          }, 200);
-          setTimeout(() => {
-            $(".row_customer_" + data.Customer_id).css('display', 'none');
-          }, 700);
+          $(".row_customer_" + data.Customer_id).addClass("fade_out");
+        }, 200);
+        setTimeout(() => {
+          $(".row_customer_" + data.Customer_id).css("display", "none");
+        }, 700);
       } else {
         showBanner("Échec de la suppression", false);
       }
-    }
+    },
   });
 }
 
 async function showBookingDetailsFromID(id) {
-  closeModal(false);
   openModal("DetailsEventModal", false);
   let event;
   try {
@@ -355,6 +356,7 @@ async function showBookingDetailsFromID(id) {
         Paid: response.Paid,
         Price: response.Price,
         Service_id: response.Service_id,
+        fullblocked: response.fullblocked,
         Type_doc: response.Type_doc,
         customer_name: response.customer_name,
         customer_phone: response.customer_phone,
@@ -378,12 +380,13 @@ async function showBookingDetailsFromID(id) {
   } catch (error) {
     console.error("Échec getBookingsFromID: ", error);
   }
-
   document.getElementById(
     "booking_details_id_h5"
   ).innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${event.service_color}">${event.Type_doc} # ${event.id}</span> `;
   document.getElementById("booking_details_service_h5").innerText =
     event.service_title;
+  document.getElementById("booking_details_fullblocked_h5").innerHTML =
+    event.fullblocked == 1 ? "Logement bloqué" : "&nbsp";
   document.getElementById("booking_details_qt_span").innerText = event.qt;
   document.getElementById("booking_details_start_span").innerText = event.start;
   document.getElementById("booking_details_end_span").innerText = event.end;
@@ -426,8 +429,8 @@ async function showBookingDetailsFromID(id) {
     download_ico + " Télécharger " + event.Type_doc;
   document.getElementById("booking_details_sendmail").innerHTML =
     send_ico + "Envoyer " + event.Type_doc + "/ EN CONSTRUCTION";
-  document.getElementById("booking_details_sendmail").href = 
-  baseUrl + "booking/sendmail/" + event.id;
+  document.getElementById("booking_details_sendmail").href =
+    baseUrl + "booking/sendmail/" + event.id;
   //baseUrl + "booking/sendmail/" + event.id;
 
   let button_update = document.getElementById("booking_details_update_button");
@@ -593,105 +596,125 @@ function get_booking_list_from_customer(data) {
   });
 }
 // Fonction pour charger et initialiser le datepicker avec des dates réservées
-function loadAndInitDatepicker(service_id) {
-  
-  $.ajax({
-    url: baseurl + 'booking/available/'+service_id,
-    method: 'GET',
-    success: function (bookings) {
-      const bookedDates = bookings.map(booking => {
-        const start = booking.start
-        const color = booking.backgroundColor
-        const type_doc = booking.type_doc
-        const status = booking.status
-        const paid = booking.paid
-        const price = booking.price
-        return [start, color, type_doc,status,paid,price];
-        
-      });
-     const bookedDatesFormatted = bookedDates.map(dateArr => {
-       const [day, month, year] = dateArr[0].split('-');
-       return `${year}-${month}-${day}`;
-      });
-      // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
-      fromServicepicker = new easepick.create({
-        element: document.getElementById('startEvent'),
-        css: [
-          'css/wd_datepicker.css',
-        ],
-        firstDay: 1, // 0 - Sunday, 1 - Monday, 2 - Tuesday
-        grid: 1, // Number of calendar columns
-        calendars: 1, // Number of visible months.
-        opens: 'top',
-        plugins: ['RangePlugin','LockPlugin'],
-        RangePlugin: {        
+function loadAndInitDatepicker(service_id , start=false,end=false) {
+  return new Promise((resolve, reject) => {
+    if (fromServicepicker) {
+      fromServicepicker.destroy(); // Assurez-vous que la méthode `destroy` est bien définie par Easepick pour détruire l'instance
+  }
+    // Si un datepicker existe déjà, retirez-le avant de créer un nouveau
+    $.ajax({
+      url: baseurl + "booking/service/" + service_id+'/true',
+      method: "GET",
+      success: function (bookings) {
+        console.log(bookings);
+        const bookedDates = Object.keys(bookings).map((key) => {
+          const booking = bookings[key];
+          const start = booking.start; // Assurez-vous que cette propriété existe dans vos objets de réservation
+          const fullblocked = booking.fullblocked; // Assurez-vous que cette propriété existe dans vos objets de réservation
+          return [start, fullblocked];
+        });
+        const bookedDatesFormatted = bookedDates.map((dateArr) => {
+          const [day, month, year] = dateArr[0].split("-");
+          return `${year}-${month}-${day}`;
+        });
+        // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
+        fromServicepicker = new easepick.create({
+          element: document.getElementById("startEvent"),
+          css: ["css/wd_datepicker.css"],
+          firstDay: 1, // 0 - Sunday, 1 - Monday, 2 - Tuesday
+          grid: 1, // Number of calendar columns
+          calendars: 1, // Number of visible months.
+          opens: "top",
+          autoApply: true,
+          header: "<b>" + document.getElementById('eventService_id').options[document.getElementById('eventService_id').selectedIndex].textContent+ "</b>",
+          plugins: ["RangePlugin", "LockPlugin"],
+          RangePlugin: {
             elementEnd: "#eventEnd",
-          tooltipNumber(num) {
-            return num -1;
+            tooltipNumber(num) {
+              return num - 1;
+            },
+            locale: {
+              one: "Nuit",
+              other: "Nuits",
+            },
           },
-          locale: {
-            one: 'Nuit',
-            other: 'Nuits',
-          }
-        },
-        zIndex: 99,
-        lang: "fr-FR",
-        format: "DD-MM-YYYY",
-        LockPlugin: {
-          minDate: new Date(), // Les réservations ne peuvent pas être faites dans le passé.
-          minDays: 2, // Nombre minimum de jours pouvant être sélectionnés.
-          inseparable: true, // Les jours sélectionnés doivent former une plage continue.
-          filter(date, picked) {
-            return bookedDatesFormatted.includes(date.format('DD-MM-YYYY'));
+          zIndex: 99,
+          lang: "fr-FR",
+          format: "DD-MM-YYYY",
+          LockPlugin: {
+            minDate: new Date(), // Les réservations ne peuvent pas être faites dans le passé.
+            minDays: 2, // Nombre minimum de jours pouvant être sélectionnés.
+            inseparable: false, // Les jours sélectionnés doivent former une plage continue.
+            filter(date, picked) {
+              return bookedDatesFormatted.includes(date.format("DD-MM-YYYY"));
+            },
           },
-        },
-        setup(fromServicepicker) {
-          // Création d'un objet pour stocker le type de document par date
-          const status = {};
-          bookedDates.forEach(([Date,Color ,TypeDoc ,Status,Paid,Price]) => {
-            status[Date] = Status; // Stocker "Devis" ou "Facture"
-          });
-        
-          // Ajouter le type de document à l'élément du jour
-          fromServicepicker.on('view', (evt) => {
-            const { view, date, target } = evt.detail;
-            const formattedDate = date ? date.format('YYYY-MM-DD') : null;
-        
-            if (view === 'CalendarDay' && status[formattedDate]) {
-              const span = target.querySelector('.day-docType') || document.createElement('span');
-              span.className = 'day-docType';
-              span.innerHTML = status[formattedDate]; // Afficher "Devis" ou "Facture"
-              target.append(span);
-            }
-          });
+          onShow(instance) {
+            const header = document.getElementById("datepicker-header");
+            const pickerElem = instance.picker.outerNode;
+            pickerElem.insertBefore(header, pickerElem.firstChild);
+          },
+          setup(fromServicepicker) {
+            // Création d'un objet pour stocker le type de document par date
+            const day = {};
+            bookedDates.forEach(([Date, Fullblocked]) => {
+              if (!day[Date]) {
+                day[Date] = {};
+              }
+              day[Date]["fullblocked"] = Fullblocked;
+            });
+
+            // Ajouter le type de document à l'élément du jour
+            fromServicepicker.on("view", (evt) => {
+              const { view, date, target } = evt.detail;
+              const formattedDate = date ? date.format("YYYY-MM-DD") : null;
+
+              if (view === "CalendarDay" && day[formattedDate]) {
+                let span;
+
+                span =
+                  target.querySelector(".day-unavailable") ||
+                  document.createElement("span");
+                span.className = "day-unavailable";
+                span.innerHTML = "blocked"; // Afficher "Devis" ou "Facture"
+
+                target.append(span);
+              }
+            });
+          },
+        });
+
+        if(start && end){
+          fromServicepicker.setStartDate(start);
+          fromServicepicker.setEndDate(end);
         }
         
-        
-        
-      });
+        fromServicepicker.on("select", function (event) {
+          // Récupérer les dates de début et de fin
+          const startDate = new Date(event.detail.start); // Adaptez ces lignes en fonction de la structure de `event.detail`
+          const endDate = new Date(event.detail.end); // Adaptez ces lignes en fonction de la structure de `event.detail`
 
-      fromServicepicker.on('select', function(event) {
-        // Récupérer les dates de début et de fin
-        const startDate = new Date(event.detail.start); // Adaptez ces lignes en fonction de la structure de `event.detail`
-        const endDate = new Date(event.detail.end); // Adaptez ces lignes en fonction de la structure de `event.detail`
+          // Calculer la différence en jours
+          const timeDifference = endDate.getTime() - startDate.getTime();
+          const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
 
-        // Calculer la différence en jours
-        const timeDifference = endDate.getTime() - startDate.getTime();
-        const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+          // Mettre à jour le champ 'eventQt'
+          document.getElementById("eventQt").value = dayDifference;
 
-        // Mettre à jour le champ 'eventQt'
-        document.getElementById('eventQt').value = dayDifference;
+          // Réinitialiser le flag puisque la mise à jour vient du datepicker et non de l'utilisateur
+          userChangedPrice = false;
 
-        // Réinitialiser le flag puisque la mise à jour vient du datepicker et non de l'utilisateur
-        userChangedPrice = false;
-
-        updatePrice();
+          updatePrice();
+        });
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.error(
+          "Erreur lors de la récupération des dates réservées: " + textStatus,
+          errorThrown
+        );
+      },
     });
-
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      console.error('Erreur lors de la récupération des dates réservées: ' + textStatus, errorThrown);
-    }
+    resolve();
   });
 }
 
@@ -723,7 +746,7 @@ function format_date(input_date, daysToAdd = 0, shorter = false) {
   dateObj.setHours(dateObj.getHours() - 10);
 
   // Ajoute des jours si nécessaire
-  dateObj.setDate(dateObj.getDate() + daysToAdd);
+  dateObj.setDate(dateObj.getDate() + daysToAdd + 1);
 
   // Récupère le jour, le mois et l'année
   let day = String(dateObj.getDate()).padStart(2, "0");

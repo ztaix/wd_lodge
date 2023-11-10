@@ -7,8 +7,8 @@ $modal_id = "DetailsEventModal";
 ?>
 
 <!-- DETAILS EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full inset-0 hidden z-50">
-    <div class="h-full relative bg-slate-200 rounded-lg dark:bg-gray-700 ">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full hidden z-50">
+    <div class="h-full bg-slate-200 rounded-lg dark:bg-gray-700 ">
         <!-- Modal Header -->
         <div class="px-6 py-6 lg:px-8 flex justify-between items-center">
             <div>
@@ -30,10 +30,10 @@ $modal_id = "DetailsEventModal";
         </div>
 
         <!-- Modal Body -->
-        <div class="flex justify-center h-full px-4 py-2 bg-slate-200">
+        <div class="flex justify-center h-full px-4 pb-9 bg-slate-200 dark:bg-slate-700">
             <h3 id="modal-title_details_booking" class="flex items-center text-lg leading-6 font-medium"><!-- JavaScript print Date du jour --></h3>
 
-            <div class="relative rounded-lg">
+            <div class="flex flex-col">
 
                 <p class="text-xs text-slate-400 flex justify-between m-2">
                     <span id="booking_details_created_span" class="flex items-center">créer le :</span>
@@ -66,14 +66,15 @@ $modal_id = "DetailsEventModal";
                                 </div>
                             </div>
                         </div>
-                        <div class="flex text-sm p-2 border-l-4 border-slate-200 bg-slate-50 rounded-lg">
+                        <div class="flex text-sm p-2 border-l-4 border-slate-200 dark:border-gray-950 dark:bg-slate-900 bg-slate-50 rounded-lg">
                             <span id="booking_details_customer_comment_span" class="text-md inline-flex text-slate-500 dark:text-slate-200 ">Commentaire client</span>
                         </div>
 
 
 
                         <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
-                        <h5 id="booking_details_service_h5" class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Titre du service</h5>
+                            <h5 id="booking_details_service_h5" class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Titre du service</h5>
+                            <h5 id="booking_details_fullblocked_h5" class="text-sm font-bold tracking-tight text-red-900 dark:text-red-300">FullBlocked</h5>
                         </p>
                         <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
                             <span class="font-bold">Quatité</span>
@@ -87,7 +88,7 @@ $modal_id = "DetailsEventModal";
                         <div class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
                             <span class="mr-2 font-bold">Encaissé</span>
                             <div class="w-full h-6 bg-slate-300 rounded-full dark:bg-gray-700">
-                                <div id="booking_details_progress_div" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full h-full flex items-center justify-center">
+                                <div id="booking_details_progress_div" class="bg-green-600 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full h-full flex items-center justify-center">
                                 </div>
                             </div>
                         </div>
@@ -111,26 +112,23 @@ $modal_id = "DetailsEventModal";
                             <a id="booking_details_sendmail" href="#" class="text-slate-400 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-sans text-xs font-bold uppercase rounded-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2 w-full"></a>
                         </div>
 
+
+                        <div class="flex flex-col items-right w-full pb-2">
+                            <button type="button" id="booking_details_update_button" class="text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg px-5 py-1.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ">
+                                Modifier</button>
+                            <button type="button
+                            " id="booking_details_delete_button" class="mt-2 text-sm text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg px-5 py-1.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ">
+                                Suppprimer</button>
+                        </div>
+
                     </div>
 
                 </div>
+
+
             </div>
 
-            <div class="fixed bottom-0  pb-10 flex justify-between w-9/12">
-                <button id="booking_details_delete_button" class="inline-flex middle none center rounded-lg bg-red-500 py-2 px-4 font-sans text-md font-bold uppercase text-white shadow-md shadow-red-500/20 transition-all hover:shadow-lg hover:shadow-red-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true">
-                    Supprimer
-                    <svg class="w-4 h-4 ml-2 mt-1 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                    </svg>
-                </button>
-                <button id="booking_details_update_button" class="inline-flex middle none center rounded-lg bg-blue-500 py-2 px-4 font-sans text-md font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true">
-                    Modifier
-                    <svg class="w-4 h-4 ml-2 mt-1 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                        <path d="M12.687 14.408a3.01 3.01 0 0 1-1.533.821l-3.566.713a3 3 0 0 1-3.53-3.53l.713-3.566a3.01 3.01 0 0 1 .821-1.533L10.905 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V11.1l-3.313 3.308Zm5.53-9.065.546-.546a2.518 2.518 0 0 0 0-3.56 2.576 2.576 0 0 0-3.559 0l-.547.547 3.56 3.56Z" />
-                        <path d="M13.243 3.2 7.359 9.081a.5.5 0 0 0-.136.256L6.51 12.9a.5.5 0 0 0 .59.59l3.566-.713a.5.5 0 0 0 .255-.136L16.8 6.757 13.243 3.2Z" />
-                    </svg>
-                </button>
-            </div>
+
         </div>
     </div>
 

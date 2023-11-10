@@ -4,7 +4,7 @@ $modal_id = "addEventModal";
 
 ?>
 <!-- ADD EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-[calc(100vh)] inset-0 hidden z-50 overflow-auto ">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-[calc(100vh)] hidden z-50 overflow-auto ">
     <div class="relative bg-white rounded-lg shadow dark:bg-gray-700  flex justify-center ">
 
         <!-- Modal content -->
@@ -55,16 +55,23 @@ $modal_id = "addEventModal";
                         </div>
                     </div>
                     <div>
-                        <!-- Votre liste déroulante de services -->
-                        <label for="eventService_id" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Service :</label>
-                        <select id="eventService_id" name="eventService_id" class="block w-full   text-md text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <?php foreach ($options_services_id as $id => $title) : ?>
-                                <option value="<?php echo $id; ?>"><?php echo $title; ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                        <!-- Liste déroulante de services -->
+                        
+                            <label for="eventService_id" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Service :</label>
+                            <select id="eventService_id" name="eventService_id" class="block w-full text-md text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <?php foreach ($options_services_id as $id => $title) : ?>
+                                    <option value="<?php echo $id; ?>"><?php echo $title; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        
+
+                        <!-- Case à cocher -->
+                        <div id="container_eventFull_Blocked" class="mt-2 p-2 bg-transparent border border-red-200 dark:border-red-900 rounded-lg">
+                            <input id="eventFull_Blocked" name="eventFull_Blocked" type="checkbox" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="eventFull_Blocked" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Bloqué tout autre réservation</label>
+                        </div>
                     </div>
                     <div date-rangepicker id="dateranger" class="flex items-center justify-between">
-
                         <div class="relative">
                             <label for="startEvent" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Début</label>
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -108,8 +115,8 @@ $modal_id = "addEventModal";
                         <textarea id="eventComment" name="eventComment" class="block p-2.5 w-full text-md text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Une chose à dire, c'est ici..."></textarea>
                     </div>
 
-                    <button type="submit" id="cancel_submit_form" type="button" onclick="closeModalById('<?= $modal_id ?>');" class="sticky bottom-10 float-left mt-10 text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 ">Annuler</button>
-                    <button type="submit" id="add_submit_form" type="button" onclick="addEvent();" class="sticky bottom-10 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ">Enregistrer</button>
+                    <button type="button" id="cancel_submit_form" type="button" onclick="closeModalById('<?= $modal_id ?>');" class="sticky bottom-10 float-left mt-10 text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 shadow-xl  z-50">Annuler</button>
+                    <button type="button" id="add_submit_form" type="button" onclick    ="addEvent();" class="sticky bottom-10 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl z-50">Enregistrer</button>
 
                 </form>
             </div>
@@ -120,6 +127,21 @@ $modal_id = "addEventModal";
 $discountRulesJSON  = json_encode($discountRules);  ?>
 
 <script>
+        var eventFull_Blocked = document.getElementById("eventFull_Blocked");
+        eventFull_Blocked.addEventListener("change", function() {
+            var container_full_blocked = document.getElementById("container_eventFull_Blocked");
+            if (eventFull_Blocked.checked) {
+                // Appliquer un style lorsque la checkbox est cochée
+                container_full_blocked.style.backgroundColor = "red"; // Exemple : Fond vert
+                // Vous pouvez également changer le style d'autres éléments ici
+            } else {
+                // Appliquer un style différent lorsque la checkbox n'est pas cochée
+                container_full_blocked.style.backgroundColor = "transparent"; // Exemple : Fond rouge
+                // Vous pouvez également réinitialiser le style d'autres éléments ici
+            }        
+        });
+
+
         var discountRules = <?= $discountRulesJSON ?>;
         var qtInput = document.getElementById("eventQt");
         var serviceSelect = document.getElementById("eventService_id");
@@ -133,6 +155,7 @@ $discountRulesJSON  = json_encode($discountRules);  ?>
 
         // Mettre à jour le prix lorsque le service sélectionné change
         serviceSelect.addEventListener("change", function() {
+            loadAndInitDatepicker(serviceSelect.value);
             if (!userChangedPrice) { // Mettre à jour uniquement si l'utilisateur n'a pas modifié le prix
                 priceInput.value = prices[this.value];
                 updatePrice(); // Appeler la fonction de mise à jour du prix
