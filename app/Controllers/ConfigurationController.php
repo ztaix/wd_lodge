@@ -31,7 +31,7 @@ class ConfigurationController extends BaseController
             'services_list' => ($services_list = $this->ServiceModel->get_services_list()) ? $services_list : [],
             'totalServices' => $this->ServiceModel->getTotalServices(),
             'All_config' => $this->getAll(),
-            'DiscountRules' => $this->DiscountRules(),
+            'discountRules' => $this->DiscountRules(),
 
         ];
 
@@ -53,6 +53,7 @@ class ConfigurationController extends BaseController
     {
         return $this->ConfigurationModel->DiscountRules();
     }
+
 
     public function saveConfigurations()
     {

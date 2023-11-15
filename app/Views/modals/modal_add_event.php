@@ -31,7 +31,7 @@ $modal_id = "addEventModal";
                 </div>
             </div>
 
-            <div class="px-6 py-6 lg:px-8">
+            <div class="px-6 py-6 lg:px-8 mb-20">
                 <form id="eventForm" class="space-y-6">
                     <input type="hidden" id="id" name="id">
                     <div>
@@ -55,15 +55,19 @@ $modal_id = "addEventModal";
                         </div>
                     </div>
                     <div>
+                        <div class="relative">
+                            <input type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="eventQtTraveller" name="QtTraveller" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+                            <label for="eventQtTraveller" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Nombre de voyageur</label>
+                        </div>
                         <!-- Liste déroulante de services -->
-                        
-                            <label for="eventService_id" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Service :</label>
-                            <select id="eventService_id" name="eventService_id" class="block w-full text-md text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <?php foreach ($options_services_id as $id => $title) : ?>
-                                    <option value="<?php echo $id; ?>"><?php echo $title; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        
+
+                        <label for="eventService_id" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Service :</label>
+                        <select id="eventService_id" name="eventService_id" class="block w-full text-md text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <?php foreach ($options_services_id as $id => $title) : ?>
+                                <option value="<?php echo $id; ?>"><?php echo $title; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+
 
                         <!-- Case à cocher -->
                         <div id="container_eventFull_Blocked" class="mt-2 p-2 bg-transparent border border-red-200 dark:border-red-900 rounded-lg">
@@ -81,10 +85,10 @@ $modal_id = "addEventModal";
                             </div>
                             <input id="startEvent" name="startEvent" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Date de début">
                         </div>
-                        <span class="mx-4 text-gray-500"> 
+                        <span class="mx-4 text-gray-500">
                             <svg class="w-4 h-4  dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                            </svg> 
+                            </svg>
                         </span>
                         <div class="relative">
                             <label for="eventEnd" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Fin</label>
@@ -104,6 +108,7 @@ $modal_id = "addEventModal";
                         <input type="number" pattern="[0-9]*" inputmode="numeric" id="eventPrice" name="eventPrice" class="block w-full  text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required>
                         <label for="eventPrice" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Prix Total</label>
 
+                        <span id="discountIndicator" class="text-base" style="color: orange; display: none;">ici</span>
                         <span id="numericIndicator" class="text-base" style="color: red; display: none;"><br>Seules des valeurs numériques sont autorisées.</span>
                     </div>
                     <div class="relative">
@@ -116,93 +121,232 @@ $modal_id = "addEventModal";
                     </div>
 
                     <button type="button" id="cancel_submit_form" type="button" onclick="closeModalById('<?= $modal_id ?>');" class="sticky bottom-10 float-left mt-10 text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 shadow-xl  z-50">Annuler</button>
-                    <button type="button" id="add_submit_form" type="button" onclick    ="addEvent();" class="sticky bottom-10 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl z-50">Enregistrer</button>
+                    <button type="button" id="add_submit_form" type="button" onclick="addEvent();" class="sticky bottom-10 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl z-50">Enregistrer</button>
 
                 </form>
+
+
             </div>
         </div>
     </div>
 </div>
 <?php
-$discountRulesJSON  = json_encode($discountRules);  ?>
-
+$DiscountServices = json_encode($services_list);
+$DiscountsValues = DiscountToArray($discountRules['Rules']['Data']) ? json_encode(DiscountToArray($discountRules['Rules']['Data'])) : false;
+$DiscountsType = $discountRules['Type']['Data'];
+$DiscountsScope = $discountRules['Scope']['Data'];
+?>
 <script>
-        var eventFull_Blocked = document.getElementById("eventFull_Blocked");
-        eventFull_Blocked.addEventListener("change", function() {
-            var container_full_blocked = document.getElementById("container_eventFull_Blocked");
-            if (eventFull_Blocked.checked) {
-                // Appliquer un style lorsque la checkbox est cochée
-                container_full_blocked.style.backgroundColor = "red"; // Exemple : Fond vert
-                // Vous pouvez également changer le style d'autres éléments ici
-            } else {
-                // Appliquer un style différent lorsque la checkbox n'est pas cochée
-                container_full_blocked.style.backgroundColor = "transparent"; // Exemple : Fond rouge
-                // Vous pouvez également réinitialiser le style d'autres éléments ici
-            }        
-        });
-
-
-        var discountRules = <?= $discountRulesJSON ?>;
-        var qtInput = document.getElementById("eventQt");
-        var serviceSelect = document.getElementById("eventService_id");
-        var priceInput = document.getElementById("eventPrice");
-        var numericIndicator = document.getElementById("numericIndicator");
-        var userChangedPrice = false; // Flag pour suivre si l'utilisateur a modifié le prix
-
-
-        // Mettre à jour le prix initial
-        priceInput.value = prices[serviceSelect.value];
-
-        // Mettre à jour le prix lorsque le service sélectionné change
-        serviceSelect.addEventListener("change", function() {
-            loadAndInitDatepicker(serviceSelect.value);
-            if (!userChangedPrice) { // Mettre à jour uniquement si l'utilisateur n'a pas modifié le prix
-                priceInput.value = prices[this.value];
-                updatePrice(); // Appeler la fonction de mise à jour du prix
-            }
-        });
-
-        // Lorsque l'utilisateur modifie manuellement le prix
-        priceInput.addEventListener("input", function() {
-            userChangedPrice = true; // Indiquer que l'utilisateur a changé le prix
-            numericIndicator.style.display = isNaN(this.value) ? "inline" : "none"; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
-        });
-
-
-        // Fonction pour mettre à jour le prix en fonction de la quantité
-        function updatePrice() {
-            var qt = parseInt(qtInput.value);
-            if (!isNaN(qt)) {
-                var servicePrice = prices[serviceSelect.value];
-                var discountPercentage = 0;
-
-                // Parcourez le tableau des réductions pour trouver la réduction la plus proche
-                var closestQty = null;
-                for (var qty in discountRules) {
-                    if (qt >= parseInt(qty) && (closestQty === null || parseInt(qty) > closestQty)) {
-                        closestQty = parseInt(qty);
-                    }
-                }
-
-                if (closestQty !== null) {
-                    discountPercentage = discountRules[closestQty];
-                }
-
-                // Calculez le prix avec réduction
-                var prixCalculé = servicePrice * (1 - discountPercentage / 100) * qt;
-
-                priceInput.value = prixCalculé.toFixed(0); // Prix sans décimales
-            } else {
-                priceInput.value = ""; // Effacez le champ de prix si la quantité n'est pas un nombre valide
-            }
+    var eventFull_Blocked = document.getElementById("eventFull_Blocked");
+    eventFull_Blocked.addEventListener("change", function() {
+        var container_full_blocked = document.getElementById("container_eventFull_Blocked");
+        if (eventFull_Blocked.checked) {
+            // Appliquer un style lorsque la checkbox est cochée
+            container_full_blocked.style.backgroundColor = "red"; // Exemple : Fond vert
+            // Vous pouvez également changer le style d'autres éléments ici
+        } else {
+            // Appliquer un style différent lorsque la checkbox n'est pas cochée
+            container_full_blocked.style.backgroundColor = "transparent"; // Exemple : Fond rouge
+            // Vous pouvez également réinitialiser le style d'autres éléments ici
         }
-        // Réinitialiser le flag lorsque la quantité change
-        qtInput.addEventListener("input", function() {
-            userChangedPrice = false; // Réinitialiser le flag si l'utilisateur modifie la quantité
-            updatePrice();
+    });
 
-        });
+    var discountScope = '<?= $DiscountsScope ?>';
+    var GlobaldiscountValues = <?= $DiscountsValues !== false ? $DiscountsValues : "'false'" ?>;
+    var Discount_type = '<?= $DiscountsType ?>';
+    var qtInput = document.getElementById("eventQt");
+    var serviceSelect = document.getElementById("eventService_id");
+    var priceInput = document.getElementById("eventPrice");
+    var discountIndicator = document.getElementById("discountIndicator");
+    var numericIndicator = document.getElementById("numericIndicator");
+    var userChangedPrice = false; // Flag pour suivre si l'utilisateur a modifié le prix
+    var discountservice = <?= $DiscountServices ?>;
+    var serviceDiscount = false;
 
+    // Mettre à jour le prix initial
+    priceInput.value = prices[serviceSelect.value];
+    service = discountservice.find(service => service.Service_id === serviceSelect.value);
+    serviceDiscount = service.Discount;
+    // Mettre à jour le prix lorsque le service sélectionné change
+    serviceSelect.addEventListener("change", function() {
+        //Get service détails from select
+        service = discountservice.find(service => service.Service_id === this.value);
 
+        loadAndInitDatepicker(this.value);
+        if (!userChangedPrice) { // Mettre à jour uniquement si l'utilisateur n'a pas modifié le prix
+            priceInput.value = prices[this.value];
+            updatePrice(); // Appeler la fonction de mise à jour du prix
+        }
+        serviceDiscount = service.Discount;
+    });
+    
+    
+    // Lorsque l'utilisateur modifie manuellement le prix
+    priceInput.addEventListener("input", function() {
+        userChangedPrice = true; // Indiquer que l'utilisateur a changé le prix
+        numericIndicator.style.display = isNaN(this.value) ? "inline" : "none"; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
+    });
+    
+    
+    // Fonction pour mettre à jour le prix en fonction de la quantité
+    function updatePrice() {
+        
+        var qt = parseInt(qtInput.value);
+        var prixCalculé = 0;
+        if (!isNaN(qt)) {
+            var servicePrice = prices[serviceSelect.value];
+            var discountValue = 0;
+            
+            if(discountScope == "Both" ){
+                // Initialisation des variables.
+                var discountValues;
+                var prixUnitaireAvecReduction;
+                
+                // Appliquez d'abord la réduction unitaire.
+                if (serviceDiscount) {
+                    discountValues = discountToArray(serviceDiscount);
+                    // Trouvez la réduction unitaire la plus proche.
+                    var closestUnitQty = null;
+                    for (var qty in discountValues) {
+                        if (qt >= parseInt(qty) && (closestUnitQty === null || parseInt(qty) > closestUnitQty)) {
+                            closestUnitQty = parseInt(qty);
+                        }
+                    }
+                    
+                    // Calculez le prix unitaire avec réduction.
+                    if (closestUnitQty !== null) {
+                        var unitDiscountValue = discountValues[closestUnitQty];
+                        
+                        if (Discount_type == "Pourcentage") {
+                            prixUnitaireAvecReduction = servicePrice * (1 - unitDiscountValue / 100);
+                        } else if (Discount_type == "Fixe") {
+                            prixUnitaireAvecReduction = unitDiscountValue * qt;
+                        }
+                    } else {
 
+                        prixUnitaireAvecReduction = servicePrice * qt;
+                    }
+                    
+                } else {
+                    prixUnitaireAvecReduction = servicePrice * qt;
+                }
+                
+                // Appliquez ensuite la réduction globale sur le total.
+                if (GlobaldiscountValues) {
+                    discountValues = discountToArray(serviceDiscount);
+                    console.log('GlobaldiscountValues Both')
+                    
+                    // Trouvez la réduction unitaire la plus proche.
+                    var closestUnitQty = null;
+                    for (var qty in discountValues) {
+                        if (qt >= parseInt(qty) && (closestUnitQty === null || parseInt(qty) > closestUnitQty)) {
+                            closestUnitQty = parseInt(qty);
+                        }
+                    }
+                    
+                    // Calculez le prix unitaire avec réduction.
+                    if (closestUnitQty !== null) {
+                        console.log('closestUnitQty OK')
+                        var unitDiscountValue = discountValues[closestUnitQty];
+                        
+                        if (Discount_type == "Pourcentage") {
+                            prixCalculé = prixUnitaireAvecReduction * (1 - unitDiscountValue / 100);
+                        } else if (Discount_type == "Fixe") {
+
+                            prixCalculé = (prixUnitaireAvecReduction * qt)  - unitDiscountValue ;
+                        }
+                    }
+                    else{
+                        prixCalculé = prixUnitaireAvecReduction;
+
+                    }
+                } else {
+                    prixCalculé = prixUnitaireAvecReduction;
+                }
+
+            }
+                
+            else if(discountScope == "Unit" || discountScope == "Global" ){
+                // Déclaration initiale des variables.
+                var discountValues;
+                
+                // Détermine les valeurs de réduction en fonction du contexte de remise.
+                if (serviceDiscount && discountScope == "Unit") {
+                    discountValues = discountToArray(serviceDiscount);
+                } else if (GlobaldiscountValues && discountScope == "Global") {
+                    discountValues = GlobaldiscountValues;
+                }
+                
+                // Calcul du prix si des réductions sont applicables.
+                if (discountValues) {
+                    // Simplification de l'affectation de discountValues.
+                    discountValues = discountScope == "Global" ? GlobaldiscountValues : discountToArray(serviceDiscount);
+                    
+                    // Trouver la quantité la plus proche pour laquelle une réduction est applicable.
+                    var closestQty = null;
+                    for (var qty in discountValues) {
+                        if (qt >= parseInt(qty) && (closestQty === null || parseInt(qty) > closestQty)) {
+                            closestQty = parseInt(qty);
+                        }
+                    }
+                    
+                    // Application de la réduction si une quantité appropriée est trouvée.
+                    if (closestQty !== null) {
+                        var discountValue = discountValues[closestQty];
+
+                        // Calcul du prix avec réduction basé sur le type de réduction.
+                        if (Discount_type == "Pourcentage") {
+                            prixCalculé = (servicePrice * qt) * (1 - discountValue / 100);
+                        } else if (Discount_type == "Fixe") {
+                            if(discountScope == "Global"){
+                                prixCalculé = (servicePrice * qt) - discountValue;
+                            }else{
+                                prixCalculé = discountValue * qt;
+                            }
+                        }
+                    } else {
+                        // Prix sans réduction.
+                        prixCalculé = servicePrice * qt;
+                    }
+                    
+                            discountIndicator.style.display = discountValue > 0 ? "inline" : "none"; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
+                            discountIndicator.innerHTML = unitDiscountValue + ' - ' + discountValue; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
+                } else {
+                    // Prix standard si aucune réduction n'est disponible.
+                    prixCalculé = servicePrice * qt;
+                }
+            }
+            else {
+                
+                prixCalculé = servicePrice * qt;
+            }
+            
+                
+            priceInput.value = prixCalculé.toFixed(0); // Prix sans décimales
+            
+            
+        } else {
+            priceInput.value = ""; // Effacez le champ de prix si la quantité n'est pas un nombre valide
+        }
+    }
+    // Réinitialiser le flag lorsque la quantité change
+    qtInput.addEventListener("input", function() {
+        userChangedPrice = false; // Réinitialiser le flag si l'utilisateur modifie la quantité
+        updatePrice();
+
+    });
+
+    function discountToArray(input) {
+        let result = {};
+        let lines = input.trim().split("\n");
+
+        for (let line of lines) {
+            let [keyStr, valueStr] = line.split(":");
+            let key = parseInt(keyStr.trim(), 10);
+            let value = parseInt(valueStr.trim().replace('%', ''), 10);
+            result[key] = value;
+        }
+
+        return result;
+    }
 </script>

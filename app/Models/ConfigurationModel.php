@@ -30,10 +30,18 @@ class ConfigurationModel extends Model
     }
     
     public function DiscountRules(){
-        $discountrules = $this->where('Title', 'Règles de réduction')->first();
-        return $discountrules;
+        $discountRules = $this->where('Title', 'Règles de réduction')->first();
+        $discountType = $this->where('Title', 'Type de réduction')->first();
+        $discountScope = $this->where('Title', 'Portée de réduction')->first();
+    
+        return [
+            'Rules' => $discountRules,
+            'Type' => $discountType,
+            'Scope' => $discountScope,
+        ];
     }
 
+    
     public function saveConfigurations($data_array)
     {
         foreach ($data_array as $data) {

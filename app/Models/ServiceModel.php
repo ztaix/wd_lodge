@@ -38,7 +38,7 @@ class ServiceModel extends Model
 
     public function get_services_list()
     {
-        $results = $this->select('Service_id, Title, Price, Image_url, Comment, Color,fullblocked')->findAll();
+        $results = $this->select('Service_id, Title, Price, Image_url, Comment, Discount, Color,fullblocked')->findAll();
     
         $AccessFile = new \App\Controllers\FilesController();
     

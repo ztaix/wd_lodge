@@ -33,7 +33,7 @@ class BookingController extends BaseController
             'services_list' => ($services_list = $this->ServiceModel->get_services_list()) ? $services_list : [],
             'bookins_list' => $this->BookingModel->getAllBookings(),
             'totalServices' => $this->ServiceModel->getTotalServices(),
-            'discountRules' => ($rule = $this->ConfigModel->DiscountRules()) ? DiscountToArray($rule['Data']) : '',
+            'discountRules' => $this->ConfigModel->DiscountRules(),
             'All_config' => $this->ConfigModel->get_all_config(),
 
         ];
@@ -132,6 +132,7 @@ class BookingController extends BaseController
             $type_doc = $booking['Type_doc']; // Assurez-vous que la clé 'type_doc' est correcte dans votre tableau $booking
             $price = $booking['Price']; // Assurez-vous que la clé 'Price' est correcte dans votre tableau $booking
             $paid = $booking['Paid']; // Assurez-vous que la clé 'Paid' est correcte dans votre tableau $booking
+            $QtTraveller = $booking['QtTraveller']; // Assurez-vous que la clé 'Paid' est correcte dans votre tableau $booking
             $service_title = $booking['service_title']; // Assurez-vous que la clé 'Paid' est correcte dans votre tableau $booking
             $fullblocked = $booking['fullblocked']; // Assurez-vous que la clé 'fullblocked' est correcte dans votre tableau $booking
 
@@ -144,6 +145,7 @@ class BookingController extends BaseController
                         'type_doc' => [],
                         'prices' => [],
                         'paids' => [],
+                        'QtTraveller' => [],
                         'fullblocked' => [],
                     ];
                 }
@@ -160,6 +162,9 @@ class BookingController extends BaseController
                 if (!in_array($paid, $grouped[$date]['paids'])) {
                     $grouped[$date]['paids'][] = $paid; // Ajoutez 'Paid' s'il n'est pas déjà dans le tableau
                 }
+                if (!in_array($QtTraveller, $grouped[$date]['QtTraveller'])) {
+                    $grouped[$date]['QtTraveller'][] = $QtTraveller; // Ajoutez 'Paid' s'il n'est pas déjà dans le tableau
+                }
                 if (!in_array($fullblocked, $grouped[$date]['fullblocked'])) {
                     $grouped[$date]['fullblocked'][] = $fullblocked; // Ajoutez 'fullblocked' s'il n'est pas déjà dans le tableau
                 }
@@ -175,6 +180,7 @@ class BookingController extends BaseController
             $color = count($data['colors']) === 1 ? $data['colors'][0] : '#bcbcbc'; // Exemple : couleur par défaut si plusieurs couleurs
             $eventPrice = array_sum($data['prices']); // Calculez le total des prix pour la date
             $eventPaidPrice = array_sum($data['paids']); // Calculez le total des prix pour la date
+            $eventQtTraveller = array_sum($data['QtTraveller']); // Calculez le total des prix pour la date
             $eventPaid = $eventPaidPrice == $eventPrice ? 'Payé' : 'Impayé'; // Déterminez si un paiement a été effectué
 
             $events[] = [
@@ -184,6 +190,7 @@ class BookingController extends BaseController
                 'status' => $eventPaid,
                 'price' => $eventPrice,
                 'paid' => $eventPaidPrice,
+                'QtTraveller' => $eventQtTraveller,
                 'service_title' => $service_title,
                 'fullblocked' => $fullblocked,
             ];

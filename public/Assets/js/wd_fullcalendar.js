@@ -1,10 +1,29 @@
 var count_row_found = 0;
 
-document.addEventListener("keydown", function (event) {
-  if (event.key === "Escape") {
-    closeModal(); // ferme la dernière fenêtre modale ouverte
-  }
-});
+
+function lightenHexColor(hex, percent) {
+  // Convertir le hex en RGB
+  let r = parseInt(hex.substring(1, 3), 16);
+  let g = parseInt(hex.substring(3, 5), 16);
+  let b = parseInt(hex.substring(5, 7), 16);
+
+  // Augmenter chaque composant de couleur par le pourcentage donné
+  r = parseInt(r * (100 + percent) / 100);
+  g = parseInt(g * (100 + percent) / 100);
+  b = parseInt(b * (100 + percent) / 100);
+
+  // S'assurer que les valeurs restent dans les limites [0, 255]
+  r = r < 255 ? r : 255;
+  g = g < 255 ? g : 255;
+  b = b < 255 ? b : 255;
+
+  // Convertir les composants RGB de nouveau en une couleur hex
+  let rr = r.toString(16).padStart(2, '0');
+  let gg = g.toString(16).padStart(2, '0');
+  let bb = b.toString(16).padStart(2, '0');
+
+  return `#${rr}${gg}${bb}`;
+}
 
 function showBanner(message, isSuccess) {
   const banner = document.getElementById("banner_update");
@@ -54,17 +73,33 @@ function openModal(modalId) {
 }
 
 // Ferme la dernière fenêtre modale ouverte
-function closeModal() {
-  if (modalStack.length > 0) {
-    let lastModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
-    lastModal.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
+function closeModal(all = false) {
+  if(all === false){
+    if (modalStack.length > 0) {
+      let lastModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
+      lastModal.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
 
-    // Retire la classe 'close-animate' après l'animation
-    setTimeout(() => {
-      lastModal.classList.remove("animate");
-      lastModal.classList.remove("close-animate");
-      lastModal.style.display = "none";
-    }, 2000); // Correspond à la durée de l'animation slideDown
+      // Retire la classe 'close-animate' après l'animation
+      setTimeout(() => {
+        lastModal.classList.remove("animate");
+        lastModal.classList.remove("close-animate");
+        lastModal.style.display = "none";
+      }, 2000); // Correspond à la durée de l'animation slideDown
+    }
+  }
+  else{
+    // Boucle tant qu'il y a des modales dans la pile
+    while (modalStack.length > 0) {
+      let currentModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
+      currentModal.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
+
+      // Retire la classe 'close-animate' après l'animation
+      setTimeout(() => {
+          currentModal.classList.remove("animate");
+          currentModal.classList.remove("close-animate");
+          currentModal.style.display = "none";
+      }, 2000); // Correspond à la durée de l'animation slideDown
+    }
   }
 }
 function closeModalById(modalId) {
@@ -170,13 +205,13 @@ document.addEventListener("DOMContentLoaded", function () {
       AddEventButton: {
         text: " ",
         click: function () {
-          openModal("addEventModal", false);
+          openModal("addEventModal");
         },
       },
       SearchIpunt: {
         text: " ",
         click: function () {
-          openModal("SearchListEventModal", false);
+          openModal("SearchListEventModal");
 
           // Trouver le champ inputSearch et le FOCUS keyboard
           const inputField = document.getElementById("default-search");
@@ -228,47 +263,55 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     eventContent: function (args) {
       let bookings = args.event.extendedProps.bookings; 
-      let dotsHtml = "";
+      let shadowDotsHtml = "";
+      let nonShadowDotsHtml = "";
       let margin_init = 0;
       // Ajouter une pastille pour chaque réservation avec la couleur du service
       /*colors.forEach(function (colors) {
         dotsHtml += `<span class="event-dot" style="background-color: ${colors};margin-left: ${margin_init}px"></span>`;
         margin_init+= 7;
       });*/
-      var border;
-    
+      
       for (let bookingId in bookings) {
         if (bookings.hasOwnProperty(bookingId)) {
             let booking = bookings[bookingId];
-           /* console.log('Booking ID:', bookingId);
-            console.log('Colors:', booking.colors);
-            console.log('Fullblocked:', booking.fullblockeds);
-            console.log('Paid:', booking.paids);
-            console.log('Price:', booking.prices);
-            console.log('Service Titles:', booking.services_titles);
-            console.log('Types of Documents:', booking.types_docs);*/
-            var status;
-            if(booking.paids==booking.prices){
-              status = `<svg class="w-3 h-3" style="color: #71d181;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7 10 2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-            </svg>`;
-            border = 'border: 2px solid #71d181;';
-          }else{
-            status = `<svg class="w-3 h-3" style="color: #261212;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 7-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-            </svg>`;
-            border = 'border: 2px solid #261212;';
-          }
-            dotsHtml += `<span class="event-dot" style="${border} background-color: ${booking.colors};margin-left: ${margin_init}px">${status}</span>`;
-            margin_init+= 7;
+            let status = "";
+            let box_shadow = "";
 
+            if(booking.paids == booking.prices){
+                // PAID
+                status = `
+                <b class="flex justify-center items-center " style="color: ${lightenHexColor(booking.colors,-70)};margin-top: 2px;font-size:8px">${booking.types_docs.charAt(0)}</b>
+                <div class="relative -top-2.5 left-0.5" style="margin-top: 0px;"><svg class=" w-4 h-4" style=" color: ${lightenHexColor(booking.colors,70)}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                </svg></div>`;
+                class_paid = "paid"; 
+                margin_init = '2';
+            } else {
+                // UNPAID
+                status = `<b class="flex justify-center items-center" style="color: ${lightenHexColor(booking.colors,-70)};margin-top: 1px;font-size:8px">${booking.types_docs.charAt(0)}</b>`;
+                class_paid = "unpaid";            
+
+            }
+
+            let dotHtml = `<span id="event-dot" class="event-dot ${class_paid}" style="background-color: ${booking.colors}; margin-left: ${margin_init}px">${status}</span>`;
+
+            if (class_paid === "unpaid") {
+                shadowDotsHtml += dotHtml;
+            } else {
+                nonShadowDotsHtml += dotHtml;
+            }
         }
-      }
-      // Créez un élément HTML pour représenter l'événement
-      let eventElement = document.createElement("div");
-      eventElement.className = "custom-event";
-      eventElement.innerHTML = dotsHtml;
+    }
 
+    // Concaténer les deux groupes de spans
+   let dotsHtml = shadowDotsHtml + nonShadowDotsHtml;
+
+    // Créer un élément HTML pour représenter l'événement
+    let eventElement = document.createElement("div");
+    eventElement.className = "flex justify-center items-center";
+    eventElement.innerHTML = dotsHtml;
+    
       return {
         domNodes: [eventElement],
       };
@@ -276,6 +319,7 @@ document.addEventListener("DOMContentLoaded", function () {
     eventClick: function (info) {
       const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'utilisateur a cliqué
       // Faire une requête AJAX pour obtenir les événements de cette date
+
       $.ajax({
         url: baseurl + "booking/getBookingsFromDate", // Votre URL pour récupérer les événements
         method: "POST",
@@ -284,10 +328,11 @@ document.addEventListener("DOMContentLoaded", function () {
           // $response = [
           //  'events' => $BookingModel,
           //  'clickedDate' => $date
+
           showBookingList(response.events, clickedDate);
           // Afficher le popup
 
-          openModal("ListEventModal", false, false);
+          openModal("ListEventModal");
         },
       });
     },
@@ -295,6 +340,7 @@ document.addEventListener("DOMContentLoaded", function () {
       //const clickedDate = info.date;  // Récupère la date cliquée
       const clickedDate = info.dateStr; // Récupère la date sur laquelle l'utilisateur a cliqué
       // Faire une requête AJAX pour obtenir les événements de cette date
+      
       $.ajax({
         url: baseurl + "booking/getBookingsFromDate", // Votre URL pour récupérer les événements
         method: "POST",
@@ -302,25 +348,28 @@ document.addEventListener("DOMContentLoaded", function () {
         success: function (response) {
           //  $response = [
           //  'events' => $BookingModel,
-          //  'clickedDate' => $date
+          //  'clickedDate' => $date            
+
+          // Attribution d'office à la modal d'ajout la date cliqué.
+          const startdate = format_date(response.clickedDate);
+          const enddate = format_date(response.clickedDate, 1);
+          document.getElementById("startEvent").value = startdate;
+          document.getElementById("eventEnd").value = enddate;
+
           if (response.events.length > 0) {
             // Si la réponse contient des événements, exécutez votre code ici
             showBookingList(response.events, clickedDate);
             // Afficher le popup
-            openModal("ListEventModal", false);
+            openModal("ListEventModal");
+            console.log('date',clickedDate);
           } else {
-            const startdate = format_date(response.clickedDate);
-            const enddate = format_date(response.clickedDate, 1);
-
-            document.getElementById("startEvent").value = startdate;
-            document.getElementById("eventEnd").value = enddate;
             document.getElementById("eventCustomer_id").value;
             document.getElementById("eventComment").value = "";
             fromServicepicker.setStartDate(startdate);
             fromServicepicker.setEndDate(enddate);
 
             // Afficher le popup
-            openModal("addEventModal", false);
+            openModal("addEventModal");
           }
         },
         error: function () {
@@ -379,30 +428,34 @@ function updateEventFromDetails() {
 
 // Fonction pour ajouter un événement
 function addEvent() {
-  let eventCustomer_id = document.getElementById("eventCustomer_id").value;
-  let eventService_id = document.getElementById("eventService_id").value;
-  let eventfullblocked = document.getElementById("eventFull_Blocked").checked ===true ? 1 : 0;
-  let eventPrice = document.getElementById("eventPrice").value;
-  let eventPaid = document.getElementById("eventPaid").value;
-  let eventQt = document.getElementById("eventQt").value;
-  let eventType_doc = document.getElementById("eventType_doc").value;
-  let eventComment = document.getElementById("eventComment").value;
-  let eventStart = format_date_toSql(
-    document.getElementById("startEvent").value
-  );
-  let eventEnd = format_date_toSql(document.getElementById("eventEnd").value);
-  let eventData = {
-    Customer_id: eventCustomer_id,
-    Service_id: eventService_id,
-    fullblocked: eventfullblocked,
-    Price: eventPrice,
-    Paid: eventPaid,
-    qt: eventQt,
-    Type_doc: eventType_doc,
-    Comment: eventComment,
-    start: eventStart,
-    end: eventEnd,
-  };
+  let eventData = {};
+  let eventElementDOM = {};
+  
+  [
+    { id: "eventCustomer_id", key: "Customer_id" },
+    { id: "eventService_id", key: "Service_id" },
+    { id: "eventFull_Blocked", key: "fullblocked", isCheckbox: true },
+    { id: "eventPrice", key: "Price" },
+    { id: "eventPaid", key: "Paid" },
+    { id: "eventQt", key: "qt" },
+    { id: "eventQtTraveller", key: "QtTraveller" },
+    { id: "eventType_doc", key: "Type_doc" },
+    { id: "eventComment", key: "Comment" },
+    { id: "startEvent", key: "start", isDate: true },
+    { id: "eventEnd", key: "end", isDate: true }
+].forEach(({ id, key, isCheckbox, isDate }) => {
+    let element = document.getElementById(id);
+    if (isCheckbox) {
+        eventData[key] = element.checked ? 1 : 0;
+        eventElementDOM = element;
+      } else if (isDate) {
+        eventData[key] = format_date_toSql(element.value);
+      } else {
+        eventData[key] = element.value;
+      }
+      eventElementDOM[id] = element;
+    });
+
 
   if (eventData["start"] && eventData["end"]) {
     // Envoi de la requête AJAX
@@ -424,8 +477,7 @@ function addEvent() {
               `,
               true
             );
-            closeModalById("addEventModal");
-
+            closeModal(true);
             setTimeout(() => {
               if (calendar) {
                 calendar.refetchEvents();
@@ -442,7 +494,7 @@ function addEvent() {
           }
         } catch (e) {
           console.error("Erreur dans l'ajout de la réservation:", e.message);
-          showBanner("Erreur dans l'ajout de la réservation:", false);
+          showBanner("Erreur dans l'ajout de la réservation:"+  e.message, false);
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
@@ -498,6 +550,7 @@ async function update_add_formEvent(data) {
         container_full_blocked.style.backgroundColor = "transparent"; // Exemple : Fond rouge
         // Vous pouvez également réinitialiser le style d'autres éléments ici
     }            
+    document.getElementById("eventQtTraveller").value = data.QtTraveller;
     document.getElementById("eventQt").value = data.qt;
     document.getElementById("eventPrice").value = data.Price;
     document.getElementById("eventPaid").value = data.Paid;
@@ -536,10 +589,23 @@ function deleteEvent(event_id, modal_id = false, event = false) {
     if (ModalInStack("ListEventModal")) {
       row_type = "booking_list_row_";
       document
-        .getElementById(`booking_${event_id.id}`)
+        .getElementById('booking_'+event_id)
         .classList.add("line-through");
       document
-        .getElementById(`booking_list_row_hr_${event_id.id}`)
+        .getElementById('badge_id_'+event_id)
+        .style.cssText = 'background-color: gray;';
+      document
+        .getElementById('booking_a_'+event_id)
+        .style.cssText = ' cursor : default;';
+        
+        let svgs = document.querySelectorAll('#booking_a_' + event_id + ' svg');
+
+        svgs.forEach(function(svg) {
+          svg.style.color = 'gray';
+      });
+
+      document
+        .getElementById('booking_list_row_hr_'+event_id)
         .classList.add("fade_out");
       count_row_found--;
       document.getElementById(
@@ -549,10 +615,10 @@ function deleteEvent(event_id, modal_id = false, event = false) {
       row_type = "row_booking_";
     }
     setTimeout(() => {
-      $("." + row_type + event_id.id).addClass("fade_out");
+      $("." + row_type + event_id).addClass("fade_out");
     }, 200);
     setTimeout(() => {
-      $("." + row_type + event_id.id).css("display", "none");
+      $("." + row_type + event_id).css("display", "none");
     }, 700);
     showBanner("Suppression réalisée avec succès", true);
     closeModalById("ConfirmDeleteModal");

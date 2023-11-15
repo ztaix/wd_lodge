@@ -24,6 +24,12 @@ let send_ico = `<svg class="w-4 h-4 mr-2 text-slate-400 dark:text-white" aria-hi
 let download_ico = `<svg class="w-4 h-4 mr-2 text-slate-400 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 19">
 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15h.01M4 12H2a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-3M9.5 1v10.93m4-3.93-4 4-4-4"/>
 </svg>`;
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Escape") {
+    closeModal(); // ferme la dernière fenêtre modale ouverte
+  }
+});
+
 
 function generateBookingElement(booking) {
   return `
@@ -74,7 +80,6 @@ function generateBookingElement(booking) {
 function showBookingList(response, clickedDate) {
   openModal("ListEventModal");
   let container = document.getElementById("bookingListContainer");
-  container.style.display = "block";
   container.innerHTML = ""; // Efface les anciennes données
 
   // Place la date dans le titre
@@ -91,11 +96,12 @@ function showBookingList(response, clickedDate) {
     /*encodeURIComponent(
         JSON.stringify(booking)
         )*/
+        
     let bookingElement = `
-        <div id="booking_list_row_${booking.id}" class="flex space-x-4 mt-1" >
+        <div id="booking_list_row_${booking.id}" class="flex p-2 mt-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
           <!-- Colonne 1 -->
           <div class="flex-grow">
-            <div class="rounded-md text-white font-bold text-sm px-1 mx-1 inline " style="background-color: ${
+            <div id="badge_id_${booking.id}" class="rounded-md text-white font-bold text-sm px-1 mx-1 inline " style="background-color: ${
               booking.service_color
             }; ">
               # ${booking.id}
@@ -121,10 +127,15 @@ function showBookingList(response, clickedDate) {
           </div>
           <!-- Colonne 2 -->
           <div class="flex flex-wrap justify-end font-bold">
-            <div class=" inline-flex" >
+          <a id="booking_a_${booking.id}" href="#" onclick="(function() { deleteEvent(${booking.id}) })()" >
+              <svg  class="flex justify-center items-center  w-6 h-6 text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 7-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+              </svg>
+            </a>
+            <div class="inline-flex items-center" >
                 <svg class="w-4 h-4 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1M2 5h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm8 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
-                </svg> ${booking.Price} Fr
+                </svg> ${booking.Price} <span>Fr</span>
             </div>
           </div>
         </div>
@@ -606,7 +617,6 @@ function loadAndInitDatepicker(service_id , start=false,end=false) {
       url: baseurl + "booking/service/" + service_id+'/true',
       method: "GET",
       success: function (bookings) {
-        console.log(bookings);
         const bookedDates = Object.keys(bookings).map((key) => {
           const booking = bookings[key];
           const start = booking.start; // Assurez-vous que cette propriété existe dans vos objets de réservation

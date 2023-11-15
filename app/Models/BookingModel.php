@@ -16,7 +16,7 @@ class BookingModel extends Model
     protected $useAutoIncrement = true;
 
     protected $allowedFields = [
-        'Customer_id', 'start', 'end', 'Service_id', 'qt','Price', 
+        'Customer_id', 'start', 'end', 'Service_id', 'qt', 'QtTraveller', 'Price', 
         'Paid', 'Type_doc', 'Pdf_url', 'Comment', 'fullblocked', 'Created_at', 'Deleted_at'
     ]; // les champs autorisés pour l'insertion ou la mise à jour
 
@@ -28,7 +28,8 @@ class BookingModel extends Model
         'end'     => 'required',
         'Service_id'   => 'required|integer',
         'fullblocked'   => 'permit_empty|integer',
-        'qt'        => 'required|integer',
+        'qt'           => 'required|integer',
+        'QtTraveller'  => 'required|integer',
         'Price'        => 'required|integer',
         'Paid'         => 'permit_empty|integer',
         'Type_doc'     => 'required|in_list[Devis,Facture]',

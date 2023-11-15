@@ -16,6 +16,8 @@ function FreetextToVartext($input)
 }
 
 function DiscountToArray($input){
+    if(trim($input) != ""){
+
     $result = [];
     $lines = explode("\n", trim($input));
     
@@ -27,4 +29,5 @@ function DiscountToArray($input){
     }
     
     return $result;
+}
 }

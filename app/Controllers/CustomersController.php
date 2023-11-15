@@ -30,7 +30,7 @@ class CustomersController extends BaseController
             'services_list' => ($services_list = $this->ServiceModel->get_services_list()) ? $services_list : [],
             'bookins_list' => $this->BookingModel->getAllBookings(),
             'totalServices' => $this->ServiceModel->getTotalServices(),
-            'discountRules' => ($rule = $this->ConfigModel->DiscountRules())? DiscountToArray($rule['Data']): '' ,
+            'discountRules' => $this->ConfigModel->DiscountRules(),
 
         ];
         

@@ -113,9 +113,7 @@ header {
   bottom:0;
 }
 .event-dot {
-  position: absolute;
   left: 50%;
-  
   /* Ratio et taille minimale */
 
   min-width: 10px;   /* taille minimale */
@@ -124,13 +122,24 @@ header {
   max-height: 15px;  /* taille max */
   
   /* Apparence */
-  background-color: rgb(197, 197, 197);
   border-radius: 50%;
 }
-.event-dot:hover {
-  background-color: rgb(0, 136, 255);
-}
+.event-dot.paid{
+  left: 50%;
+  /* Ratio et taille minimale */
 
+  min-width: 15px;   /* taille minimale */
+  min-height: 15px;  /* taille minimale */
+
+  
+  /* Apparence */
+  border-radius: 50%;
+}
+.event-dot.unpaid{
+  max-width: 10px;   /* taille max */
+  max-height: 10px;  /* taille max */
+  box-shadow: -1px 1px 0px 0 rgba(0, 0, 0, 0.2),inset 1px -1px 3px 0 rgba(0, 0, 0, 0.4),inset -1px 1px 2px -1px rgba(255, 255, 255, 0.8);
+}
 
 .has-shadow {
     box-shadow: 0px 0px 5px #252525;
