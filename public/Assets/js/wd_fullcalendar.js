@@ -276,20 +276,21 @@ document.addEventListener("DOMContentLoaded", function () {
         if (bookings.hasOwnProperty(bookingId)) {
             let booking = bookings[bookingId];
             let status = "";
-            let box_shadow = "";
+            let facture = booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):"";
 
             if(booking.paids == booking.prices){
+
                 // PAID
                 status = `
-                <b class="flex justify-center items-center " style="color: ${lightenHexColor(booking.colors,-70)};margin-top: 2px;font-size:8px">${booking.types_docs.charAt(0)}</b>
-                <div class="relative -top-2.5 left-0.5" style="margin-top: 0px;"><svg class=" w-4 h-4" style=" color: ${lightenHexColor(booking.colors,70)}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                <b class="flex justify-center items-center " style="color: ${lightenHexColor(booking.colors,40)};margin-top: 0px;font-size:8px">${booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):""}</b>
+                <div class="relative ${facture!=="F"?"-top-0.5":"-top-2.5"} left-0.5" style="margin-top: 2px;"><svg class=" w-4 h-4" style=" color: ${lightenHexColor(booking.colors,70)}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
                 </svg></div>`;
                 class_paid = "paid"; 
                 margin_init = '2';
             } else {
                 // UNPAID
-                status = `<b class="flex justify-center items-center" style="color: ${lightenHexColor(booking.colors,-70)};margin-top: 1px;font-size:8px">${booking.types_docs.charAt(0)}</b>`;
+                status = `<b class="flex justify-center items-center" style="color: ${lightenHexColor(booking.colors,-50)};margin-top: 1px;font-size:8px">${booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):""}</b>`;
                 class_paid = "unpaid";            
 
             }
