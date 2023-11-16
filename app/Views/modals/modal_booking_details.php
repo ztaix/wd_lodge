@@ -77,14 +77,18 @@ $modal_id = "DetailsEventModal";
                             <h5 id="booking_details_fullblocked_h5" class="text-sm font-bold tracking-tight text-red-900 dark:text-red-300">FullBlocked</h5>
                         </p>
                         <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
-                            <span class="font-bold">Quatité</span>
-                            <span id="booking_details_qt_span" class="text-md font-medium mr-2">Qt</span>
+                            <span class="font-bold">Nombre de nuits</span>
+                            <span id="booking_details_qt_span" class="text-md font-medium mr-2">Qt nuits</span>
                         </p>
                         <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
                             <span class="font-bold">Tarif</span>
                             <span id="booking_details_price_span" class="text-md bg-yellow-100 text-yellow-800 font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Yellow</span>
                         </p>
-
+                        <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
+                            <span class="font-bold">Voyageur(s):</span>
+                            <span id="booking_details_traveller_span" class="text-md font-medium mr-2">Nb Voyageurs</span>
+                        </p>
+                        
                         <div class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
                             <span class="mr-2 font-bold">Encaissé</span>
                             <div class="w-full h-6 bg-slate-300 rounded-full dark:bg-gray-700">
@@ -107,9 +111,9 @@ $modal_id = "DetailsEventModal";
                             <span class="font-bold">Commentaire</span>
                             <span id="booking_details_comment_span">Commentaire de réservation.</span>
                         </p>
-                        <div class="flex flex-col items-center w-full">
-                            <a id="booking_details_pdf" href="#" class="text-slate-400 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-sans text-xs font-bold uppercase rounded-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2 w-full"></a>
-                            <a id="booking_details_sendmail" href="#" class="text-slate-400 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-sans text-xs font-bold uppercase rounded-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2 w-full"></a>
+                        <div class="inline-flex items-center w-full gap-2">
+                            <a id="booking_details_pdf" href="#" class="whitespace-nowrap text-slate-400 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-sans text-xs font-bold uppercase rounded-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2 w-full"></a>
+                            <a id="booking_details_sendmail" href="#" class="whitespace-nowrap text-slate-400 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-sans text-xs font-bold uppercase rounded-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2 w-full"></a>
                         </div>
 
 

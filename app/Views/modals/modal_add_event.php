@@ -55,10 +55,17 @@ $modal_id = "addEventModal";
                         </div>
                     </div>
                     <div>
-                        <div class="relative">
-                            <input type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="eventQtTraveller" name="QtTraveller" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
-                            <label for="eventQtTraveller" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Nombre de voyageur</label>
+                        <div class="relative flex">
+                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                    <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+                                </svg>
+                            </span>
+                            <input type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="eventQtTraveller" name="eventQtTraveller" class="block w-full  rounded-none rounded-e-lg text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+                            <label for="eventQtTraveller" class="absolute ml-10 text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Nombre de voyageur</label>
                         </div>
+
                         <!-- Liste déroulante de services -->
 
                         <label for="eventService_id" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Service :</label>
@@ -70,9 +77,9 @@ $modal_id = "addEventModal";
 
 
                         <!-- Case à cocher -->
-                        <div id="container_eventFull_Blocked" class="mt-2 p-2 bg-transparent border border-red-200 dark:border-red-900 rounded-lg">
+                        <div id="container_eventFull_Blocked" class="w-fit mt-2 p-2 bg-transparent border border-red-200 dark:border-red-900 rounded-lg">
                             <input id="eventFull_Blocked" name="eventFull_Blocked" type="checkbox" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label for="eventFull_Blocked" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Bloqué tout autre réservation</label>
+                            <label for="eventFull_Blocked" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Privatiser</label>
                         </div>
                     </div>
                     <div date-rangepicker id="dateranger" class="flex items-center justify-between">
@@ -108,13 +115,30 @@ $modal_id = "addEventModal";
                         <input type="number" pattern="[0-9]*" inputmode="numeric" id="eventPrice" name="eventPrice" class="block w-full  text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required>
                         <label for="eventPrice" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Prix Total</label>
 
-                        <span id="discountIndicator" class="text-base" style="color: orange; display: none;">ici</span>
+                        <span id="discountIndicator" class="text-base" style="color: orange; display: none;">Discount status</span>
                         <span id="numericIndicator" class="text-base" style="color: red; display: none;"><br>Seules des valeurs numériques sont autorisées.</span>
                     </div>
                     <div class="relative">
                         <input type="number" pattern="[0-9]*" value=0 inputmode="numeric" id="eventPaid" name="eventPaid" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
                         <label for="eventPaid" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Encaissé</label>
                     </div>
+
+                    <div class="flex">
+
+
+                    <select id="eventPaids_row" name="eventPaids_row" class="inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-500 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600" type="button">
+                                <option value="ESPECE">ESPECE</option>
+                                <option value="VIREMENT">VIREMENT</option>
+                                <option value="VISA">VISA</option>
+                                <option value="AMEX">AMEX</option>
+                                <option value="CHEQUE">CHEQUE</option>
+                        </select>
+    
+    <input type="number" pattern="[0-9]*" value=0 inputmode="numeric" id="eventPaid" name="eventPaid" 
+    class="rounded-e-lg block w-full text-md text-gray-900 bg-transparent border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+    <label for="eventPaid" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Encaissé</label>
+</div>
+
                     <div>
                         <label for="eventComment" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Commentaire :</label>
                         <textarea id="eventComment" name="eventComment" class="block p-2.5 w-full text-md text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Une chose à dire, c'est ici..."></textarea>
@@ -310,7 +334,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
                     }
                     
                             discountIndicator.style.display = discountValue > 0 ? "inline" : "none"; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
-                            discountIndicator.innerHTML = unitDiscountValue + ' - ' + discountValue; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
+                            discountIndicator.innerHTML = `Total des réduction: ${Discount_type == 'Pourcentage' ? discountValue + '%': '-'+discountValue}  Fr` ; 
                 } else {
                     // Prix standard si aucune réduction n'est disponible.
                     prixCalculé = servicePrice * qt;

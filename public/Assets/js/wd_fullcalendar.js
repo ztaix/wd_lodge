@@ -138,7 +138,6 @@ function closex(modalId) {
 }
 
 function ModalInStack(modalId) {
-  // Vérifie si une fenêtre modale contenant 'booking' est dans la pile
   return modalStack.some(function (modal) {
     return modal.id.includes(modalId);
   });
@@ -391,6 +390,7 @@ function updateEventFromDetails() {
     Service_id: document.getElementById("eventService_id").value,
     fullblocked: document.getElementById("eventFull_Blocked").checked ===true ? 1 : 0,
     qt: document.getElementById("eventQt").value,
+    QtTraveller: document.getElementById("eventQtTraveller").value,
     Price: document.getElementById("eventPrice").value,
     Paid: document.getElementById("eventPaid").value,
     Type_doc: document.getElementById("eventType_doc").value,
@@ -408,6 +408,14 @@ function updateEventFromDetails() {
         showBanner("Événement mise à jour avec succès !", true);
         closeModalById('addEventModal');
         showBookingDetailsFromID(response.id);
+
+        if(ModalInStack('ListEventModal')){
+            document.getElementById('booking_total_'+response.id).innerText = formData.Price;
+            document.getElementById('booking_Comment_'+response.id).innerText = formData.Comment;
+            document.getElementById('booking_start_'+response.id).innerText = getDayOfWeek(format_date(formData.start)) + ' ' + format_date(formData.start);
+            document.getElementById('booking_end_'+response.id).innerText = getDayOfWeek(format_date(formData.end)) + ' ' + format_date(formData.end);
+            document.getElementById('booking_title_'+response.id).innerHTML = "<i style='color: orange'>*" + document.getElementById('booking_title_'+response.id).innerText + "</i>";
+        }
 
         if (calendar) {
           calendar.refetchEvents();
@@ -524,7 +532,7 @@ function addEvent() {
 
 async function update_add_formEvent(data) {
   openModal("addEventModal");
-
+console.log('data:',data.QtTraveller);
   // Changer le texte du bouton et son action pour l'ajout
   let submitButton = document.getElementById("add_submit_form");
   submitButton.onclick = function () {
@@ -551,7 +559,7 @@ async function update_add_formEvent(data) {
         container_full_blocked.style.backgroundColor = "transparent"; // Exemple : Fond rouge
         // Vous pouvez également réinitialiser le style d'autres éléments ici
     }            
-    document.getElementById("eventQtTraveller").value = data.QtTraveller;
+    document.getElementById("eventQtTraveller").value = parseInt(data.QtTraveller);
     document.getElementById("eventQt").value = data.qt;
     document.getElementById("eventPrice").value = data.Price;
     document.getElementById("eventPaid").value = data.Paid;

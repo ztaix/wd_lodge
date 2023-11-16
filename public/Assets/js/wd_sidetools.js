@@ -98,45 +98,47 @@ function showBookingList(response, clickedDate) {
         )*/
         
     let bookingElement = `
-        <div id="booking_list_row_${booking.id}" class="flex p-2 mt-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
+        <div id="booking_list_row_${booking.id}" class="flex flex-col p-2 mt-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
           <!-- Colonne 1 -->
-          <div class="flex-grow">
-            <div id="badge_id_${booking.id}" class="rounded-md text-white font-bold text-sm px-1 mx-1 inline " style="background-color: ${
-              booking.service_color
-            }; ">
-              # ${booking.id}
-            </div>
+          <div class="w-full flex-col">
             
-            <a href="#" id='booking_${
-              booking.id
-            }' onclick="showBookingDetailsFromID('${
-      booking.id
-    }');" class="text-blue-500 hover:underline ">
-              ${booking.customer_name + " - " + booking.service_title}
-            </a>
-            <div class="flex">
-              ${getDayOfWeek(format_date(booking.start))} ${format_date(
-      booking.start
-    )} 
+              <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${
+              booking.id}');" class="flex font-bold text-slate-600">
+                <div id="badge_id_${booking.id}" class="absolute -mt-3 -ml-2.5 text-xs h-4 rounded-md text-white font-bold px-1 mx-1 inline  " style="background-color: ${
+                  booking.service_color}; ">
+                    ${booking.Type_doc} # ${booking.id + booking.QtTraveller}
+                </div>
+                <div id="booking_title_${booking.id}" class="transition-margin m-0 hover:mx-2">
+                  ${booking.customer_name + " - " + booking.service_title}
+             
+                </div>
+              </div>
+            <div class="w-full inline-flex">
+              <span id="booking_start_${booking.id}">${getDayOfWeek(format_date(booking.start))} ${format_date(booking.start)}</span>
               <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-              </svg>${getDayOfWeek(format_date(booking.end))} ${format_date(
-      booking.end
-    )}
-            </div>
-          </div>
-          <!-- Colonne 2 -->
-          <div class="flex flex-wrap justify-end font-bold">
-          <a id="booking_a_${booking.id}" href="#" onclick="(function() { deleteEvent(${booking.id}) })()" >
-              <svg  class="flex justify-center items-center  w-6 h-6 text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 7-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
               </svg>
-            </a>
-            <div class="inline-flex items-center" >
-                <svg class="w-4 h-4 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1M2 5h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm8 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
-                </svg> ${booking.Price} <span>Fr</span>
+              <span id="booking_end_${booking.id}">${getDayOfWeek(format_date(booking.end))} ${format_date(booking.end)}</span>
+              <div class="flex flex-col grow items-end font-bold border-l border-slate-200 ml-2">
+                <div class="absolute -mt-6 group">
+                  <a id="booking_a_${booking.id}" href="#" class="text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" onclick="(function() { deleteEvent(${booking.id}) })()" >
+                    <span class="absolute left-full opacity-0 group-hover:opacity-100 group-hover:-left-14 transition-all ease-in-out duration-300 text-xs ">Supprimer</span>
+                    <svg  class="flex justify-center items-center  w-6 h-6  transition-transform duration-300 scale-100 group-hover:scale-75" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 7-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                    </svg>
+                  </a>
+                </div>
+                <div class="inline-flex items-center" >
+                    <svg class="w-4 h-4 dark:text-white" style="margin: 0 0.5rem 0 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1M2 5h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm8 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+                    </svg> <span id="booking_total_${booking.id}">${booking.Price}</span> <span>Fr</span>
+                </div>
+              </div>
             </div>
+            <div id="booking_Comment_${booking.id}" class="flex flex-col text-xs">
+            ${booking.Comment} 
+            </div>
+
           </div>
         </div>
         <hr id="booking_list_row_hr_${booking.id}" class="my-2">
@@ -364,6 +366,7 @@ async function showBookingDetailsFromID(id) {
         Customer_id: response.Customer_id,
         Pdf_url: response.Pdf_url,
         qt: response.qt,
+        QtTraveller: response.QtTraveller,
         Paid: response.Paid,
         Price: response.Price,
         Service_id: response.Service_id,
@@ -399,6 +402,7 @@ async function showBookingDetailsFromID(id) {
   document.getElementById("booking_details_fullblocked_h5").innerHTML =
     event.fullblocked == 1 ? "Logement bloqué" : "&nbsp";
   document.getElementById("booking_details_qt_span").innerText = event.qt;
+  document.getElementById("booking_details_traveller_span").innerText = event.QtTraveller;
   document.getElementById("booking_details_start_span").innerText = event.start;
   document.getElementById("booking_details_end_span").innerText = event.end;
   document.getElementById("booking_details_price_span").innerText =
@@ -437,9 +441,9 @@ async function showBookingDetailsFromID(id) {
   document.getElementById("booking_details_pdf").href =
     baseUrl + "booking/generatePDF/booking/" + event.id;
   document.getElementById("booking_details_pdf").innerHTML =
-    download_ico + " Télécharger " + event.Type_doc;
+    download_ico + " Télécharger PDF";
   document.getElementById("booking_details_sendmail").innerHTML =
-    send_ico + "Envoyer " + event.Type_doc + "/ EN CONSTRUCTION";
+    send_ico + "Envoyer EMAIL";
   document.getElementById("booking_details_sendmail").href =
     baseUrl + "booking/sendmail/" + event.id;
   //baseUrl + "booking/sendmail/" + event.id;
@@ -686,7 +690,7 @@ function loadAndInitDatepicker(service_id , start=false,end=false) {
                   target.querySelector(".day-unavailable") ||
                   document.createElement("span");
                 span.className = "day-unavailable";
-                span.innerHTML = "blocked"; // Afficher "Devis" ou "Facture"
+                span.innerHTML = "Réservé"; // Afficher "Devis" ou "Facture"
 
                 target.append(span);
               }
