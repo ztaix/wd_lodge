@@ -24,4 +24,7 @@
     </label>
   </div>
 
+    <!-- LOADER PAGE FOR LOADING PAGE -->
+  <div class="loader"></div>
+
   <div class="flex flex-col h-screen">

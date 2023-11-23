@@ -27,19 +27,20 @@ $modal_id = "ListEventModal";
         </div>
 
         <!-- Modal Body -->
-        <div class="flex justify-center max-w-xl mx-auto cursor-pointer p-2 m-2 shadow-md border hover:border border-blue-300 dark:border-blue-600 hover:border-blue-900 text-blue-200 hover:text-white dark:text-white bg-blue-400 hover:bg-blue-600 dark:bg-blue-900 hover:dark:bg-blue-700 rounded-lg"
-            onclick="openModal('addEventModal')"> 
-            <div class="px-4 text-slate-200 dark:text-white">
-               + Ajouter une réservation</div>
-        </div>
-        <div class="flex justify-center p-2 mx-2 mb-14 bg-slate-200 dark:bg-slate-700">
+        <div class="flex flex-col max-w-xl mx-auto">
+            <div class="p-2 mx-2 cursor-pointer  shadow-md border hover:border border-blue-300 dark:border-blue-600 hover:border-blue-900 text-blue-200 hover:text-white dark:text-white bg-blue-400 hover:bg-blue-600 dark:bg-blue-900 hover:dark:bg-blue-700 rounded-lg" onclick="handleAddEventClick()">
+                <div class="px-4 text-slate-200 dark:text-white">+ Ajouter une réservation</div>
+            </div>
 
-            <div class="max-w-xl bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <div class="px-4">
+            <div class="flex justify-center p-2 mx-2 mb-14 bg-slate-200 dark:bg-slate-700">
 
-                    <div class="flex items-center my-2">
-                        <div id="bookingListContainer" class="text-md text-slate-500">
-                            <!-- JavaScript will populate this area -->
+                <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                    <div class="px-4">
+
+                        <div class="flex items-center my-2">
+                            <div id="bookingListContainer" class="w-full text-md text-slate-500">
+                                <!-- JavaScript will populate this area -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -47,3 +48,10 @@ $modal_id = "ListEventModal";
         </div>
     </div>
 </div>
+
+<script>
+    function handleAddEventClick() {
+        resetForm('addEventModal');
+        openModal('addEventModal');
+    }
+</script>

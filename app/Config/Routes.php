@@ -27,6 +27,7 @@ $routes->group('booking', function($routes)
     $routes->post('addBooking', 'BookingController::addBooking');
     
     $routes->get('', 'BookingController::getBookings');
+    $routes->get('servicepicker/(:num)/(:any)', 'BookingController::getBookingsfromDatepicker/$1/$2');
     $routes->get('service/(:num)/(:any)', 'BookingController::getBookings/$1/$2');
     $routes->get('available/(:num)', 'BookingController::getBookingsFromService/$1');
     $routes->get('search', 'BookingController::getBookingsFromSearch');
@@ -38,6 +39,23 @@ $routes->group('booking', function($routes)
 
 });
 
+/// PAIDS ROUTES
+$routes->group('paids', function($routes)
+{
+$routes->get('', 'PaidsController::getAllPaids');
+$routes->get('(:num)', 'PaidsController::getAllPaids/$1');
+$routes->get('Customer/(:num)', 'PaidsController::getPaidsFromCustomer/$1');
+$routes->get('booking', 'PaidsController::getPaidsFromBookingID');
+$routes->get('bookings/(:num)', 'PaidsController::getPaidsFromBookingID/$1');
+
+
+// update / add
+$routes->post('upsert', 'PaidsController::upsert');
+
+//delete
+$routes->post('delete', 'PaidsController::deletePaid');
+
+});
 /// OTHER NON PAGES ROUTES
 $routes->group('services', function($routes)
 {

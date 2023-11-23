@@ -29,7 +29,7 @@ if (isset($seller[0]) && isset($data)) {
 	$s_paid = $data['booking_info']['Paid'];
 	$s_price = $data['booking_info']['Price'];
 	$s_service = $data['booking_info']['service_title'];
-	$s_qt = $data['booking_info']['qt'];
+	$s_qt = $data['booking_info']['Qt'];
 
 	if (
 		isset($denomination) && isset($telephone) && isset($adresse) && isset($mail) &&
@@ -97,7 +97,7 @@ $due_date = $date->format('d/m/Y');
 				<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><?=$seller[0]['Data'] ?></h5>
 			</a>
 			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Bonjour <b><?=$data['customer_info']['Name'] ?></b>,</p>
-			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Nous vous confirmons la réservation du <?= sql_date_to_dmY($data['booking_info']['start']) ?> au <?= sql_date_to_dmY($data['booking_info']['end']) ?> (<?=$data['booking_info']['qt'] ?> nuits).</p>
+			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Nous vous confirmons la réservation du <?= sql_date_to_dmY($data['booking_info']['start']) ?> au <?= sql_date_to_dmY($data['booking_info']['end']) ?> (<?=$data['booking_info']['Qt'] ?> nuits).</p>
 			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Vous avez réserver la chambre <?=$data['booking_info']['service_title'] ?> pour un total de <?=$data['booking_info']['Price'] ?> Fr</p>
 			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Nous sommes très impatient de vous accueillir !</p>
 			<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">

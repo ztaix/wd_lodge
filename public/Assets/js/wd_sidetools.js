@@ -30,7 +30,6 @@ document.addEventListener("keydown", function (event) {
   }
 });
 
-
 function generateBookingElement(booking) {
   return `
         <div class="flex space-x-4 mt-" >
@@ -96,33 +95,50 @@ function showBookingList(response, clickedDate) {
     /*encodeURIComponent(
         JSON.stringify(booking)
         )*/
-        
+
     let bookingElement = `
-        <div id="booking_list_row_${booking.id}" class="flex flex-col p-2 mt-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
+        <div id="booking_list_row_${
+          booking.id
+        }" class="flex flex-col p-2 mt-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
           <!-- Colonne 1 -->
           <div class="w-full flex-col">
             
-              <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${
-              booking.id}');" class="flex font-bold text-slate-600">
-                <div id="badge_id_${booking.id}" class="absolute -mt-3 -ml-2.5 text-xs h-4 rounded-md text-white font-bold px-1 mx-1 inline  " style="background-color: ${
-                  booking.service_color}; ">
-                    ${booking.Type_doc} # ${booking.id + booking.QtTraveller}
+              <div id='booking_${
+                booking.id
+              }' onclick="showBookingDetailsFromID('${
+      booking.id
+    }');" class="flex cursor-pointer font-bold text-slate-600">
+                <div id="badge_id_${
+                  booking.id
+                }" class="absolute -mt-3 -ml-2.5 text-xs h-4 rounded-md text-white font-bold px-1 mx-1 inline  " style="background-color: ${
+      booking.service_color
+    }; ">
+                    ${booking.Type_doc} # ${booking.id}
                 </div>
-                <div id="booking_title_${booking.id}" class="transition-margin m-0 hover:mx-2">
+                <div id="booking_title_${
+                  booking.id
+                }" class="transition-margin m-0 hover:mx-2">
                   ${booking.customer_name + " - " + booking.service_title}
-             
                 </div>
               </div>
             <div class="w-full inline-flex">
-              <span id="booking_start_${booking.id}">${getDayOfWeek(format_date(booking.start))} ${format_date(booking.start)}</span>
+              <span id="booking_start_${booking.id}">${getDayOfWeek(
+      format_date(booking.start)
+    )} ${format_date(booking.start)}</span>
               <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
               </svg>
-              <span id="booking_end_${booking.id}">${getDayOfWeek(format_date(booking.end))} ${format_date(booking.end)}</span>
+              <span id="booking_end_${booking.id}">${getDayOfWeek(
+      format_date(booking.end)
+    )} ${format_date(booking.end)}</span>
               <div class="flex flex-col grow items-end font-bold border-l border-slate-200 ml-2">
                 <div class="absolute -mt-6 group">
-                  <a id="booking_a_${booking.id}" href="#" class="text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" onclick="(function() { deleteEvent(${booking.id}) })()" >
-                    <span class="absolute left-full opacity-0 group-hover:opacity-100 group-hover:-left-14 transition-all ease-in-out duration-300 text-xs ">Supprimer</span>
+                  <a id="booking_a_${
+                    booking.id
+                  }" href="#" class="text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" onclick="(function() { deleteEvent(${
+      booking.id
+    }) })()" >
+                    <span class="absolute opacity-0 mt-1 right-10 group-hover:opacity-100 group-hover:right-6 transition-all ease-in-out duration-300 text-xs ">Supprimer</span>
                     <svg  class="flex justify-center items-center  w-6 h-6  transition-transform duration-300 scale-100 group-hover:scale-75" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 7-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                     </svg>
@@ -131,11 +147,15 @@ function showBookingList(response, clickedDate) {
                 <div class="inline-flex items-center" >
                     <svg class="w-4 h-4 dark:text-white" style="margin: 0 0.5rem 0 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1M2 5h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm8 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
-                    </svg> <span id="booking_total_${booking.id}">${booking.Price}</span> <span>Fr</span>
+                    </svg> <span id="booking_total_${booking.id}">${
+      booking.Price
+    }</span> <span>Fr</span>
                 </div>
               </div>
             </div>
-            <div id="booking_Comment_${booking.id}" class="flex flex-col text-xs">
+            <div id="booking_Comment_${
+              booking.id
+            }" class="flex flex-col text-xs">
             ${booking.Comment} 
             </div>
 
@@ -230,7 +250,6 @@ async function showUpdateCustomer(id) {
     let response = await $.ajax({
       url: baseurl + `customer/get_customer_info?customer_id=${id}`,
       method: "GET",
-      dataType: "json",
     });
     if (response && response.id == id) {
       customer = {
@@ -240,6 +259,7 @@ async function showUpdateCustomer(id) {
         email: response.Email,
         comment: response.Comment,
       };
+      document.getElementById("customer_name").value = customer.name;
     } else {
       console.error(
         `Échec get_customer_info: aucun enregistrement trouvé pour l'id : ${id}`
@@ -290,7 +310,7 @@ async function showUpdateCustomer(id) {
       },
     });
   };
-  let button_delete = document.getElementById("delete_customer_submit_form");
+  /* let button_delete = document.getElementById("delete_customer_submit_form");
   var data = {
     Customer_id: document.getElementById("customer_id").value,
     delete: true,
@@ -318,7 +338,46 @@ async function showUpdateCustomer(id) {
         }
       },
     });
-  };
+  };*/
+}
+function Deletepaid(ids) {
+  let idsArray = Array.isArray(ids) ? ids : [ids];
+
+  // Supprimer les éléments avec un ID commençant par 'temp'
+  idsArray.forEach((id) => {
+    if (typeof id === 'string' && id.startsWith('temp')) {
+      var element = document.getElementById(id);
+      if (element) {
+        element.remove(); // Supprimer directement l'élément
+      }
+    }
+  });
+  // Filtrer les IDs pour ne conserver que ceux ne commençant pas par 'temp'
+  let nonTempIds = idsArray.filter(id => typeof id === 'string' && !id.startsWith('temp'));
+
+  // Continuer avec la requête AJAX uniquement si il reste des IDs à traiter
+  if (nonTempIds.length > 0) {
+    $.ajax({
+      url: baseurl + "paids/delete",
+      method: "POST",
+      data: { ids: nonTempIds },
+      success: function (response) {
+        if (response.success == true) {
+          showBanner("Suppression réussi", true);
+          Object.keys(response.data).forEach((key) => {
+            if (response.data[key]) {
+              var element = document.getElementById(key);
+              if (element) {
+                element.remove(); // Supprimer directement l'élément
+              }
+            }
+          });
+        } else {
+          showBanner("Échec de la suppression", false);
+        }
+      },
+    });
+  }
 }
 
 function DeleteCustomer(event, id) {
@@ -351,6 +410,8 @@ function DeleteCustomer(event, id) {
   });
 }
 
+//Bookings / DETAILS BOOKING
+
 async function showBookingDetailsFromID(id) {
   openModal("DetailsEventModal", false);
   let event;
@@ -365,9 +426,12 @@ async function showBookingDetailsFromID(id) {
         id: response.id,
         Customer_id: response.Customer_id,
         Pdf_url: response.Pdf_url,
-        qt: response.qt,
+        Qt: response.Qt,
         QtTraveller: response.QtTraveller,
         Paid: response.Paid,
+        Paids_ids: response.paids_ids,
+        Types_paids: response.types_paids,
+        Paids_values: response.paids_values,
         Price: response.Price,
         Service_id: response.Service_id,
         fullblocked: response.fullblocked,
@@ -394,32 +458,41 @@ async function showBookingDetailsFromID(id) {
   } catch (error) {
     console.error("Échec getBookingsFromID: ", error);
   }
+  let array_paids_values = event.Paids_values
+    ? event.Paids_values.split(",").map(Number)
+    : [0];
+  let paids_sum = array_paids_values.reduce(
+    (total, currentValue) => total + currentValue,
+    0
+  );
   document.getElementById(
     "booking_details_id_h5"
   ).innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${event.service_color}">${event.Type_doc} # ${event.id}</span> `;
   document.getElementById("booking_details_service_h5").innerText =
     event.service_title;
   document.getElementById("booking_details_fullblocked_h5").innerHTML =
-    event.fullblocked == 1 ? "Logement bloqué" : "&nbsp";
-  document.getElementById("booking_details_qt_span").innerText = event.qt;
-  document.getElementById("booking_details_traveller_span").innerText = event.QtTraveller;
+    event.fullblocked == 1 ? "Logement privatisé" : "&nbsp";
+  document.getElementById("booking_details_qt_span").innerText = event.Qt;
+  document.getElementById("booking_details_traveller_span").innerText =
+    event.QtTraveller;
   document.getElementById("booking_details_start_span").innerText = event.start;
   document.getElementById("booking_details_end_span").innerText = event.end;
   document.getElementById("booking_details_price_span").innerText =
     event.Price + " Fr";
   document.getElementById("booking_details_progress_div").style.width =
-    event.Paid > 0
-      ? Math.min(Math.round((event.Paid / event.Price) * 10000) / 100, 100) +
-        "%"
+    paids_sum > 0
+      ? Math.min(Math.round((paids_sum / event.Price) * 10000) / 100, 100) + "%"
       : "0";
   document.getElementById("booking_details_progress_div").innerText =
-    event.Paid > 0 ? event.Paid + " Fr" : "";
+    paids_sum > 0 ? paids_sum + " Fr" : "";
   document.getElementById("booking_details_customer_name_span").innerText =
     event.customer_name;
   document.getElementById("booking_details_customer_name_span").onclick =
-    function (event) {
-      showUpdateCustomer(event.Customer_id);
-    };
+    (function (customerId) {
+      return function () {
+        showUpdateCustomer(customerId);
+      };
+    })(event.Customer_id);
 
   document.getElementById("booking_details_customer_phone_span").innerText =
     event.customer_phone;
@@ -610,21 +683,97 @@ function get_booking_list_from_customer(data) {
     },
   });
 }
+
+function getPaidFromBookingId(booking_id) {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: baseurl + "paids/bookings/" + booking_id,
+      method: "GET",
+      success: function (paids) {
+        resolve(paids); // Résoudre la promesse avec les données
+      },
+      error: function (error) {
+        console.error("Erreur lors de la récupération des paids: ", error);
+        reject(error); // Rejeter la promesse en cas d'erreur
+      },
+    });
+  });
+}
+
+function createPaymentHtml(paid, index, lenght) {
+  let payements_class = "";
+  if (lenght === 1) {
+    payements_class = [
+      "rounded-tl-lg rounded-bl-lg",
+      "rounded-tr-lg rounded-br-lg",
+    ];
+  } else if (lenght === 2) {
+    if (index === 0) {
+      payements_class = ["rounded-tl-lg", "rounded-tr-lg"];
+    } else {
+      payements_class = ["rounded-bl-lg", "rounded-br-lg "];
+    }
+  } else {
+    if (index === 0) {
+      payements_class = ["rounded-tl-lg", "rounded-tr-lg "];
+    } else if (index === lenght - 1) {
+      payements_class = ["rounded-bl-lg", "rounded-br-lg"];
+    } else {
+      payements_class = ["", ""];
+    }
+  }
+  return `
+  <div id="${paid.paid_id}" class="flex payment-row">
+      <input type="hidden" id="rowPaidid${index}" value="${
+    paid.paid_id
+  }" name="rowPaidid${index}">
+      <div class=" inline-flex  items-center w-fit bg-red-50 border border-red-300 hover:bg-red-400  dark:bg-red-700 dark:hover:bg-red-900 rounded-lg mx-1 my-0.5 p-2 cursor-pointer" onclick="Deletepaid('${
+        paid.paid_id
+      }')"> X </div>
+      <select id="rowPaidType${index}" name="rowPaidType${index}" class="${
+    payements_class[0]
+  } inline-flex items-center py-2.5 px-4 text-sm font-bold text-center text-gray-500 bg-gray-100 border border-gray-300 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600">
+          <option value="ESPECE" ${
+            paid.type_paid === "ESPECE" ? "selected" : ""
+          }>ESPECE</option>
+          <option value="VIREMENT" ${
+            paid.type_paid === "VIREMENT" ? "selected" : ""
+          }>VIREMENT</option>
+          <option value="VISA" ${
+            paid.type_paid === "VISA" ? "selected" : ""
+          }>VISA</option>
+          <option value="AMEX" ${
+            paid.type_paid === "AMEX" ? "selected" : ""
+          }>AMEX</option>
+          <option value="CHEQUE" ${
+            paid.type_paid === "CHEQUE" ? "selected" : ""
+          }>CHEQUE</option>
+      </select>
+      <input type="number" pattern="[0-9]*" value="${
+        paid.value
+      }" inputmode="numeric" id="rowPaid${index}" name="rowPaid${index}" class="${
+    payements_class[1]
+  }  block w-full text-md text-gray-900 bg-transparent border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+      <label for="rowPaid${index}" class="absolute text-md ml-32 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-0 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Encaissé</label>
+  </div>
+`;
+}
+
 // Fonction pour charger et initialiser le datepicker avec des dates réservées
-function loadAndInitDatepicker(service_id , start=false,end=false) {
+function loadAndInitDatepicker(service_id, start_date = false, end_date = false) {
   return new Promise((resolve, reject) => {
     if (fromServicepicker) {
-      fromServicepicker.destroy(); // Assurez-vous que la méthode `destroy` est bien définie par Easepick pour détruire l'instance
-  }
+      fromServicepicker.destroy(); 
+    }
     // Si un datepicker existe déjà, retirez-le avant de créer un nouveau
     $.ajax({
-      url: baseurl + "booking/service/" + service_id+'/true',
+      url: baseurl + "booking/servicepicker/" + service_id + "/true",
       method: "GET",
       success: function (bookings) {
         const bookedDates = Object.keys(bookings).map((key) => {
           const booking = bookings[key];
-          const start = booking.start; // Assurez-vous que cette propriété existe dans vos objets de réservation
-          const fullblocked = booking.fullblocked; // Assurez-vous que cette propriété existe dans vos objets de réservation
+          const start = booking.start;
+          const fullblocked = booking.fullblocked;
           return [start, fullblocked];
         });
         const bookedDatesFormatted = bookedDates.map((dateArr) => {
@@ -633,17 +782,22 @@ function loadAndInitDatepicker(service_id , start=false,end=false) {
         });
         // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
         fromServicepicker = new easepick.create({
-          element: document.getElementById("startEvent"),
+          element: document.getElementById("ModaleventStart"),
           css: ["css/wd_datepicker.css"],
           firstDay: 1, // 0 - Sunday, 1 - Monday, 2 - Tuesday
           grid: 1, // Number of calendar columns
           calendars: 1, // Number of visible months.
           opens: "top",
           autoApply: true,
-          header: "<b>" + document.getElementById('eventService_id').options[document.getElementById('eventService_id').selectedIndex].textContent+ "</b>",
+          header:
+            "<b>" +
+            document.getElementById("ModaleventService_id").options[
+              document.getElementById("ModaleventService_id").selectedIndex
+            ].textContent +
+            "</b>",
           plugins: ["RangePlugin", "LockPlugin"],
           RangePlugin: {
-            elementEnd: "#eventEnd",
+            elementEnd: "#ModaleventEnd",
             tooltipNumber(num) {
               return num - 1;
             },
@@ -690,7 +844,7 @@ function loadAndInitDatepicker(service_id , start=false,end=false) {
                   target.querySelector(".day-unavailable") ||
                   document.createElement("span");
                 span.className = "day-unavailable";
-                span.innerHTML = "Réservé"; // Afficher "Devis" ou "Facture"
+                span.innerHTML = "Réservé";
 
                 target.append(span);
               }
@@ -698,28 +852,29 @@ function loadAndInitDatepicker(service_id , start=false,end=false) {
           },
         });
 
-        if(start && end){
-          fromServicepicker.setStartDate(start);
-          fromServicepicker.setEndDate(end);
+        if (start_date && end_date) {
+          fromServicepicker.setStartDate(start_date);
+          fromServicepicker.setEndDate(end_date);
         }
-        
+
         fromServicepicker.on("select", function (event) {
           // Récupérer les dates de début et de fin
-          const startDate = new Date(event.detail.start); // Adaptez ces lignes en fonction de la structure de `event.detail`
-          const endDate = new Date(event.detail.end); // Adaptez ces lignes en fonction de la structure de `event.detail`
+          const startDate = new Date(event.detail.start); 
+          const endDate = new Date(event.detail.end);
 
           // Calculer la différence en jours
           const timeDifference = endDate.getTime() - startDate.getTime();
           const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
 
           // Mettre à jour le champ 'eventQt'
-          document.getElementById("eventQt").value = dayDifference;
+          document.getElementById("ModaleventQt").value = dayDifference;
 
           // Réinitialiser le flag puisque la mise à jour vient du datepicker et non de l'utilisateur
           userChangedPrice = false;
 
           updatePrice();
         });
+        resolve(fromServicepicker); // Déplacez `resolve` ici
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.error(
@@ -728,7 +883,6 @@ function loadAndInitDatepicker(service_id , start=false,end=false) {
         );
       },
     });
-    resolve();
   });
 }
 
@@ -753,14 +907,22 @@ function getDayOfWeek(dateString) {
 function format_date(input_date, daysToAdd = 0, shorter = false) {
   let result = ``;
 
+  // Vérifie si la date est au format 'dd-mm-yyyy'
+  if (/^\d{2}-\d{2}-\d{4}$/.test(input_date)) {
+    // Convertit 'dd-mm-yyyy' en 'mm/dd/yyyy' pour la compatibilité avec l'objet Date de JavaScript
+    const parts = input_date.split('-');
+    input_date = parts[1] + '/' + parts[0] + '/' + parts[2];
+  }
+  
   // Convertit la date en un objet Date de JavaScript
   let dateObj = new Date(input_date);
 
-  // Ajuste pour le fuseau horaire de la Polynésie française (UTC-10)
-  dateObj.setHours(dateObj.getHours() - 10);
-
+  // Vérifie si la date est valide
+  if (isNaN(dateObj.getTime())) {
+    return 'Date invalide'; // ou gérer l'erreur comme vous le souhaitez
+  }
   // Ajoute des jours si nécessaire
-  dateObj.setDate(dateObj.getDate() + daysToAdd + 1);
+  dateObj.setDate(dateObj.getDate() + daysToAdd );
 
   // Récupère le jour, le mois et l'année
   let day = String(dateObj.getDate()).padStart(2, "0");

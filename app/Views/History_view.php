@@ -103,7 +103,7 @@ $data['options_customers_id'] = $options_customers_id;
                                 <tr class="ROW row_booking_<?= $booking['id']; ?> service_<?= $booking['Service_id']; ?> hover:bg-gray-50 border-b dark:border-gray-700 cursor-pointer whitespace-nowrap" onclick="showBookingDetailsFromID(<?= $booking['id']; ?>)">
                                     <td class="px-4 py-3"><?= $booking['Type_doc']; ?></td>
                                     <td class=" py-3 text-xs"># <?= $booking['id']; ?></td>
-                                    <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white service_<?= $booking['Customer_id']; ?>"><?= $booking['customer_name']; ?></th>
+                                    <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"><?= $booking['customer_name']; ?></th>
                                     <td class="px-4 py-3"> <?= $booking['service_title']; ?></td>
                                     <td class="px-4 py-3 text-center"> <?= countNights(sql_date_to_dmY($booking['start']),sql_date_to_dmY($booking['end'])) ?></td>
                                     <td class="px-4 py-3 inline-flex">
@@ -113,7 +113,7 @@ $data['options_customers_id'] = $options_customers_id;
                                         </svg>
                                         <?= sql_date_to_dmY($booking['end']); ?>
                                     </td>
-                                    <td class="px-3 py-3" onclick="deleteEvent('<?= $booking['id']; ?>',false,event)">
+                                    <td class="px-3 py-3" onclick="deleteEvent('<?= $booking['id']; ?>')">
                                     <svg class="w-4 h-4 text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                                     </svg>

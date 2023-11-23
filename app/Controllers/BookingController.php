@@ -74,13 +74,121 @@ class BookingController extends BaseController
                 }
 
                 if (!isset($grouped[$date]['bookings'][$booking['id']])) {
+                    
+                    $booking_paids = [];
+                    $booking_paids_ids = [];
+                    if (strlen($booking['paids_ids']) > 1) {
+                        $booking_paids_ids = explode(',', $booking['paids_ids']);
+                    }
+            
+                    $types_paids = explode(',', $booking['types_paids']);
+                    $paids_values =  explode(',', $booking['paids_values']);
+                    $paids_sum = array_sum($paids_values);
+                    foreach ($booking_paids_ids as $index => $id) {
+                        $booking_paids[$id] = [
+                            'type_paid' => $types_paids[$index] ?? null, // Utilisez l'opérateur null coalescent pour éviter les erreurs d'index
+                            'value' => $paids_values[$index] ?? null
+                        ];
+                    }
+
                     $grouped[$date]['bookings'][$booking['id']] = [
                         'colors' => $booking['service_color'], // Initialise avec la première couleur
                         'services_titles' => $booking['service_title'], // Initialise avec le premier titre de service
                         'prices' => $booking['Price'], // Initialise avec le premier prix
-                        'paids' => $booking['Paid'], // Initialise avec le premier paiement
+                        'paids' => $paids_sum, // Initialise avec le premier paiement
                         'types_docs' => $booking['Type_doc'], // Initialise avec le premier type de document
-                        'fullblockeds' => $booking['fullblocked'] // Initialise avec le premier statut fullblocked
+                        'fullblockeds' => $booking['fullblocked'], // Initialise avec le premier statut fullblocked
+                        'array_paids' => $booking_paids
+
+                    ];
+                    $grouped[$date]['count']++; // Incrémente le compteur uniquement lors de l'ajout d'une nouvelle réservation
+                } else {
+                    // Ajoutez les données uniquement si elles sont uniques pour cette réservation spécifique
+                    if (!in_array($booking['service_color'], $grouped[$date]['bookings'][$booking['id']]['colors'])) {
+                        $grouped[$date]['bookings'][$booking['id']]['colors'][] = $booking['service_color'];
+                    }
+                }
+
+
+
+                // Ajoutez les couleurs uniques à la liste globale des couleurs pour la date
+            if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
+                $grouped[$date]['colors'][] = $booking['service_color'];
+            }
+                // Ajoutez les couleurs uniques à la liste globale des couleurs pour la date
+            if (!in_array($booking['fullblocked'], $grouped[$date]['fullblocked'])) {
+                $grouped[$date]['fullblocked'][] = $booking['fullblocked'];
+            }
+                $startDate->modify('+1 day'); // Passer au jour suivant
+            }
+        }
+
+        // Générer les événements
+        $events = [];
+        foreach ($grouped as $date => $data) {
+            $events[] = [
+                'title' => $data['count'] . ' réservations',
+                'start' => $date,
+                'colors' => $data['colors'],
+                'fullblocked' => $data['fullblocked'],
+                'bookings' => $data['bookings']
+            ];
+        }
+
+
+        return $this->response->setJSON($events);
+    }
+
+    public function getBookingsfromDatepicker($service_id = false, $fullblocked = false)
+    {
+
+        $bookings = $this->BookingModel->getAllBookingsFromDatepicker($service_id,$fullblocked);
+        // Regroupez les réservations par jour
+        $grouped = [];
+        foreach ($bookings as $booking) {
+            if (!isset($booking['start'], $booking['end'])) {
+                continue; // Skip if required fields are missing
+            }
+
+            $startDate = new DateTime($booking['start']);
+            $endDate = new DateTime($booking['end']);
+
+            while ($startDate <= $endDate) {
+                $date = $startDate->format('Y-m-d');
+
+                if (!isset($grouped[$date])) {
+                    $grouped[$date] = [
+                        'count' => 0,
+                        'fullblocked' => [],
+                        'colors' => [],
+                        'bookings' => []
+                        ];
+                }
+
+                if (!isset($grouped[$date]['bookings'][$booking['id']])) {
+                    
+                    $booking_paids = [];
+                    $booking_paids_ids = [];
+                    if (strlen($booking['paids_ids']) > 1) {
+                        $booking_paids_ids = explode(',', $booking['paids_ids']);
+                    }
+            
+                    $paids_values =  explode(',', $booking['paids_values']);
+                    $paids_sum = array_sum($paids_values);
+                    foreach ($booking_paids_ids as $index => $id) {
+                        $booking_paids[$id] = [
+                            'value' => $paids_values[$index] ?? null
+                        ];
+                    }
+
+                    $grouped[$date]['bookings'][$booking['id']] = [
+                        'colors' => $booking['service_color'], // Initialise avec la première couleur
+                        'services_titles' => $booking['service_title'], // Initialise avec le premier titre de service
+                        'prices' => $booking['Price'], // Initialise avec le premier prix
+                        'paids' => $paids_sum, // Initialise avec le premier paiement
+                        'fullblockeds' => $booking['fullblocked'], // Initialise avec le premier statut fullblocked
+                        'array_paids' => $booking_paids
+
                     ];
                     $grouped[$date]['count']++; // Incrémente le compteur uniquement lors de l'ajout d'une nouvelle réservation
                 } else {
@@ -163,7 +271,7 @@ class BookingController extends BaseController
                     $grouped[$date]['paids'][] = $paid; // Ajoutez 'Paid' s'il n'est pas déjà dans le tableau
                 }
                 if (!in_array($QtTraveller, $grouped[$date]['QtTraveller'])) {
-                    $grouped[$date]['QtTraveller'][] = $QtTraveller; // Ajoutez 'Paid' s'il n'est pas déjà dans le tableau
+                    $grouped[$date]['QtTraveller'][] = $QtTraveller; 
                 }
                 if (!in_array($fullblocked, $grouped[$date]['fullblocked'])) {
                     $grouped[$date]['fullblocked'][] = $fullblocked; // Ajoutez 'fullblocked' s'il n'est pas déjà dans le tableau
@@ -179,7 +287,7 @@ class BookingController extends BaseController
             // Gérer ici la logique pour déterminer la couleur à afficher si plusieurs couleurs pour une date
             $color = count($data['colors']) === 1 ? $data['colors'][0] : '#bcbcbc'; // Exemple : couleur par défaut si plusieurs couleurs
             $eventPrice = array_sum($data['prices']); // Calculez le total des prix pour la date
-            $eventPaidPrice = array_sum($data['paids']); // Calculez le total des prix pour la date
+            $eventPaidPrice = array_sum($data['paids']); // Calculez le total des paiements pour la date
             $eventQtTraveller = array_sum($data['QtTraveller']); // Calculez le total des prix pour la date
             $eventPaid = $eventPaidPrice == $eventPrice ? 'Payé' : 'Impayé'; // Déterminez si un paiement a été effectué
 
@@ -254,10 +362,11 @@ class BookingController extends BaseController
         $data = $this->request->getPost();
 
         $id = $this->request->getPost('id');
+        unset($data['id']);
 
         if ($this->BookingModel->validate($data)) {  // Utilisez les règles de validation définies dans le modèle
             if ($this->BookingModel->update($id, $data)) {
-                return $this->response->setJSON(['status' => 'success', 'id' => $id]);
+                return $this->response->setJSON(['status' => 'success', 'id' => $id, 'data' => $data]);
             } else {
                 return $this->response->setJSON(['status' => 'fail', 'message' => 'Une erreur dans les données envoyées, vérifier la syntaxe des textes']);
             }
@@ -281,11 +390,11 @@ class BookingController extends BaseController
 
         $result = $this->BookingModel->addBooking($booking_data);
 
-        if ($result) {
-            return $this->response->setJSON(['status' => 'success', 'data' => $booking_data]);
+        if ($result['success']) {
+            return $this->response->setJSON(['success' => true, 'id' => $result['id'], 'data' => $booking_data]);
         } else {
             $errors = $this->BookingModel->errors() ? $this->BookingModel->errors() : 'Unknown error';
-            return $this->response->setJSON(['status' => 'fail', 'error' => $errors, 'booking_data' => $booking_data]);
+            return $this->response->setJSON(['success' => false, 'error' => $errors, 'booking_data' => $booking_data]);
         }
     }
 

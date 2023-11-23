@@ -90,10 +90,17 @@
 <script src="Assets/js/wd_fullcalendar.js?v=" <?= time() ?>></script>
 <script src="Assets/js/wd_sidetools.js?v=" <?= time() ?>></script>
 <script>
+// LOADER
+document.addEventListener('DOMContentLoaded', function() {
+    var loader = document.querySelector('.loader');
+    loader.style.display = 'none';
+});
+
+
     // Initialisation du select recherche
     $(document).ready(function() {
 
-        $('#eventCustomer_id').select2({
+        $('#ModaleventCustomer_id').select2({
             tags: true,
             tokenSeparators: [',', ' '],
             placeholder: "Recherchez ou ajoutez un nouveau client",
@@ -118,7 +125,7 @@
     var fromServicepicker; // Déclare la variable à l'extérieur de la fonction pour qu'elle ait une portée globale.
 
 document.addEventListener('DOMContentLoaded', function() {
-    var serviceSelect = document.getElementById('eventService_id');
+    var serviceSelect = document.getElementById('ModaleventService_id');
 
     // Chargez et initiez le datepicker avec l'ID de service sélectionné au départ
     loadAndInitDatepicker(serviceSelect.value);

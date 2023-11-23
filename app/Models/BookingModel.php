@@ -16,7 +16,7 @@ class BookingModel extends Model
     protected $useAutoIncrement = true;
 
     protected $allowedFields = [
-        'Customer_id', 'start', 'end', 'Service_id', 'qt', 'QtTraveller', 'Price', 
+        'Customer_id', 'start', 'end', 'Service_id', 'Qt', 'QtTraveller', 'Price', 
         'Paid', 'Type_doc', 'Pdf_url', 'Comment', 'fullblocked', 'Created_at', 'Deleted_at'
     ]; // les champs autorisés pour l'insertion ou la mise à jour
 
@@ -28,7 +28,7 @@ class BookingModel extends Model
         'end'     => 'required',
         'Service_id'   => 'required|integer',
         'fullblocked'   => 'permit_empty|integer',
-        'qt'           => 'required|integer',
+        'Qt'           => 'required|integer',
         'QtTraveller'  => 'required|integer',
         'Price'        => 'required|integer',
         'Paid'         => 'permit_empty|integer',
@@ -49,9 +49,35 @@ class BookingModel extends Model
 
 
     public function getAllBookings($service_id=false,$fullblocked=false){
-        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, wd_services.Color as service_color');
+        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
+        wd_services.Color as service_color,
+        GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
+        GROUP_CONCAT(wd_paid.type_paid) as types_paids,
+        GROUP_CONCAT(wd_paid.value) as paids_values');
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
+        $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
+        $this->groupBy('wd_bookings.id');
+        if($service_id !== false){
+            $this->where('wd_bookings.Service_id', $service_id);
+        }
+        if($fullblocked == "true"){
+            $this->orWhere('wd_bookings.fullblocked', 1);
+        }
+        $result = $this->findAll();
+
+        return $result;
+    }
+
+    public function getAllBookingsFromDatepicker($service_id=false,$fullblocked=false){
+        $this->select('wd_bookings.id,wd_bookings.Price,wd_bookings.start,wd_bookings.end,wd_bookings.fullblocked, wd_bookings.service_id, wd_bookings.Paid , 
+        wd_services.Title as service_title,wd_services.Color as service_color,
+        GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
+        GROUP_CONCAT(wd_paid.type_paid) as types_paids,
+        GROUP_CONCAT(wd_paid.value) as paids_values');
+        $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
+        $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
+        $this->groupBy('wd_bookings.id');
         if($service_id !== false){
             $this->where('wd_bookings.Service_id', $service_id);
         }
@@ -63,9 +89,15 @@ class BookingModel extends Model
         return $result;
     }
     public function getAllBookingsFromService($service){
-        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, wd_services.Color as service_color');
+        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
+        wd_services.Color as service_color,
+        GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
+        GROUP_CONCAT(wd_paid.type_paid) as types_paids,
+        GROUP_CONCAT(wd_paid.value) as paids_values');
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
+        $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
+        $this->groupBy('wd_bookings.id');
         // Appliquer le filtre pour les réservations avec le service_id spécifié
         $this->where('wd_bookings.Service_id', $service);
         // OU les réservations qui n'ont pas ce service_id mais avec fullblocked à true
@@ -83,9 +115,15 @@ class BookingModel extends Model
             // La date est mal formée
             return null;
         }
-        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, wd_services.Color as service_color');
+        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
+        wd_services.Color as service_color,
+        GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
+        GROUP_CONCAT(wd_paid.type_paid) as types_paids,
+        GROUP_CONCAT(wd_paid.value) as paids_values');
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
+        $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
+        $this->groupBy('wd_bookings.id');
         // Condition pour vérifier si la colonne 'end' contient une valeur
         $this->groupStart();
         $this->where("(DATE(start) <= '$formattedDate' AND (DATE(end) >= '$formattedDate' OR end IS NULL))");
@@ -97,18 +135,37 @@ class BookingModel extends Model
 
     public function getBookingFromID($id)
     {
-        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_customers.Phone as customer_phone, wd_customers.Email as customer_mail, wd_customers.Comment as customer_comment, wd_customers.Created_at as customer_created,  wd_services.Title as service_title, wd_services.Color as service_color', false);
-        $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.customer_id', 'left');
+        $this->select('wd_bookings.*, 
+        wd_customers.Name as customer_name, 
+        wd_customers.Phone as customer_phone, 
+        wd_customers.Email as customer_mail, 
+        wd_customers.Created_at as customer_created, 
+        wd_customers.Comment as customer_comment, 
+        wd_services.Title as service_title, 
+        wd_services.Color as service_color,
+        GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
+        GROUP_CONCAT(wd_paid.type_paid) as types_paids,
+        GROUP_CONCAT(wd_paid.value) as paids_values');
+        $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
+        $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
+        $this->groupBy('wd_bookings.id');
         $this->where("wd_bookings.id", $id);
-        $result = $this->first(); // Utilisez first si vous attendez un seul enregistrement
+        $result = $this->first(); 
         return $result;
     }
 
     public function getBookingsFromCustomer($customer_id){
 
-        $this->select('wd_bookings.*,  wd_services.Title as service_title, wd_services.Color as service_color');
-        $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');        
+        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
+        wd_services.Color as service_color,
+        GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
+        GROUP_CONCAT(wd_paid.type_paid) as types_paids,
+        GROUP_CONCAT(wd_paid.value) as paids_values');
+        $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
+        $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
+        $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
+        $this->groupBy('wd_bookings.id');    
         $this->where("wd_bookings.Customer_id", $customer_id);
         $result = $this->findAll();
         return $result;
@@ -144,18 +201,25 @@ class BookingModel extends Model
 
     public function addBooking($data)
     {
-        // Effectuer la validation ici si nécessaire
+        $id = null; // Initialisez $id en dehors du bloc conditionnel
+
         if ($this->validate($data)) {
-            $this->insert($data);
-            return true;
+            $inserted = $this->insert($data);
+            if ($inserted) {
+                $id = $this->insertID(); // Récupérer le nouvel ID si nécessaire
+                return ['success' => true, 'id' => $id];
+            } else {
+                // Gérer le cas où l'insertion échoue
+                $error = $this->errors();
+                return ['success' => false, 'error' => $error];
+            }
         } else {
-            // Récupérer et retourner les erreurs de validation
-            $errors = $this->errors();
-            return [
-                'success' => false,
-                'errors' => $errors
-            ];
+            // Gérer le cas où la validation échoue
+            $validationErrors = $this->validation->getErrors();
+            return ['success' => false, 'validationErrors' => $validationErrors];
         }
+        return ['success' => isset($id), 'id' => $id];
+
     }
 
     public function deleteBooking($data)

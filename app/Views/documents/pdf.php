@@ -26,12 +26,18 @@ if(isset($seller[0]) && isset($data)){
     $s_start = $data['booking_info']['start'];
     $s_end = $data['booking_info']['end'];
     $s_type = $data['booking_info']['Type_doc'];
-    $s_paid = $data['booking_info']['Paid'];
     $s_price = $data['booking_info']['Price'];
     $s_service = $data['booking_info']['service_title'];
     $s_comment = $data['booking_info']['Comment'];
-    $s_qt = $data['booking_info']['qt'] == 0 ? 1: $data['booking_info']['qt'] ;
-	
+    $s_qt = $data['booking_info']['Qt'] == 0 ? 1: $data['booking_info']['Qt'] ;
+	$count_paid =  count(explode(',',trim($data['booking_info']['paids_ids'])));
+	$types_paids = explode(',',trim($data['booking_info']['types_paids']));
+	$paids_values = explode(',',trim($data['booking_info']['paids_values']));
+    $s_paid = array_sum($paids_values);
+	$payments = [];
+	for ($i = 0; $i < $count_paid; $i++) {$payments[$types_paids[$i]] = $paids_values[$i];}
+
+
     $u_price = $s_price/$s_qt;
 
     if(isset($denomination) && isset($telephone) && isset($adresse) && isset($mail) &&
@@ -210,6 +216,8 @@ $due_date = $date->format('d/m/Y');
 	</head>
 
 	<body>
+		<?php //var_dump($paids_values); 
+		?>
 		<div class="invoice-box">
 			<table cellpadding="0" cellspacing="0">
 				<tr class="top">
@@ -288,18 +296,39 @@ $due_date = $date->format('d/m/Y');
 						<p><?=$s_price.$currency?></p>
 					</td>
 				</tr>
-		
-				<tr >
+				<tr class="total" style="white-space: nowrap;" >
 					<td colspan="2">
                         <table cellpadding="0" cellspacing="0">
                             <tr class="heading">
                                 <td colspan="2">Encaissé</td>
                             </tr>
-                            <tr><td colspan="2"><?=$s_paid.$currency?></span></td></tr>
+                            <tr><td colspan="2">
+							<?php
+								foreach($payments as $key => $value){
+									if(strlen($value) !== 0){
+										echo $key.':'.$value.$currency.'<br>';
+									}
+							}
+							?>	
+							
+							</td></tr>
         
 
                         </table>
-                   
+					</td>
+					<?php if($tax_bool == true){
+						echo "<td colspan='2'><p>Payé</p></td>	";
+					}
+					else{
+						echo "<td colspan='2'>";
+						echo "<p>Payé</p>";
+						echo "</td";
+					
+					} ?>
+					<td>
+					<p><?=$s_paid.$currency?></p>
+					</td>
+				</tr>
 
 				
                 <tr class="invoice-footer">

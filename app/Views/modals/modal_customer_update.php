@@ -1,7 +1,7 @@
 <?php
 $modal_id = "updateCustomerModal";
 ?>
-<!-- ADD EVENTS - Modal Container -->
+<!-- UPDATE CUSTOMER - Modal Container -->
 <div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full inset-0 hidden z-50 overflow-auto ">
     <div class="relative h-full bg-white rounded-lg shadow dark:bg-gray-700  flex justify-center ">
 
@@ -46,7 +46,6 @@ $modal_id = "updateCustomerModal";
                         <textarea rows="3" value='' id="customer_comment" name="Comment" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" ></textarea>                        
                         <label for="customer_comment" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Commentaire</label>
                     </div>
-                    <button type="button" id="cancel_customer_submit_form" type="button"  class="sticky bottom-10 float-left mt-10 text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 ">Annuler</button>
                     <button type="button" id="update_customer_submit_form" type="button"  class="sticky bottom-10 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ">Enregistrer</button>
                 </form>
             </div>

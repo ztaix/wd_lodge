@@ -1,5 +1,12 @@
 var count_row_found = 0;
+function getToday() {
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0'); // Janvier est 0 !
+  var yyyy = today.getFullYear();
 
+  return dd + '-' + mm + '-' + yyyy;
+}
 
 function lightenHexColor(hex, percent) {
   // Convertir le hex en RGB
@@ -29,12 +36,12 @@ function showBanner(message, isSuccess) {
   const banner = document.getElementById("banner_update");
   const banner_txt = document.getElementById("banner_update-text");
 
-  banner_txt.innerHTML = message;
+  banner_txt.innerHTML += '<p>' + message + '</p>';
 
   if (isSuccess) {
-    banner.style.backgroundColor = "rgba(0, 128, 0)"; //green 50%
+    banner.style.backgroundColor = "rgba(0, 128, 0, 0.9)"; //green 50%
   } else {
-    banner.style.backgroundColor = "rgba(255, 0, 0)";
+    banner.style.backgroundColor = "rgba(255, 0, 0, 0.9)";
   }
 
   banner.classList.remove("banner_update-exit");
@@ -43,7 +50,8 @@ function showBanner(message, isSuccess) {
   setTimeout(() => {
     banner.classList.remove("banner_update-visible");
     banner.classList.add("banner_update-exit");
-  }, 4000);
+    banner_txt.innerHTML = '';
+  }, 3500);
 }
 
 function showSearch() {
@@ -55,6 +63,49 @@ function showSearch() {
 // La pile pour garder une trace des fenêtres modales ouvertes
 var modalStack = []; // Pile pour stocker les fenêtres modales ouvertes
 var currentZIndex = 50; // Valeur initiale du zIndex
+
+function resetForm(modalId, start = false , end = false){
+  console.log('start: ',start);
+  console.log('end: ',end);
+  if(modalId == "addEventModal"){
+    const form_addEventModal = [
+      "Modaleventid",
+      "ModaleventType_doc",
+      "ModaleventCustomer_id",
+      "ModaleventQtTraveller",
+      "ModaleventService_id",
+      "ModaleventFull_Blocked",
+      "ModaleventQt",
+      "ModaleventPrice",
+      "ModaleventComment",
+    ];
+    
+    form_addEventModal.forEach(input => {
+      if(input == "ModaleventType_doc"){
+        document.getElementById(input).value = 'Devis';
+      }
+      else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" || input == "ModaleventCustomer_id" || input == "ModaleventService_id" ){
+        document.getElementById(input).value = 1;
+      }
+      else {
+        document.getElementById(input).value = '';
+      }
+    });
+    
+    document.getElementById("addEventModal_title").innerText = 'Ajouter';
+    let date_start = '';
+    let date_end = '';
+    if(start){
+      start_date = format_date(start);
+      date_end = end ? format_date(end) : format_date(start,1);
+    }else {
+      date_start = format_date(getToday());
+      date_end = format_date(date_start,1);
+    }
+
+    loadAndInitDatepicker(1,date_start,date_end);
+  }
+}
 
 function openModal(modalId) {
   let modalElement = document.getElementById(modalId);
@@ -84,7 +135,7 @@ function closeModal(all = false) {
         lastModal.classList.remove("animate");
         lastModal.classList.remove("close-animate");
         lastModal.style.display = "none";
-      }, 2000); // Correspond à la durée de l'animation slideDown
+      }, 1000); // Correspond à la durée de l'animation slideDown
     }
   }
   else{
@@ -98,7 +149,7 @@ function closeModal(all = false) {
           currentModal.classList.remove("animate");
           currentModal.classList.remove("close-animate");
           currentModal.style.display = "none";
-      }, 2000); // Correspond à la durée de l'animation slideDown
+      }, 1000); // Correspond à la durée de l'animation slideDown
     }
   }
 }
@@ -150,6 +201,15 @@ var isClosingModal = false;
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
   calendar = new FullCalendar.Calendar(calendarEl, {
+    loading: function(isLoading) {
+      if (isLoading) {
+          // Afficher le loader
+          document.querySelector('.loader').style.display = 'block';
+      } else {
+          // Cacher le loader
+          document.querySelector('.loader').style.display = 'none';
+      }
+    },
     locale: "fr",
     firstDay: 1,
     initialView: "multiMonthYear",
@@ -204,6 +264,7 @@ document.addEventListener("DOMContentLoaded", function () {
       AddEventButton: {
         text: " ",
         click: function () {
+          resetForm("addEventModal");
           openModal("addEventModal");
         },
       },
@@ -276,7 +337,6 @@ document.addEventListener("DOMContentLoaded", function () {
             let booking = bookings[bookingId];
             let status = "";
             let facture = booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):"";
-
             if(booking.paids == booking.prices){
 
                 // PAID
@@ -346,27 +406,20 @@ document.addEventListener("DOMContentLoaded", function () {
         method: "POST",
         data: { date: clickedDate },
         success: function (response) {
-          //  $response = [
-          //  'events' => $BookingModel,
-          //  'clickedDate' => $date            
 
           // Attribution d'office à la modal d'ajout la date cliqué.
           const startdate = format_date(response.clickedDate);
           const enddate = format_date(response.clickedDate, 1);
-          document.getElementById("startEvent").value = startdate;
-          document.getElementById("eventEnd").value = enddate;
+          document.getElementById("ModaleventStart").value = startdate;
+          document.getElementById("ModaleventEnd").value = enddate;
 
           if (response.events.length > 0) {
             // Si la réponse contient des événements, exécutez votre code ici
             showBookingList(response.events, clickedDate);
             // Afficher le popup
             openModal("ListEventModal");
-            console.log('date',clickedDate);
           } else {
-            document.getElementById("eventCustomer_id").value;
-            document.getElementById("eventComment").value = "";
-            fromServicepicker.setStartDate(startdate);
-            fromServicepicker.setEndDate(enddate);
+            resetForm("addEventModal",startdate,enddate);
 
             // Afficher le popup
             openModal("addEventModal");
@@ -384,42 +437,101 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Mettre à jour l'événement depuis la !!! vue détaillé !!! dans la base de données
 function updateEventFromDetails() {
-  let formData = {
-    id: document.getElementById("id").value,
-    Customer_id: document.getElementById("eventCustomer_id").value,
-    Service_id: document.getElementById("eventService_id").value,
-    fullblocked: document.getElementById("eventFull_Blocked").checked ===true ? 1 : 0,
-    qt: document.getElementById("eventQt").value,
-    QtTraveller: document.getElementById("eventQtTraveller").value,
-    Price: document.getElementById("eventPrice").value,
-    Paid: document.getElementById("eventPaid").value,
-    Type_doc: document.getElementById("eventType_doc").value,
-    Comment: document.getElementById("eventComment").value,
-    start: format_date_toSql(document.getElementById("startEvent").value),
-    end: format_date_toSql(document.getElementById("eventEnd").value),
-  };
+  let formData = {};
+  let E_Form = Array.from(document.querySelectorAll('[id]')).filter(element => typeof element.id === 'string' && element.id.startsWith('Modalevent'));
+  E_Form.forEach(element => {
+    const key = element.id.replace("Modalevent", ""); // Supprime "Modalevent" du début de l'id pour obtenir la clé
+    if (element.type === "checkbox") {
+        formData[key] = element.checked ? 1 : 0; // Pour les cases à cocher
+    } else if (key ==="Start" || key === 'End' ){
+      formData[key.toLowerCase()] = format_date_toSql(element.value); // Pour les champs de texte et les listes déroulantes
+
+    }else {formData[key] = element.value;}
+  });
+  //UPDATE FORM BOOKING
   $.ajax({
     url: baseurl + "booking/updateBooking", // URL de mise à jour
     method: "POST",
     data: formData,
     success: function (response) {
       if (response.status == "success") {
-
+        
         showBanner("Événement mise à jour avec succès !", true);
         closeModalById('addEventModal');
         showBookingDetailsFromID(response.id);
-
+        
         if(ModalInStack('ListEventModal')){
-            document.getElementById('booking_total_'+response.id).innerText = formData.Price;
-            document.getElementById('booking_Comment_'+response.id).innerText = formData.Comment;
-            document.getElementById('booking_start_'+response.id).innerText = getDayOfWeek(format_date(formData.start)) + ' ' + format_date(formData.start);
-            document.getElementById('booking_end_'+response.id).innerText = getDayOfWeek(format_date(formData.end)) + ' ' + format_date(formData.end);
-            document.getElementById('booking_title_'+response.id).innerHTML = "<i style='color: orange'>*" + document.getElementById('booking_title_'+response.id).innerText + "</i>";
+          console.log(document.getElementById('booking_title_'+response.id));
+          document.getElementById('booking_total_'+response.id).innerText = response.data.Price;
+          document.getElementById('booking_Comment_'+response.id).innerText = response.data.Comment;
+          document.getElementById('booking_start_'+response.id).innerText = getDayOfWeek(format_date(response.data.start)) + ' ' + format_date(response.data.start);
+          document.getElementById('booking_end_'+response.id).innerText = getDayOfWeek(format_date(response.data.end)) + ' ' + format_date(response.data.end);
+          document.getElementById('booking_title_'+response.id).innerHTML = "<i style='color: orange'>*"+ document.getElementById('booking_details_customer_name_span').innerText + response.data.Service_id + "</i>";
         }
 
         if (calendar) {
           calendar.refetchEvents();
         }
+       
+        // UPDATE FORM PAID
+        let payments = []; // Initialise payments comme un tableau vide
+        document.querySelectorAll('.payment-row').forEach((row, index) => {
+          if(row.id.startsWith('temp_') === true ) {
+            // Pour un nouvel enregistrement (id non défini ou vide)
+            payments.push({
+              'booking_id': formData['id'],
+              'type_paid': document.getElementById(`rowPaidType${row.id}`).value,
+              'value': document.getElementById(`rowPaid${row.id}`).value
+            });
+          }
+          else{
+            let id = document.getElementById(`rowPaidid${index}`).value;
+            if (id){
+              // Pour un enregistrement existant (avec un id défini)
+              payments.push({
+                'id': id, // Stocker l'id dans l'objet
+                'booking_id': formData['id'],
+                'type_paid': document.getElementById(`rowPaidType${index}`).value,
+                'value': document.getElementById(`rowPaid${index}`).value
+              }); // Ajouter l'objet au tableau
+            }
+          }
+        });
+        let payments_filtred = payments.filter(item => item !== undefined);
+        $.ajax({
+          url: baseurl + "paids/upsert",
+          method: "POST",
+          data: { 'payments' : payments_filtred},
+          success: function (response) {
+            let allSuccess = true;
+            let allErrors = [];
+
+            for (let key in response) {
+                if (response.hasOwnProperty(key)) {
+                    let res = response[key];
+                    if (!res.success) {
+                        allSuccess = false;
+                    }
+                    if (res.errors && res.errors.length > 0) {
+                        allErrors.push(...res.errors);
+                    }
+                }
+            }
+
+            if (allSuccess) {
+                showBanner("Paiements mise à jour avec succès !", true);
+            } else {
+                showBanner("Echec de la mise à jour des paiements !", false);
+                console.log('Erreurs: ', allErrors);
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            
+            // En cas d'échec de la requête AJAX
+            showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
+            console.error("AJAX Error:", errorThrown); // Log the error for debugging
+          },
+        });
       } else {
         showBanner("Echec de la mise à jour !", false);
         console.log(response);
@@ -439,19 +551,17 @@ function updateEventFromDetails() {
 function addEvent() {
   let eventData = {};
   let eventElementDOM = {};
-  
   [
-    { id: "eventCustomer_id", key: "Customer_id" },
-    { id: "eventService_id", key: "Service_id" },
-    { id: "eventFull_Blocked", key: "fullblocked", isCheckbox: true },
-    { id: "eventPrice", key: "Price" },
-    { id: "eventPaid", key: "Paid" },
-    { id: "eventQt", key: "qt" },
-    { id: "eventQtTraveller", key: "QtTraveller" },
-    { id: "eventType_doc", key: "Type_doc" },
-    { id: "eventComment", key: "Comment" },
-    { id: "startEvent", key: "start", isDate: true },
-    { id: "eventEnd", key: "end", isDate: true }
+    { id: "ModaleventCustomer_id", key: "Customer_id" },
+    { id: "ModaleventService_id", key: "Service_id" },
+    { id: "ModaleventFull_Blocked", key: "fullblocked", isCheckbox: true },
+    { id: "ModaleventPrice", key: "Price" },
+    { id: "ModaleventQt", key: "Qt" },
+    { id: "ModaleventQtTraveller", key: "QtTraveller" },
+    { id: "ModaleventType_doc", key: "Type_doc" },
+    { id: "ModaleventComment", key: "Comment" },
+    { id: "ModaleventStart", key: "start", isDate: true },
+    { id: "ModaleventEnd", key: "end", isDate: true }
 ].forEach(({ id, key, isCheckbox, isDate }) => {
     let element = document.getElementById(id);
     if (isCheckbox) {
@@ -466,6 +576,7 @@ function addEvent() {
     });
 
 
+
   if (eventData["start"] && eventData["end"]) {
     // Envoi de la requête AJAX
     $.ajax({
@@ -474,13 +585,13 @@ function addEvent() {
       data: eventData, // Données à envoyer
       success: function (response) {
         try {
-          if (response.status == "success") {
+          if (response.success == true) {
             // Traitez la réponse ici
             showBanner(
               `<div class="flex flex-col">Evènement ajouté avec succès !</div>
                 <div class="text-center">
-                  Du <b>${document.getElementById("startEvent").value}</b> au <b>${
-                document.getElementById("eventEnd").value
+                  Du <b>${document.getElementById("ModaleventStart").value}</b> au <b>${
+                document.getElementById("ModaleventEnd").value
               }</b>
               </div>
               `,
@@ -492,6 +603,37 @@ function addEvent() {
                 calendar.refetchEvents();
               }
             }, 200);
+
+
+            let payments = [];
+            document.querySelectorAll('.payment-row').forEach((row, index=0) => {
+                payments[index] = {
+                    'booking_id': response.id,
+                    'type_paid': document.getElementById(`rowPaidType${index}`).value,
+                    'value': document.getElementById(`rowPaid${index}`).value
+                };
+                index++;
+            });
+          // ADD FORM PAID
+          $.ajax({
+            url: baseurl + "paids/add",
+            method: "POST",
+            data: { payments},
+            success: function (response) {
+              if (response.success !== false) {
+                showBanner("Paiements ajouté avec succès !", true);
+              } else {
+                showBanner("Echec de la mise à jour des paiements ! " + response['errors']['message'], false);
+              }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              
+              // En cas d'échec de la requête AJAX
+              showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
+              console.error("AJAX Error:", errorThrown); // Log the error for debugging
+            },
+          });
+
           } else {
             // Gestion des erreurs de validation
             let errorMessages = "Erreur(s) lors de l'ajout :<ul>";
@@ -532,21 +674,35 @@ function addEvent() {
 
 async function update_add_formEvent(data) {
   openModal("addEventModal");
-console.log('data:',data.QtTraveller);
   // Changer le texte du bouton et son action pour l'ajout
   let submitButton = document.getElementById("add_submit_form");
   submitButton.onclick = function () {
     updateEventFromDetails();
   }; // Ajouter un nouvel événement
+  try {
+    let paids = await getPaidFromBookingId(data.id);
+    let paymentsHtml = '';
+    if(paids.length > 0){
+      paids.forEach((paid, index) => {
+          paymentsHtml += createPaymentHtml(paid, index, paids.length);
+      });
+    }
+    document.getElementById('payments-subcontainer').innerHTML = paymentsHtml; 
+
+} catch (error) {
+    console.error("Erreur lors de la récupération des paids: ", error);
+    // Gérez l'erreur comme vous le souhaitez
+}
+
   if (data) {
     await loadAndInitDatepicker(data.Service_id, data.start, data.end);
 
     document.getElementById(
       "addEventModal_title"
     ).innerText = `Modifier #${data.id}`;
-    document.getElementById("id").value = data.id;
-    document.getElementById("eventCustomer_id").value = data.Customer_id;
-    document.getElementById("eventService_id").value = data.Service_id;
+    document.getElementById("Modaleventid").value = data.id;
+    document.getElementById("ModaleventCustomer_id").value = data.Customer_id;
+    document.getElementById("ModaleventService_id").value = data.Service_id;
     eventFull_Blocked.checked = parseInt(data.fullblocked) === 1;
 
     var container_full_blocked = document.getElementById("container_eventFull_Blocked");
@@ -559,18 +715,17 @@ console.log('data:',data.QtTraveller);
         container_full_blocked.style.backgroundColor = "transparent"; // Exemple : Fond rouge
         // Vous pouvez également réinitialiser le style d'autres éléments ici
     }            
-    document.getElementById("eventQtTraveller").value = parseInt(data.QtTraveller);
-    document.getElementById("eventQt").value = data.qt;
-    document.getElementById("eventPrice").value = data.Price;
-    document.getElementById("eventPaid").value = data.Paid;
-    document.getElementById("eventType_doc").value = data.Type_doc;
-    document.getElementById("eventComment").value = data.Comment;
+    document.getElementById("ModaleventQtTraveller").value = parseInt(data.QtTraveller);
+    document.getElementById("ModaleventQt").value = data.Qt;
+    document.getElementById("ModaleventPrice").value = data.Price;
+    document.getElementById("ModaleventType_doc").value = data.Type_doc;
+    document.getElementById("ModaleventComment").value = data.Comment;
 
   }
 }
 
 // Fonction pour ajouter un événement
-function deleteEvent(event_id, modal_id = false, event = false) {
+function deleteEvent(event_id, modal_id = false, paids_id = false) {
   openModal("ConfirmDeleteModal", true, false);
 
   // Changer le texte du bouton et son action pour l'ajout
