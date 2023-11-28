@@ -1,7 +1,5 @@
 <?php
 $modal_id = "addEventModal";
-
-
 ?>
 <!-- ADD EVENTS - Modal Container -->
 <div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-[calc(100vh)] hidden z-50 overflow-auto ">
@@ -77,9 +75,9 @@ $modal_id = "addEventModal";
 
 
                         <!-- Case à cocher -->
-                        <div id="container_eventFull_Blocked" class="w-fit mt-2 p-2 bg-transparent border border-red-200 dark:border-red-900 rounded-lg">
-                            <input id="ModaleventFull_Blocked" name="ModaleventFull_Blocked" type="checkbox" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label for="ModaleventFull_Blocked" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Privatiser</label>
+                        <div id="container_eventfullblocked" class="w-fit mt-2 p-2 bg-transparent border border-red-200 dark:border-red-900 rounded-lg">
+                            <input id="Modaleventfullblocked" name="Modaleventfullblocked" type="checkbox" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="Modaleventfullblocked" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Privatiser</label>
                         </div>
                     </div>
                     <div date-rangepicker id="dateranger" class="flex items-center justify-between">
@@ -108,23 +106,27 @@ $modal_id = "addEventModal";
                         </div>
                     </div>
                     <div class="relative">
-                        <input type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="ModaleventQt" name="ModaleventQt" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+                        <input disabled type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="ModaleventQt" name="ModaleventQt" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
                         <label for="ModaleventQt" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Nombre de nuit</label>
                     </div>
                     <div class="relative">
-                        <input type="number" pattern="[0-9]*" inputmode="numeric" id="ModaleventPrice" name="ModaleventPrice" class="block w-full  text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required>
+                        <input type="number" pattern="[0-9]*" inputmode="numeric" id="ModaleventPrice" name="ModaleventPrice" class="block w-full  text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder="" required>
                         <label for="ModaleventPrice" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Prix Total</label>
-
-                        <span id="discountIndicator" class="text-base" style="color: orange; display: none;">Discount status</span>
-                        <span id="numericIndicator" class="text-base" style="color: red; display: none;"><br>Seules des valeurs numériques sont autorisées.</span>
+                        <div class="flex flex-col">
+                            <div class="inline-flex justify-between">
+                                <span id="discountIndicator" class="text-sm text-orange-400 hidden"></span>
+                                <span id="totalIndicator" class="text-sm font-bold text-slate-600 text-right"></span>
+                            </div>
+                            <span id="numericIndicator" class="text-sm text-red-600 hidden">Seules des valeurs numériques sont autorisées.</span>
+                        </div>
                     </div>
 
 
                     <div id="payments-container" class="relative">
                         <div id="payments-subcontainer"></div>
                     </div>
-                    <div class="flex justify-end cursor-pointer" onclick="addPaymentRow()" style="margin-top: 0.5rem;">
-                        <div class="flex w-fitp-2 rounded-lg text-gray-600 dark:text-white bg-slate-400 hover:bg-slate-300 focus:ring-4 focus:ring-slate-300 font-medium text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-500 focus:outline-none dark:focus:ring-slate-800 shadow-sm" style="margin-top: 0.5rem;">Ajouter un encaissement</div>
+                    <div class="flex justify-end">
+                        <div onclick="addPaymentRow()" class="flex w-fit p-2 cursor-pointer rounded-lg text-gray-600 dark:text-white bg-slate-400 hover:bg-slate-300 focus:ring-4 focus:ring-slate-300 font-medium text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-500 focus:outline-none dark:focus:ring-slate-800 shadow-sm" style="margin-top: 0.5rem;">Ajouter un encaissement</div>
                     </div>
                     <div position="relative">
                         <label for="ModaleventComment" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Commentaire :</label>
@@ -153,10 +155,25 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         const NotRegisteruniqueID = () => `temp_${Math.random().toString(36).substr(2, 5)}`;
         let uniqueID = NotRegisteruniqueID(); // Appelle la fonction pour obtenir un ID unique
         let payements_class = '';
+        let inputsValues = document.querySelectorAll('input[id^="rowPaid"]');
+        // Filtrer les éléments pour ne garder que ceux dont l'ID est suivi d'un chiffre
+        let filteredInputs = Array.from(inputsValues).filter(input => /^rowPaid\d+$/.test(input.id));
 
+        let sum = 0;
+        var qtTraveller = parseInt(document.getElementById("ModaleventQtTraveller").value);
+        var price = parseInt(priceInput.value);
+        var restapayer = 0;
+
+        filteredInputs.forEach(input => {
+        // Convertir la valeur en nombre et l'ajouter à la somme
+        sum += Number(input.value);
+        });
+
+        if (!isNaN(price) && !isNaN(qtTraveller)) {
+            FillPaidInput = (price + (qtTraveller * 200)) - sum;
+        }
 
         const container = document.getElementById('payments-subcontainer');
-        console.log(container);
         const newPaymentRow = `
         <div class="flex payment-row mt-1" id='${uniqueID}'>
         <div class=" inline-flex items-center w-fit bg-red-50 border border-red-300 hover:bg-red-400 dark:bg-red-700 dark:hover:bg-red-900 rounded-lg mx-1 my-0.5 p-2 cursor-pointer" onclick="Deletepaid('${uniqueID}')"> X </div>
@@ -168,7 +185,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
                 <option value="AMEX">AMEX</option>
                 <option value="CHEQUE">CHEQUE</option>
             </select>
-            <input type="number" pattern="[0-9]*" value=0 inputmode="numeric" id="rowPaid${uniqueID}" name="rowPaid${uniqueID}" class=" block w-full rounded-r-lg text-md text-gray-900 bg-transparent border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+            <input type="number" pattern="[0-9]*" value=${FillPaidInput} inputmode="numeric" id="rowPaid${uniqueID}" name="rowPaid${uniqueID}" class=" block w-full rounded-r-lg text-md text-gray-900 bg-transparent border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
         </div>
     `;
         // container.innerHTML += newPaymentRow; OLD PRACTICE
@@ -177,9 +194,9 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     }
 
     // BLOCKED DAY
-    var eventFull_Blocked = document.getElementById("ModaleventFull_Blocked");
+    var eventFull_Blocked = document.getElementById("Modaleventfullblocked");
     eventFull_Blocked.addEventListener("change", function() {
-        var container_full_blocked = document.getElementById("container_eventFull_Blocked");
+        var container_full_blocked = document.getElementById("container_eventfullblocked");
         if (eventFull_Blocked.checked) {
             // Appliquer un style lorsque la checkbox est cochée
             container_full_blocked.style.backgroundColor = "red"; // Exemple : Fond vert
@@ -198,15 +215,34 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     var serviceSelect = document.getElementById("ModaleventService_id");
     var priceInput = document.getElementById("ModaleventPrice");
     var discountIndicator = document.getElementById("discountIndicator");
-    var numericIndicator = document.getElementById("numericIndicator");
+    var totalIndicator = document.getElementById("totalIndicator");
     var userChangedPrice = false; // Flag pour suivre si l'utilisateur a modifié le prix
     var discountservice = <?= $DiscountServices ?>;
     var serviceDiscount = false;
+    // Lorsque l'utilisateur modifie manuellement le prix
+    function InfoTotal() {    
+        userChangedPrice = true; // Indiquer que l'utilisateur a changé le prix ou la quantité
+        var qtTraveller = parseInt(document.getElementById("ModaleventQtTraveller").value);
+        var price = parseInt(priceInput.value);
+        var total = 0;
+
+        if (!isNaN(price) && !isNaN(qtTraveller)) {
+            total = price + (qtTraveller * 200);
+        }
+        totalIndicator.innerHTML = '<span class="font-normale text-xs text-slate-400">Taxe de séjour inclus:</span> ' + total + ' Fr';
+        numericIndicator.style.display = isNaN(price) || isNaN(qtTraveller) ? "inline" : "none"; // Afficher/Cacher l'indicateur si une des valeurs n'est pas un nombre
+    }
+
+// Attacher l'écouteur aux deux champs
+document.getElementById("ModaleventPrice").addEventListener("change", InfoTotal);
+document.getElementById("ModaleventQtTraveller").addEventListener("change", InfoTotal);
+
 
     // Mettre à jour le prix initial
     priceInput.value = prices[serviceSelect.value];
     service = discountservice.find(service => service.Service_id === serviceSelect.value);
     serviceDiscount = service.Discount;
+
     // Mettre à jour le prix lorsque le service sélectionné change
     serviceSelect.addEventListener("change", function() {
         //Get service détails from select
@@ -218,14 +254,9 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             updatePrice(); // Appeler la fonction de mise à jour du prix
         }
         serviceDiscount = service.Discount;
+        InfoTotal();
     });
 
-
-    // Lorsque l'utilisateur modifie manuellement le prix
-    priceInput.addEventListener("input", function() {
-        userChangedPrice = true; // Indiquer que l'utilisateur a changé le prix
-        numericIndicator.style.display = isNaN(this.value) ? "inline" : "none"; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
-    });
 
 
     // Fonction pour mettre à jour le prix en fonction de la quantité
@@ -302,7 +333,6 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             } else if (discountScope == "Unit" || discountScope == "Global") {
                 // Déclaration initiale des variables.
                 var discountValues;
-
                 // Détermine les valeurs de réduction en fonction du contexte de remise.
                 if (serviceDiscount && discountScope == "Unit") {
                     discountValues = discountToArray(serviceDiscount);
@@ -326,7 +356,6 @@ $DiscountsScope = $discountRules['Scope']['Data'];
                     // Application de la réduction si une quantité appropriée est trouvée.
                     if (closestQty !== null) {
                         var discountValue = discountValues[closestQty];
-
                         // Calcul du prix avec réduction basé sur le type de réduction.
                         if (Discount_type == "Pourcentage") {
                             prixCalculé = (servicePrice * qt) * (1 - discountValue / 100);
@@ -343,7 +372,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
                     }
 
                     discountIndicator.style.display = discountValue > 0 ? "inline" : "none"; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
-                    discountIndicator.innerHTML = `Total des réduction: ${Discount_type == 'Pourcentage' ? discountValue + '%': '-'+discountValue}  Fr`;
+                    discountIndicator.innerHTML = `+ de ${closestQty} Nuit / <b>${Discount_type == 'Pourcentage' ? discountValue + '%': +discountValue}  Fr</b> la nuit au lieu de ${servicePrice}`;
                 } else {
                     // Prix standard si aucune réduction n'est disponible.
                     prixCalculé = servicePrice * qt;
@@ -360,6 +389,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         } else {
             priceInput.value = ""; // Effacez le champ de prix si la quantité n'est pas un nombre valide
         }
+        InfoTotal();
     }
     // Réinitialiser le flag lorsque la quantité change
     qtInput.addEventListener("input", function() {

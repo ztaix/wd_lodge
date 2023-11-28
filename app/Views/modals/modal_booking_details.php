@@ -1,13 +1,11 @@
-<script>
-    var baseUrl = "<?= base_url(); ?>"; // Ceci stockera l'URL de base dans une variable JavaScript
-</script>
+
 
 <?php
 $modal_id = "DetailsEventModal";
 ?>
 
 <!-- DETAILS EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full hidden z-50">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-[calc(100vh)] hidden z-50 overflow-auto ">
     <div class="h-full bg-slate-200 rounded-lg dark:bg-gray-700 ">
         <!-- Modal Header -->
         <div class="px-6 py-6 lg:px-8 flex justify-between items-center">
@@ -74,21 +72,15 @@ $modal_id = "DetailsEventModal";
 
                         <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
                             <h5 id="booking_details_service_h5" class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Titre du service</h5>
-                            <h5 id="booking_details_fullblocked_h5" class="text-sm font-bold tracking-tight text-red-900 dark:text-red-300">FullBlocked</h5>
-                        </p>
-                        <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
-                            <span class="font-bold">Nombre de nuits</span>
-                            <span id="booking_details_qt_span" class="text-md font-medium mr-2">Qt nuits</span>
+                            <h5 id="booking_details_fullblocked_h5" class="relative bg-red-200 dark:bg-red-800 rounded-lg text-sm text-center font-bold tracking-tight text-red-500 dark:text-red-950 mx-auto p-2">FullBlocked</h5>
                         </p>
                         <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
                             <span class="font-bold">Tarif</span>
-                            <span id="booking_details_price_span" class="text-md bg-yellow-100 text-yellow-800 font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Yellow</span>
+                            <span class="ml-auto flex flex-col items-end">
+                            <span id="booking_details_price_span" class="w-fit text-md bg-yellow-100 text-yellow-800 font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Yellow</span>
+                            <span class='text-xs italic text-slate-300 dark:text-slate-400'>(taxe voyageur inclus)</span>
+                        </span>
                         </p>
-                        <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
-                            <span class="font-bold">Voyageur(s):</span>
-                            <span id="booking_details_traveller_span" class="text-md font-medium mr-2">Nb Voyageurs</span>
-                        </p>
-                        
                         <div class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
                             <span class="mr-2 font-bold">Encaissé</span>
                             <div class="w-full h-6 bg-slate-300 rounded-full dark:bg-gray-700">
@@ -96,6 +88,15 @@ $modal_id = "DetailsEventModal";
                                 </div>
                             </div>
                         </div>
+                        <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
+                            <span class="font-bold">Nombre de nuits</span>
+                            <span id="booking_details_qt_span" class="text-md font-medium mr-2">Qt nuits</span>
+                        </p>
+                        <p class="flex justify-between text-base text-gray-700 dark:text-gray-400 my-2">
+                            <span class="font-bold">Voyageur(s):</span>
+                            <span id="booking_details_traveller_span" class="text-md font-medium mr-2">Nb Voyageurs</span>
+                        </p>
+                        
 
 
                         <div class="flex items-center justify-between text-base text-gray-700 dark:text-gray-400 my-2">

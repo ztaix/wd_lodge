@@ -92,12 +92,13 @@ class BookingController extends BaseController
                     }
 
                     $grouped[$date]['bookings'][$booking['id']] = [
-                        'colors' => $booking['service_color'], // Initialise avec la première couleur
-                        'services_titles' => $booking['service_title'], // Initialise avec le premier titre de service
-                        'prices' => $booking['Price'], // Initialise avec le premier prix
-                        'paids' => $paids_sum, // Initialise avec le premier paiement
-                        'types_docs' => $booking['Type_doc'], // Initialise avec le premier type de document
-                        'fullblockeds' => $booking['fullblocked'], // Initialise avec le premier statut fullblocked
+                        'colors' => $booking['service_color'], 
+                        'services_titles' => $booking['service_title'],
+                        'prices' => $booking['Price'], 
+                        'QtTraveller' => $booking['QtTraveller'], 
+                        'paids' => $paids_sum, 
+                        'types_docs' => $booking['Type_doc'], 
+                        'fullblockeds' => $booking['fullblocked'], 
                         'array_paids' => $booking_paids
 
                     ];

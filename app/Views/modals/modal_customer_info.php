@@ -4,7 +4,7 @@ $modal_id= "CustomerInfoModal";
 
 <!-- DETAILS EVENTS - Modal Container -->
 <div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full inset-0 hidden z-50">
-    <div class="h-full relative bg-white rounded-lg shadow dark:bg-gray-700 ">
+    <div class="h-full relative bg-slate-200 rounded-lg shadow dark:bg-gray-700 ">
         <div class="h-full overflow-scroll">
 
             <!-- Modal Header -->
@@ -28,16 +28,17 @@ $modal_id= "CustomerInfoModal";
             </div>
 
             <!-- Modal Body -->
-            <div class="h-full overflow-scroll px-4 py-2 bg-slate-200">
+            <div class="h-full overflow-scroll px-4 py-2 mx-auto  max-w-2xl">
                 <h3 id="modal-title_customer_finance_total" class="flex items-center text-lg leading-6 font-medium"><!-- JavaScript print Date du jour --></h3>
-                <div class="relative  shadow rounded-lg mb-3">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                
+                <div class="relative bg-white rounded-lg shadow pb-2">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+                        <thead class="text-xs text-gray-700 uppercase dark:text-gray-400 ">
                             <tr>
                                 <th scope="col" class="px-3 py-3">
                                     Service
                                 </th>
-                                <th scope="col" class="px-3 py-3">
+                                <th scope="col" class="text-center px-3 py-3">
                                     Date
                                 </th>
                                 <th scope="col" class="px-3 py-3">
@@ -48,7 +49,7 @@ $modal_id= "CustomerInfoModal";
                                 </th>
                             </tr>
                         </thead>
-                        <tbody id="CustomerDetailsContainer">
+                        <tbody class="bg-transparent border-0" id="CustomerDetailsContainer">
 
                             <!-- JavaScript will populate this area -->
 

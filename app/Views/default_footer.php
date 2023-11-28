@@ -82,7 +82,10 @@
         });
     });
 
+    //URL BASE pour requete AJAX
     let baseurl = <?= json_encode($baseurl); ?>;
+    // Liste des services
+    let services_list = <?= json_encode($services_list); ?>;
 </script>
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>

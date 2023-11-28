@@ -2,7 +2,7 @@
 $modal_id = "updateCustomerModal";
 ?>
 <!-- UPDATE CUSTOMER - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full inset-0 hidden z-50 overflow-auto ">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-[calc(100vh)] hidden z-50 overflow-auto">
     <div class="relative h-full bg-white rounded-lg shadow dark:bg-gray-700  flex justify-center ">
 
         <!-- Modal content -->

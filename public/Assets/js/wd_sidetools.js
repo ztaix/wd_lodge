@@ -1,18 +1,5 @@
 // Liste des mois en français
-var moisFrancais = [
-  "janvier",
-  "février",
-  "mars",
-  "avril",
-  "mai",
-  "juin",
-  "juillet",
-  "août",
-  "septembre",
-  "octobre",
-  "novembre",
-  "décembre",
-];
+const moisFrancais = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin","Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
 let info_ico = `<svg class="w-4 h-4 mt-1 mr-1 text-slate-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
@@ -80,89 +67,113 @@ function showBookingList(response, clickedDate) {
   openModal("ListEventModal");
   let container = document.getElementById("bookingListContainer");
   container.innerHTML = ""; // Efface les anciennes données
+// Place la date dans le titre
+const dateComponents = clickedDate.split("-"); // ["2023", "10", "27"]
+const newDateStr = [
+  dateComponents[2],
+  dateComponents[1],
+  dateComponents[0],
+].join("/");
 
-  // Place la date dans le titre
-  const dateComponents = clickedDate.split("-"); // ["2023", "10", "27"]
-  const newDateStr = [
-    dateComponents[2],
-    dateComponents[1],
-    dateComponents[0],
-  ].join("/");
-  document.getElementById("modal-title").innerHTML = newDateStr;
+  document.getElementById("modal-title").innerHTML = getDayOfWeek(format_date(newDateStr)) + ' ' + newDateStr;
+
   count_row_found = 0;
   response.forEach((booking) => {
     count_row_found++;
-    /*encodeURIComponent(
-        JSON.stringify(booking)
-        )*/
 
+    let array_paids_values = booking.paids_values
+    ? booking.paids_values.split(",").map(Number)
+    : [0];
+
+  let paids_sum = array_paids_values.reduce(
+    (total, currentValue) => total + currentValue,
+    0
+  );
+    
+    
     let bookingElement = `
         <div id="booking_list_row_${
           booking.id
-        }" class="flex flex-col p-2 mt-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
+        }" class="flex flex-col p-1 mt-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
           <!-- Colonne 1 -->
-          <div class="w-full flex-col">
-            
-              <div id='booking_${
-                booking.id
-              }' onclick="showBookingDetailsFromID('${
-      booking.id
-    }');" class="flex cursor-pointer font-bold text-slate-600">
-                <div id="badge_id_${
-                  booking.id
-                }" class="absolute -mt-3 -ml-2.5 text-xs h-4 rounded-md text-white font-bold px-1 mx-1 inline  " style="background-color: ${
-      booking.service_color
-    }; ">
-                    ${booking.Type_doc} # ${booking.id}
+          <div class="w-full flex-col group">
+            <div class="inline-flex">
+              <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex cursor-pointer font-bold text-slate-600">
+                <div class="justify-center items-center text-xs h-4 rounded-md text-white font-bold px-1 mx-1 my-auto inline  " style="background-color: ${booking.service_color}; ">
+                  <span id='badge_type_${booking.id}'>${booking.Type_doc}</span> # <span id='badge_id_${booking.id}'>${booking.id}</span>
                 </div>
-                <div id="booking_title_${
-                  booking.id
-                }" class="transition-margin m-0 hover:mx-2">
-                  ${booking.customer_name + " - " + booking.service_title}
+                <div id="booking_title_${booking.id}" class="transition-margin m-0 hover:mx-2">
+                  ${booking.service_title + ' (' + DaysDifferenceStartEnd(booking.start,booking.end) + ' nuits)'}
                 </div>
               </div>
+            </div>
             <div class="w-full inline-flex">
-              <span id="booking_start_${booking.id}">${getDayOfWeek(
-      format_date(booking.start)
-    )} ${format_date(booking.start)}</span>
-              <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-              </svg>
-              <span id="booking_end_${booking.id}">${getDayOfWeek(
-      format_date(booking.end)
-    )} ${format_date(booking.end)}</span>
-              <div class="flex flex-col grow items-end font-bold border-l border-slate-200 ml-2">
-                <div class="absolute -mt-6 group">
+              <div class="w-full flex items-center justify-between">
+                <div class="w-2/3 flex-col">
+                  <div class="text-base text-slate-500"><span class="font-semibold">Client:</span><span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
+                  <div class="text-base text-slate-500"><span class="font-semibold">Nb personne:</span> <span id="booking_QtTraveller_${booking.id}">${booking.QtTraveller}</span></div>
+                </div>
+                <div class="w-1/3 inline-flex">
+                  <div class="flex-col">
+                    <div class="w-full inline-flex items-center justify-between text-xs text-slate-400">
+                      <span class="items-center" id="booking_startDay_${booking.id}">${getDayOfWeek(format_date(booking.start))}</span>
+                      <span class="items-center" id="booking_endDay_${booking.id}">${getDayOfWeek(format_date(booking.end))}</span>
+                    </div>
+                    <div class="w-full inline-flex items-center justify-between ">
+                      <span class="items-center" id="booking_start_${booking.id}"> ${format_date(booking.start,0,'DD/MM')}</span>
+                      <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                    </svg>
+                    <span class="items-center" id="booking_end_${booking.id}">${format_date(booking.end,0,'DD/MM')}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col grow items-end font-bold ml-2">
+                <div class="absolute -mt-7 group">
                   <a id="booking_a_${
                     booking.id
                   }" href="#" class="text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" onclick="(function() { deleteEvent(${
-      booking.id
-    }) })()" >
+                    booking.id
+                  }) })()" >
                     <span class="absolute opacity-0 mt-1 right-10 group-hover:opacity-100 group-hover:right-6 transition-all ease-in-out duration-300 text-xs ">Supprimer</span>
                     <svg  class="flex justify-center items-center  w-6 h-6  transition-transform duration-300 scale-100 group-hover:scale-75" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 7-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                     </svg>
                   </a>
                 </div>
-                <div class="inline-flex items-center" >
-                    <svg class="w-4 h-4 dark:text-white" style="margin: 0 0.5rem 0 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1M2 5h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm8 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
-                    </svg> <span id="booking_total_${booking.id}">${
-      booking.Price
-    }</span> <span>Fr</span>
+                <div class="flex-col justify-end bg-slate-100 rounded-lg px-1">
+                  <div class="inline-flex items-center" >
+                      <span class="mr-1 text-xs text-slate-400">Tarif</span> 
+                      <span id="booking_total_${booking.id}">${ parseInt(booking.Price) + (parseInt(booking.QtTraveller) * 200)}</span>
+                      <span class="ml-1 text-xs">Fr</span>
+
+                  </div>
+                  <div class="inline-flex items-center" >
+                    <span class="mr-1 text-xs text-slate-400">Encaissé</span>   
+                    <span class="font-bold" id="booking_paid_${booking.id}">${paids_sum}</span>
+                    <span class="ml-1 text-xs">Fr</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <div id="booking_Comment_${
-              booking.id
-            }" class="flex flex-col text-xs">
-            ${booking.Comment} 
-            </div>
+          `;
+          // Partie Commentaire
+          let comment_display = 'hidden';
+          if(booking.Comment){
+            comment_display = 'block';
+          }
+            bookingElement += `
+              <div class="flex ${comment_display} flex-col text-xs bg-slate-50 group-hover:bg-slate-100 rounded-xl border border-dashed border-slate-200 group-hover:border-slate-100 mt-1 p-2">
+                <span class="mr-1 text-xs text-slate-400">Commentaire: </span>   
+                <span id="booking_Comment_${booking.id}">${booking.Comment} </span>
+              </div>`;
 
-          </div>
-        </div>
-        <hr id="booking_list_row_hr_${booking.id}" class="my-2">
-      `;
+          bookingElement += `
+              </div>
+            </div>
+            <hr id="booking_list_row_hr_${booking.id}" class="my-2">
+          `;
     container.innerHTML += bookingElement;
   });
   container.innerHTML += `          <div class="flex flex-wrap justify-end font-bold">
@@ -301,7 +312,7 @@ async function showUpdateCustomer(id) {
       success: function (response) {
         if (response.status === "success") {
           setTimeout(function () {
-            window.location.href = baseUrl + "Customers";
+            window.location.href = baseurl + "Customers";
           }, 1000);
           showBanner("Modification réalisée avec succès", true);
         } else {
@@ -470,15 +481,22 @@ async function showBookingDetailsFromID(id) {
   ).innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${event.service_color}">${event.Type_doc} # ${event.id}</span> `;
   document.getElementById("booking_details_service_h5").innerText =
     event.service_title;
-  document.getElementById("booking_details_fullblocked_h5").innerHTML =
-    event.fullblocked == 1 ? "Logement privatisé" : "&nbsp";
+  let h5_fullblocked = document.getElementById(
+    "booking_details_fullblocked_h5"
+  );
+  if (event.fullblocked == 1) {
+    h5_fullblocked.style.display= "block";
+    h5_fullblocked.innerText = "- Logement entier privatisé -";
+  } else {
+    h5_fullblocked.style.display = "none";
+  }
   document.getElementById("booking_details_qt_span").innerText = event.Qt;
   document.getElementById("booking_details_traveller_span").innerText =
     event.QtTraveller;
   document.getElementById("booking_details_start_span").innerText = event.start;
   document.getElementById("booking_details_end_span").innerText = event.end;
-  document.getElementById("booking_details_price_span").innerText =
-    event.Price + " Fr";
+  document.getElementById("booking_details_price_span").innerHTML =
+    parseInt(event.Price) + parseInt(event.QtTraveller) * 200 + " Fr";
   document.getElementById("booking_details_progress_div").style.width =
     paids_sum > 0
       ? Math.min(Math.round((paids_sum / event.Price) * 10000) / 100, 100) + "%"
@@ -512,15 +530,13 @@ async function showBookingDetailsFromID(id) {
   document.getElementById("booking_details_comment_span").innerText =
     event.Comment;
   document.getElementById("booking_details_pdf").href =
-    baseUrl + "booking/generatePDF/booking/" + event.id;
+    baseurl + "booking/generatePDF/booking/" + event.id;
   document.getElementById("booking_details_pdf").innerHTML =
     download_ico + " Télécharger PDF";
   document.getElementById("booking_details_sendmail").innerHTML =
     send_ico + "Envoyer EMAIL";
   document.getElementById("booking_details_sendmail").href =
-    baseUrl + "booking/sendmail/" + event.id;
-  //baseUrl + "booking/sendmail/" + event.id;
-
+    baseurl + "booking/sendmail/" + event.id;
   let button_update = document.getElementById("booking_details_update_button");
   button_update.onclick = function () {
     update_add_formEvent(event);
@@ -532,41 +548,6 @@ async function showBookingDetailsFromID(id) {
 }
 
 // SIDEBOX //////
-
-function get_service_list() {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url: baseurl + "booking/getServicesBookings", // URL de mise à jour
-      method: "GET",
-      success: function (response) {
-        if (response) {
-          resolve(response);
-        } else {
-          reject("Échec get_service_list::");
-        }
-      },
-    });
-  });
-}
-
-function findColorServiceById(id) {
-  return new Promise((resolve, reject) => {
-    get_service_list()
-      .then((response) => {
-        for (let i = 0; i < response.length; i++) {
-          if (response[i].Service_id === id.toString()) {
-            // Assurez-vous que les types correspondent
-
-            return resolve(response[i].Color);
-          }
-        }
-        reject("Aucune correspondance trouvée"); // Si aucune correspondance n'est trouvée
-      })
-      .catch((error) => {
-        reject(error); // Propager l'erreur
-      });
-  });
-}
 
 function get_booking_list_from_customer(data) {
   closeModal();
@@ -600,36 +581,48 @@ function get_booking_list_from_customer(data) {
     success: function (response) {
       response.forEach(function (booking) {
         // Mise à jour des sommes totales
-        totalPaid += parseFloat(booking.Paid);
-        totalPrice += parseFloat(booking.Price);
-
+        let array_paids_values = booking.paids_values
+        ? booking.paids_values.split(",").map(Number)
+        : [0];
+      let paids_sum = array_paids_values.reduce(
+        (total, currentValue) => total + currentValue,
+        0
+      );
+      totalPaid += paids_sum;
+      totalPrice += parseFloat(booking.Price) + (parseFloat(booking.QtTraveller) * 200);
+      
         let newRow = document.createElement("tr");
         newRow.classList.add(
           "bg-white",
-          "border-b",
           "dark:bg-gray-800",
           "dark:border-gray-700",
           "booking-row",
           "cursor-pointer" // Ajout de la classe spécifique
         );
+        // Ensuite, ajouter la classe conditionnelle
+        if (response.length > 1) {
+          newRow.classList.add("border-b");
+        }
         newRow.setAttribute("data-booking-id", booking.id); // Ajout de l'ID de la réservation comme attribut
 
         newRow.innerHTML = `
-                <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">${
-                  booking.service_title
-                }</th>
-                <td class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">${format_date(
-                  booking.start,
-                  0,
-                  true
-                )} <svg class="w-2 h-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-              </svg> ${format_date(booking.end, 0, true)}</td>
+                <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  ${booking.service_title}
+                </th>
+                <td class="flex flex-col justify-center items-center px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                <span>${format_date(booking.start,0,true)} </span>
+                  <span>
+                    <svg class="w-2 h-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
+                    </svg>
+                  </span>
+                  <span>${format_date(booking.end,0,true)} </span>
+                </td>
                 <td class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">${
-                  booking.Paid
+                  totalPaid
                 }</td>
                 <td class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">${
-                  booking.Price
+                  totalPrice
                 }</td>
             `;
 
@@ -649,18 +642,19 @@ function get_booking_list_from_customer(data) {
       );
       customer_finance_total.innerHTML = `
         <div class="text-center py-4 lg:px-4 w-full">
-        <div class="customer-container w-full inline-flex items-center justify-between px-1 py-1 pr-4 text-gray-700 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 mb-2">
-        <a onclick="showUpdateCustomer(${customer_id})" class="customer-link text-blue-500 hover:underline">
-            <span class="customer-name text-md flex bg-blue-600 rounded-full text-white px-3 py-1.5 mr-3">
-                <span class="mr-2">Modifier</span>
-                <svg class="w-5 h-5 mr-2 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 18">
-                    <path d="M7 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm2 1H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-                </svg> 
-                ${Name}
-            </span>
-        </a>
-        <span class="text-md font-bold text-blue-700 dark:text-white">Total ${totalPrice} Fr</span>
-        </div>
+          <div class="customer-container w-full inline-flex items-center justify-center flex-wrap px-1 py-1 pr-4 text-gray-700  dark:text-white mb-2">
+            <a onclick="showUpdateCustomer(${customer_id})" class="cursor-pointer customer-link text-blue-500 hover:underline">
+              <span class="customer-name text-md flex bg-blue-600 rounded-full text-white px-3 py-1.5 mr-3">
+                  <span class="mr-2">Modifier</span>
+                  <svg class="w-5 h-5 mr-2 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 18">
+                      <path d="M7 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm2 1H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+                  </svg> 
+                  ${Name}
+              </span>
+            </a>
+            <span class="text-md font-bold text-blue-700 dark:text-white">Total ${totalPrice} Fr</span>
+          </div>
+
     
               <div class="flex justify-between font-bold text-xs" >
               <div class="flex flex-grow-0 mr-3 text-slate-500"> 
@@ -859,12 +853,11 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
 
         fromServicepicker.on("select", function (event) {
           // Récupérer les dates de début et de fin
-          const startDate = new Date(event.detail.start); 
-          const endDate = new Date(event.detail.end);
+          //const startDate = new Date(event.detail.start); 
+          //const endDate = new Date(event.detail.end);
 
           // Calculer la différence en jours
-          const timeDifference = endDate.getTime() - startDate.getTime();
-          const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+          const dayDifference = DaysDifferenceStartEnd(event.detail.start,event.detail.end);
 
           // Mettre à jour le champ 'eventQt'
           document.getElementById("ModaleventQt").value = dayDifference;
@@ -891,7 +884,6 @@ function getDayOfWeek(dateString) {
   let [day, month, year] = dateString.split("-");
   let date = new Date(year, month - 1, day);
   let dayOfWeek = date.getDay();
-
   let days = [
     "Dimanche",
     "Lundi",
@@ -904,40 +896,98 @@ function getDayOfWeek(dateString) {
 
   return days[dayOfWeek];
 }
-function format_date(input_date, daysToAdd = 0, shorter = false) {
-  let result = ``;
 
-  // Vérifie si la date est au format 'dd-mm-yyyy'
-  if (/^\d{2}-\d{2}-\d{4}$/.test(input_date)) {
-    // Convertit 'dd-mm-yyyy' en 'mm/dd/yyyy' pour la compatibilité avec l'objet Date de JavaScript
-    const parts = input_date.split('-');
-    input_date = parts[1] + '/' + parts[0] + '/' + parts[2];
+function check_date(input_date){
+
+    // Vérifier si input_date est déjà un objet Date valide
+    if (input_date instanceof Date && !isNaN(input_date)) {
+      return input_date;
+    }
+  // Expression régulière pour vérifier les formats de date
+  const regexFormats = {
+    "YYYY-MM-DD": /^\d{4}-\d{2}-\d{2}$/,
+    "DD/MM/YYYY": /^\d{2}\/\d{2}\/\d{4}$/,
+    "DD-MM-YYYY": /^\d{2}-\d{2}-\d{4}$/,
+    "YYYY-MM-DD HH:MM:SS": /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+  };
+  
+  // Trouver le format correspondant
+  let dateFormat;
+  for (let format in regexFormats) {
+    if (regexFormats[format].test(input_date)) {
+      dateFormat = format;
+      break;
+    }
   }
   
-  // Convertit la date en un objet Date de JavaScript
-  let dateObj = new Date(input_date);
-
-  // Vérifie si la date est valide
-  if (isNaN(dateObj.getTime())) {
-    return 'Date invalide'; // ou gérer l'erreur comme vous le souhaitez
+  if (!dateFormat) {
+    return 'Format de date invalide';
   }
-  // Ajoute des jours si nécessaire
-  dateObj.setDate(dateObj.getDate() + daysToAdd );
-
-  // Récupère le jour, le mois et l'année
-  let day = String(dateObj.getDate()).padStart(2, "0");
-  let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Les mois sont de 0 à 11
-  let year = dateObj.getFullYear();
-
-  if (shorter == true) {
-    result = shortenYearInDate(`${day}-${month}-${year}`);
+  
+  // Convertir la date en format compatible avec l'objet Date de JavaScript
+  if (dateFormat === "DD/MM/YYYY") {
+    const [day, month, year] = input_date.split("/");
+    input_date = `${year}-${month}-${day}`;
+  } else if (dateFormat === "DD-MM-YYYY") {
+    const [day, month, year] = input_date.split("-");
+    input_date = `${year}-${month}-${day}`;
+  }
+  
+  // Convertir la date en format compatible avec l'objet Date de JavaScript
+  let dateObj;
+  if (dateFormat === "DD/MM/YYYY" || dateFormat === "DD-MM-YYYY" || dateFormat === "YYYY-MM-DD") {
+    const [year, month, day] = input_date.split("-");
+    dateObj = new Date(year, month - 1, day); // Les mois sont de 0 à 11, traité comme date locale
   } else {
-    result = `${day}-${month}-${year}`;
+    // Pour les formats avec heure, traiter comme date locale
+    const parts = input_date.split(/[- :]/);
+    dateObj = new Date(parts[0], parts[1] - 1, parts[2], parts[3] || 0, parts[4] || 0, parts[5] || 0);
   }
+  // Vérifier si la date est valide
+  if (isNaN(dateObj.getTime())) {
+    return 'Date invalide';
+  }
+  return dateObj;
+}
 
-  // Formatte la date en JJ-MM-AA'AA'
+function format_date(input_date, daysToAdd = 0, shorter = false) {
+let dateObj = check_date(input_date);
+
+// Ajouter des jours si nécessaire
+dateObj.setDate(dateObj.getDate() + daysToAdd);
+
+// Récupérer le jour, le mois et l'année
+let day = String(dateObj.getDate()).padStart(2, "0");
+let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Les mois sont de 0 à 11
+let year = dateObj.getFullYear();
+// Formater la date
+if (shorter === true) {
+  result = shortenYearInDate(`${day}-${month}-${year}`);
+} 
+else if(shorter == 'DD-MM') {
+  result = `${day}-${month}`;
+}
+else if(shorter == 'DD/MM') {
+  result = `${day}/${month}`;
+}
+else if(shorter == 'DD') {
+  result = `${day}`;
+}
+else if(shorter == 'DD-Mois-YY') {
+  result = `${day} ${moisFrancais[month].substring(0, 3)}. ${year}`;
+}
+else if(shorter == 'DD-Mois') {
+  result = ` ${day} ${moisFrancais[month]}`;
+}
+else if(shorter == 'Mois') {
+  result = moisFrancais[month];
+}
+else {
+  result = `${day}-${month}-${year}`;
+}
   return result;
 }
+
 
 function format_date_toSql(input_date) {
   // Découpe la date en ses composantes (jour, mois, année)
@@ -953,4 +1003,13 @@ function shortenYearInDate(date) {
 }
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+function DaysDifferenceStartEnd(start, end){
+
+  let start_obj = check_date(start);
+  let end_obj = check_date(end);
+
+  let timeDifference = end_obj.getTime() - start_obj.getTime();
+  let dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+  return dayDifference;
 }
