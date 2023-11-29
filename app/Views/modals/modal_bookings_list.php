@@ -3,7 +3,7 @@ $modal_id = "ListEventModal";
 ?>
 
 <!-- LIST TODAY EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full  hidden z-50">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full hidden z-50">
     <div class="h-full relative bg-slate-200 rounded-lg dark:bg-gray-700 ">
 
         <div class="sticky right-3 top-3">

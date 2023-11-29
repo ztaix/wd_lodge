@@ -5,7 +5,7 @@ $modal_id = "DetailsEventModal";
 ?>
 
 <!-- DETAILS EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-[calc(100vh)] hidden z-50 overflow-auto ">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full hidden z-50 overflow-auto">
     <div class="h-full bg-slate-200 rounded-lg dark:bg-gray-700 ">
         <!-- Modal Header -->
         <div class="px-6 py-6 lg:px-8 flex justify-between items-center">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html id="goFullScreen">
 
 <head>
   <title>Mon Application</title>

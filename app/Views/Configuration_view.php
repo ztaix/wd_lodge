@@ -81,9 +81,9 @@ foreach ($All_config as $row) {
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                         </svg>') . '
                         <div class="flex flex-col items-center justify-center p-5">
-                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Mettre en ligne ton LOGO </span></p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF</p>
-                        <p break-word class="w-auto text-xs text-center text-gray-500 dark:text-gray-400" style="word-break: break-word;">' . $row['Data'] . '</p>
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Mettre en ligne ton LOGO </span></p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF</p>
+                            <p break-word class="w-auto text-xs text-center text-gray-500 dark:text-gray-400" style="word-break: break-word;">' . $row['Data'] . '</p>
                         </div>
                     </div>
                     <input name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '-dropzone-file" type="file" class="hidden" />
@@ -108,7 +108,8 @@ foreach ($All_config as $row) {
                             <svg class="w-5 h-5 mx-1 text-slate-300 dark:text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.153 15 19 8l-4.847-7H1l4.848 7L1 15h13.153Z"/>
                             </svg>  
-                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-1.5 rounded dark:bg-yellow-900 dark:text-yellow-300">' . $discount .'</span></p>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-1.5 rounded dark:bg-yellow-900 dark:text-yellow-300">' . $discount .'</span>
+                        </p>
                     </div>
                     ';
                 }}
@@ -120,18 +121,18 @@ foreach ($All_config as $row) {
 
                 }
                 $html_form .= '
-    <div class="flex flex-col">
+<div class="flex flex-col">
 
     <div class="grow ">
         <div class="flex">
             <div class="w-1/2 py-2 mr-1">
                 <div class="mb-4 w-full rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700">
 
-                        <label for="discount" class="sr-only">Règles</label>
-                        <h3 class="text-md p-2 font-semibold text-gray-600 dark:text-white border-b dark:border-gray-600">1 règle = 1 ligne:</h3>
-                        <textarea name="' . $row['config_id'] . '" id="discount" rows="4" class="w-full border-0 rounded-lg bg-white px-2 text-sm text-gray-900 focus:ring-0 border-gray-500 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:border-2">' . $row['Data'] . '</textarea>
+                    <label for="discount" class="sr-only">Règles</label>
+                    <h3 class="text-md p-2 font-semibold text-gray-600 dark:text-white border-b dark:border-gray-600">1 règle = 1 ligne:</h3>
+                    <textarea name="' . $row['config_id'] . '" id="discount" rows="4" class="w-full border-0 rounded-lg bg-white px-2 text-sm text-gray-900 focus:ring-0 border-gray-500 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:border-2">' . $row['Data'] . '</textarea>
                     <div class="flex flex-col  border-t px-2 py-2 dark:border-gray-600">
-                    <p class="text-xs text-gray-600 dark:text-white underline">Exemple:</p>
+                        <p class="text-xs text-gray-600 dark:text-white underline">Exemple:</p>
                         <p class=" text-xs font-medium text-slate-400"><b>SI FIXE :</b><i>Nombre de nuit : Prix par nuit réduit</i></br>
                         <b>5:5000</b> (exemple: À partir de la 5ᵉ nuit, le client paiera 5000 Fr par nuit)</p>
                         <p class=" text-xs font-medium text-slate-400"><b>SI POURCENTAGE :</b><i>Nombre de nuit : Pourcentage de réduction</i></br>
@@ -151,6 +152,7 @@ foreach ($All_config as $row) {
             </div>
         </div>
     </div>
+</div>
     ';
             } else {
                 $html_form .= '
@@ -233,11 +235,12 @@ foreach ($All_config as $row) {
                 <?php
                         } */
                 ?>
-            </div>
+           
 
-            <button type="button" id="addService" class=" py-1.5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">+ Ajouter un service</button>
--->
-            <button type="submit" class="sticky bottom-10 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ">Enregistrer</button>
+                <button type="button" id="addService" class=" py-1.5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">+ Ajouter un service</button>
+                --> 
+            </div>
+            <button type="submit" class="sticky bottom-16 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl">Enregistrer</button>
         </form>
     </div>
 </div>

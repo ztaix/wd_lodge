@@ -108,28 +108,27 @@ const newDateStr = [
               </div>
             </div>
             <div class="w-full inline-flex">
-              <div class="w-full flex items-center justify-between">
-                <div class="w-2/3 flex-col">
-                  <div class="text-base text-slate-500"><span class="font-semibold">Client:</span><span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
+              <div class="w-full flex flex-wrap items-center justify-between">
+                <div class="flex-col">
+                  <div class="text-base text-slate-500"><span class="font-semibold">Client:</span> <span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
                   <div class="text-base text-slate-500"><span class="font-semibold">Nb personne:</span> <span id="booking_QtTraveller_${booking.id}">${booking.QtTraveller}</span></div>
                 </div>
-                <div class="w-1/3 inline-flex">
-                  <div class="flex-col">
-                    <div class="w-full inline-flex items-center justify-between text-xs text-slate-400">
-                      <span class="items-center" id="booking_startDay_${booking.id}">${getDayOfWeek(format_date(booking.start))}</span>
-                      <span class="items-center" id="booking_endDay_${booking.id}">${getDayOfWeek(format_date(booking.end))}</span>
-                    </div>
-                    <div class="w-full inline-flex items-center justify-between ">
-                      <span class="items-center" id="booking_start_${booking.id}"> ${format_date(booking.start,0,'DD/MM')}</span>
-                      <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                <div class="flex-col flex-wrap">
+                  <div class="w-full inline-flex items-center justify-between text-xs text-slate-400">
+                    <span class="items-center" id="booking_startDay_${booking.id}">${getDayOfWeek(format_date(booking.start))}</span>
+                    <span class="items-center" id="booking_endDay_${booking.id}">${getDayOfWeek(format_date(booking.end))}</span>
+                  </div>
+                  <div class="w-full inline-flex items-center justify-between ">
+                    <span class="items-center" id="booking_start_${booking.id}"> ${format_date(booking.start,0,'DD/MM')}</span>
+                    <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                     </svg>
                     <span class="items-center" id="booking_end_${booking.id}">${format_date(booking.end,0,'DD/MM')}</span>
-                    </div>
                   </div>
                 </div>
               </div>
-              <div class="flex flex-col grow items-end font-bold ml-2">
+
+              <div class="flex flex-col grow items-end text-right font-bold ml-2">
                 <div class="absolute -mt-7 group">
                   <a id="booking_a_${
                     booking.id

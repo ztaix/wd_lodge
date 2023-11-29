@@ -65,7 +65,6 @@ var modalStack = []; // Pile pour stocker les fenêtres modales ouvertes
 var currentZIndex = 50; // Valeur initiale du zIndex
 
 function resetForm(modalId, start = false , end = false){
-
   if(modalId == "addEventModal"){
     const form_addEventModal = [
       "Modaleventid",
@@ -78,13 +77,20 @@ function resetForm(modalId, start = false , end = false){
       "ModaleventPrice",
       "ModaleventComment",
     ];
+
     
     form_addEventModal.forEach(input => {
       if(input == "ModaleventType_doc"){
         document.getElementById(input).value = 'Devis';
       }
-      else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" || input == "ModaleventCustomer_id" || input == "ModaleventService_id" ){
+      else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" || input == "ModaleventService_id" ){
         document.getElementById(input).value = 1;
+      }
+      else if( input == "ModaleventCustomer_id"){
+        let ModaleventCustomer_id = $('#ModaleventCustomer_id'); // Utilisez jQuery pour sélectionner l'élément
+        ModaleventCustomer_id.val(1); // Changez la valeur
+        ModaleventCustomer_id.trigger('change'); // Mettez à jour l'affichage de Select2
+        
       }
       else {
         document.getElementById(input).value = '';
@@ -102,6 +108,14 @@ function resetForm(modalId, start = false , end = false){
       date_end = format_date(date_start,1);
     }
 
+    //RESET PAYMENT ROW
+    let temp_payments_row = document.querySelectorAll('div[id^="temp_"]');
+    if(temp_payments_row.length > 0){
+      // Parcourir et supprimer chaque div
+      temp_payments_row.forEach(div => {
+        div.parentNode.removeChild(div);
+      });
+    } 
     loadAndInitDatepicker(1,date_start,date_end);
   }
 }
@@ -424,7 +438,8 @@ const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'ut
             openModal("ListEventModal");
           } else {
             resetForm("addEventModal",startdate,enddate);
-
+            InfoTotal();
+            updatePrice();
             // Afficher le popup
             openModal("addEventModal");
           }
@@ -621,6 +636,7 @@ function addEvent() {
       success: function (response) {
         try {
           if (response.success == true) {
+            let booking_id = response.id;
             // Traitez la réponse ici
             showBanner(
               `<div class="flex flex-col">Evènement ajouté avec succès !</div>
@@ -640,34 +656,92 @@ function addEvent() {
             }, 200);
 
 
-            let payments = [];
-            document.querySelectorAll('.payment-row').forEach((row, index=0) => {
-                payments[index] = {
-                    'booking_id': response.id,
-                    'type_paid': document.getElementById(`rowPaidType${index}`).value,
-                    'value': document.getElementById(`rowPaid${index}`).value
-                };
-                index++;
+            // UPDATE FORM PAID
+        let payments = []; // Initialise payments comme un tableau vide
+        document.querySelectorAll('.payment-row').forEach((row, index) => {
+          if(row.id.startsWith('temp_') === true ) {
+            // Pour un nouvel enregistrement (id non défini ou vide)
+            payments.push({
+              'booking_id': booking_id,
+              'type_paid': document.getElementById(`rowPaidType${row.id}`).value,
+              'value': document.getElementById(`rowPaid${row.id}`).value
             });
-          // ADD FORM PAID
-          $.ajax({
-            url: baseurl + "paids/add",
-            method: "POST",
-            data: { payments},
-            success: function (response) {
-              if (response.success !== false) {
-                showBanner("Paiements ajouté avec succès !", true);
-              } else {
-                showBanner("Echec de la mise à jour des paiements ! " + response['errors']['message'], false);
-              }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
+          }
+          else{
+            let id = document.getElementById(`rowPaidid${index}`).value;
+            if (id){
+              // Pour un enregistrement existant (avec un id défini)
+              payments.push({
+                'id': id, // Stocker l'id dans l'objet
+                'booking_id': booking_id,
+                'type_paid': document.getElementById(`rowPaidType${index}`).value,
+                'value': document.getElementById(`rowPaid${index}`).value
+              }); // Ajouter l'objet au tableau
+            }
+          }
+        });
+        let payments_filtred = payments.filter(item => item !== undefined);
+        $.ajax({
+          url: baseurl + "paids/upsert",
+          method: "POST",
+          data: { 'payments' : payments_filtred},
+          success: function (response) {
+            let allSuccess = true;
+            let allErrors = [];
+
+            for (let key in response) {
+                if (response.hasOwnProperty(key)) {
+                    let res = response[key];
+                    if (!res.success) {
+                        allSuccess = false;
+                    }
+                    if (res.errors && res.errors.length > 0) {
+                        allErrors.push(...res.errors);
+                    }
+                }
+            }
+
+            if (allSuccess) {
+              var encaissement = 0;
+              // Parcourez l'objet reponse
+              for (var key in response) {
+                if (response.hasOwnProperty(key)) {
+                  // Accédez à la valeur "value" de chaque objet
+                  var value = response[key].data.value;
+                  
+                  // Checker si c'est bien un chiffre
+                  if (!isNaN(parseFloat(value))) {
+                    encaissement += parseFloat(value);
+                  }
+                }
+              }                
               
-              // En cas d'échec de la requête AJAX
-              showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
-              console.error("AJAX Error:", errorThrown); // Log the error for debugging
-            },
-          });
+              if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                let details_paid_div = document.getElementById('booking_details_progress_div');
+                details_paid_div.innerText = encaissement + ' Fr';
+                details_paid_div.style.width = encaissement > 0
+                ? Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100) + "%"
+                : "0";
+               document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+              }
+              
+              if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+               document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+               document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+              }
+                showBanner("Paiements mise à jour avec succès !", true);
+            } else {
+                showBanner("Echec de la mise à jour des paiements !", false);
+                console.log('Erreurs: ', allErrors);
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            
+            // En cas d'échec de la requête AJAX
+            showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
+            console.error("AJAX Error:", errorThrown); // Log the error for debugging
+          },
+        });
 
           } else {
             // Gestion des erreurs de validation
