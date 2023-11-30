@@ -1169,6 +1169,10 @@ input:checked + .toggle-bg {
   bottom: 2.5rem;
 }
 
+.bottom-16 {
+  bottom: 4rem;
+}
+
 .bottom-2 {
   bottom: 0.5rem;
 }
@@ -1335,10 +1339,6 @@ input:checked + .toggle-bg {
 
 .top-6 {
   top: 1.5rem;
-}
-
-.bottom-16 {
-  bottom: 4rem;
 }
 
 .-z-10 {
@@ -1950,10 +1950,6 @@ input:checked + .toggle-bg {
   height: 24rem;
 }
 
-.h-\[calc\(100vh\)\] {
-  height: calc(100vh);
-}
-
 .h-auto {
   height: auto;
 }
@@ -1977,10 +1973,6 @@ input:checked + .toggle-bg {
 
 .h-screen {
   height: 100vh;
-}
-
-.h-\[calc\(100\%\)\] {
-  height: calc(100%);
 }
 
 .max-h-20 {
