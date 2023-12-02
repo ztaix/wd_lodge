@@ -15,7 +15,7 @@ $modal_id= "CustomerInfoModal";
                     </svg>
                 </div>
                 <div class="flex-grow text-center">
-                    <h3 class="text-center text-2xl font-bold text-gray-800 dark:text-white">Historique client</h3>
+                    <h3 id='history_customer_title_h3' class="text-center text-2xl font-bold text-gray-800 dark:text-white">Historique client</h3>
                 </div>    
                 <div >
                     <button type="button" class="absolute right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal" onclick="closeModalById('<?= $modal_id ?>')">
@@ -33,18 +33,23 @@ $modal_id= "CustomerInfoModal";
                 
                 <div class="relative bg-white rounded-lg shadow pb-2">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-                        <thead class="text-xs text-gray-700 uppercase dark:text-gray-400 ">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th scope="col" class="px-3 py-3">
+                                <th scope="col" class="px-4 py-3">
+                                    Type
+                                </th>
+                                <th scope="col" class="px-2 py-3">
+                                </th>
+                                <th scope="col" class="px-4 py-3">
                                     Service
                                 </th>
-                                <th scope="col" class="text-center px-3 py-3">
+                                <th scope="col" class="text-center px-4 py-3">
                                     Date
                                 </th>
-                                <th scope="col" class="px-3 py-3">
+                                <th scope="col" class="px-4 py-3">
                                     Encaissé
                                 </th>
-                                <th scope="col" class="px-3 py-3">
+                                <th scope="col" class="px-4 py-3">
                                     Tarif
                                 </th>
                             </tr>

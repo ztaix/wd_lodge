@@ -88,6 +88,7 @@ $data['options_customers_id'] = $options_customers_id;
                             <th scope="col" class="px-4 py-3">Type</th>
                             <th scope="col" class="px-2 py-3"></th>
                             <th scope="col" class="px-4 py-3">Client</th>
+                            <th scope="col" class="px-4 py-3">Voyageurs</th>
                             <th scope="col" class="px-4 py-3">Service</th>
                             <th scope="col" class="px-4 py-3">Nuits</th>
                             <th scope="col" class="px-4 py-3">Période</th>
@@ -102,8 +103,9 @@ $data['options_customers_id'] = $options_customers_id;
                             ?>
                                 <tr class="ROW row_booking_<?= $booking['id']; ?> service_<?= $booking['Service_id']; ?> hover:bg-gray-50 border-b dark:border-gray-700 cursor-pointer whitespace-nowrap" onclick="showBookingDetailsFromID(<?= $booking['id']; ?>)">
                                     <td class="px-4 py-3"><?= $booking['Type_doc']; ?></td>
-                                    <td class=" py-3 text-xs"># <?= $booking['id']; ?></td>
+                                    <td class="py-3 text-xs"># <?= $booking['id']; ?></td>
                                     <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"><?= $booking['customer_name']; ?></th>
+                                    <th scope="row" class="px-4 py-3"><?= $booking['QtTraveller']; ?></th>
                                     <td class="px-4 py-3"> <?= $booking['service_title']; ?></td>
                                     <td class="px-4 py-3 text-center"> <?= countNights(sql_date_to_dmY($booking['start']),sql_date_to_dmY($booking['end'])) ?></td>
                                     <td class="px-4 py-3 inline-flex">

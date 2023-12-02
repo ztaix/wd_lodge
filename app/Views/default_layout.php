@@ -3,7 +3,6 @@
 
         <div class='content text-gray-900 dark:text-white bg-slate-50 dark:bg-slate-900'>
 
-                <?php echo view('banners/banner_search'); ?>
                 <?php echo view('banners/banner_update'); ?>
 
 

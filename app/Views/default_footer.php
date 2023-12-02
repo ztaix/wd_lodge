@@ -88,14 +88,18 @@
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
 <script src="Assets/js/select2.min.js"></script>
-<script src="Assets/js/wd_fullcalendar.js?v=" <?= time() ?>></script>
-<script src="Assets/js/wd_sidetools.js?v=" <?= time() ?>></script>
+<script src="Assets/js/wd_modal_system.js"></script>
+<script src="Assets/js/wd_html.js"></script>
+<script src="Assets/js/wd_fullcalendar.js"></script>
+<script src="Assets/js/wd_sidetools.js"></script>
 <script>
 // LOADER
-document.addEventListener('DOMContentLoaded', function() {
-    var loader = document.querySelector('.loader');
-    loader.style.display = 'none';
-});
+if(!window.location.href.includes('Config')){
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var loader = document.querySelector('.loader');
+        loader.style.display = 'none';
+    });
 
 
     // Initialisation du select recherche
@@ -120,27 +124,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('customer_name').value = e.params.data.text;
             }
         });
+        
     });
 
 
     var fromServicepicker; // Déclare la variable à l'extérieur de la fonction pour qu'elle ait une portée globale.
 
-document.addEventListener('DOMContentLoaded', function() {
-    var serviceSelect = document.getElementById('ModaleventService_id');
+    document.addEventListener('DOMContentLoaded', function() {
+        var serviceSelect = document.getElementById('ModaleventService_id');
 
-    // Chargez et initiez le datepicker avec l'ID de service sélectionné au départ
-    loadAndInitDatepicker(serviceSelect.value);
+        // Chargez et initiez le datepicker avec l'ID de service sélectionné au départ
+        loadAndInitDatepicker(serviceSelect.value);
 
-    // Ajoutez un écouteur d'événements pour réagir aux changements de sélection
-    serviceSelect.addEventListener('change', function() {
-        // Vérifiez si le datepicker a déjà été initialisé et détruisez-le si c'est le cas
-        if (fromServicepicker) {
-            fromServicepicker.destroy(); // Assurez-vous que la méthode `destroy` est bien définie par Easepick pour détruire l'instance
-        }
+        // Ajoutez un écouteur d'événements pour réagir aux changements de sélection
+        serviceSelect.addEventListener('change', function() {
+            // Vérifiez si le datepicker a déjà été initialisé et détruisez-le si c'est le cas
+            if (fromServicepicker) {
+                fromServicepicker.destroy(); // Assurez-vous que la méthode `destroy` est bien définie par Easepick pour détruire l'instance
+            }
 
+        });
     });
-});
-
+}
     //DARKMODE
     document.addEventListener('DOMContentLoaded', function() {
         var body = document.body;

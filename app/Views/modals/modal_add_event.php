@@ -231,6 +231,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         }
         totalIndicator.innerHTML = '<span class="font-normale text-xs text-slate-400">Taxe de séjour inclus:</span> ' + total + ' Fr';
         numericIndicator.style.display = isNaN(price) || isNaN(qtTraveller) ? "inline" : "none"; // Afficher/Cacher l'indicateur si une des valeurs n'est pas un nombre
+    
     }
 
 // Attacher l'écouteur aux deux champs

@@ -88,6 +88,8 @@ class ConfigurationController extends BaseController
         // Vérification et traitement de l'image téléchargée
         $uploadedImage = $this->request->getFile(2);
         $imagePath = '';
+
+        
         if ($uploadedImage->isValid() && !$uploadedImage->hasMoved()) {
             $newName = $uploadedImage->getRandomName();  // Génère un nouveau nom aléatoire
             $uploadedImage->move(WRITEPATH . 'uploads', $newName);  // Déplace le fichier vers le dossier "uploads"

@@ -18,6 +18,7 @@ document.addEventListener("keydown", function (event) {
 });
 
 function generateBookingElement(booking) {
+  let Total_price = parseInt(booking.Price) + (parseInt(booking.QtTraveller) * 200);
   return `
         <div class="flex space-x-4 mt-" >
           <!-- Colonne 1 -->
@@ -54,7 +55,7 @@ function generateBookingElement(booking) {
             <div class="flex w-full  justify-end" >
                 <svg class="w-4 h-4 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1M2 5h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm8 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
-                </svg> ${booking.Price} Fr
+                </svg> ${Total_price} Fr
             </div>
           </div>
         </div>
@@ -186,8 +187,7 @@ function ShowCreateCustomer() {
   document.getElementById("customer_phone").value = "";
   document.getElementById("customer_email").value = "";
   document.getElementById("customer_comment").value = "";
-  document.getElementById("update_customer_submit_form").onclick =
-    CreateCustomer;
+  document.getElementById("update_customer_submit_form").onclick = CreateCustomer;
 }
 
 function CreateCustomer() {
@@ -206,12 +206,19 @@ function CreateCustomer() {
       try {
         if (response.status === "success") {
           var newCustomerId = response.id;
-          $("#eventCustomer_id").append(
+          
+          if(ModalInStack('addEventModal')){
+            
+          }
+          $("#ModaleventCustomer_id").append(
             new Option(customerData["Name"], newCustomerId, true, true)
-          );
+            );
+            $('#ModaleventCustomer_id').trigger('change');
+            
+            if(window.location.href.includes('Customers')){
 
-          // Génère la nouvelle ligne HTML
-          var newCustomerRow = `<tr class="border-b dark:border-gray-700 row_customer_${newCustomerId}" data-id="${newCustomerId}" data-Name="${
+              // Génère la nouvelle ligne HTML
+              var newCustomerRow = `<tr class="border-b dark:border-gray-700 row_customer_${newCustomerId}" data-id="${newCustomerId}" data-Name="${
             customerData["Name"]
           }" data-Comment="${customerData["Comment"]}" data-Email="${
             customerData["Email"]
@@ -221,23 +228,28 @@ function CreateCustomer() {
                   <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white service_${newCustomerId} cursor-pointer"><b>${
             customerData["Name"]
           }</b></th>
-                      <td class="px-3 py-3">${customerData["Email"]}</td>
-                      <td class="px-3 py-3">${customerData["Phone"]}</td>
+          <td class="px-3 py-3">${customerData["Email"]}</td>
+          <td class="px-3 py-3">${customerData["Phone"]}</td>
                       <td class="px-3 py-3 max-w-[150px] overflow-hidden overflow-ellipsis whitespace-nowrap customer_comment" id="comment_${newCustomerId}" onclick="toggleComment(event,  ${
             "comment_" + newCustomerId
           })">${customerData["Comment"]}</td>
                       <td class="px-3 py-3" onclick="DeleteCustomer(event, ${newCustomerId})">
                           <svg class="w-4 h-4 text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                           </svg>
                       </td>
                   </tr>`;
+          
           // Ajoute la nouvelle ligne au début du tbody
           $(newCustomerRow)
             .addClass("blinking")
             .insertBefore("#items-container tr:first");
+          }
 
-          closeModalById("updateCustomerModal");
+          if(ModalInStack('updateCustomerModal')){
+            closeModalById("updateCustomerModal");
+          }
+
           showBanner(`Le client ${response.Name} a été créé avec succès`, true);
         } else {
           alert("Erreur : " + response.message);
@@ -276,43 +288,64 @@ async function showUpdateCustomer(id) {
       );
       return; // Arrête la fonction ici si aucune donnée n'est trouvée
     }
-  } catch (error) {
-    console.error("Échec get_customer_info: ", error);
-    console.error("Status Code:", error.status);
-    console.error("Response Text:", error.responseText);
 
-    return;
+    } catch (error) {
+      console.error("Échec get_customer_info: ", error);
+      console.error("Status Code:", error.status);
+      console.error("Response Text:", error.responseText);
+
+      return;
+    }
+
+
+  function getCustomerFormData() {
+    return {
+      Customer_id: document.getElementById("customer_id").value,
+      Name: document.getElementById("customer_name").value,
+      Phone: document.getElementById("customer_phone").value,
+      Email: document.getElementById("customer_email").value,
+      Comment: document.getElementById("customer_comment").value,
+    };
   }
-
+  
   // Met à jour les champs du formulaire avec les données récupérées
-  document.getElementById("customer_id").value = customer.customer_id;
-  document.getElementById("customer_name").value = customer.name;
-  document.getElementById("customer_phone").value = customer.phone;
-  document.getElementById("customer_email").value = customer.email;
-  document.getElementById("customer_comment").value = customer.comment;
-  document.getElementById(
-    "Update_customer_Modal_title"
-  ).innerText = `Modifier Client #${customer.customer_id}`;
+  function updateCustomersFormFields(customer) {
+    document.getElementById("customer_id").value = customer.customer_id;
+    document.getElementById("customer_name").value = customer.name;
+    document.getElementById("customer_phone").value = customer.phone;
+    document.getElementById("customer_email").value = customer.email;
+    document.getElementById("customer_comment").value = customer.comment;
+    document.getElementById("Update_customer_Modal_title").innerText = `Modifier Client #${customer.customer_id}`;
+  }
+  updateCustomersFormFields(customer);
 
   let button_update = document.getElementById("update_customer_submit_form");
   button_update.onclick = function () {
+    let formData = getCustomerFormData(); // Récupère les données du formulaire
+    console.log("formData",formData);
     $.ajax({
       url: baseurl + "customer/update",
       method: "POST",
-      data: {
-        customer_info: {
-          Customer_id: document.getElementById("customer_id").value,
-          Name: document.getElementById("customer_name").value,
-          Phone: document.getElementById("customer_phone").value,
-          Email: document.getElementById("customer_email").value,
-          Comment: document.getElementById("customer_comment").value,
-        },
-      },
+      data: { customer_info: formData },
       success: function (response) {
         if (response.status === "success") {
-          setTimeout(function () {
-            window.location.href = baseurl + "Customers";
-          }, 1000);
+          var newCustomerId = response.id;
+          
+          if(ModalInStack('CustomerInfoModal')){
+            document.getElementById('history_customer_name').innerText = formData.Name;
+          }
+          if(ModalInStack('DetailsEventModal')){
+            console.log('DetailsEventModal');
+            document.getElementById('booking_details_customer_name_span').value = formData.customer_name;
+            document.getElementById('booking_details_customer_phone_span').value = formData.customer_phone;
+            document.getElementById('booking_details_customer_mail_span').value = formData.customer_email;
+            document.getElementById('booking_details_customer_comment_span').value = formData.customer_comment;
+          }
+
+          if(ModalInStack('updateCustomerModal')){
+            closeModalById("updateCustomerModal");
+          }
+      
           showBanner("Modification réalisée avec succès", true);
         } else {
           showBanner("Échec de la modification", false);
@@ -320,35 +353,6 @@ async function showUpdateCustomer(id) {
       },
     });
   };
-  /* let button_delete = document.getElementById("delete_customer_submit_form");
-  var data = {
-    Customer_id: document.getElementById("customer_id").value,
-    delete: true,
-  };
-  button_delete.onclick = function () {
-    $.ajax({
-      url: baseurl + "customer/update",
-      method: "POST",
-      data: {
-        customer_info: data, // Utilisez la variable locale ici
-      },
-      success: function (response) {
-        if (response.status === "success") {
-          showBanner("Suppression réalisée avec succès", true);
-          closeModalById("updateCustomerModal");
-          closeModalById("CustomerInfoModal");
-          setTimeout(() => {
-            $(".row_customer_" + data.Customer_id).addClass("fade_out");
-          }, 200);
-          setTimeout(() => {
-            $(".row_customer_" + data.Customer_id).css("display", "none");
-          }, 700);
-        } else {
-          showBanner("Échec de la suppression", false);
-        }
-      },
-    });
-  };*/
 }
 function Deletepaid(ids) {
   let idsArray = Array.isArray(ids) ? ids : [ids];
@@ -424,7 +428,7 @@ function DeleteCustomer(event, id) {
 
 async function showBookingDetailsFromID(id) {
   openModal("DetailsEventModal", false);
-  let event;
+  let Booking;
   try {
     let response = await $.ajax({
       url: baseurl + "booking/getBookingFromID?id=" + id,
@@ -432,7 +436,7 @@ async function showBookingDetailsFromID(id) {
     });
     if (response && response.id == id) {
       // Assurez-vous que cette condition est correcte
-      event = {
+      Booking = {
         id: response.id,
         Customer_id: response.Customer_id,
         Pdf_url: response.Pdf_url,
@@ -444,6 +448,7 @@ async function showBookingDetailsFromID(id) {
         Paids_values: response.paids_values,
         Price: response.Price,
         Service_id: response.Service_id,
+        booking_img: response.img,
         fullblocked: response.fullblocked,
         Type_doc: response.Type_doc,
         customer_name: response.customer_name,
@@ -468,8 +473,8 @@ async function showBookingDetailsFromID(id) {
   } catch (error) {
     console.error("Échec getBookingsFromID: ", error);
   }
-  let array_paids_values = event.Paids_values
-    ? event.Paids_values.split(",").map(Number)
+  let array_paids_values = Booking.Paids_values
+    ? Booking.Paids_values.split(",").map(Number)
     : [0];
   let paids_sum = array_paids_values.reduce(
     (total, currentValue) => total + currentValue,
@@ -477,72 +482,107 @@ async function showBookingDetailsFromID(id) {
   );
   document.getElementById(
     "booking_details_id_h5"
-  ).innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${event.service_color}">${event.Type_doc} # ${event.id}</span> `;
+  ).innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${Booking.service_color}">${Booking.Type_doc} # ${Booking.id}</span> `;
+
+  document.getElementById("booking_details_img").src =  baseurl + 'uploads/' + Booking.booking_img;
   document.getElementById("booking_details_service_h5").innerText =
-    event.service_title;
+    Booking.service_title;
   let h5_fullblocked = document.getElementById(
     "booking_details_fullblocked_h5"
   );
-  if (event.fullblocked == 1) {
+  if (Booking.fullblocked == 1) {
     h5_fullblocked.style.display= "block";
     h5_fullblocked.innerText = "- Logement entier privatisé -";
   } else {
     h5_fullblocked.style.display = "none";
   }
-  document.getElementById("booking_details_qt_span").innerText = event.Qt;
+  document.getElementById("booking_details_qt_span").innerText = Booking.Qt;
   document.getElementById("booking_details_traveller_span").innerText =
-    event.QtTraveller;
-  document.getElementById("booking_details_start_span").innerText = event.start;
-  document.getElementById("booking_details_end_span").innerText = event.end;
-  document.getElementById("booking_details_price_span").innerHTML =
-    parseInt(event.Price) + parseInt(event.QtTraveller) * 200 + " Fr";
-  document.getElementById("booking_details_progress_div").style.width =
-    paids_sum > 0
-      ? Math.min(Math.round((paids_sum / event.Price) * 10000) / 100, 100) + "%"
-      : "0";
-  document.getElementById("booking_details_progress_div").innerText =
-    paids_sum > 0 ? paids_sum + " Fr" : "";
+    Booking.QtTraveller;
+  document.getElementById("booking_details_start_span").innerText = Booking.start;
+  document.getElementById("booking_details_end_span").innerText = Booking.end;
+  document.getElementById("booking_details_price_span").innerHTML = parseInt(Booking.Price) + parseInt(Booking.QtTraveller) * 200 + " Fr";
+
+  let details_paid_div = document.getElementById('booking_details_progress_div');
+  details_paid_div.innerText = paids_sum > 0 ? paids_sum + " Fr" : "0";
+  if(paids_sum > 0){
+    let convert_pourc = Math.min(Math.round((parseInt(paids_sum) / (parseInt(Booking.Price) + (parseInt(Booking.QtTraveller) * 200))) * 10000) / 100, 100);
+    details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
+  } else {details_paid_div.style.width = "24px"; }
+
   document.getElementById("booking_details_customer_name_span").innerText =
-    event.customer_name;
+    Booking.customer_name;
   document.getElementById("booking_details_customer_name_span").onclick =
     (function (customerId) {
       return function () {
         showUpdateCustomer(customerId);
       };
-    })(event.Customer_id);
+    })(Booking.Customer_id);
 
   document.getElementById("booking_details_customer_phone_span").innerText =
-    event.customer_phone;
+    Booking.customer_phone;
   document.getElementById("booking_details_customer_mail_span").innerText =
-    event.customer_mail;
+    Booking.customer_mail;
   document.getElementById("booking_details_customer_comment_span").innerHTML =
-    event.customer_comment;
+    Booking.customer_comment;
   document.getElementById("booking_details_customer_created_span").innerText =
     "Client depuis " +
-    new Date(event.customer_created)
+    new Date(Booking.customer_created)
       .toLocaleDateString("fr-FR", { year: "numeric", month: "long" })
       .replace(/^\w/, (c) => c.toUpperCase());
   document.getElementById("booking_details_created_span").innerHTML =
-    "Créé le: " + event.created;
+    "Créé le: " + Booking.created;
   document.getElementById("booking_details_updated_span").innerHTML =
-    "Modifié le: " + event.updated;
-  document.getElementById("booking_details_comment_span").innerText =
-    event.Comment;
+    "Modifié le: " + Booking.updated;
+    
+    let child_Span_Comment = document.getElementById("booking_details_comment_span");
+    let parent_Span_Comment = child_Span_Comment.parentElement;
+    child_Span_Comment.innerText = Booking.Comment;
+    if(Booking.Comment.length > 0 ){
+      parent_Span_Comment.classList.remove('hidden'); 
+    }else { 
+      parent_Span_Comment.classList.add('hidden'); 
+    }
   document.getElementById("booking_details_pdf").href =
-    baseurl + "booking/generatePDF/booking/" + event.id;
+    baseurl + "booking/generatePDF/booking/" + Booking.id;
   document.getElementById("booking_details_pdf").innerHTML =
     download_ico + " Télécharger PDF";
   document.getElementById("booking_details_sendmail").innerHTML =
     send_ico + "Envoyer EMAIL";
-  document.getElementById("booking_details_sendmail").href =
-    baseurl + "booking/sendmail/" + event.id;
+
+    document.getElementById("booking_details_sendmail").addEventListener("click", function(event) {
+      event.preventDefault(); // Empêche le comportement par défaut du lien
+  
+      // Requête AJAX pour envoyer l'e-mail
+      $.ajax({
+        url: baseurl + "booking/sendmail/" + Booking.id,
+        method: "GET",
+        success: function (response) {
+          if (response.success === true) {
+            showBanner('Ok envoyé', true);
+          } 
+          else{
+            showBanner('Erreur lors de l\'envoi', false);
+
+          }
+        
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error('Erreur AJAX : ' + textStatus + ', ' + errorThrown);
+            showBanner('Erreur lors de la connexion au serveur', false);
+        }
+        });
+      
+  });
+  
+
   let button_update = document.getElementById("booking_details_update_button");
   button_update.onclick = function () {
-    update_add_formEvent(event);
+    update_add_formEvent(Booking);
   };
   let button_delete = document.getElementById("booking_details_delete_button");
   button_delete.onclick = function () {
-    deleteEvent(event, "DetailsEventModal");
+    deleteEvent(Booking, "DetailsEventModal");
   };
 }
 
@@ -552,9 +592,11 @@ function get_booking_list_from_customer(data) {
   closeModal();
   openModal("CustomerInfoModal");
   let customer_id = data.getAttribute("data-id");
-  let Name = data.getAttribute("data-Name");
-  let Comment = data.getAttribute("data-Comment");
+  let Name = data.getAttribute("data-name");
+  let Phone = data.getAttribute("data-phone");
+  let Comment = data.getAttribute("data-comment");
   let tbody = document.getElementById("CustomerDetailsContainer");
+  document.getElementById('history_customer_title_h3').innerText = Name + (Phone.length>0? ' - ' + Phone: '') ;
   // Gestionnaire d'événements délégués pour les lignes de tableau avec la classe "booking-row"
   tbody.addEventListener("click", function (event) {
     if (event.target.classList.contains("booking-row")) {
@@ -605,22 +647,28 @@ function get_booking_list_from_customer(data) {
         newRow.setAttribute("data-booking-id", booking.id); // Ajout de l'ID de la réservation comme attribut
 
         newRow.innerHTML = `
+                <td scope="row" class="px-3 py-3">
+                  ${booking.Type_doc}
+                </td>
+                <td scope="row" class="py-3 text-xs ">
+                  #${booking.id}
+                </td>
                 <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   ${booking.service_title}
                 </th>
-                <td class="flex flex-col justify-center items-center px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                <td class="flex flex-col justify-center items-center px-3 py-3">
                 <span>${format_date(booking.start,0,true)} </span>
                   <span>
-                    <svg class="w-2 h-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                    <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
                     </svg>
                   </span>
                   <span>${format_date(booking.end,0,true)} </span>
                 </td>
-                <td class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">${
+                <td class="px-3 py-3 ">${
                   totalPaid
                 }</td>
-                <td class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">${
+                <td class="px-3 py-3">${
                   totalPrice
                 }</td>
             `;
@@ -648,7 +696,7 @@ function get_booking_list_from_customer(data) {
                   <svg class="w-5 h-5 mr-2 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 18">
                       <path d="M7 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm2 1H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
                   </svg> 
-                  ${Name}
+                  <span id='history_customer_name'>${Name}</span>
               </span>
             </a>
             <span class="text-md font-bold text-blue-700 dark:text-white">Total ${totalPrice} Fr</span>

@@ -2,12 +2,12 @@
 <html id="goFullScreen">
 
 <head>
-  <title>Mon Application</title>
-  <link href="css/wd_composed_style.css?v=<?= time(); ?>" rel="stylesheet">
+  <title>Kaipekalodge - Gestion Réservation</title>
+  <link href="css/wd_composed_style.css" rel="stylesheet">
   <link href="css/select2.min.css" rel="stylesheet">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <!--<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
+  <meta http-equiv="Expires" content="0" />-->
   <!-- Responsive design : system css viewport et utilisation des unités vh et vw) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>

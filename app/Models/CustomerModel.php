@@ -24,7 +24,6 @@ class CustomerModel extends Model
         'Email' => 'permit_empty|valid_email',
         'Phone' => 'permit_empty',
         'Comment' => 'permit_empty',
-        'Deleted_at' => 'permit_empty|in_list[0,1]'
     ];
 
     // Dates
@@ -131,15 +130,8 @@ class CustomerModel extends Model
             // Gérer l'erreur, car $modify n'est pas au format attendu
         }
 
-
-
         if ($delete == true) {
             $this->delete($id);
         }
-    }
-
-    public function create_customer($data)
-    {
-        return $this->insert($data);
     }
 }

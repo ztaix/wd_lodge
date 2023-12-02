@@ -142,6 +142,7 @@ class BookingModel extends Model
         wd_customers.Created_at as customer_created, 
         wd_customers.Comment as customer_comment, 
         wd_services.Title as service_title, 
+        wd_services.Image_url as img, 
         wd_services.Color as service_color,
         GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
         GROUP_CONCAT(wd_paid.type_paid) as types_paids,
@@ -233,39 +234,50 @@ class BookingModel extends Model
 
     public function getBookingsFromSearch($searchInput)
     {
-        $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, wd_services.Color as service_color');
+        $this->select('wd_bookings.*');
+        $this->select('wd_customers.Name as customer_name');
+        $this->select('wd_services.Title as service_title, wd_services.Color as service_color');
+       
+        if(is_numeric($searchInput)){
+        $this->select('wd_bookings.Price + (wd_bookings.QtTraveller * 200) AS Total');
+        }
+    
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
     
-        // Convertir searchInput en minuscule
-        $searchInputLower = strtolower($searchInput);
+
     
-        // Tenter de convertir le searchInput en une date au format YYYY-MM-DD
-        $possibleDateFormats = ['d/m/Y', 'd/m/y', 'd-m-Y', 'd-m-y'];
-        $searchDate = null;
-    
-        foreach ($possibleDateFormats as $format) {
-            $dateObj = DateTime::createFromFormat($format, $searchInput);
-            if ($dateObj !== false && $dateObj->format($format) === $searchInput) {
-                $searchDate = $dateObj->format('Y-m-d');
-                break;
+        
+        if(is_numeric($searchInput)){
+            $this->having('Total', $searchInput);
+        }else{
+                $this->groupStart(); // Commencer un groupe de conditions
+                    // Convertir searchInput en minuscule
+                    $searchInputLower = strtolower($searchInput);
+                
+                    // Tenter de convertir le searchInput en une date au format YYYY-MM-DD
+                    $possibleDateFormats = ['d/m/Y', 'd/m/y', 'd-m-Y', 'd-m-y'];
+                    $searchDate = null;
+                
+                    foreach ($possibleDateFormats as $format) {
+                        $dateObj = DateTime::createFromFormat($format, $searchInput);
+                        if ($dateObj !== false && $dateObj->format($format) === $searchInput) {
+                            $searchDate = $dateObj->format('Y-m-d');
+                            break;
+                        }
+                    }
+                    $this->like("LOWER(wd_customers.Name)", $searchInputLower);
+                    $this->orLike("LOWER(wd_bookings.id)", $searchInputLower);
+                    if ($searchDate) {
+                        $this->orGroupStart();
+                            $this->orWhere("wd_bookings.start <= ", $searchDate);
+                            $this->where("wd_bookings.end >= ", $searchDate);
+                        $this->groupEnd();
+                    }
+                    $this->orLike("LOWER(wd_services.Title)", $searchInputLower);
+                    $this->orLike("LOWER(wd_bookings.Comment)", $searchInputLower);
+                $this->groupEnd(); // Finir le groupe de conditions
             }
-        }
-    
-        $this->groupStart(); // Commencer un groupe de conditions
-            $this->like("LOWER(wd_customers.Name)", $searchInputLower);
-            $this->orLike("LOWER(wd_bookings.id)", $searchInputLower);
-            if ($searchDate) {
-                $this->orGroupStart();
-                    $this->orWhere("wd_bookings.start <= ", $searchDate);
-                    $this->where("wd_bookings.end >= ", $searchDate);
-                $this->groupEnd();
-            }
-            $this->orLike("LOWER(wd_services.Title)", $searchInputLower);
-            $this->orLike("LOWER(wd_bookings.Comment)", $searchInputLower);
-            $this->orLike("LOWER(wd_bookings.Price)", $searchInputLower);
-            $this->orLike("LOWER(wd_bookings.Paid)", $searchInputLower);
-        $this->groupEnd(); // Finir le groupe de conditions
         
         $result = $this->findAll(); // Utiliser findAll pour récupérer tous les résultats
         

@@ -32,184 +32,8 @@ function lightenHexColor(hex, percent) {
   return `#${rr}${gg}${bb}`;
 }
 
-function showBanner(message, isSuccess) {
-  const banner = document.getElementById("banner_update");
-  const banner_txt = document.getElementById("banner_update-text");
-
-  banner_txt.innerHTML += '<p>' + message + '</p>';
-
-  if (isSuccess) {
-    banner.style.backgroundColor = "rgba(0, 128, 0, 0.9)"; //green 50%
-  } else {
-    banner.style.backgroundColor = "rgba(255, 0, 0, 0.9)";
-  }
-
-  banner.classList.remove("banner_update-exit");
-  banner.classList.add("banner_update-visible");
-
-  setTimeout(() => {
-    banner.classList.remove("banner_update-visible");
-    banner.classList.add("banner_update-exit");
-    banner_txt.innerHTML = '';
-  }, 3500);
-}
-
-function showSearch() {
-  const banner = document.getElementById("SearchListEventModal");
-  banner.classList.add("banner_search-visible");
-  banner.classList.remove("hidden"); // Supprimer la classe "hidden"
-  banner.style.display = "flex"; // Modifier la propriété "display"
-}
-// La pile pour garder une trace des fenêtres modales ouvertes
-var modalStack = []; // Pile pour stocker les fenêtres modales ouvertes
-var currentZIndex = 50; // Valeur initiale du zIndex
-
-function resetForm(modalId, start = false , end = false){
-  if(modalId == "addEventModal"){
-    const form_addEventModal = [
-      "Modaleventid",
-      "ModaleventType_doc",
-      "ModaleventCustomer_id",
-      "ModaleventQtTraveller",
-      "ModaleventService_id",
-      "Modaleventfullblocked",
-      "ModaleventQt",
-      "ModaleventPrice",
-      "ModaleventComment",
-    ];
-
-    
-    form_addEventModal.forEach(input => {
-      if(input == "ModaleventType_doc"){
-        document.getElementById(input).value = 'Devis';
-      }
-      else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" || input == "ModaleventService_id" ){
-        document.getElementById(input).value = 1;
-      }
-      else if( input == "ModaleventCustomer_id"){
-        let ModaleventCustomer_id = $('#ModaleventCustomer_id'); // Utilisez jQuery pour sélectionner l'élément
-        ModaleventCustomer_id.val(1); // Changez la valeur
-        ModaleventCustomer_id.trigger('change'); // Mettez à jour l'affichage de Select2
-        
-      }
-      else {
-        document.getElementById(input).value = '';
-      }
-    });
-    discountIndicator.innerText = '';
-    document.getElementById("addEventModal_title").innerText = 'Ajouter';
-    let date_start = '';
-    let date_end = '';
-    if(start){
-      start_date = format_date(start);
-      date_end = end ? format_date(end) : format_date(start,1);
-    }else {
-      date_start = format_date(getToday());
-      date_end = format_date(date_start,1);
-    }
-
-    //RESET PAYMENT ROW
-    let temp_payments_row = document.querySelectorAll('div[id^="temp_"]');
-    if(temp_payments_row.length > 0){
-      // Parcourir et supprimer chaque div
-      temp_payments_row.forEach(div => {
-        div.parentNode.removeChild(div);
-      });
-    } 
-    loadAndInitDatepicker(1,date_start,date_end);
-  }
-}
-
-function openModal(modalId) {
-  let modalElement = document.getElementById(modalId);
-
-  if (modalElement) {
-    // Augmenter la valeur globale du zIndex
-    currentZIndex += 1;
-
-    // Appliquer le zIndex et afficher la fenêtre modale
-    modalElement.style.zIndex = currentZIndex;
-    modalElement.style.display = "block";
-    modalElement.classList.add("animate");
-
-    modalStack.push(modalElement); // Ajoute la fenêtre modale à la pile
-  }
-}
-
-// Ferme la dernière fenêtre modale ouverte
-function closeModal(all = false) {
-  if(all === false){
-    if (modalStack.length > 0) {
-      let lastModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
-      lastModal.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
-
-      // Retire la classe 'close-animate' après l'animation
-      setTimeout(() => {
-        lastModal.classList.remove("animate");
-        lastModal.classList.remove("close-animate");
-        lastModal.style.display = "none";
-      }, 1000); // Correspond à la durée de l'animation slideDown
-    }
-  }
-  else{
-    // Boucle tant qu'il y a des modales dans la pile
-    while (modalStack.length > 0) {
-      let currentModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
-      currentModal.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
-
-      // Retire la classe 'close-animate' après l'animation
-      setTimeout(() => {
-          currentModal.classList.remove("animate");
-          currentModal.classList.remove("close-animate");
-          currentModal.style.display = "none";
-      }, 1000); // Correspond à la durée de l'animation slideDown
-    }
-  }
-}
-function closeModalById(modalId) {
-  let modalElement = document.getElementById(modalId);
-
-  if (modalElement) {
-    modalElement.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
-
-    // Retire la classe 'close-animate' après l'animation
-
-    modalElement.classList.remove("animate");
-    modalElement.classList.remove("close-animate");
-    modalElement.style.display = "none";
-
-    // Retire la fenêtre modale spécifiée de la pile
-    modalStack = modalStack.filter((modal) => modal.id !== modalId);
-
-    // Si une fenêtre modale est toujours dans la pile, alors la rouvrir
-    if (modalStack.length > 0) {
-      let previousModal = modalStack[modalStack.length - 1];
-      previousModal.style.display = "block";
-      previousModal.classList.add("animate");
-    }
-  }
-}
-
-function closex(modalId) {
-  let modalElement = document.getElementById(modalId);
-  modalElement.classList.remove("banner_update-visible");
-  modalElement.classList.add("banner_update-exit"); // Ajoutez cette ligne
-
-  // Écouter l'événement 'animationend' pour enlever la classe 'banner_update-exit'
-  modalElement.addEventListener(modalId, function () {
-    modalElement.classList.remove("banner_update-exit");
-  });
-}
-
-function ModalInStack(modalId) {
-  return modalStack.some(function (modal) {
-    return modal.id.includes(modalId);
-  });
-}
-
 var calendar; // Déclaration dans la portée globale
 var clickedDate = null; // Défini dans la portée globale
-var isClosingModal = false;
 
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
@@ -480,7 +304,6 @@ function updateEventFromDetails() {
         closeModalById('addEventModal');
         showBookingDetailsFromID(row_id);
         if(ModalInStack('ListEventModal')){ // UPDATE SI RESPONSE VALIDE !! HORS PAIEMENTS !!
-          console.log(response.data);
           document.getElementById('booking_total_'+row_id).innerText =  row_price;
           document.getElementById('booking_Comment_'+row_id).innerText = response.data.Comment;
           document.getElementById('booking_startDay_'+row_id).innerText = getDayOfWeek(format_date(response.data.start));
@@ -555,20 +378,19 @@ function updateEventFromDetails() {
                   }
                 }
               }                
-              
               if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+              }
+              if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
                 let details_paid_div = document.getElementById('booking_details_progress_div');
-                details_paid_div.innerText = encaissement + ' Fr';
-                details_paid_div.style.width = encaissement > 0
-                ? Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100) + "%"
-                : "0";
-               document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+                details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
+                if(encaissement > 0){
+                  let convert_pourc = Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100);
+                  details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
+                } else {details_paid_div.style.width = "24px"; }
+                 
               }
-              
-              if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-               document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
-               document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
-              }
+
                 showBanner("Paiements mise à jour avec succès !", true);
             } else {
                 showBanner("Echec de la mise à jour des paiements !", false);
@@ -583,8 +405,8 @@ function updateEventFromDetails() {
           },
         });
       } else {
-        showBanner("Echec de la mise à jour !", false);
-        console.log(response);
+        showBanner("Echec de la mise à jour ! <br>" + response.message.Customer_id, false);
+        console.log(response.message.Customer_id);
       }
     },
     error: function (jqXHR, textStatus, errorThrown) {
@@ -635,7 +457,8 @@ function addEvent() {
       data: eventData, // Données à envoyer
       success: function (response) {
         try {
-          if (response.success == true) {
+          if (response.success === true) {
+
             let booking_id = response.id;
             // Traitez la réponse ici
             showBanner(
@@ -656,7 +479,7 @@ function addEvent() {
             }, 200);
 
 
-            // UPDATE FORM PAID
+            // ADD PAYMENTS
         let payments = []; // Initialise payments comme un tableau vide
         document.querySelectorAll('.payment-row').forEach((row, index) => {
           if(row.id.startsWith('temp_') === true ) {
@@ -717,16 +540,19 @@ function addEvent() {
               }                
               
               if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+              }
+              if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
                 let details_paid_div = document.getElementById('booking_details_progress_div');
-                details_paid_div.innerText = encaissement + ' Fr';
-                details_paid_div.style.width = encaissement > 0
-                ? Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100) + "%"
-                : "0";
-               document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+                details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
+                if(encaissement > 0){
+                  let convert_pourc = Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100);
+                  details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
+                } else {details_paid_div.style.width = "24px"; }
+                 
               }
               
-              if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-               document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+              if(ModalInStack('ListEventModal')){ 
                document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
               }
                 showBanner("Paiements mise à jour avec succès !", true);
@@ -745,11 +571,8 @@ function addEvent() {
 
           } else {
             // Gestion des erreurs de validation
-            let errorMessages = "Erreur(s) lors de l'ajout :<ul>";
-            for (let field in response.errors) {
-              errorMessages += `<li>${response.errors[field]}</li>`;
-            }
-            errorMessages += "</ul>";
+            let errorMessages = "Erreur(s) lors de l'ajout";
+            errorMessages += "<br>" + response.error.Customer_id;
             showBanner(errorMessages, false);
           }
         } catch (e) {

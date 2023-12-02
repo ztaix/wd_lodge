@@ -22,14 +22,23 @@ if (isset($seller[0]) && isset($data)) {
 	$s_client_telephone = $data['customer_info']['Phone'];
 	$s_client_mail = $data['customer_info']['Email'];
 	$s_id = $data['booking_info']['id'];
+	$s_comment = $data['booking_info']['Comment'];
 	$s_created = $data['booking_info']['Created_at'];
 	$s_start = $data['booking_info']['start'];
 	$s_end = $data['booking_info']['end'];
 	$s_type = $data['booking_info']['Type_doc'];
 	$s_paid = $data['booking_info']['Paid'];
-	$s_price = $data['booking_info']['Price'];
+	$s_qttraveller = $data['booking_info']['QtTraveller'];
+	$s_price = $data['booking_info']['Price'] + ($s_qttraveller * 200);
 	$s_service = $data['booking_info']['service_title'];
 	$s_qt = $data['booking_info']['Qt'];
+
+	$count_paid =  count(explode(',',trim($data['booking_info']['paids_ids'])));
+	$types_paids = explode(',',trim($data['booking_info']['types_paids']));
+	$paids_values = explode(',',trim($data['booking_info']['paids_values']));
+    $s_paid = array_sum($paids_values);
+	$payments = [];
+	for ($i = 0; $i < $count_paid; $i++) {$payments[] = array($types_paids[$i] => $paids_values[$i]);}
 
 	if (
 		isset($denomination) && isset($telephone) && isset($adresse) && isset($mail) &&
@@ -76,7 +85,6 @@ $due_date = $date->format('d/m/Y');
 			flex-direction: column;
 			justify-content: flex-end;
 			align-items: center;
-			min-height: 100vh;
 			/* Assure que le conteneur prend au moins toute la hauteur de la fenêtre */
 			margin: 10px 0 0 0;
 			color: #d6dbdf;
@@ -88,22 +96,18 @@ $due_date = $date->format('d/m/Y');
 <?php 
 
 ?>
-	<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-		<a href="#">
-			<img class="rounded-t-lg" style="max-width: 100px ;" src="<?=$seller[1]['Data'] ?>" alt="" />
-		</a>
+	<div class="">
+		<img class="rounded-t-lg" style="max-width: 100px ;" src="<?=$logo ?>" alt="" />
 		<div class="p-5">
-			<a href="#">
-				<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><?=$seller[0]['Data'] ?></h5>
-			</a>
-			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Bonjour <b><?=$data['customer_info']['Name'] ?></b>,</p>
-			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Nous vous confirmons la réservation du <?= sql_date_to_dmY($data['booking_info']['start']) ?> au <?= sql_date_to_dmY($data['booking_info']['end']) ?> (<?=$data['booking_info']['Qt'] ?> nuits).</p>
-			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Vous avez réserver la chambre <?=$data['booking_info']['service_title'] ?> pour un total de <?=$data['booking_info']['Price'] ?> Fr</p>
+			<h3 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><?= $denomination ?></h3>
+			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Bonjour <b><?=$s_client_nom ?></b>,</p>
+			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Nous vous confirmons la réservation du <?= sql_date_to_dmY($s_start) ?> au <?= sql_date_to_dmY($s_end) ?> (<?=$s_qt ?> nuits).</p>
+			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Vous avez réserver la chambre <?=$s_service ?> pour un total de <?=$s_price ?> Fr</p>
 			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Nous sommes très impatient de vous accueillir !</p>
-			<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-				Statut du paiement : <?=$data['booking_info']['Paid'] ?> / <?=$data['booking_info']['Price'] ?> Fr
-			</a>
-			<?=$data['booking_info']['Comment']? '<p><b>Commentaire de réservation:</b> <br>'.$data['booking_info']['Comment'].'</p>':'';?>
+			<p class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+				Statut du paiement : <?= $s_paid ?> / <?=$s_price ?> Fr
+			</p>
+			<?=$data['booking_info']['Comment']? '<p><b>Commentaire de réservation:</b> <br>'.$s_comment.'</p>':'';?>
 		</div>
 	</div>
 

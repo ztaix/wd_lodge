@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use CodeIgniter\HTTP\ResponseInterface;
 
 use DateTime;
 use Dompdf\Dompdf;
@@ -567,7 +568,8 @@ class BookingController extends BaseController
 
         $email->initialize($config);
 
-        $email->setFrom($seller[0][3]['Data'], $seller[0][0]['Data']); // Définissez l'adresse de l'expéditeur
+        $email->setFrom("mail@ztaix.me", $seller[0][0]['Data']); // Définissez l'adresse de l'expéditeur
+        $email->setReplyTo($seller[0][3]['Data'], $seller[0][0]['Data']);
         $email->setTo($customerData['Email']); // Définissez le destinataire
         $email->setSubject('Information de réservation : ' . $bookingData['Type_doc']); // Définissez le sujet
         $email->setMessage($html); // Ajoutez le corps de l'email
@@ -576,19 +578,19 @@ class BookingController extends BaseController
         $email->attach($pdfFilePath);
         if ($email->send()) {
             unlink($pdfFilePath);
-            return redirect()->to('/')->with('message', 'Email envoyé avec succès.');
-            return [
-                'success' => true
-            ];
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                  ->setJSON([
+                                      'success' => true
+                                  ]);
         } else {
             unlink($pdfFilePath);
-            return redirect()->to('/')->with('message', 'Email non envoyé.');
-            $error = $email->printDebugger(['headers']); // Récupérez les informations d'erreur
+            $error = $email->printDebugger(['headers']);
             log_message('error', 'Email sending failed: ' . $error);
-            return [
-                'success' => false,
-                'message' => 'Échec de l’envoi de l’email. ' . $error
-            ];
+            return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                                  ->setJSON([
+                                      'success' => false,
+                                      'message' => 'Échec de l’envoi de l’email. ' . $error
+                                  ]);
         }
     }
 }
