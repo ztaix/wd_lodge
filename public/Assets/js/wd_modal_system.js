@@ -55,8 +55,11 @@ function resetForm(modalId, start = false , end = false){
       if(input == "ModaleventType_doc"){
         document.getElementById(input).value = 'Devis';
       }
-      else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" || input == "ModaleventService_id" ){
+      else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" ){
         document.getElementById(input).value = 1;
+      }
+      else if( input == "ModaleventService_id" ){
+        document.getElementById(input).value = discountservice[0].Service_id;
       }
       else if( input == "ModaleventCustomer_id"){
         let ModaleventCustomer_id = $('#ModaleventCustomer_id'); // Utilisez jQuery pour sélectionner l'élément

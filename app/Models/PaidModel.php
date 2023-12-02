@@ -156,7 +156,6 @@ class PaidModel extends Model
                     $result = $this->update($Paid_ID, $data);
                 }
             }else {
-
                 /* Si n'existe pas */ 
                 // Création d'un nouvel enregistrement
                 $Paid_ID = $this->insert($data, true);

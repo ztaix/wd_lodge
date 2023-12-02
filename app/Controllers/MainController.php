@@ -6,6 +6,14 @@ use CodeIgniter\Controller;
 
 class MainController extends Controller
 {
+    private $ConfigurationModel;
+
+    public function __construct()
+    {
+        $this->ConfigurationModel = new \App\Models\ConfigurationModel();
+        
+    }
+
     public function index()
     {
         // Logique pour la page d'accueil (calendrier)

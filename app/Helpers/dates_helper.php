@@ -10,6 +10,7 @@ if (! function_exists('convert_date_format'))
         }
         return $date->format('d-m-Y');
     }
+    
     function countNights($startDate, $endDate) {
         // Convertir les chaînes de date en objets DateTime
         $start = DateTime::createFromFormat('d-m-Y', $startDate);
