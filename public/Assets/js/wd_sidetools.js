@@ -806,6 +806,10 @@ function createPaymentHtml(paid, index, lenght) {
 // Fonction pour charger et initialiser le datepicker avec des dates réservées
 function loadAndInitDatepicker(service_id, start_date = false, end_date = false) {
   return new Promise((resolve, reject) => {
+    var loader = document.querySelector('.loader');
+    loader.style.display = 'block';
+    loader.style.zIndex = 99;
+
     if (fromServicepicker) {
       fromServicepicker.destroy(); 
     }
@@ -915,8 +919,14 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
           // Réinitialiser le flag puisque la mise à jour vient du datepicker et non de l'utilisateur
           userChangedPrice = false;
 
+          InfoTotal();
           updatePrice();
-        });
+
+        });            
+            InfoTotal();
+            updatePrice();
+            
+            loader.style.display = 'none';
         resolve(fromServicepicker); // Déplacez `resolve` ici
       },
       error: function (jqXHR, textStatus, errorThrown) {

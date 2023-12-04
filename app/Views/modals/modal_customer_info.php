@@ -3,7 +3,7 @@ $modal_id= "CustomerInfoModal";
 ?>
 
 <!-- DETAILS EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full inset-0 hidden z-50">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full hidden z-50 overflow-auto">
     <div class="h-full relative bg-slate-200 rounded-lg shadow dark:bg-gray-700 ">
         <div class="h-full overflow-scroll">
 

@@ -423,6 +423,7 @@ document.getElementById("ModaleventQtTraveller").addEventListener("change", Info
 
         // Ajoutez un écouteur d'événements pour réagir aux changements de sélection
         serviceSelect.addEventListener('change', function() {
+            console.log('serviceSelect changed');
             // Vérifiez si le datepicker a déjà été initialisé et détruisez-le si c'est le cas
             if (fromServicepicker) {
                 fromServicepicker.destroy(); // Assurez-vous que la méthode `destroy` est bien définie par Easepick pour détruire l'instance
