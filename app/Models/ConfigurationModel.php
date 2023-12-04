@@ -50,4 +50,16 @@ class ConfigurationModel extends Model
                      ->update(['Data' => $data['Data']]);
         }
     }
+
+    public function getSMTPCredential(){
+        $this->select('Data');
+        $mail = $this->where('Title', 'SMTPmail')->first();
+        $pass = $this->where('Title', 'SMTPpass')->first();
+    return [
+        'mail' => $mail['Data'],
+        'pass' => $pass['Data']
+    ];
+        
+    }
+
 }

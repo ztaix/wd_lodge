@@ -412,4 +412,25 @@ document.getElementById("ModaleventQtTraveller").addEventListener("change", Info
 
         return result;
     }
+
+
+    var fromServicepicker; // Déclare la variable à l'extérieur de la fonction pour qu'elle ait une portée globale.
+
+        var serviceSelect = document.getElementById('ModaleventService_id');
+
+        // Chargez et initiez le datepicker avec l'ID de service sélectionné au départ
+        loadAndInitDatepicker(serviceSelect.value);
+
+        // Ajoutez un écouteur d'événements pour réagir aux changements de sélection
+        serviceSelect.addEventListener('change', function() {
+            // Vérifiez si le datepicker a déjà été initialisé et détruisez-le si c'est le cas
+            if (fromServicepicker) {
+                fromServicepicker.destroy(); // Assurez-vous que la méthode `destroy` est bien définie par Easepick pour détruire l'instance
+            }
+
+            InfoTotal();
+            updatePrice();
+
+        });
+
 </script>

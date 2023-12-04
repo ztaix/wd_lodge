@@ -552,7 +552,9 @@ async function showBookingDetailsFromID(id) {
 
     document.getElementById("booking_details_sendmail").addEventListener("click", function(event) {
       event.preventDefault(); // Empêche le comportement par défaut du lien
-  
+      var loader = document.querySelector('.loader');
+      loader.style.display = 'block';
+      loader.style.zIndex = 999;
       // Requête AJAX pour envoyer l'e-mail
       $.ajax({
         url: baseurl + "booking/sendmail/" + Booking.id,
@@ -560,10 +562,11 @@ async function showBookingDetailsFromID(id) {
         success: function (response) {
           if (response.success === true) {
             showBanner('Ok envoyé', true);
+            loader.style.display = 'none';
           } 
           else{
             showBanner('Erreur lors de l\'envoi', false);
-
+            loader.style.display = 'none';
           }
         
         },

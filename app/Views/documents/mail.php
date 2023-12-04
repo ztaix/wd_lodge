@@ -16,12 +16,14 @@ if (isset($seller[0]) && isset($data)) {
 	$checkout = $seller[10]['Data'];
 	$txt_bas_devis = $seller[11]['Data'];
 	$txt_bas_facture = $seller[12]['Data'];
+	$txt_bas_mail = $seller[13]['Data'];
 
 
 	$s_client_nom = $data['customer_info']['Name'];
 	$s_client_telephone = $data['customer_info']['Phone'];
 	$s_client_mail = $data['customer_info']['Email'];
 	$s_id = $data['booking_info']['id'];
+	$s_img = $data['baseurl'] .'uploads/'.$data['booking_info']['img'];
 	$s_comment = $data['booking_info']['Comment'];
 	$s_created = $data['booking_info']['Created_at'];
 	$s_start = $data['booking_info']['start'];
@@ -31,7 +33,10 @@ if (isset($seller[0]) && isset($data)) {
 	$s_qttraveller = $data['booking_info']['QtTraveller'];
 	$s_price = $data['booking_info']['Price'] + ($s_qttraveller * 200);
 	$s_service = $data['booking_info']['service_title'];
+	$s_service_color = $data['booking_info']['service_color'];
 	$s_qt = $data['booking_info']['Qt'];
+	$s_update_at = $data['booking_info']['updated_at'];
+	$s_fullblocked = $data['booking_info']['fullblocked'];
 
 	$count_paid =  count(explode(',',trim($data['booking_info']['paids_ids'])));
 	$types_paids = explode(',',trim($data['booking_info']['types_paids']));
@@ -72,46 +77,73 @@ $due_date = $date->format('d/m/Y');
 ?>
 
 <!DOCTYPE html>
-<html>
-
+<html lang="fr">
 <head>
-	<meta charset="utf-8" />
-	<title>Facture/Devis KAIPEKA LODGE PDF</title>
-
-	<link href="css/wd_composed_style.css?" rel="stylesheet">
-	<style>
-		.footer_wayzdigital {
-			display: flex;
-			flex-direction: column;
-			justify-content: flex-end;
-			align-items: center;
-			/* Assure que le conteneur prend au moins toute la hauteur de la fenêtre */
-			margin: 10px 0 0 0;
-			color: #d6dbdf;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Confirmation de Réservation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f6f6f6;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+			padding: 20px;
+			border-radius: 15px;
+        }
+    </style>
 </head>
-
 <body>
-<?php 
+	<div style="max-width: 600px;margin: 0 auto; padding: 20px 0 0 20px; color:#5e5e5e; font-size: 10px;">Dernière mise à jour : <?= $s_update_at?></div>
+    <div class="email-container" style="text-align: center;">
+		<!-- En-tête avec logo et image du service en colonne -->
+		<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items:start;">
+			<!-- Logo de l'entreprise -->
+			<img src="<?=$logo?>" alt="Logo" style="max-height: 150px; margin: 10px 0 0 10px;">
 
-?>
-	<div class="">
-		<img class="rounded-t-lg" style="max-width: 100px ;" src="<?=$logo ?>" alt="" />
-		<div class="p-5">
-			<h3 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><?= $denomination ?></h3>
-			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Bonjour <b><?=$s_client_nom ?></b>,</p>
-			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Nous vous confirmons la réservation du <?= sql_date_to_dmY($s_start) ?> au <?= sql_date_to_dmY($s_end) ?> (<?=$s_qt ?> nuits).</p>
-			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Vous avez réserver la chambre <?=$s_service ?> pour un total de <?=$s_price ?> Fr</p>
-			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Nous sommes très impatient de vous accueillir !</p>
-			<p class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-				Statut du paiement : <?= $s_paid ?> / <?=$s_price ?> Fr
-			</p>
-			<?=$data['booking_info']['Comment']? '<p><b>Commentaire de réservation:</b> <br>'.$s_comment.'</p>':'';?>
+			<!-- Image du service -->
+			<img src="<?=$s_img ?>" alt="Service Image" style="max-height:150px; margin: 10px 10px 0 0; border-radius: 15px;">
 		</div>
-	</div>
 
-	<div class="footer_wayzdigital"> wayz.digital, logiciel de gestion pour entreprise et développement personnalisé - <?= date('Y'); ?></div>
+
+        <!-- Corps de l'email -->
+        <div style="padding: 20px; text-align: left;">
+			<div style="display: flex; justify-content: space-between; align-items: center;">
+				<h1 style="margin: 0;"><?= $denomination ?></h1>
+				<span style="background-color: <?=$s_service_color?>; padding:10px; border-radius: 10px; font-size: 1rem; font-weight: bold;"><?=$s_type?> #<?= $s_id ?></span>
+			</div>
+			<?php if($s_fullblocked!==0){
+				?>
+                <div style="width:50%; color: #78a9eb;  text-align: center; margin: 10px auto;">
+                   <h2>~ Privatisé ~ </h2>
+                </div>
+				<?php
+			}?>
+			<p style="line-height: 20px; <?=$s_fullblocked!==0? "padding: 10px; background-color:#e0eeff; border-radius: 10px; ":""?>;">
+			Bonjour <b><?=$s_client_nom?></b>,<br>
+            Nous vous confirmons la réservation du <b><?= sql_date_to_dmY($s_start) ?></b> au <b><?= sql_date_to_dmY($s_end) ?></b> (<?=$s_qt ?> nuits).<br>
+            Vous avez réservé: <b><?=$s_service ?></b> pour un total de <b><?=$s_price ?> Fr</b>.<br>
+            Nous sommes heureux de vous accueillir !</p>
+            <p style="text-align: center; border: 1px solid #e3e3e3; color: #5e5e5e; padding: 10px; margin:0 auto; border-radius: 10px; width: 50%;">
+                <b>Encaissé :</b> <?= $s_paid ?> / <?=$s_price ?> Fr
+            </p>
+            <?= $s_comment ? '<p><b>Commentaire de réservation:</b> <br>'.$s_comment.'</p>' : ''; ?>
+			
+			<!-- Footer -->
+			<div style="margin: 20px 0 0 5px; background-color: #f6f6f6; padding: 10px; text-align: center; font-size: 12px; border-radius: 15px;">
+				<?= $txt_bas_mail; ?>
+			</div>
+        </div>
+
+    </div>
+
+    <div style="text-align: center; padding: 10px 0; font-size: 12px; color: #d6dbdf;">
+        wayz.digital, logiciel de gestion pour entreprise et développement personnalisé - <?= date('Y'); ?>
+    </div>
 </body>
-
 </html>

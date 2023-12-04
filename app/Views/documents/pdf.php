@@ -253,6 +253,7 @@ $due_date = $date->format('d/m/Y');
 							<tr>
 								<td>
 									<p><b><?= $denomination?></b></p>
+									<p><b><?= $info_administrative?></b></p>
 									<p><?= $adresse?></p>
                                   <p><?= $telephone?></p>
                                   <p><?= $mail?></p>

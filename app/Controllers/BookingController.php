@@ -520,6 +520,7 @@ class BookingController extends BaseController
         helper(['text', 'email']); // Chargement des helpers nécessaires
 
         $bookingData = $this->BookingModel->getBookingFromID($booking_id); // Vos données de réservation
+        $SMTPCredential = $this->ConfigModel->getSMTPCredential(); // Vos données de réservation
 
         if (!$bookingData) {
             return [
@@ -538,6 +539,7 @@ class BookingController extends BaseController
             }
 
             $data = [
+                'baseurl' => base_url(),
                 'booking_info' => $bookingData,
                 'customer_info' => $customerData
             ];
@@ -559,8 +561,8 @@ class BookingController extends BaseController
         $config['protocol'] = 'smtp';
         $config['SMTPHost'] = 'smtp.hostinger.com';
         $config['SMTPPort'] = 587; // ou 465 pour SSL
-        $config['SMTPUser'] = 'mail@ztaix.me';
-        $config['SMTPPass'] = 'Belcusar69';
+        $config['SMTPUser'] = $SMTPCredential['mail'];
+        $config['SMTPPass'] = $SMTPCredential['pass'];
         $config['SMTPCrypto'] = 'tls'; // ou 'ssl'
         $config['mailType'] = 'html';
         $config['charset']   = 'utf-8';
@@ -568,7 +570,7 @@ class BookingController extends BaseController
 
         $email->initialize($config);
 
-        $email->setFrom("mail@ztaix.me", $seller[0][0]['Data']); // Définissez l'adresse de l'expéditeur
+        $email->setFrom($SMTPCredential['mail'], $seller[0][0]['Data']); // Définissez l'adresse de l'expéditeur
         $email->setReplyTo($seller[0][3]['Data'], $seller[0][0]['Data']);
         $email->setTo($customerData['Email']); // Définissez le destinataire
         $email->setSubject('Information de réservation : ' . $bookingData['Type_doc']); // Définissez le sujet
@@ -589,7 +591,7 @@ class BookingController extends BaseController
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                                   ->setJSON([
                                       'success' => false,
-                                      'message' => 'Échec de l’envoi de l’email. ' . $error
+                                      'message' => 'Échec de l’envoi de l’email. ' . $error . print_r($SMTPCredential['mail'])
                                   ]);
         }
     }

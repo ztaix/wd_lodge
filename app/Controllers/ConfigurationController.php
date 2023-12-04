@@ -55,6 +55,7 @@ class ConfigurationController extends BaseController
     }
 
 
+
     public function saveConfigurations()
     {
         $data_config_to_save = []; 
