@@ -127,7 +127,7 @@ $due_date = $date->format('d/m/Y');
 			<p style="line-height: 20px; <?=$s_fullblocked!==0? "padding: 10px; background-color:#e0eeff; border-radius: 10px; ":""?>;">
 			Bonjour <b><?=$s_client_nom?></b>,<br>
             Nous vous confirmons la réservation du <b><?= sql_date_to_dmY($s_start) ?></b> au <b><?= sql_date_to_dmY($s_end) ?></b> (<?=$s_qt ?> nuits).<br>
-            Vous avez réservé: <b><?=$s_service ?></b> pour un total de <b><?=$s_price ?> Fr</b>.<br>
+            Vous avez réservé: <b><?=$s_service ?></b> pour <?= $s_qttraveller?> personne<?= $s_qttraveller>1?"s":"";?> = <b><?=$s_price ?> Fr</b>.<br>
             Nous sommes heureux de vous accueillir !</p>
             <p style="text-align: center; border: 1px solid #e3e3e3; color: #5e5e5e; padding: 10px; margin:0 auto; border-radius: 10px; width: 50%;">
                 <b>Encaissé :</b> <?= $s_paid ?> / <?=$s_price ?> Fr

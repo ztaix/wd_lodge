@@ -280,18 +280,19 @@ $due_date = $date->format('d/m/Y');
 <?php 		$tax_bool = $seller[15]['Data'];
 			//$tax = ($tax_bool)? round(((100*$u_price)/(100+$tax_value))*($tax_value/100)): 0;
 			$total_tax = ($tax_bool)? ($s_QtTraveller*200): 0;
+			$plurial= $s_QtTraveller>1?'s':'';
 			?>
 				<tr class='item'>
-					<td><?='<b>'.$s_service.'</b><br>'.$s_comment?></td>
+					<td><?='<b>'.$s_service.'</b> * '.$s_QtTraveller.' personne'.$plurial.' <br>'.$s_comment?></td>
 					<td style="white-space: nowrap;"><?=$u_price.$currency?></td>
-					<td style="white-space: nowrap;"><?=/*$tax.$currency*/ 0 ?></td>
+					<td style="white-space: nowrap;"><?=($s_QtTraveller * $tax_tourist) ?></td>
 					<td><?=$s_qt?></td>
-					<td style="white-space: nowrap;"><?=$s_price.$currency?></td>
+					<td style="white-space: nowrap;"><?=($s_price + ($s_QtTraveller * $tax_tourist)).$currency?></td>
 				</tr>            
 				<tr class="total" style="white-space: nowrap;">
 					<?php if($tax_bool == true){
 						echo "<td colspan='4'>
-						<p>Taxes<span style='position: absolute; right : 0;margin: 10px 45px 0 0; color: #aeaeae ;font-size:10px'>(Taxe de 200 ".$currency." / personne)</span></p>
+						<p >Taxes<span style='position: absolute; right : 0;margin: -15px 35px 0 0; color: #aeaeae ;font-size:10px'>(Taxe de 200 ".$currency." / personne)</span></p>
 						<p>Total</p>
 					</td>	";
 					}
