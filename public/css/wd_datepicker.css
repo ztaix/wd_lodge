@@ -662,3 +662,23 @@
   color: #171717;
   padding: 2px;
 }
+
+
+.locked{
+  overflow: hidden;
+}
+.start-date-triangle {
+  position: absolute;
+  left: 0;
+  top:0;
+  width: 15px;
+}
+
+
+
+.end-date-triangle {
+  position: absolute;
+  right: 0;
+  bottom:0;
+  width: 15px;
+}

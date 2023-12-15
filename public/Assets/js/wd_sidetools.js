@@ -97,15 +97,17 @@ const newDateStr = [
           booking.id
         }" class="flex flex-col p-1 mt-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
           <!-- Colonne 1 -->
-          <div class="w-full flex-col group">
-            <div class="inline-flex">
-              <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex cursor-pointer font-bold text-slate-600">
-                <div class="justify-center items-center text-xs h-4 rounded-md text-white font-bold px-1 mx-1 my-auto inline  " style="background-color: ${booking.service_color}; ">
+          <div class="w-full flex-col group ${booking.fullblocked == 1 ? 'border p-2 border-dashed border-red-400 dark:border-red-900 rounded-lg':''}">
+            <div class="inline-flex text-slate-600 ${booking.fullblocked == 1 ? 'bg-red-200 text-red-700 dark:bg-red-700 dark:text-red-200 rounded-lg':''}">
+              <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex cursor-pointer font-bold">
+                <div class="justify-center items-center text-xs h-4 rounded-md text-white dark:text-black font-bold px-1 mx-1 my-auto inline" style="background-color: ${booking.service_color}; ">
                   <span id='badge_type_${booking.id}'>${booking.Type_doc}</span> # <span id='badge_id_${booking.id}'>${booking.id}</span>
                 </div>
                 <div id="booking_title_${booking.id}" class="transition-margin m-0 hover:mx-2">
                   ${booking.service_title + ' (' + DaysDifferenceStartEnd(booking.start,booking.end) + ' nuits)'}
+                  ${booking.fullblocked == 1 ? '<span class="px-1">~ privatisé ~</span>':''}
                 </div>
+                
               </div>
             </div>
             <div class="w-full inline-flex">
@@ -142,7 +144,7 @@ const newDateStr = [
                     </svg>
                   </a>
                 </div>
-                <div class="flex-col justify-end bg-slate-100 rounded-lg px-1">
+                <div class="flex-col justify-end bg-slate-100 dark:bg-slate-800 rounded-lg px-1">
                   <div class="inline-flex items-center" >
                       <span class="mr-1 text-xs text-slate-400">Tarif</span> 
                       <span id="booking_total_${booking.id}">${ parseInt(booking.Price) + (parseInt(booking.QtTraveller) * 200)}</span>
@@ -810,24 +812,29 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
     loader.style.display = 'block';
     loader.style.zIndex = 99;
 
+    // Si un datepicker existe déjà, retirez-le avant de créer un nouveau
     if (fromServicepicker) {
       fromServicepicker.destroy(); 
     }
-    // Si un datepicker existe déjà, retirez-le avant de créer un nouveau
+
     $.ajax({
-      url: baseurl + "booking/servicepicker/" + service_id + "/true",
+      url: baseurl + "booking/datepicker/" + service_id + "/true",
       method: "GET",
       success: function (bookings) {
         const bookedDates = Object.keys(bookings).map((key) => {
           const booking = bookings[key];
+          const hasFirstDay = Object.values(booking.details_bookings).some(obj => obj.is_first_day === true);
+          const hasLastDay = Object.values(booking.details_bookings).some(obj => obj.is_last_day === true);
           const start = booking.start;
           const fullblocked = booking.fullblocked;
-          return [start, fullblocked];
-        });
-        const bookedDatesFormatted = bookedDates.map((dateArr) => {
-          const [day, month, year] = dateArr[0].split("-");
-          return `${year}-${month}-${day}`;
-        });
+
+          return [start, fullblocked, hasFirstDay, hasLastDay];
+      });
+
+      const bookedDatesFormatted = bookedDates.map((dateArr) => {
+        const [day, month, year] = dateArr[0].split("-");
+        return `${year}-${month}-${day}`;
+      });
         // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
         fromServicepicker = new easepick.create({
           element: document.getElementById("ModaleventStart"),
@@ -871,32 +878,82 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
             pickerElem.insertBefore(header, pickerElem.firstChild);
           },
           setup(fromServicepicker) {
-            // Création d'un objet pour stocker le type de document par date
-            const day = {};
-            bookedDates.forEach(([Date, Fullblocked]) => {
-              if (!day[Date]) {
-                day[Date] = {};
-              }
-              day[Date]["fullblocked"] = Fullblocked;
-            });
+            const daytoShow = {};
 
+            bookedDates.forEach(([Date, Fullblocked, hasFirstDay, hasLastDay]) => {
+              if (!daytoShow[Date]) {
+                daytoShow[Date] = {};
+              }
+              daytoShow[Date]["fullblocked"] = Fullblocked;
+              daytoShow[Date]["FirstDay"] = hasFirstDay;
+              daytoShow[Date]["LastDay"] = hasLastDay;
+            });
+            
+            
             // Ajouter le type de document à l'élément du jour
             fromServicepicker.on("view", (evt) => {
               const { view, date, target } = evt.detail;
               const formattedDate = date ? date.format("YYYY-MM-DD") : null;
+              
+              if (view === "CalendarDay" && daytoShow[formattedDate]) {
+                let span1;
+                let span2;
+                let FirstDay = daytoShow[formattedDate]['FirstDay'];
+                let LastDay = daytoShow[formattedDate]['LastDay'];
+                let existingSpan;
 
-              if (view === "CalendarDay" && day[formattedDate]) {
-                let span;
+                if (FirstDay && !LastDay) {       
+                  existingSpan = target.querySelector(".start-date-triangle");
+                  if (!existingSpan) {
+                    span1 = document.createElement("span");
+                    span1.className = "day-unavailable start-date-triangle";
+                    span1.innerHTML += `<svg style="transform: rotate(135deg);" class="w-2 h-2  text-green-200 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+                  </svg>`;
+                    target.append(span1);
+                  }
+                }
+                else if(!FirstDay && LastDay){
+                  existingSpan = target.querySelector(".end-date-triangle");
+                  if (!existingSpan) {
+                    span1 = document.createElement("span");
+                    span1.className = "day-unavailable end-date-triangle";
+                    span1.innerHTML += `<svg style="transform: rotate(-135deg);"  class="w-2 h-2 text-slate-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
+                  </svg>`;
 
-                span =
-                  target.querySelector(".day-unavailable") ||
-                  document.createElement("span");
-                span.className = "day-unavailable";
-                span.innerHTML = "Réservé";
-
-                target.append(span);
+                    target.append(span1);
+                  }
+                }
+                else if(FirstDay && LastDay){
+                  existingSpan = target.querySelector(".start-date-triangle .end-date-triangle");
+                  if (!existingSpan) {
+                    span1 = document.createElement("span");
+                    span1.className = "day-unavailable start-date-triangle";
+                    span1.innerHTML = `<svg style="transform: rotate(135deg);" class="w-2 h-2  text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+                  </svg>`;
+                    target.append(span1);
+                    span2 = document.createElement("span");
+                    span2.className = "day-unavailable end-date-triangle";
+                    span2.innerHTML = `<svg style="transform: rotate(-135deg);"  class="w-2 h-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
+                  </svg>`;
+                    target.append(span2);
+                  }else{
+                    alert('existingSpan FirstDay && LastDay');
+                  }
+                }
+                else{                  
+                  span = target.querySelector(".day-unavailable") || document.createElement("span");
+                  span.className = "day-unavailable";
+                  span.innerHTML = "Réservé";
+                  target.append(span);
+                }
               }
             });
+
+
           },
         });
 

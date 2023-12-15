@@ -27,7 +27,7 @@ $routes->group('booking', function($routes)
     $routes->post('addBooking', 'BookingController::addBooking');
     
     $routes->get('', 'BookingController::getBookings');
-    $routes->get('servicepicker/(:num)/(:any)', 'BookingController::getBookingsfromDatepicker/$1/$2');
+    $routes->get('datepicker/(:num)/(:any)', 'BookingController::getBookingsfromDatepicker/$1/$2');
     $routes->get('service/(:num)/(:any)', 'BookingController::getBookings/$1/$2');
     $routes->get('available/(:num)', 'BookingController::getBookingsFromService/$1');
     $routes->get('search', 'BookingController::getBookingsFromSearch');

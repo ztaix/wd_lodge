@@ -12,6 +12,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        'xxs': '.65rem',
+      },
       colors: {
         'primary': {
           '50': '#F2F7FA',  // Couleur la plus claire

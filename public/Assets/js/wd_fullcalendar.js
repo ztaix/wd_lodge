@@ -173,10 +173,10 @@ document.addEventListener("DOMContentLoaded", function () {
       
       for (let bookingId in bookings) {
         if (bookings.hasOwnProperty(bookingId)) {
-            let booking = bookings[bookingId];
-            let status = "";
-            let facture = booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):"";
-
+          let booking = bookings[bookingId];
+          let status = "";
+          let facture = booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):"";
+          
             if(parseInt(booking.paids) >= (parseInt(booking.prices) + (parseInt(booking.QtTraveller) * 200))){
 
                 // PAID
@@ -194,8 +194,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
-            let dotHtml = `<span id="event-dot" class="event-dot ${class_paid}" style="background-color: ${booking.colors}; margin-left: ${margin_init}px">${status}</span>`;
 
+            let fullblocked = booking.fullblockeds =='1';
+            let fullblocked_html  = fullblocked ? `<div class="absolute rounded-full p-2 border-2 border-spacing-2 shadow-md border-red-600"></div>` : "";
+            
+            let dotHtml = `<span id="event-dot" class="event-dot ${class_paid}   flex items-center justify-center" style="background-color: ${booking.colors}; margin-left: ${margin_init}px">${status} ${fullblocked_html}</span>`;
             if (class_paid === "unpaid") {
                 shadowDotsHtml += dotHtml;
             } else {
@@ -206,10 +209,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Concaténer les deux groupes de spans
    let dotsHtml = shadowDotsHtml + nonShadowDotsHtml;
-
     // Créer un élément HTML pour représenter l'événement
     let eventElement = document.createElement("div");
-    eventElement.className = "flex justify-center items-center";
+    eventElement.className = `flex justify-center items-center`;
     eventElement.innerHTML = dotsHtml;
     
       return {

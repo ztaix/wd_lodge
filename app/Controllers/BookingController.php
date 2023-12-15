@@ -154,20 +154,24 @@ class BookingController extends BaseController
 
             $startDate = new DateTime($booking['start']);
             $endDate = new DateTime($booking['end']);
+            $firstDay = $startDate->format('Y-m-d');
+            $lastDay = $endDate->format('Y-m-d');
 
             while ($startDate <= $endDate) {
                 $date = $startDate->format('Y-m-d');
+                $isFirstDay = ($date === $firstDay);
+                $isLastDay = ($date === $lastDay);
 
                 if (!isset($grouped[$date])) {
                     $grouped[$date] = [
                         'count' => 0,
                         'fullblocked' => [],
                         'colors' => [],
-                        'bookings' => []
+                        'details_bookings' => [],
                         ];
                 }
 
-                if (!isset($grouped[$date]['bookings'][$booking['id']])) {
+                if (!isset($grouped[$date]['details_bookings'][$booking['id']])) {
                     
                     $booking_paids = [];
                     $booking_paids_ids = [];
@@ -183,7 +187,7 @@ class BookingController extends BaseController
                         ];
                     }
 
-                    $grouped[$date]['bookings'][$booking['id']] = [
+                    $grouped[$date]['details_bookings'][$booking['id']] = [
                         'colors' => $booking['service_color'], // Initialise avec la première couleur
                         'services_titles' => $booking['service_title'], // Initialise avec le premier titre de service
                         'prices' => $booking['Price'], // Initialise avec le premier prix
@@ -192,11 +196,15 @@ class BookingController extends BaseController
                         'array_paids' => $booking_paids
 
                     ];
+                    $grouped[$date]['details_bookings'][$booking['id']] = array_merge($grouped[$date]['details_bookings'][$booking['id']], [
+                        'is_first_day' => $isFirstDay, // Ajout de l'indicateur pour le premier jour
+                        'is_last_day' => $isLastDay, // Ajout de l'indicateur pour le dernier jour
+                    ]);
                     $grouped[$date]['count']++; // Incrémente le compteur uniquement lors de l'ajout d'une nouvelle réservation
                 } else {
                     // Ajoutez les données uniquement si elles sont uniques pour cette réservation spécifique
-                    if (!in_array($booking['service_color'], $grouped[$date]['bookings'][$booking['id']]['colors'])) {
-                        $grouped[$date]['bookings'][$booking['id']]['colors'][] = $booking['service_color'];
+                    if (!in_array($booking['service_color'], $grouped[$date]['details_bookings'][$booking['id']]['colors'])) {
+                        $grouped[$date]['details_bookings'][$booking['id']]['colors'][] = $booking['service_color'];
                     }
                 }
 
@@ -222,7 +230,7 @@ class BookingController extends BaseController
                 'start' => $date,
                 'colors' => $data['colors'],
                 'fullblocked' => $data['fullblocked'],
-                'bookings' => $data['bookings']
+                'details_bookings' => $data['details_bookings'],
             ];
         }
 
