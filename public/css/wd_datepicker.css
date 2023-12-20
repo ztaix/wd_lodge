@@ -26,7 +26,7 @@
   --color-btn-secondary-disabled-fg: #fff;
   --color-btn-secondary-disabled-border: #b5bbc4;
   --color-border-default: #ddd;
-  --color-border-locked: #f9f9f9;
+  --color-border-locked: #ea9f9f;
   --day-width: 42px;
   --day-height: 37px;
   --border-radius: 2px;
@@ -333,13 +333,16 @@
   background-color: var(--color-bg-unavailable);
   color: var(--color-fg-locked);
   font-style: italic;
-  pointer-events: pointer;
+  cursor:pointer;
 }
 .container.lock-plugin .calendar > .days-grid > .day.locked {
   background-color: transparent;
   border: 1px solid var(--color-border-locked);
-  color: var(--color-fg-locked);
-  pointer-events: pointer;
+  color: #390000;
+  cursor:pointer;
+}
+.container.lock-plugin .calendar > .days-grid > .day.unit.locked:hover{
+  background-color: var(--color-border-locked);
 }
 .container.lock-plugin
   .calendar
@@ -459,6 +462,10 @@
   position: absolute;
   right: -14px;
   z-index: 1;
+}
+
+.container.range-plugin .calendar > .days-grid > .day.in-range:after {
+  background-color: var(--color-btn-primary-bg);
 }
 .container.range-plugin .calendar > .days-grid > .day.start.flipped {
   border-bottom-left-radius: 0;
@@ -659,19 +666,20 @@
 
 .day-unavailable {
   font-size: 9px;
-  color: #171717;
+  color: #390000;
   padding: 2px;
 }
 
 
-.locked{
-  overflow: hidden;
-}
 .start-date-triangle {
   position: absolute;
   left: 0;
-  top:0;
-  width: 15px;
+  top: 0;
+  width: 50%;
+  transform: rotate(-45deg);
+  color:white;
+  filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.4));
+
 }
 
 
@@ -679,6 +687,10 @@
 .end-date-triangle {
   position: absolute;
   right: 0;
-  bottom:0;
-  width: 15px;
+  bottom: 0;
+  width: 50%;
+  transform: rotate(135deg);
+  color:rgba(241, 127, 127, 0.7);
+  filter: drop-shadow(-1px -1px 0px rgba(0, 0, 0, 0.5));
+
 }

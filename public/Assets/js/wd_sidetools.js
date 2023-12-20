@@ -896,6 +896,7 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
               const formattedDate = date ? date.format("YYYY-MM-DD") : null;
               
               if (view === "CalendarDay" && daytoShow[formattedDate]) {
+                let span;
                 let span1;
                 let span2;
                 let FirstDay = daytoShow[formattedDate]['FirstDay'];
@@ -907,8 +908,8 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
                   if (!existingSpan) {
                     span1 = document.createElement("span");
                     span1.className = "day-unavailable start-date-triangle";
-                    span1.innerHTML += `<svg style="transform: rotate(135deg);" class="w-2 h-2  text-green-200 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+                    span1.innerHTML += `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                   </svg>`;
                     target.append(span1);
                   }
@@ -918,8 +919,8 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
                   if (!existingSpan) {
                     span1 = document.createElement("span");
                     span1.className = "day-unavailable end-date-triangle";
-                    span1.innerHTML += `<svg style="transform: rotate(-135deg);"  class="w-2 h-2 text-slate-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
+                    span1.innerHTML += `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                   </svg>`;
 
                     target.append(span1);
@@ -930,14 +931,14 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
                   if (!existingSpan) {
                     span1 = document.createElement("span");
                     span1.className = "day-unavailable start-date-triangle";
-                    span1.innerHTML = `<svg style="transform: rotate(135deg);" class="w-2 h-2  text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+                    span1.innerHTML = `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                   </svg>`;
                     target.append(span1);
                     span2 = document.createElement("span");
                     span2.className = "day-unavailable end-date-triangle";
-                    span2.innerHTML = `<svg style="transform: rotate(-135deg);"  class="w-2 h-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
+                    span2.innerHTML = `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                   </svg>`;
                     target.append(span2);
                   }else{
@@ -947,7 +948,9 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
                 else{                  
                   span = target.querySelector(".day-unavailable") || document.createElement("span");
                   span.className = "day-unavailable";
-                  span.innerHTML = "Réservé";
+                  span.innerHTML = `<svg class="w-2 h-2 text-slate-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>`;
                   target.append(span);
                 }
               }

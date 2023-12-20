@@ -78,12 +78,18 @@ class BookingModel extends Model
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
         $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
         $this->groupBy('wd_bookings.id');
-        if($service_id !== false){
+        // Appliquer des conditions groupées
+        $this->groupStart();
+        if ($service_id !== false) {
             $this->where('wd_bookings.Service_id', $service_id);
         }
-        if($fullblocked == "true"){
+        if ($fullblocked == "true") {
             $this->orWhere('wd_bookings.fullblocked', 1);
         }
+        $this->groupEnd();
+
+        // Assurer que les lignes supprimées ne sont pas incluses
+        $this->where('wd_bookings.Deleted_at IS NULL');
         $result = $this->findAll();
 
         return $result;
