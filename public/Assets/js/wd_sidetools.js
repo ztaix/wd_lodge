@@ -18,9 +18,9 @@ document.addEventListener("keydown", function (event) {
 });
 
 function generateBookingElement(booking) {
-  let Total_price = parseInt(booking.Price) + (parseInt(booking.QtTraveller) * 200);
+  let Total_price = parseInt(booking.Price) + (parseInt(booking.QtTraveller) * 200) + parseInt(booking.Fee);
   return `
-        <div class="flex space-x-4 mt-" >
+        <div class="flex space-x-4" >
           <!-- Colonne 1 -->
           <div class="flex-grow">
             <div class="rounded-md text-white font-bold text-sm px-1 inline" style="background-color: ${
@@ -111,7 +111,7 @@ const newDateStr = [
               </div>
             </div>
             <div class="w-full inline-flex">
-              <div class="w-full flex flex-wrap items-center justify-between">
+              <div class="w-full flex flex-wrap items-center justify-between cursor-pointer" onclick="showBookingDetailsFromID('${booking.id}');">
                 <div class="flex-col">
                   <div class="text-base text-slate-500"><span class="font-semibold">Client:</span> <span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
                   <div class="text-base text-slate-500"><span class="font-semibold">Nb personne:</span> <span id="booking_QtTraveller_${booking.id}">${booking.QtTraveller}</span></div>
@@ -147,7 +147,7 @@ const newDateStr = [
                 <div class="flex-col justify-end bg-slate-100 dark:bg-slate-800 rounded-lg px-1">
                   <div class="inline-flex items-center" >
                       <span class="mr-1 text-xs text-slate-400">Tarif</span> 
-                      <span id="booking_total_${booking.id}">${ parseInt(booking.Price) + (parseInt(booking.QtTraveller) * 200)}</span>
+                      <span id="booking_total_${booking.id}">${ parseInt(booking.Price) + (parseInt(booking.QtTraveller) * 200) + parseInt(booking.Fee) }</span>
                       <span class="ml-1 text-xs">Fr</span>
 
                   </div>
@@ -324,7 +324,6 @@ async function showUpdateCustomer(id) {
   let button_update = document.getElementById("update_customer_submit_form");
   button_update.onclick = function () {
     let formData = getCustomerFormData(); // Récupère les données du formulaire
-    console.log("formData",formData);
     $.ajax({
       url: baseurl + "customer/update",
       method: "POST",
@@ -337,7 +336,6 @@ async function showUpdateCustomer(id) {
             document.getElementById('history_customer_name').innerText = formData.Name;
           }
           if(ModalInStack('DetailsEventModal')){
-            console.log('DetailsEventModal');
             document.getElementById('booking_details_customer_name_span').value = formData.customer_name;
             document.getElementById('booking_details_customer_phone_span').value = formData.customer_phone;
             document.getElementById('booking_details_customer_mail_span').value = formData.customer_email;
@@ -449,6 +447,7 @@ async function showBookingDetailsFromID(id) {
         Types_paids: response.types_paids,
         Paids_values: response.paids_values,
         Price: response.Price,
+        Fee: response.Fee,
         Service_id: response.Service_id,
         booking_img: response.img,
         fullblocked: response.fullblocked,
@@ -503,12 +502,12 @@ async function showBookingDetailsFromID(id) {
     Booking.QtTraveller;
   document.getElementById("booking_details_start_span").innerText = Booking.start;
   document.getElementById("booking_details_end_span").innerText = Booking.end;
-  document.getElementById("booking_details_price_span").innerHTML = parseInt(Booking.Price) + parseInt(Booking.QtTraveller) * 200 + " Fr";
+  document.getElementById("booking_details_price_span").innerHTML = parseInt(Booking.Price) + parseInt(Booking.QtTraveller) * 200 + parseInt(Booking.Fee) + " Fr";
 
   let details_paid_div = document.getElementById('booking_details_progress_div');
   details_paid_div.innerText = paids_sum > 0 ? paids_sum + " Fr" : "0";
   if(paids_sum > 0){
-    let convert_pourc = Math.min(Math.round((parseInt(paids_sum) / (parseInt(Booking.Price) + (parseInt(Booking.QtTraveller) * 200))) * 10000) / 100, 100);
+    let convert_pourc = Math.min(Math.round((parseInt(paids_sum) / (parseInt(Booking.Price) + (parseInt(Booking.QtTraveller) * 200) + parseInt(Booking.Fee) )) * 10000) / 100, 100);
     details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
   } else {details_paid_div.style.width = "24px"; }
 
@@ -601,7 +600,7 @@ function get_booking_list_from_customer(data) {
   let Phone = data.getAttribute("data-phone");
   let Comment = data.getAttribute("data-comment");
   let tbody = document.getElementById("CustomerDetailsContainer");
-  document.getElementById('history_customer_title_h3').innerText = Name + (Phone.length>0? ' - ' + Phone: '') ;
+  document.getElementById('history_customer_title_h3').innerText = Name + (Phone.length>0? ' - ' + Phone : '') ;
   // Gestionnaire d'événements délégués pour les lignes de tableau avec la classe "booking-row"
   tbody.addEventListener("click", function (event) {
     if (event.target.classList.contains("booking-row")) {
@@ -635,7 +634,7 @@ function get_booking_list_from_customer(data) {
         0
       );
       totalPaid += paids_sum;
-      totalPrice += parseFloat(booking.Price) + (parseFloat(booking.QtTraveller) * 200);
+      totalPrice += parseFloat(booking.Price) + (parseFloat(booking.QtTraveller) * 200) + parseInt(booking.Fee);
       
         let newRow = document.createElement("tr");
         newRow.classList.add(
@@ -769,7 +768,7 @@ function createPaymentHtml(paid, index, lenght) {
     }
   }
   return `
-  <div id="${paid.paid_id}" class="flex payment-row">
+  <div id="${paid.paid_id}" class="flex payment-row mt-2">
       <input type="hidden" id="rowPaidid${index}" value="${
     paid.paid_id
   }" name="rowPaidid${index}">
@@ -800,7 +799,7 @@ function createPaymentHtml(paid, index, lenght) {
       }" inputmode="numeric" id="rowPaid${index}" name="rowPaid${index}" class="${
     payements_class[1]
   }  block w-full text-md text-gray-900 bg-transparent border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
-      <label for="rowPaid${index}" class="absolute text-md ml-32 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-0 z-10 origin-[0] bg-white dark:bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Encaissé</label>
+      <label for="rowPaid${index}" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 translate-x-40 top-0 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-5 left-1">Encaissement </label>
   </div>
 `;
 }

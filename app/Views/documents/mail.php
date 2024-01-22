@@ -31,11 +31,15 @@ if (isset($seller[0]) && isset($data)) {
 	$s_type = $data['booking_info']['Type_doc'];
 	$s_paid = $data['booking_info']['Paid'];
 	$s_qttraveller = $data['booking_info']['QtTraveller'];
-	$s_price = $data['booking_info']['Price'] + ($s_qttraveller * 200);
+	$s_tax= $data['booking_info']['Tax'];
+	$s_fee= $data['booking_info']['Fee'];
+	$s_price = $data['booking_info']['Price'] + ($s_qttraveller * 200) + $s_fee;
 	$s_service = $data['booking_info']['service_title'];
 	$s_service_color = $data['booking_info']['service_color'];
 	$s_qt = $data['booking_info']['Qt'];
 	$s_update_at = $data['booking_info']['updated_at'];
+
+
 	$s_fullblocked = $data['booking_info']['fullblocked'];
 
 	$count_paid =  count(explode(',',trim($data['booking_info']['paids_ids'])));

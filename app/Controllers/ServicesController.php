@@ -43,6 +43,7 @@ class ServicesController extends BaseController
             //'Image_url' => $image,  // Utilisez le nom du fichier retourné par la méthode d'upload
             'Color' => $this->request->getPost('Color'),
             'Comment' => $this->request->getPost('Comment'),
+            'Fee' => $this->request->getPost('Fee'),
             'fullblocked' => $this->request->getPost('fullblocked'),
         ];
 

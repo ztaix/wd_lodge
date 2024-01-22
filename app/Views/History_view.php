@@ -33,12 +33,13 @@ $data['options_customers_id'] = $options_customers_id;
 
 <div id='calendar' class="hidden text-gray-900 dark:text-white  bg-slate-50 dark:bg-slate-800"></div>
 
+<div id="history" class="max-w-screen-lg bg-gray-50 dark:bg-gray-900">
+    
 <header>Historique</header>
 
-<div id="history" class="max-w-screen-md bg-gray-50 dark:bg-gray-900">
-    <div class="mx-auto px-4">
+<div class="mx-auto px-4">
         <!-- Start Container -->
-        <div class="bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 relative shadow-md rounded-lg overflow-hidden">
+        <div class=" relative bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg overflow-hidden">
             <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                 <div class="w-full md:w-1/2">
                     <form class="flex items-center">
@@ -173,7 +174,7 @@ $data['options_customers_id'] = $options_customers_id;
 
     //pagination système
     let currentPage = 1;
-    const itemsPerPage = 6;
+    const itemsPerPage = 8;
     const all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
     const totalPages = Math.ceil(all_bookings.length / itemsPerPage);
 
@@ -287,4 +288,5 @@ $data['options_customers_id'] = $options_customers_id;
 
 
     var totalServices = <?= $totalServices; ?>;
+
 </script>

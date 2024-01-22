@@ -27,4 +27,4 @@
     <!-- LOADER PAGE FOR LOADING PAGE -->
   <div class="loader"></div>
 
-  <div class="flex flex-col h-screen">
+  <div class="flex flex-col h-screen w-full justify-center items-center text-gray-900 dark:text-white bg-slate-50 dark:bg-slate-900">

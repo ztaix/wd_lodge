@@ -28,6 +28,11 @@ class ConfigurationModel extends Model
         $result =  $this->findAll();
         return $result;
     }
+    public function get_enteprise_name()
+    {
+        $result = $this->where('Title', 'Nom de l\'entreprise')->first();
+        return $result['Data'];
+    }
     
     public function DiscountRules(){
         $discountRules = $this->where('Title', 'Règles de réduction')->first();

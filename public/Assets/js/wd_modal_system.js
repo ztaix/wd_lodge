@@ -1,9 +1,18 @@
 
 // La pile pour garder une trace des fenêtres modales ouvertes
 var modalStack = []; // Pile pour stocker les fenêtres modales ouvertes
+var ShadowmodalStack = []; // Pile pour stocker les fenêtres modales ouvertes
 var currentZIndex = 50; // Valeur initiale du zIndex
 var isClosingModal = false;
 
+function urlLocation(){
+   let segments = baseurl.split('/');
+   let dernierSegment = segments.pop() || segments.pop();
+   
+   let returnSegment = dernierSegment.toLowerCase().replace(/[^a-z0-9]/g, '');
+   returnSegment = returnSegment == '' ||  returnSegment == 'public'  ? "calendar" : returnSegment;
+   return returnSegment;
+}
 
 function showBanner(message, isSuccess) {
     const banner = document.getElementById("banner_update");
@@ -96,73 +105,118 @@ function resetForm(modalId, start = false , end = false){
 }
 
 function openModal(modalId) {
+  
   let modalElement = document.getElementById(modalId);
-
+  let shadow_modal = document.getElementById(modalId + '-shadow_modal');
   if (modalElement) {
     // Augmenter la valeur globale du zIndex
-    currentZIndex += 1;
 
     // Appliquer le zIndex et afficher la fenêtre modale
-    modalElement.style.zIndex = currentZIndex;
-    modalElement.style.display = "block";
+    modalElement.style.zIndex = currentZIndex+2;
     modalElement.classList.add("animate");
+    modalElement.classList.remove("close-animate");
+    modalElement.classList.remove("hidden");
 
-    modalStack.push(modalElement); // Ajoute la fenêtre modale à la pile
-  }
+    shadow_modal.style.zIndex = currentZIndex+1;
+    shadow_modal.classList.add("animate_shadow_modal");
+    shadow_modal.classList.remove("close-animate_shadow_modal");
+    shadow_modal.classList.remove("hidden");
+    
+    if(modalStack.length > 0){
+      console.log("modalStack",modalStack);
+      let previousModal = modalStack[modalStack.length - 1];
+      previousModal.classList.add('blur-lg');
+    }
+
+    currentZIndex +=1;
+    //Ajoute à la pile
+    modalStack.push(modalElement); 
+    ShadowmodalStack.push(shadow_modal); 
+  }  
+  
+
+  var current_page_DIV = document.getElementById(urlLocation());
+    current_page_DIV.classList.add('blur-lg');
 }
 
 // Ferme la dernière fenêtre modale ouverte
-function closeModal(all = false) {
-  if(all === false){
-    if (modalStack.length > 0) {
-      let lastModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
-      lastModal.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
+function closeModal() {
+  if(modalStack.length > 1 ){
 
-      // Retire la classe 'close-animate' après l'animation
-      setTimeout(() => {
-        lastModal.classList.remove("animate");
-        lastModal.classList.remove("close-animate");
-        lastModal.style.display = "none";
-      }, 1000); // Correspond à la durée de l'animation slideDown
-    }
+  var currentModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
+  var lastShadowModal = ShadowmodalStack.pop(); // Retire la dernière fenêtre modale de la pile
+  var lastModal = modalStack[modalStack.length -1]; // Retire la dernière fenêtre modale de la pile
+
+  currentModal.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
+  currentModal.classList.remove("animate");
+  
+  lastShadowModal.classList.add("close-animate_shadow_modal");
+  lastShadowModal.classList.remove("animate_shadow_modal");
+
+  lastModal.classList.remove("blur-lg");
+  
+  setTimeout(() => {
+    currentModal.classList.add("hidden");
+    lastShadowModal.classList.add("hidden");
+  }, 500);  
+
   }
-  else{
-    // Boucle tant qu'il y a des modales dans la pile
-    while (modalStack.length > 0) {
-      let currentModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
-      currentModal.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
+  else if(modalStack.length === 1 ){  
+    var currentModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
+    var lastShadowModal = ShadowmodalStack.pop(); // Retire la dernière fenêtre modale de la pile
 
-      // Retire la classe 'close-animate' après l'animation
-      setTimeout(() => {
-          currentModal.classList.remove("animate");
-          currentModal.classList.remove("close-animate");
-          currentModal.style.display = "none";
-      }, 1000); // Correspond à la durée de l'animation slideDown
-    }
+    currentModal.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
+    currentModal.classList.remove("animate");
+    lastShadowModal.classList.add("close-animate_shadow_modal");
+    lastShadowModal.classList.remove("animate_shadow_modal");
+  
+    setTimeout(() => {
+      currentModal.classList.add("hidden");
+      lastShadowModal.classList.add("hidden");
+    }, 500);  
+  }
+  if(modalStack.length === 0  ){
+       var current_page_DIV = document.getElementById(urlLocation())
+       current_page_DIV.classList.remove('blur-lg');
   }
 }
+
 function closeModalById(modalId) {
   let modalElement = document.getElementById(modalId);
+  let shadow_modal = document.getElementById(modalId + '-shadow_modal');
 
   if (modalElement) {
-    modalElement.classList.add("close-animate"); // Ajoute la classe 'close-animate' pour animer la fermeture
-
-    // Retire la classe 'close-animate' après l'animation
-
+    
+    modalElement.classList.add("close-animate"); 
     modalElement.classList.remove("animate");
-    modalElement.classList.remove("close-animate");
-    modalElement.style.display = "none";
 
-    // Retire la fenêtre modale spécifiée de la pile
-    modalStack = modalStack.filter((modal) => modal.id !== modalId);
+    shadow_modal.classList.add("close-animate_shadow_modal"); 
+    shadow_modal.classList.remove("animate_shadow_modal");
 
+    setTimeout(function() {
+      modalElement.classList.add("hidden");
+      shadow_modal.classList.add("hidden");
+  }, 500);
+  
     // Si une fenêtre modale est toujours dans la pile, alors la rouvrir
-    if (modalStack.length > 0) {
-      let previousModal = modalStack[modalStack.length - 1];
-      previousModal.style.display = "block";
-      previousModal.classList.add("animate");
+    if (modalStack.length > 1) {
+      
+      let previousModal = modalStack[modalStack.length - 2]; // 2 car l'indexation commence à 0
+      previousModal.classList.remove("blur-lg");
     }
-  }
+
+    else {
+
+      var current_page_DIV = document.getElementById(urlLocation())
+    
+      current_page_DIV.classList.remove('blur-lg');
+      
+    }
+}
+  
+  // Retire la fenêtre modale spécifiée de la pile
+  modalStack = modalStack.filter((modal) => modal.id !== modalId);
+
 }
 
 function closex(modalId) {

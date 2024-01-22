@@ -32,10 +32,12 @@ $data['options_customers_id'] = $options_customers_id;
 <?php echo view('modals/modal_bookings_list', $data); ?>
 <?php echo view('modals/modal_customer_info', $data); ?>
 
+<div id='calendar' class="hidden text-gray-900 dark:text-white  bg-slate-50 dark:bg-slate-800"></div>
+
+<div id="customers" class="max-w-screen-md bg-gray-50 dark:bg-gray-900">
 
 <header>Clients</header>
 
-<div id="customer" class="max-w-screen-md bg-gray-50 dark:bg-gray-900">
 <div class="mx-auto px-4">
 
         <div class="bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 relative shadow-md rounded-lg overflow-hidden">

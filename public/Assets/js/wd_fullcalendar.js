@@ -81,8 +81,8 @@ document.addEventListener("DOMContentLoaded", function () {
     viewDidMount: function (view, element) {
       var cellWidth = $(".fc-daygrid-day").width();
       $(".fc-daygrid-day").css("height", cellWidth + "px");
-      let buttonAddEvent = document.querySelector(".fc-AddEventButton-button"); // Assurez-vous que la classe correspond à votre bouton
-      let buttonSearchInput = document.querySelector(".fc-SearchIpunt-button"); // Assurez-vous que la classe correspond à votre bouton
+      let buttonAddEvent = document.querySelector(".fc-AddEventButton-button");
+      let buttonSearchInput = document.querySelector(".fc-SearchIpunt-button");
       buttonAddEvent.innerHTML =
         '<svg viewBox="0 0 16 16" class="w-6 h-6 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3H4.5a.5.5 0 0 1 0-1H7V4.5a.5.5 0 0 1 .5-.5z"/></svg>';
       buttonSearchInput.innerHTML =
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
           let status = "";
           let facture = booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):"";
           
-            if(parseInt(booking.paids) >= (parseInt(booking.prices) + (parseInt(booking.QtTraveller) * 200))){
+            if(parseInt(booking.paids) >= (parseInt(booking.prices) + (parseInt(booking.QtTraveller) * 200) + parseInt(booking.Fee))){
 
                 // PAID
                 status = `
@@ -234,8 +234,6 @@ const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'ut
 
           showBookingList(response.events, clickedDate);
           // Afficher le popup
-
-          openModal("ListEventModal");
         },
       });
     },
@@ -260,8 +258,6 @@ const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'ut
           if (response.events.length > 0) {
             // Si la réponse contient des événements, exécutez votre code ici
             showBookingList(response.events, clickedDate);
-            // Afficher le popup
-            openModal("ListEventModal");
           } else {
             resetForm("addEventModal",startdate,enddate);
             InfoTotal();
@@ -301,7 +297,7 @@ function updateEventFromDetails() {
     success: function (response) {
       if (response.status == "success") {
         let row_id = response.id;
-        let row_price =  parseInt(response.data.Price) + (parseInt(response.data.QtTraveller) * 200);
+        let row_price =  parseInt(response.data.Price) + (parseInt(response.data.QtTraveller) * 200) + parseInt(response.data.Fee);
         showBanner("Événement mise à jour avec succès !", true);
         closeModalById('addEventModal');
         showBookingDetailsFromID(row_id);
@@ -434,6 +430,7 @@ function addEvent() {
     { id: "ModaleventQtTraveller", key: "QtTraveller" },
     { id: "ModaleventType_doc", key: "Type_doc" },
     { id: "ModaleventComment", key: "Comment" },
+    { id: "ModaleventFee", key: "Fee" },
     { id: "ModaleventStart", key: "start", isDate: true },
     { id: "ModaleventEnd", key: "end", isDate: true }
 ].forEach(({ id, key, isCheckbox, isDate }) => {
@@ -448,7 +445,6 @@ function addEvent() {
       }
       eventElementDOM[id] = element;
     });
-
 
 
   if (eventData["start"] && eventData["end"]) {
@@ -553,10 +549,7 @@ function addEvent() {
                 } else {details_paid_div.style.width = "24px"; }
                  
               }
-              
-              if(ModalInStack('ListEventModal')){ 
-               document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
-              }
+             
                 showBanner("Paiements mise à jour avec succès !", true);
             } else {
                 showBanner("Echec de la mise à jour des paiements !", false);

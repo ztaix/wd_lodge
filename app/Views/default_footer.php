@@ -81,7 +81,7 @@
     });
 
     //URL BASE pour requete AJAX
-    let baseurl = <?= json_encode($baseurl); ?>;
+    const baseurl = <?= json_encode($baseurl); ?>;
     // Liste des services
     let services_list = <?= json_encode($services_list); ?>;
 </script>

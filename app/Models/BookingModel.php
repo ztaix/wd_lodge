@@ -17,7 +17,7 @@ class BookingModel extends Model
 
     protected $allowedFields = [
         'Customer_id', 'start', 'end', 'Service_id', 'Qt', 'QtTraveller', 'Price', 
-        'Paid', 'Type_doc', 'Pdf_url', 'Comment', 'fullblocked', 'Created_at', 'Deleted_at'
+        'Paid', 'Type_doc', 'Pdf_url', 'Comment','Tax','Fee', 'fullblocked', 'Created_at', 'Deleted_at'
     ]; // les champs autorisés pour l'insertion ou la mise à jour
 
     // Pas de champ pour la date de modification, donc on ne définit pas `$updatedField`
@@ -35,6 +35,8 @@ class BookingModel extends Model
         'Type_doc'     => 'required|in_list[Devis,Facture]',
         'Pdf_url'      => 'permit_empty|max_length[255]',
         'Comment'      => 'permit_empty|max_length[255]',
+        'Fee'      => 'permit_empty',
+        'Tax'      => 'permit_empty',
         'Deleted_at'      => 'permit_empty|in_list[0,1]'
     ]; // les règles de validation
 
@@ -70,7 +72,7 @@ class BookingModel extends Model
     }
 
     public function getAllBookingsFromDatepicker($service_id=false,$fullblocked=false){
-        $this->select('wd_bookings.id,wd_bookings.Price,wd_bookings.start,wd_bookings.end,wd_bookings.fullblocked, wd_bookings.service_id, wd_bookings.Paid , 
+        $this->select('wd_bookings.id,wd_bookings.Price,wd_bookings.start,wd_bookings.end,wd_bookings.fullblocked, wd_bookings.service_id, wd_bookings.Tax , wd_bookings.Fee,  wd_bookings.Paid , 
         wd_services.Title as service_title,wd_services.Color as service_color,
         GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
         GROUP_CONCAT(wd_paid.type_paid) as types_paids,

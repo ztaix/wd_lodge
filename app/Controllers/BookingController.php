@@ -456,6 +456,9 @@ class BookingController extends BaseController
 
     public function generatePDF($origine = 'booking', $id = 1, $show = true)
     {
+
+        $entreprise = $this->ConfigModel->get_enteprise_name();
+
         if ($origine == 'booking') {
             $bookingData = $this->BookingModel->getBookingFromID($id); // Vos données de réservation
             if (isset($bookingData['Customer_id'])) {
@@ -510,7 +513,8 @@ class BookingController extends BaseController
             // Sauvegarder le PDF dans un fichier temporaire
             $output = $dompdf->output();
             $tempDir = WRITEPATH . 'uploads/temp/';
-            $fileName = uniqid("pdf_") . ".pdf"; // Générer un nom de fichier unique
+            //$fileName = uniqid("pdf_") . ".pdf"; // Générer un nom de fichier unique
+            $fileName = $entreprise ."_".$bookingData['Type_doc']."#".$id . ".pdf"; // Générer un nom de fichier unique
             $filePath = $tempDir . $fileName;
 
             // Assurez-vous que le répertoire temporaire existe
@@ -578,10 +582,10 @@ class BookingController extends BaseController
 
         $email->initialize($config);
 
-        $email->setFrom($SMTPCredential['mail'], $seller[0][0]['Data']); // Définissez l'adresse de l'expéditeur
+        $email->setFrom($SMTPCredential['mail'], $seller[0][0]['Data']); 
         $email->setReplyTo($seller[0][3]['Data'], $seller[0][0]['Data']);
         $email->setTo($customerData['Email']); // Définissez le destinataire
-        $email->setSubject('Information de réservation : ' . $bookingData['Type_doc']); // Définissez le sujet
+        $email->setSubject($seller[0][0]['Data']. ' - ' . $bookingData['Type_doc']. ' : Information de réservation'); // Définissez le sujet
         $email->setMessage($html); // Ajoutez le corps de l'email
         // Chemin vers le fichier que vous souhaitez joindre
         // Attachez le PDF à l'e-mail

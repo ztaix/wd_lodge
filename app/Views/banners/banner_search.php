@@ -1,8 +1,14 @@
 <?php $modal_id = 'SearchListEventModal' ?>
-<div id="<?= $modal_id ?>" class="fixed w-full h-full top-0 m-0 p-0 z-50" style="display:none; background-color: rgba(0, 0, 0, 0.5);">
+
+
+<div id="<?=$modal_id?>-shadow_modal" class="absolute bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
+
+<!-- SEARCH BANNER -->
+
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed max-w-md lg:max-w-lg flex flex-col hidden top-0 overflow-auto" >
         
-    <div class="px-6 py-6 lg:px-8 flex justify-between items-center ">
-            <div class="absolute left-5 flex items-center pl-3 pointer-events-none">
+    <div class="px-6 pt-20 lg:px-8 flex justify-between items-center ">
+            <div class="absolute  flex items-center pl-3 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                 </svg>

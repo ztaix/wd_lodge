@@ -1,33 +1,31 @@
 <?php
 $modal_id = "ListEventModal";
 ?>
-
 <!-- LIST TODAY EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full h-full hidden z-50">
-    <div class="h-full relative bg-slate-200 rounded-lg dark:bg-gray-700 ">
+<div id="<?=$modal_id?>-shadow_modal" class="absolute bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-auto" >
 
-        <div class="sticky right-3 top-3">
-            <button type="button" class="absolute right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal" onclick="closeModalById('<?= $modal_id ?>')">
+<div class="relative mx-auto mt-8 p-2 ">
+
+    <!-- Modal Header -->
+    <div class="px-6 py-6 lg:px-8 flex justify-between items-center bg-white rounded-xl">
+
+        <div class="flex-grow text-center">
+        <div class="w-full inline-flex p-2 mx-2 cursor-pointer Add_Event_blinking" onclick="handleAddEventClick()">
+                        <h2 class="px-4">Ajouter une réservation : </h2>
+    
+                        <h2 id="modal-title" class="text-center font-bold -ml-2"><!-- JavaScript print Date du jour --></h2>
+                    </div>
+        </div>    
+        <div class="pl-4">
+            <button type="button" class=" text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal" onclick="closeModalById('<?= $modal_id ?>')">
                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                 </svg>
                 <span class=" sr-only">Fermer</span>
             </button>
         </div>
-        <!-- Modal Header -->
-        <div class="flex max-w-xl mx-auto py-4">
-                    <div class="w-full inline-flex p-2 mx-2 cursor-pointer text-base shadow-md 
-                    border
-                    text-blue-700 dark:text-white
-                    bg-blue-300 hover:bg-blue-200 dark:bg-blue-700 hover:dark:bg-blue-800 rounded-lg" onclick="handleAddEventClick()">
-                        <svg class=" w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v3m5-3v3m5-3v3M1 7h18M5 11h10M2 3h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
-                        </svg>
-                        <div class="px-4">+ Ajouter une réservation pour le </div>
-    
-                        <h3 id="modal-title" class="text-center font-bold -ml-2"><!-- JavaScript print Date du jour --></h3>
-                    </div>
-        </div>
+    </div>
 
         <!-- Modal Body -->
         <div class="flex flex-col max-w-xl mx-auto">

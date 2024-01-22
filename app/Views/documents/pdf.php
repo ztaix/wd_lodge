@@ -31,6 +31,8 @@ if(isset($seller[0]) && isset($data)){
     $s_price = $data['booking_info']['Price'];
     $s_service = $data['booking_info']['service_title'];
     $s_comment = $data['booking_info']['Comment'];
+    $s_fee = $data['booking_info']['Fee'];
+    $s_tax = $data['booking_info']['Tax'];
     $s_qt = $data['booking_info']['Qt'] == 0 ? 1: $data['booking_info']['Qt'] ;
 	$count_paid =  count(explode(',',trim($data['booking_info']['paids_ids'])));
 	$types_paids = explode(',',trim($data['booking_info']['types_paids']));
@@ -287,7 +289,14 @@ $due_date = $date->format('d/m/Y');
 					<td style="white-space: nowrap;"><?=$u_price.$currency?></td>
 					<td style="white-space: nowrap;"><?=($s_QtTraveller * $tax_tourist) ?></td>
 					<td><?=$s_qt?></td>
-					<td style="white-space: nowrap;"><?=($s_price + ($s_QtTraveller * $tax_tourist)).$currency?></td>
+					<td style="white-space: nowrap;"><?=($s_price + ($s_QtTraveller * $tax_tourist) + $s_fee).$currency?></td>
+				</tr>    
+				<tr class='item'>
+					<td><i>Frais de ménage</i></td>
+					<td style="white-space: nowrap;"><?= $s_fee . $currency?></td>
+					<td style="white-space: nowrap;">-</td>
+					<td>-</td>
+					<td style="white-space: nowrap;"><?=$s_fee.$currency?></td>
 				</tr>            
 				<tr class="total" style="white-space: nowrap;">
 					<?php if($tax_bool == true){
@@ -304,7 +313,7 @@ $due_date = $date->format('d/m/Y');
 					} ?>	
 					<td>
 						<p><?= $total_tax.$currency?></p>
-						<p><?=($s_price + ($s_QtTraveller * $tax_tourist)).$currency?></p>
+						<p><?=($s_price + ($s_QtTraveller * $tax_tourist) + $s_fee).$currency?></p>
 					</td>
 				</tr>
 				<tr class="total" style="white-space: nowrap;" >

@@ -16,22 +16,20 @@ header {
 
 }
 
-.content {
-    /* Ajoutez vos styles pour le contenu ici */
-    box-sizing: border-box;  /* Assurez-vous que le padding et la bordure sont inclus dans la hauteur */
- /*   height: 100vh;*/
-}
 
-#calendar, #customer, #history, #config {
+#customers, #history, #config {
   box-sizing: border-box;  /* Assurez-vous que le padding et la bordure sont inclus dans la hauteur */
-  height: calc(100vh - 10rem);
   width: 100%;
   margin: 0 auto;
   z-index: 0;
-  overflow-y: auto;
 }
-#calender {
-  overflow: none;
+#calendar {
+  box-sizing: border-box;  /* Assurez-vous que le padding et la bordure sont inclus dans la hauteur */
+  width: 100%;
+  max-width: 750px;
+  height: calc(100vh - 10rem);
+  margin: 0 auto;
+  z-index: 0;
 }
 
 
@@ -39,30 +37,6 @@ header {
   height: 6rem;
   max-height: 6rem;
   bottom: 0;
-}
-
-  /* Styles pour les écrans de taille PC */
-@media screen and (min-width: 1024px) {
-    /* Vos styles PC ici */
-    #calendar, header {
-        width: 70vh;
-    }
-}
-
-/* Styles pour les tablettes */
-@media screen and (max-width: 1023px) and (min-width: 751px) {
-    /* Vos styles tablette ici */
-    #calendar, header {
-        width: 85vh;
-    }
-}
-
-/* Styles pour les mobiles */
-@media screen and (max-width: 750px) {
-    /* Vos styles mobile ici */
-    #calendar, header {
-        width: 100%;
-    }
 }
 
 
@@ -75,13 +49,11 @@ header {
 
   
 #ListEventModal, #DetailsEventModal, #addEventModal, #SearchListEventModal {
-  background: transparent;
   z-index: 50;
   position: fixed;
   width: 100%;
-  max-height: 100vh;
+  height: 100%;
   overflow-y: auto; /* Pour activer le défilement vertical */
-  display: none;     /* Cachez-le par défaut */
 }
 
 .modal-title-details::first-letter{
@@ -91,13 +63,21 @@ header {
 
 /* Classe pour l'animation */
 .animate {
+  top:0;
   animation: slideUp 0.5s forwards; /* Applique l'animation slideUp */
-  display: block; /* Rend le modal visible */
   opacity: 1;
 }
 .close-animate {
-  animation: slideDown 0.3s forwards; /* Applique l'animation slideDown */
-  display: none; /* Rend le modal visible */
+  top:0;
+  animation: slideDown 0.5s forwards; /* Applique l'animation slideDown */
+}
+/* Classe pour l'animation */
+.animate_shadow_modal {
+  animation: slideUpShadow 0.5s forwards; /* Applique l'animation slideUp */
+  opacity: 0.5;
+}
+.close-animate_shadow_modal {
+  animation: slideDownShadow 0.5s forwards; /* Applique l'animation slideDown */
 }
 
 
@@ -182,37 +162,45 @@ header {
 .dark .fc-multimonth-title, .dark .fc-multimonth-header, .dark div.fc-view-harness.fc-view-harness-active div.fc-multiMonthYear-view.fc-view.fc-multimonth.fc-multimonth-singlecol div.fc-multimonth-month div.fc-multimonth-header table.fc-multimonth-header-table thead{
   background-color: #1e293b;
   border-color: #1e293b;
-  border: 0px;
 }
 .dark .fc-multimonth-daygrid-table, .dark .fc-multimonth-header-table {
   background-color: #1e293b;
-  border: 0px;
 }
-.dark .fc-day-disabled{
-  background-color: #101825;
-  border: 0px;
 
-}
-.dark .fc-day-past {
-  background-color: #2a3e60;
-  border: 0px;
-}
 .dark .fc-day-future{
   background-color: #2a3e60;
-  border: 0px;
 }
 .dark .fc-daygrid-day.fc-day-today {
   background-color:#6e7e98;
   color: black;
-  border: 0px;
 }
-.dark .fc-multimonth-compact{
-  border: 0;
-}
-.dark .fc-daygrid-day:hover {
-  background-color: rgb(42, 57, 82);
+.dark .fc-theme-standard td .fc-daygrid-day {
+  border-bottom: 2px;
+  border-color:#101825;
 }
 
+
+.dark .fc-daygrid-day:hover {
+  background-color: rgb(49, 85, 148);
+  cursor:pointer;
+}
+
+.dark .fc-day-disabled{
+  background-color: #263755;
+}
+.dark .fc-day-disabled:hover{
+  cursor:default;
+  background-color: #263755;
+}
+.dark .fc .fc-view-harness-active > .fc-view{
+  border-color:#22324d;
+}
+.dark .fc-theme-standard td, .dark .fc-theme-standard th {
+  border-color:#22324d;
+}
+.dark .fc-multimonth-title, .dark .fc-multimonth-header, .dark div.fc-view-harness.fc-view-harness-active div.fc-multiMonthYear-view.fc-view.fc-multimonth.fc-multimonth-singlecol div.fc-multimonth-month div.fc-multimonth-header table.fc-multimonth-header-table thead {
+  background-color: #22324d;
+}
 
   /** SURCHARGER FullCalendar -  END   ***/
 
@@ -243,21 +231,37 @@ header {
 }
 @keyframes slideUp {
     from {
-      bottom: -50%; /* Part du bas, hors de l'écran */
+      top: -1000px; /* Part du bas, hors de l'écran */
       opacity: 0;
     }
     to {
-      bottom: 0; /* Arrive à la position finale */
+      top: 0px; /* Arrive à la position finale */
       opacity: 1;
     }
   }
   @keyframes slideDown {
     from {
-      bottom: 6vh; /* Départ de la position actuelle */
+      top: 0; /* Départ de la position actuelle */
       opacity: 1;
     }
     to {
-      bottom: -50%; /* Descend en dehors de l'écran */
+      top: -1000px; /* Descend en dehors de l'écran */
+      opacity: 0;
+    }
+  }
+@keyframes slideUpShadow {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 0.5;
+    }
+  }
+  @keyframes slideDownShadow {
+    from {
+      opacity: 0.5;
+    }
+    to {
       opacity: 0;
     }
   }
@@ -377,7 +381,20 @@ header {
     transition: max-width 0.4s ease-in-out, opacity 0.6s ease-in-out, overflow 0.4s ease-in-out, white-space 0.4s ease-in-out;
 }
 
-/* DARK MODE SWITCH */
+
+
+
+
+.fullblocked-border {
+  border: 2px solid red; /* Exemple de bordure personnalisée */
+}
+
+/* Tooltip pour la case privatisation */
+#container_eventfullblocked:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+/* DARK MODE MODULE SWITCHER */
 .container-darkmode {
   position: fixed;
   top: 15px;
@@ -393,17 +410,14 @@ header {
   display: flex;
   align-items: center; /* Centré verticalement */
   justify-content: flex-start; /* Aligné à gauche */
-  padding-left: 5px; /* Ajouté pour ajouter de l'espace à gauche */
-  padding-top: 18px; /* Ajouté pour ajouter de l'espace à gauche */
+  padding-left: 5px; 
+  padding-top: 18px; 
 }
-/* Assurez-vous que la hauteur du label est égale à celle du container */
-
-
 .container-darkmode:hover {
   opacity: 1;
-  right: 00px;
+  right: 0px;
 }
 
-.fullblocked-border {
-  border: 2px solid red; /* Exemple de bordure personnalisée */
+.Add_Event_blinking:hover{
+  animation: blink 1.5s forwards; /* Applique l'animation slideUp */
 }

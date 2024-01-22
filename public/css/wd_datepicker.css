@@ -464,9 +464,7 @@
   z-index: 1;
 }
 
-.container.range-plugin .calendar > .days-grid > .day.in-range:after {
-  background-color: var(--color-btn-primary-bg);
-}
+
 .container.range-plugin .calendar > .days-grid > .day.start.flipped {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: var(--border-radius);
