@@ -6,7 +6,7 @@ var currentZIndex = 50; // Valeur initiale du zIndex
 var isClosingModal = false;
 
 function urlLocation(){
-   let segments = baseurl.split('/');
+   let segments = window.location.herf.split('/');
    let dernierSegment = segments.pop() || segments.pop();
    
    let returnSegment = dernierSegment.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -123,7 +123,6 @@ function openModal(modalId) {
     shadow_modal.classList.remove("hidden");
     
     if(modalStack.length > 0){
-      console.log("modalStack",modalStack);
       let previousModal = modalStack[modalStack.length - 1];
       previousModal.classList.add('blur-lg');
     }
