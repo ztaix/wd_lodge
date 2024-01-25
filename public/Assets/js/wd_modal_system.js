@@ -7,11 +7,10 @@ var isClosingModal = false;
 
 function urlLocation(){
    let segments = window.location.href.split('/');
-   console.log('baseurl',baseurl);
    let dernierSegment = segments.pop() || segments.pop();
    
    let returnSegment = dernierSegment.toLowerCase().replace(/[^a-z0-9]/g, '');
-   returnSegment = returnSegment == '' ||  returnSegment == 'public'  ? "calendar" : returnSegment;
+   returnSegment = returnSegment == '' ||  baseurl == window.location.href  ? "calendar" : returnSegment;
    return returnSegment;
 }
 
