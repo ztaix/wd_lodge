@@ -5,10 +5,10 @@ $modal_id = "ListEventModal";
 <div id="<?=$modal_id?>-shadow_modal" class="absolute bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
 <div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-auto" >
 
-<div class="relative mx-auto mt-8 p-2 ">
+<div class="relative mx-auto p-2 ">
 
     <!-- Modal Header -->
-    <div class="px-6 py-6 lg:px-8 flex justify-between items-center bg-white rounded-xl">
+    <div class="px-6 py-6 lg:px-8 flex justify-between items-center text-slate-500 bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700 rounded-xl">
 
         <div class="flex-grow text-center">
         <div class="w-full inline-flex p-2 mx-2 cursor-pointer Add_Event_blinking" onclick="handleAddEventClick()">
@@ -30,7 +30,7 @@ $modal_id = "ListEventModal";
         <!-- Modal Body -->
         <div class="flex flex-col max-w-xl mx-auto">
 
-            <div class="flex justify-center p-2 mx-2 mb-14 bg-slate-200 dark:bg-slate-700">
+            <div class="flex justify-center pt-2">
 
                 <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                     <div class="px-4">

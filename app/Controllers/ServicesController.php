@@ -44,6 +44,7 @@ class ServicesController extends BaseController
             'Color' => $this->request->getPost('Color'),
             'Comment' => $this->request->getPost('Comment'),
             'Fee' => $this->request->getPost('Fee'),
+            'Tax' => $this->request->getPost('Tax'),
             'fullblocked' => $this->request->getPost('fullblocked'),
         ];
 

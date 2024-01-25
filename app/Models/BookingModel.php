@@ -231,10 +231,10 @@ class BookingModel extends Model
 
     }
 
-    public function deleteBooking($data)
+    public function deleteBooking($booking_id)
     {
             // Utilisez la fonction delete pour supprimer la réservation avec l'ID donné
-        $this->delete($data);
+        $this->delete($booking_id);
 
         // Vérifiez si la suppression a réussi en vérifiant le nombre de lignes affectées
         return $this->db->affectedRows() > 0;

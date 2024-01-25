@@ -97,6 +97,7 @@ const newDateStr = [
           booking.id
         }" class="flex flex-col p-1 mt-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
           <!-- Colonne 1 -->
+          ${booking.fullblocked == 1 ? '<span class="flex mx-auto font-bold ">~ privatisé ~</span>':''}
           <div class="w-full flex-col group ${booking.fullblocked == 1 ? 'border p-2 border-dashed border-red-400 dark:border-red-900 rounded-lg':''}">
             <div class="inline-flex text-slate-600 ${booking.fullblocked == 1 ? 'bg-red-200 text-red-700 dark:bg-red-700 dark:text-red-200 rounded-lg':''}">
               <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex cursor-pointer font-bold">
@@ -105,7 +106,6 @@ const newDateStr = [
                 </div>
                 <div id="booking_title_${booking.id}" class="transition-margin m-0 hover:mx-2">
                   ${booking.service_title + ' (' + DaysDifferenceStartEnd(booking.start,booking.end) + ' nuits)'}
-                  ${booking.fullblocked == 1 ? '<span class="px-1">~ privatisé ~</span>':''}
                 </div>
                 
               </div>
@@ -147,7 +147,7 @@ const newDateStr = [
                 <div class="flex-col justify-end bg-slate-100 dark:bg-slate-800 rounded-lg px-1">
                   <div class="inline-flex items-center" >
                       <span class="mr-1 text-xs text-slate-400">Tarif</span> 
-                      <span id="booking_total_${booking.id}">${ parseInt(booking.Price) + (parseInt(booking.QtTraveller) * 200) + parseInt(booking.Fee) }</span>
+                      <span id="booking_total_${booking.id}">${ parseInt(booking.Price) + (parseInt(booking.QtTraveller) * parseInt(booking.Tax)) + parseInt(booking.Fee) }</span>
                       <span class="ml-1 text-xs">Fr</span>
 
                   </div>
@@ -299,26 +299,6 @@ async function showUpdateCustomer(id) {
       return;
     }
 
-
-  function getCustomerFormData() {
-    return {
-      Customer_id: document.getElementById("customer_id").value,
-      Name: document.getElementById("customer_name").value,
-      Phone: document.getElementById("customer_phone").value,
-      Email: document.getElementById("customer_email").value,
-      Comment: document.getElementById("customer_comment").value,
-    };
-  }
-  
-  // Met à jour les champs du formulaire avec les données récupérées
-  function updateCustomersFormFields(customer) {
-    document.getElementById("customer_id").value = customer.customer_id;
-    document.getElementById("customer_name").value = customer.name;
-    document.getElementById("customer_phone").value = customer.phone;
-    document.getElementById("customer_email").value = customer.email;
-    document.getElementById("customer_comment").value = customer.comment;
-    document.getElementById("Update_customer_Modal_title").innerText = `Modifier Client #${customer.customer_id}`;
-  }
   updateCustomersFormFields(customer);
 
   let button_update = document.getElementById("update_customer_submit_form");
@@ -333,13 +313,16 @@ async function showUpdateCustomer(id) {
           var newCustomerId = response.id;
           
           if(ModalInStack('CustomerInfoModal')){
-            document.getElementById('history_customer_name').innerText = formData.Name;
+            document.getElementById('history_customer_name_span').innerText = formData.Name;
+            document.getElementById('history_customer_phone_span').innerText = formData.Phone;
+            document.getElementById('history_customer_email_span').innerText = formData.Email;
+            document.getElementById('history_customer_comment_span').innerText = formData.Comment;
           }
           if(ModalInStack('DetailsEventModal')){
-            document.getElementById('booking_details_customer_name_span').value = formData.customer_name;
-            document.getElementById('booking_details_customer_phone_span').value = formData.customer_phone;
-            document.getElementById('booking_details_customer_mail_span').value = formData.customer_email;
-            document.getElementById('booking_details_customer_comment_span').value = formData.customer_comment;
+            document.getElementById('booking_details_customer_name_span').innerText = formData.Name;
+            document.getElementById('booking_details_customer_phone_span').innerText = formData.Phone;
+            document.getElementById('booking_details_customer_email_span').innerText = formData.Email;
+            document.getElementById('booking_details_customer_comment_span').innerText = formData.Comment;
           }
 
           if(ModalInStack('updateCustomerModal')){
@@ -485,7 +468,17 @@ async function showBookingDetailsFromID(id) {
     "booking_details_id_h5"
   ).innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${Booking.service_color}">${Booking.Type_doc} # ${Booking.id}</span> `;
 
-  document.getElementById("booking_details_img").src =  baseurl + 'uploads/' + Booking.booking_img;
+  /* Vérification de l'existance du fichier */
+    if(ExistFile(baseurl + 'uploads/' + Booking.booking_img)){ 
+        document.getElementById("booking_details_img").src =  baseurl + 'uploads/' + Booking.booking_img;
+      }
+      else{ /* Si le fichier n'existe pas alors création d'une image standart */
+        document.getElementById("booking_details_div_img").classList.add("bg-gray-200");
+        document.getElementById("booking_details_div_img").classList.add("rounded-t-lg");
+        document.getElementById("booking_details_div_img").style.height =  "150px";
+        document.getElementById("booking_details_div_img").innerHTML =  "<svg class='max-w-full max-h-full h-auto w-auto text-gray-300 dark:text-gray-600' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'><path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m4 12 8-8 8 8M6 10.5V19c0 .6.4 1 1 1h3v-3c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v3h3c.6 0 1-.4 1-1v-8.5'/></svg>";
+    }
+
   document.getElementById("booking_details_service_h5").innerText =
     Booking.service_title;
   let h5_fullblocked = document.getElementById(
@@ -513,7 +506,7 @@ async function showBookingDetailsFromID(id) {
 
   document.getElementById("booking_details_customer_name_span").innerText =
     Booking.customer_name;
-  document.getElementById("booking_details_customer_name_span").onclick =
+  document.getElementById("booking_details_customer_block_toedit").onclick =
     (function (customerId) {
       return function () {
         showUpdateCustomer(customerId);
@@ -522,10 +515,15 @@ async function showBookingDetailsFromID(id) {
 
   document.getElementById("booking_details_customer_phone_span").innerText =
     Booking.customer_phone;
-  document.getElementById("booking_details_customer_mail_span").innerText =
+  document.getElementById("booking_details_customer_email_span").innerText =
     Booking.customer_mail;
-  document.getElementById("booking_details_customer_comment_span").innerHTML =
-    Booking.customer_comment;
+    if(Booking.customer_comment){
+      document.getElementById("booking_details_customer_comment_span").innerHTML = Booking.customer_comment;
+    }
+    else{
+      document.getElementById("booking_details_customer_comment_span").innerHTML = "<i>Vous pouvez ajouter un commentaire au client.</i>";
+    }
+  
   document.getElementById("booking_details_customer_created_span").innerText =
     "Client depuis " +
     new Date(Booking.customer_created)
@@ -596,11 +594,8 @@ function get_booking_list_from_customer(data) {
   closeModal();
   openModal("CustomerInfoModal");
   let customer_id = data.getAttribute("data-id");
-  let Name = data.getAttribute("data-name");
-  let Phone = data.getAttribute("data-phone");
-  let Comment = data.getAttribute("data-comment");
+
   let tbody = document.getElementById("CustomerDetailsContainer");
-  document.getElementById('history_customer_title_h3').innerText = Name + (Phone.length>0? ' - ' + Phone : '') ;
   // Gestionnaire d'événements délégués pour les lignes de tableau avec la classe "booking-row"
   tbody.addEventListener("click", function (event) {
     if (event.target.classList.contains("booking-row")) {
@@ -613,7 +608,6 @@ function get_booking_list_from_customer(data) {
   });
   tbody.innerHTML = "";
 
-  // Variables pour stocker les sommes totales
   let totalPaid = 0;
   let totalPrice = 0;
 
@@ -624,7 +618,10 @@ function get_booking_list_from_customer(data) {
       customer_id: customer_id,
     },
     success: function (response) {
-      response.forEach(function (booking) {
+      let bookings = response[0]; // Les réservations
+      let customerInfo = response[1]; // Les informations du client
+
+      bookings.forEach(function (booking) {
         // Mise à jour des sommes totales
         let array_paids_values = booking.paids_values
         ? booking.paids_values.split(",").map(Number)
@@ -633,9 +630,11 @@ function get_booking_list_from_customer(data) {
         (total, currentValue) => total + currentValue,
         0
       );
+      console.log('booking',paids_sum);
       totalPaid += paids_sum;
-      totalPrice += parseFloat(booking.Price) + (parseFloat(booking.QtTraveller) * 200) + parseInt(booking.Fee);
-      
+      totalPrice += parseFloat(booking.Price) + (parseFloat(booking.QtTraveller) * parseInt(booking.Tax)) + parseInt(booking.Fee);
+      let rowPaid = paids_sum
+      let rowPrice = parseFloat(booking.Price) + (parseFloat(booking.QtTraveller) * parseInt(booking.Tax)) + parseInt(booking.Fee);;
         let newRow = document.createElement("tr");
         newRow.classList.add(
           "bg-white",
@@ -670,10 +669,10 @@ function get_booking_list_from_customer(data) {
                   <span>${format_date(booking.end,0,true)} </span>
                 </td>
                 <td class="px-3 py-3 ">${
-                  totalPaid
+                  rowPaid
                 }</td>
                 <td class="px-3 py-3">${
-                  totalPrice
+                  rowPrice
                 }</td>
             `;
 
@@ -688,21 +687,25 @@ function get_booking_list_from_customer(data) {
         Math.round((totalPaid / totalPrice) * 10000) / 100,
         100
       );
+
+      document.getElementById("history_customer_block_toedit").onclick = (function (customer_id) {
+        return function () {
+            showUpdateCustomer(customer_id);
+        };
+    })(customer_id); // Assurez-vous que 'customer_id' est défini et accessible ici
+    
+        document.getElementById('history_customer_name_span').innerText = customerInfo.Name;
+        document.getElementById('history_customer_email_span').innerText = customerInfo.Email;
+        document.getElementById('history_customer_phone_span').innerText = customerInfo.Phone;
+        document.getElementById('history_customer_comment_span').innerText = customerInfo.Comment;
+        document.getElementById('history_customer_created_span').innerText = customerInfo.Created_at;
+
       let customer_finance_total = document.getElementById(
         "modal-title_customer_finance_total"
       );
       customer_finance_total.innerHTML = `
         <div class="text-center py-4 lg:px-4 w-full">
           <div class="customer-container w-full inline-flex items-center justify-center flex-wrap px-1 py-1 pr-4 text-gray-700  dark:text-white mb-2">
-            <a onclick="showUpdateCustomer(${customer_id})" class="cursor-pointer customer-link text-blue-500 hover:underline">
-              <span class="customer-name text-md flex bg-blue-600 rounded-full text-white px-3 py-1.5 mr-3">
-                  <span class="mr-2">Modifier</span>
-                  <svg class="w-5 h-5 mr-2 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 18">
-                      <path d="M7 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm2 1H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-                  </svg> 
-                  <span id='history_customer_name'>${Name}</span>
-              </span>
-            </a>
             <span class="text-md font-bold text-blue-700 dark:text-white">Total ${totalPrice} Fr</span>
           </div>
 
@@ -722,8 +725,6 @@ function get_booking_list_from_customer(data) {
               
               </div>
               
-              <div class="flex w-full text-slate-400  my-4 text-left">
-              ${Comment}</div>
             </div>`;
     },
   });

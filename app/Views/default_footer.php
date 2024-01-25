@@ -88,6 +88,7 @@
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
 <script src="Assets/js/select2.min.js"></script>
+<script src="Assets/js/wd_function_toolbox.js"></script>
 <script src="Assets/js/wd_modal_system.js"></script>
 <script src="Assets/js/wd_html.js"></script>
 <script src="Assets/js/wd_fullcalendar.js"></script>

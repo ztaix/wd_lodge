@@ -191,4 +191,13 @@ class PaidModel extends Model
         }
         return $result;
     }
+
+    public function deletePaidsFromBooking($booking_id)
+    {
+            // Utilisez la fonction delete pour supprimer la réservation avec l'ID donné
+            $this->where('booking_id', $booking_id)->delete();
+
+        // Vérifiez si la suppression a réussi en vérifiant le nombre de lignes affectées
+        return $this->db->affectedRows() > 0;
+    }
 }

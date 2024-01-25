@@ -144,4 +144,16 @@ class PaidsController extends BaseController
             return $this->response->setJSON(['success' => false, 'data' => $ids]);
         }
     }
+
+    public function deletePaidsFromBooking($bookingid)
+    {
+        $listIdDeleted = $this->PaidModel->deletePaidsFromBooking($bookingid);
+        if ($listIdDeleted) {
+            // La suppression a réussi
+            return $this->response->setJSON(['success' => true, 'data' => $listIdDeleted]);
+        } else {
+            // La suppression a échoué
+            return $this->response->setJSON(['success' => false, 'data' => $bookingid]);
+        }
+    }
 }

@@ -164,6 +164,12 @@ document.addEventListener("DOMContentLoaded", function () {
       let bookings = args.event.extendedProps.bookings; 
       let shadowDotsHtml = "";
       let nonShadowDotsHtml = "";
+
+      let firstdayHtml = "";
+      let currentdayHtml ="";
+      let lastdayHtml = "";
+
+
       let margin_init = 0;
       // Ajouter une pastille pour chaque réservation avec la couleur du service
       /*colors.forEach(function (colors) {
@@ -172,24 +178,60 @@ document.addEventListener("DOMContentLoaded", function () {
       });*/
       
       for (let bookingId in bookings) {
-        if (bookings.hasOwnProperty(bookingId)) {
+        if (bookings.hasOwnProperty(bookingId)) {          
           let booking = bookings[bookingId];
-          let status = "";
-          let facture = booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):"";
+          /// ALL INSTRUCTIONS DOWN ///
+
+
+          let isBookingStartDay = booking.Date == booking.FirstDay.substring(0, 10);
+          let isBookingCurrentDay = booking.Date < booking.LastDay.substring(0, 10) && booking.Date > booking.FirstDay.substring(0, 10)
+          let isBookingEndDay = booking.Date == booking.LastDay.substring(0, 10);
           
-            if(parseInt(booking.paids) >= (parseInt(booking.prices) + (parseInt(booking.QtTraveller) * 200) + parseInt(booking.Fee))){
+          if (isBookingStartDay) {
+            firstdayHtml += `<div class="absolute" id="FIRST"> 
+            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="0,100 100,0 ,100,100" class="opacity-20" style="fill: ${lightenHexColor(booking.colors,-20)}" ></polygon>
+
+            </svg>
+        </div>`;  
+          }
+          
+          if (isBookingCurrentDay) {
+            firstdayHtml += `<div class="absolute" id="CURRENT"> 
+            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="0,0 0,100 100,100 100,0" class="opacity-20" style="fill: ${lightenHexColor(booking.colors,-20)}" ></polygon>
+
+            </svg>
+        </div>`;  
+          }
+          if (isBookingEndDay) {
+            lastdayHtml += `<div class="absolute" id="END" >
+            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="0, 0, 0,100 ,100,100" class="opacity-20" style="fill: ${lightenHexColor(booking.colors,-20)}" ></polygon>
+
+            </svg>
+        </div>`;  
+          }
+
+          let status = "";
+          let facture = booking.types_docs.charAt(0)=="F"? booking.types_docs.charAt(0):"";
+          let total_price = parseInt(booking.prices) + (parseInt(booking.QtTraveller) * parseInt(booking.Tax)) + parseInt(booking.Fee);
+          
+            if(parseInt(booking.paids) >= total_price){
 
                 // PAID
                 status = `
-                <b class="flex justify-center items-center " style="color: ${lightenHexColor(booking.colors,-40)};margin-top: 0px;font-size:8px">${booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):""}</b>
-                <div class="relative ${facture!=="F"?"-top-0.5":"-top-2.5"} left-0.5" style="margin-top: 2px;"><svg class=" w-4 h-4" style=" color: ${lightenHexColor(booking.colors,70)}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                </svg></div>`;
+                <b class="flex justify-center items-center z-50" style="color: ${lightenHexColor(booking.colors,-65)};">${facture=="F"?facture:""}</b>
+                <div class="absolute" style="width: 15px;
+                height: 15px;
+                border-radius: 15px 15px 15px 15px;
+                background: linear-gradient(to top, green 10%, transparent 50%)
+            "></div>`;
                 class_paid = "paid"; 
                 margin_init = '2';
             } else {
                 // UNPAID
-                status = `<b class="flex justify-center items-center" style="color: ${lightenHexColor(booking.colors,-50)};margin-top: 1px;font-size:8px">${booking.types_docs.charAt(0)=="F"?booking.types_docs.charAt(0):""}</b>`;
+                status = `<b class="flex justify-center items-center" style="color: ${lightenHexColor(booking.colors,-50)};margin-top: 1px;">${facture=="F"?facture:""}</b>`;
                 class_paid = "unpaid";            
 
             }
@@ -198,7 +240,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let fullblocked = booking.fullblockeds =='1';
             let fullblocked_html  = fullblocked ? `<div class="absolute rounded-full p-2 border-2 border-spacing-2 shadow-md border-red-600"></div>` : "";
             
-            let dotHtml = `<span id="event-dot" class="event-dot ${class_paid}   flex items-center justify-center" style="background-color: ${booking.colors}; margin-left: ${margin_init}px">${status} ${fullblocked_html}</span>`;
+            let dotHtml = `<span id="event-dot" class="event-dot ${class_paid} mb-2 flex items-end justify-center" style="background-color: ${booking.colors}; margin-left: ${margin_init}px">${status} ${fullblocked_html}</span>`;
             if (class_paid === "unpaid") {
                 shadowDotsHtml += dotHtml;
             } else {
@@ -207,13 +249,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Concaténer les deux groupes de spans
-   let dotsHtml = shadowDotsHtml + nonShadowDotsHtml;
+   let dotsHtml =  lastdayHtml + firstdayHtml + shadowDotsHtml + nonShadowDotsHtml;
     // Créer un élément HTML pour représenter l'événement
     let eventElement = document.createElement("div");
-    eventElement.className = `flex justify-center items-center`;
+    eventElement.className = `flex justify-center items-end h-full`;
     eventElement.innerHTML = dotsHtml;
-    
       return {
         domNodes: [eventElement],
       };
@@ -299,8 +339,7 @@ function updateEventFromDetails() {
         let row_id = response.id;
         let row_price =  parseInt(response.data.Price) + (parseInt(response.data.QtTraveller) * 200) + parseInt(response.data.Fee);
         showBanner("Événement mise à jour avec succès !", true);
-        closeModalById('addEventModal');
-        showBookingDetailsFromID(row_id);
+
         if(ModalInStack('ListEventModal')){ // UPDATE SI RESPONSE VALIDE !! HORS PAIEMENTS !!
           document.getElementById('booking_total_'+row_id).innerText =  row_price;
           document.getElementById('booking_Comment_'+row_id).innerText = response.data.Comment;
@@ -388,7 +427,7 @@ function updateEventFromDetails() {
                 } else {details_paid_div.style.width = "24px"; }
                  
               }
-
+              closeModalById('addEventModal');
                 showBanner("Paiements mise à jour avec succès !", true);
             } else {
                 showBanner("Echec de la mise à jour des paiements !", false);
@@ -469,7 +508,7 @@ function addEvent() {
               `,
               true
             );
-            closeModal(true);
+            closeModal();
             setTimeout(() => {
               if (calendar) {
                 calendar.refetchEvents();
@@ -549,7 +588,7 @@ function addEvent() {
                 } else {details_paid_div.style.width = "24px"; }
                  
               }
-             
+                closeModalById('addEventModal');
                 showBanner("Paiements mise à jour avec succès !", true);
             } else {
                 showBanner("Echec de la mise à jour des paiements !", false);
@@ -630,19 +669,21 @@ async function update_add_formEvent(data) {
     ).innerText = `Modifier #${data.id}`;
     document.getElementById("Modaleventid").value = data.id;
     document.getElementById("ModaleventCustomer_id").value = data.Customer_id;
-    document.getElementById("ModaleventService_id").value = data.Service_id;
-    eventFull_Blocked.checked = parseInt(data.fullblocked) === 1;
+    $('#ModaleventCustomer_id').trigger('change'); // afin que le module SELECT2 reflète formulaire
 
+    document.getElementById("ModaleventService_id").value = data.Service_id;
+    document.getElementById("Modaleventfullblocked").checked = parseInt(data.fullblocked) === 1;
+    /* GESTION du STYLE FULLBLOCKED CHECKED PAR LA PAGE MODAL DIRECTEMENT  
     var container_full_blocked = document.getElementById("container_eventfullblocked");
       if (parseInt(data.fullblocked) === 1) {
         // Appliquer un style lorsque la checkbox est cochée
-        container_full_blocked.style.backgroundColor = "red"; // Exemple : Fond vert
-        // Vous pouvez également changer le style d'autres éléments ici
+        container_full_blocked.style.border = "2px dashed red"; 
     } else {
         // Appliquer un style différent lorsque la checkbox n'est pas cochée
         container_full_blocked.style.backgroundColor = "transparent"; // Exemple : Fond rouge
         // Vous pouvez également réinitialiser le style d'autres éléments ici
-    }            
+    }     */  
+
     document.getElementById("ModaleventQtTraveller").value = parseInt(data.QtTraveller);
     document.getElementById("ModaleventQt").value = data.Qt;
     document.getElementById("ModaleventPrice").value = data.Price;
@@ -656,11 +697,9 @@ async function update_add_formEvent(data) {
   }
 }
 
-// Fonction pour ajouter un événement
 function deleteEvent(event_id, modal_id = false, paids_id = false) {
-  openModal("ConfirmDeleteModal", true, false);
+  openModal("ConfirmDeleteModal");
 
-  // Changer le texte du bouton et son action pour l'ajout
   let modal = document.getElementById("ConfirmDeleteModal");
   modal.style.zIndex = "999";
   let yesconfirmButton = document.getElementById(

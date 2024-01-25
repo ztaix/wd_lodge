@@ -14,7 +14,7 @@ class ServiceModel extends Model
     protected $useAutoIncrement = true;
 
     // Les champs autorisés pour les insertions et les mises à jour
-    protected $allowedFields = ['Title', 'Price', 'Image_url','Color', 'Comment','Fee', 'fullblocked'];
+    protected $allowedFields = ['Title', 'Price', 'Image_url','Color', 'Comment','Fee','Tax', 'fullblocked'];
 
     // Les règles de validation pour les champs
     protected $validationRules = [
@@ -24,6 +24,7 @@ class ServiceModel extends Model
         'Color' => 'permit_empty',
         'Comment' => 'permit_empty',
         'Fee' => 'permit_empty',
+        'Tax' => 'permit_empty',
         'fullblocked' => 'permit_empty',
     ];
 
@@ -39,7 +40,7 @@ class ServiceModel extends Model
 
     public function get_services_list()
     {
-        $results = $this->select('Service_id, Title, Price, Image_url, Comment, Discount, Color,Fee,fullblocked')->findAll();
+        $results = $this->select('Service_id, Title, Price, Image_url, Comment, Discount, Color,Fee,Tax,fullblocked')->findAll();
     
         $AccessFile = new \App\Controllers\FilesController();
     

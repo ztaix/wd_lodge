@@ -30,6 +30,7 @@ $modal_id = "addEventModal";
             <div class="px-6 py-6 lg:px-8 mb-20">
                 <form id="eventForm" class="space-y-6">
                     <input type="hidden" id="Modaleventid" name="id">
+                    <input type="hidden" id="ModaleventTax" name="Tax">
                     <input type="hidden" id="ModaleventFee" name="Fee">
                     <div>
                         <select id="ModaleventType_doc" name="ModaleventType_doc" class="block w-full p-4 text-xl font-bold text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -157,23 +158,9 @@ $DiscountsScope = $discountRules['Scope']['Data'];
 ?>
 <script>
     // BLOCKED DAY
-    document.addEventListener("DOMContentLoaded", function() {
     var eventFull_Blocked = document.getElementById("Modaleventfullblocked");
     var container_full_blocked = document.getElementById("container_eventfullblocked");
     var container_global = document.getElementById("addEventModal");
-
-    eventFull_Blocked.addEventListener("change", function() {
-        if (eventFull_Blocked.checked) {
-            container_full_blocked.style.backgroundColor = "red";
-            container_global.classList.remove('bg-white');
-            container_global.classList.add('bg-red-200');
-        } else {
-            container_full_blocked.style.backgroundColor = "transparent";
-            container_global.classList.add('bg-white');
-            container_global.classList.remove('bg-red-200');
-        }
-    });
-});
 
     var discountScope = '<?= $DiscountsScope ?>';
     var GlobaldiscountValues = <?= $DiscountsValues !== false ? $DiscountsValues : "'false'" ?>;
@@ -187,6 +174,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     var discountservice = <?= $DiscountServices ?>;
     var serviceDiscount = false;
     var E_Fee = document.getElementById('ModaleventFee');
+    var E_Tax = document.getElementById('ModaleventTax');
 
 
 
@@ -198,7 +186,6 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         let inputsValues = document.querySelectorAll('input[id^="rowPaid"]');
         // Filtrer les éléments pour ne garder que ceux dont l'ID est suivi d'un chiffre
         let filteredInputs = Array.from(inputsValues).filter(input => /^rowPaid\d+$/.test(input.id));
-        var Fee = 0;
 
         let sum = 0;
         var qtTraveller = parseInt(document.getElementById("ModaleventQtTraveller").value);
@@ -206,7 +193,8 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         var restapayer = 0;
 
         serviceSelect.addEventListener("change", function() {
-        //Get service détails from select
+        
+        //GET SERVICE // from select
         service = discountservice.find(service => service.Service_id === this.value);
     });
         filteredInputs.forEach(input => {
@@ -215,7 +203,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         });
 
         if (!isNaN(price) && !isNaN(qtTraveller)) {
-            FillPaidInput = (price + (qtTraveller * 200) + parseInt(service.Fee)) - sum;
+            FillPaidInput = (price + (qtTraveller * parseInt(service.Tax)) + parseInt(service.Fee)) - sum;
         }
 
         const container = document.getElementById('payments-subcontainer');
@@ -243,19 +231,16 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         var qtTraveller = parseInt(document.getElementById("ModaleventQtTraveller").value);
         var price = parseInt(priceInput.value);
         var total = 0;
-        var taxSejour = qtTraveller * 200;
-        var Fee = 0;
 
         serviceSelect.addEventListener("change", function() {
         //Get service détails from select
         service = discountservice.find(service => service.Service_id === this.value);
-        E_Fee.value = parseInt(service.Fee);
     }
         );
         if (!isNaN(price) && !isNaN(qtTraveller)) {
-            total = price + (qtTraveller * taxSejour ) + parseInt(service.Fee);
+            total = price + (qtTraveller * parseInt(service.Tax) ) + parseInt(service.Fee);
         }
-        totalIndicator.innerHTML = '<span class="font-normale text-xs text-slate-400">Taxe de séjour (<b>'+ taxSejour +' Fr</b>) et frais de ménage (<b>'+ service.Fee +' Fr</b>) inclus:</span> ' + total + ' Fr';
+        totalIndicator.innerHTML = '<span class="font-normale text-xs text-slate-400">Taxe de séjour (<b>'+ qtTraveller +'*'+parseInt(service.Tax) +' Fr</b>) et frais de ménage (<b>'+ service.Fee +' Fr</b>) inclus:</span> ' + total + ' Fr';
         numericIndicator.style.display = isNaN(price) || isNaN(qtTraveller) ? "inline" : "none"; // Afficher/Cacher l'indicateur si une des valeurs n'est pas un nombre
     
     }
@@ -269,6 +254,7 @@ document.getElementById("ModaleventQtTraveller").addEventListener("change", Info
     priceInput.value = prices[serviceSelect.value];
     service = discountservice.find(service => service.Service_id === serviceSelect.value);
     E_Fee.value = parseInt(service.Fee);
+    E_Tax.value = parseInt(service.Tax);
 
     serviceDiscount = service.Discount;
 
@@ -285,14 +271,21 @@ document.getElementById("ModaleventQtTraveller").addEventListener("change", Info
         var container_global = document.getElementById("addEventModal");
         if (service.fullblocked == 1) {
             checkbox.checked = true;
-            container_global.classList.remove('bg-white');
-            container_global.classList.add('bg-red-200');
+            container_full_blocked.classList.add("bg-red-500");
+            container_full_blocked.classList.remove("bg-transparent");
+            container_global.classList.add('border');
+            container_global.classList.add('border-dashed');
+            container_global.classList.add('border-4');
+            container_global.classList.add('border-red-400');
       
         }
         else { 
             checkbox.checked = false;
-            container_global.classList.add('bg-white');
-            container_global.classList.remove('bg-red-200');
+            container_full_blocked.classList.remove("bg-red-500");
+            container_global.classList.remove('border');
+            container_global.classList.remove('border-dashed');
+            container_global.classList.remove('border-4');
+            container_global.classList.remove('border-red-400'); 
         }
 
         if (!userChangedPrice) { // Mettre à jour uniquement si l'utilisateur n'a pas modifié le prix

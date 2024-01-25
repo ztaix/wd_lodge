@@ -15,12 +15,14 @@ class BookingController extends BaseController
     private $CustomerModel;
     private $ServiceModel;
     private $BookingModel;
+    private $PaidModel;
     private $ConfigModel;
 
     public function __construct()
     {
         $this->CustomerModel = new \App\Models\CustomerModel();
         $this->ServiceModel = new \App\Models\ServiceModel();
+        $this->PaidModel = new \App\Models\PaidModel();
         $this->BookingModel = new \App\Models\BookingModel();
         $this->ConfigModel = new \App\Models\ConfigurationModel();
     }
@@ -93,13 +95,18 @@ class BookingController extends BaseController
                     }
 
                     $grouped[$date]['bookings'][$booking['id']] = [
-                        'colors' => $booking['service_color'], 
+                        'Date' => $date,
+                        'colors' => $booking['service_color'],
                         'services_titles' => $booking['service_title'],
-                        'prices' => $booking['Price'], 
-                        'QtTraveller' => $booking['QtTraveller'], 
-                        'paids' => $paids_sum, 
-                        'types_docs' => $booking['Type_doc'], 
-                        'fullblockeds' => $booking['fullblocked'], 
+                        'prices' => $booking['Price'],
+                        'QtTraveller' => $booking['QtTraveller'],
+                        'paids' => $paids_sum,
+                        'FirstDay' => $booking['start'],
+                        'LastDay' => $booking['end'],
+                        'Fee' => $booking['Fee'],
+                        'Tax' => $booking['Tax'],
+                        'types_docs' => $booking['Type_doc'],
+                        'fullblockeds' => $booking['fullblocked'],
                         'array_paids' => $booking_paids
 
                     ];
@@ -348,11 +355,11 @@ class BookingController extends BaseController
     public function getBookingsFromCustomer()
     {
         $customer_id = $this->request->getGet('customer_id');
-
+        $customer_info = $this->CustomerModel->get_customer_info($customer_id);
         if ($customer_id) {
             // Votre logique pour récupérer les réservations        
             $data = $this->BookingModel->getBookingsFromCustomer($customer_id);
-            return $this->response->setJSON($data);
+            return $this->response->setJSON([$data,$customer_info]);
         } else {
             var_dump('ERROR, paramètre manquant: ', $customer_id);
         }
@@ -414,7 +421,7 @@ class BookingController extends BaseController
         $booking_id = $this->request->getPost('id'); // Récupérez l'ID de la réservation à supprimer depuis la requête POST
 
         // Utilisez la fonction deleteBooking pour supprimer la réservation
-        $result = $this->BookingModel->deleteBooking($booking_id);
+        $result = $this->BookingModel->deleteBooking($booking_id) && $this->PaidModel->deletePaidsFromBooking($booking_id);
 
         if ($result) {
             // La suppression a réussi

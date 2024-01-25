@@ -6,7 +6,7 @@ var currentZIndex = 50; // Valeur initiale du zIndex
 var isClosingModal = false;
 
 function urlLocation(){
-   let segments = window.location.herf.split('/');
+   let segments = window.location.href.split('/');
    let dernierSegment = segments.pop() || segments.pop();
    
    let returnSegment = dernierSegment.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -199,17 +199,12 @@ function closeModalById(modalId) {
   
     // Si une fenêtre modale est toujours dans la pile, alors la rouvrir
     if (modalStack.length > 1) {
-      
       let previousModal = modalStack[modalStack.length - 2]; // 2 car l'indexation commence à 0
       previousModal.classList.remove("blur-lg");
     }
-
     else {
-
       var current_page_DIV = document.getElementById(urlLocation())
-    
       current_page_DIV.classList.remove('blur-lg');
-      
     }
 }
   
