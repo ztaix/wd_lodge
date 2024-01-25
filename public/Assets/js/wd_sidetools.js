@@ -469,6 +469,7 @@ async function showBookingDetailsFromID(id) {
   ).innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${Booking.service_color}">${Booking.Type_doc} # ${Booking.id}</span> `;
 
   /* Vérification de l'existance du fichier */
+  console.log('baseurl sBooking.booking_img',baseurl + 'uploads/' + Booking.booking_img);
     if(ExistFile(baseurl + 'uploads/' + Booking.booking_img)){ 
         document.getElementById("booking_details_img").src =  baseurl + 'uploads/' + Booking.booking_img;
       }
