@@ -468,17 +468,18 @@ async function showBookingDetailsFromID(id) {
     "booking_details_id_h5"
   ).innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${Booking.service_color}">${Booking.Type_doc} # ${Booking.id}</span> `;
 
-  /* Vérification de l'existance du fichier */
-  console.log('baseurl sBooking.booking_img',baseurl + 'uploads/' + Booking.booking_img);
-    if(ExistFile(baseurl + 'uploads/' + Booking.booking_img)){ 
-        document.getElementById("booking_details_img").src =  baseurl + 'uploads/' + Booking.booking_img;
+  existFile(baseurl + 'uploads/' + Booking.booking_img).then(fileExists => {
+    if (fileExists) {
+      console.log(baseurl + 'uploads/' + Booking.booking_img);
+      document.getElementById("booking_details_img").src =  baseurl + 'uploads/' + Booking.booking_img;
+    } else {
+      console.log(baseurl + 'uploads/' + Booking.booking_img);
+      document.getElementById("booking_details_div_img").classList.add("bg-gray-200");
+      document.getElementById("booking_details_div_img").classList.add("rounded-t-lg");
+      document.getElementById("booking_details_div_img").style.height =  "150px";
+      document.getElementById("booking_details_div_img").innerHTML =  "<svg class='max-w-full max-h-full h-auto w-auto text-gray-300 dark:text-gray-600' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'><path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m4 12 8-8 8 8M6 10.5V19c0 .6.4 1 1 1h3v-3c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v3h3c.6 0 1-.4 1-1v-8.5'/></svg>";
       }
-      else{ /* Si le fichier n'existe pas alors création d'une image standart */
-        document.getElementById("booking_details_div_img").classList.add("bg-gray-200");
-        document.getElementById("booking_details_div_img").classList.add("rounded-t-lg");
-        document.getElementById("booking_details_div_img").style.height =  "150px";
-        document.getElementById("booking_details_div_img").innerHTML =  "<svg class='max-w-full max-h-full h-auto w-auto text-gray-300 dark:text-gray-600' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'><path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m4 12 8-8 8 8M6 10.5V19c0 .6.4 1 1 1h3v-3c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v3h3c.6 0 1-.4 1-1v-8.5'/></svg>";
-    }
+});
 
   document.getElementById("booking_details_service_h5").innerText =
     Booking.service_title;

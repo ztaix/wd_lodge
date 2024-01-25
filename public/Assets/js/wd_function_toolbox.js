@@ -1,18 +1,15 @@
-function ExistFile(url){
-    let exists = false;
-    fetch(url)
-    .then(response => {
-        if (response.ok) {
-            exists = true;
-        } else {
-            exists = false;
+async function existFile(url) {
+    try {
+        const response = await fetch(url);
+        const contentType = response.headers.get('Content-Type');
+        // Vous pouvez ajuster la vérification ici en fonction de ce que vous attendez
+        if (contentType && contentType.includes('image')) {
+            return true;
         }
-    })
-    .catch(error => {
-        exists = false;
+    } catch (error) {
         console.log('Erreur lors de la requête:', error);
-    });
-    return exists;
+        return false;
+    }
 }
 
 // MODAL CUSTOMER UPSERT function module
@@ -26,7 +23,7 @@ function ExistFile(url){
     document.getElementById("customer_comment").value = customer.comment;
     document.getElementById("Update_customer_Modal_title").innerText = `Modifier Client #${customer.customer_id}`;
   }
-  
+
   function getCustomerFormData() {
     return {
       Customer_id: document.getElementById("customer_id").value,
