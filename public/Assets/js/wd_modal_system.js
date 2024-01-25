@@ -7,6 +7,7 @@ var isClosingModal = false;
 
 function urlLocation(){
    let segments = window.location.href.split('/');
+   console.log('baseurl',baseurl);
    let dernierSegment = segments.pop() || segments.pop();
    
    let returnSegment = dernierSegment.toLowerCase().replace(/[^a-z0-9]/g, '');
