@@ -3,9 +3,9 @@ $modal_id= "CustomerInfoModal";
 ?>
 
 <!-- DETAILS EVENTS - Modal Container -->
-<div id="<?=$modal_id?>-shadow_modal" class="absolute bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
+<div id="<?=$modal_id?>-shadow_modal" class="fixed bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
 
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed max-w-md lg:max-w-lg mx-auto flex flex-col flex-grow hidden top-0 overflow-auto" >
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="max-w-md lg:max-w-lg mx-auto flex flex-col flex-grow hidden" >
 
             <!-- Modal Header -->
             <div class="px-2 py-2 lg:px-8 flex justify-between items-center bg-white rounded-b-lg shadow-md ">

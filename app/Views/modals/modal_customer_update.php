@@ -2,8 +2,8 @@
 $modal_id = "updateCustomerModal";
 ?>
 <!-- UPDATE CUSTOMER - Modal Container -->
-<div id="<?=$modal_id?>-shadow_modal" class="absolute bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-auto" >
+<div id="<?=$modal_id?>-shadow_modal" class="fixed bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class=" max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-auto" >
 
     <div class="relative mx-auto mt-8 p-2 bg-white rounded-xl">
 

@@ -48,9 +48,9 @@ header {
 }
 
   
-#ListEventModal, #DetailsEventModal, #addEventModal, #SearchListEventModal {
+#ListEventModal, #DetailsEventModal, #addEventModal, #SearchListEventModal, #CustomerInfoModal {
   z-index: 50;
-  position: fixed;
+  position: absolute;
   width: 100%;
   height: auto;
   max-height: 100%;
