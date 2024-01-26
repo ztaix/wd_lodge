@@ -45,7 +45,7 @@ function showSearch() {
   }
 
   
-function resetForm(modalId, start = false , end = false){
+async function resetForm(modalId, start = false , end = false){
   if(modalId == "addEventModal"){
     const form_addEventModal = [
       "Modaleventid",
@@ -100,7 +100,7 @@ function resetForm(modalId, start = false , end = false){
         div.parentNode.removeChild(div);
       });
     } 
-    loadAndInitDatepicker(1,date_start,date_end);
+    await loadAndInitDatepicker(1,date_start,date_end);
   }
 }
 

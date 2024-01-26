@@ -201,6 +201,8 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         //GET SERVICE // from select
         service = discountservice.find(service => service.Service_id === this.value);
         });
+
+
         filteredInputs.forEach(input => {
         // Convertir la valeur en nombre et l'ajouter à la somme
         sum += Number(input.value);
@@ -266,13 +268,17 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         </div>`;
         numericIndicator.style.display = (isNaN(price) || isNaN(qtTraveller)) ? "inline" : "none";
     }
+    
     function loadServiceDetails(serviceId) {
         
         service = discountservice.find(s => s.Service_id === serviceId);
         
         // MàJ datepicker
-       // loadAndInitDatepicker(serviceId);
+        if(fromServicepicker){
 
+            loadAndInitDatepicker(serviceId);
+        }
+  
         serviceDiscount = service.Discount;
         
         //UPDATE UI:    
