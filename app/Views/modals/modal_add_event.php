@@ -123,8 +123,8 @@ $modal_id = "addEventModal";
                     </div>    
                     
                     <div class="relative z-0">
-                        <div id="totalIndicator" class="-mt-7 p-2 border border-dashed border-gray-400 bg-gray-50 rounded-b-lg border-t-0 text-md font-bold text-slate-600"></div>
-                        <div id="discountIndicator" class="text-sm text-orange-400 hidden"></div>
+                        <div id="totalIndicator" class="-mt-7 p-2 border border-dashed border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t-0 text-sm text-slate-600 dark:text-slate-400"></div>
+                        <div id="discountIndicator" class="-mt-2 p-2 border border-dashed border-gray-400 dark:border-yellow-600 bg-yellow-200 dark:bg-yellow-800 rounded-b-lg border-t-0 text-md text-yellow-500 dark:text-yellow-200 hidden"></div>
                         <div id="numericIndicator" class="absolute top-0 left-0 text-sm text-red-600 hidden">Seules des valeurs numériques sont autorisées.</div>
                     </div>
                     
@@ -183,38 +183,25 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     let service;
 
       // PAYMENT ROW
-    function addPaymentRow() {
-        const NotRegisteruniqueID = () => `temp_${Math.random().toString(36).substr(2, 5)}`;
-        let uniqueID = NotRegisteruniqueID(); // Appelle la fonction pour obtenir un ID unique
-        let payements_class = '';
-        let inputsValues = document.querySelectorAll('input[id^="rowPaid"]');
-        // Filtrer les éléments pour ne garder que ceux dont l'ID est suivi d'un chiffre
-        let filteredInputs = Array.from(inputsValues).filter(input => /^rowPaid\d+$/.test(input.id));
+      function addPaymentRow() {
+    // Simplifier la génération d'ID unique en utilisant une combinaison de date et aléatoire
+    const uniqueID = `temp_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
 
-        let sum = 0;
-        var qtTraveller = parseInt(document.getElementById("ModaleventQtTraveller").value);
-        var price = parseInt(priceInput.value);
-        var restapayer = 0;
+    // Optimiser l'accès au DOM
+    const qtTraveller = parseInt(document.getElementById("ModaleventQtTraveller").value, 10);
+    const price = parseInt(priceInput.value, 10);
+    const serviceTax = parseInt(service.Tax, 10);
+    const serviceFee = parseInt(service.Fee, 10);
 
-        serviceSelect.addEventListener("change", function() {
+    let sum = Array.from(document.querySelectorAll('input[id^="rowPaid"]'))
+                    .filter(input => /^rowPaid\d+$/.test(input.id))
+                    .reduce((acc, input) => acc + Number(input.value), 0);
 
-        //GET SERVICE // from select
-        service = discountservice.find(service => service.Service_id === this.value);
-        });
+    let FillPaidInput = !isNaN(price) && !isNaN(qtTraveller) ?
+                        (price + (qtTraveller * serviceTax) + serviceFee) - sum : 0;
 
-
-        filteredInputs.forEach(input => {
-        // Convertir la valeur en nombre et l'ajouter à la somme
-        sum += Number(input.value);
-        });
-
-        if (!isNaN(price) && !isNaN(qtTraveller)) {
-            FillPaidInput = (price + (qtTraveller * parseInt(service.Tax)) + parseInt(service.Fee)) - sum;
-        }
-
-        const container = document.getElementById('payments-subcontainer');
-        const newPaymentRow = `
-        <div class="flex payment-row mt-1" id='${uniqueID}'>
+    const newPaymentRow = `
+    <div class="flex payment-row mt-1" id='${uniqueID}'>
         <div class=" inline-flex items-center w-fit bg-red-50 border border-red-300 hover:bg-red-400 dark:bg-red-700 dark:hover:bg-red-900 rounded-lg mx-1 my-0.5 p-2 cursor-pointer" onclick="Deletepaid('${uniqueID}')"> X </div>
             <input type="hidden" id="rowPaidid${uniqueID}" name="rowPaidid${uniqueID}">
             <select id="rowPaidType${uniqueID}" name="rowPaidType${uniqueID}" class="inline-flex rounded-l-lg items-center py-2.5 px-4 text-sm font-bold text-center text-gray-500 bg-gray-100 border border-gray-300 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-slate-800 dark:hover:bg-gray-600 dark:focus:ring-slate-800 dark:text-white dark:border-gray-600">
@@ -226,10 +213,10 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             </select>
             <input type="number" pattern="[0-9]*" value=${FillPaidInput} inputmode="numeric" id="rowPaid${uniqueID}" name="rowPaid${uniqueID}" class=" block w-full rounded-r-lg text-md text-gray-900 bg-transparent border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
         </div>
-        `;
-        container.insertAdjacentHTML('beforeend', newPaymentRow)
+    `;
 
-    }
+    document.getElementById('payments-subcontainer').insertAdjacentHTML('beforeend', newPaymentRow);
+}
 
     // Déclaration globale des variables pour une meilleure visibilité
     // Fonction pour mettre à jour les informations totales
@@ -245,16 +232,16 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         }
 
         totalIndicator.innerHTML = `
-        <div class="flex justify-between">
+        <div class="flex justify-between  font-normal text-xs text-slate-400 dark:text-slate-100">
             <div class="flex-grow">
-                <div class="font-normal text-xs text-slate-400">
-                    Tarif réservation: <b>${price}  Fr</b>
+                <div class="">
+                    <b>Tarif réservation:</b> ${price.toLocaleString('fr-FR')}  Fr
                 </div>
-                <div class="font-normal text-xs text-slate-400">
-                    Taxe de séjour: <b>${qtTraveller} Personne(s) * ${nDays} jour(s) * ${parseInt(service.Tax)} Fr</b>
+                <div class="">
+                    <b>Taxe de séjour:</b> ${qtTraveller} Personne(s) * ${nDays} jour(s) * ${parseInt(service.Tax)} Fr
                 </div>
-                <div class="font-normal text-xs text-slate-400">
-                Frais de ménage: <b>${service.Fee} Fr</b>
+                <div class="">
+                    <b>Frais de ménage:</b>  ${service.Fee.toLocaleString('fr-FR')} Fr
                 </div>
             </div>
             <div class="flex-col">
@@ -262,7 +249,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
                     TOTAL
                 </div>           
                 <div class="text-right text-lg whitespace-nowrap">
-                    ${total} Fr
+                    ${total.toLocaleString('fr-FR')} Fr
                 </div>
             </div>
         </div>`;
@@ -323,138 +310,80 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     // Initialiser les valeurs par défaut
     loadServiceDetails(serviceSelect.value);
 
-    // Fonction pour mettre à jour le prix en fonction de la quantité
-    function updatePrice() {
+// Fonction pour obtenir la réduction la plus proche en fonction de la quantité
+function getClosestDiscount(discountValues, quantity) {
+    let closestQty = null;
+    let discountValue = null;
 
-        var qt = parseInt(qtInput.value);
-        var prixCalculé = 0;
-        var selected_service = discountservice.find(function(service) { return service.Service_id === serviceSelect.value;})
-        if (!isNaN(qt)) {
-            var servicePrice = prices[serviceSelect.value];
-            var discountValue = 0;
-
-            if (discountScope == "Both") {
-                // Initialisation des variables.
-                var discountValues;
-                var prixUnitaireAvecReduction;
-
-                // Appliquez d'abord la réduction unitaire.
-                if (serviceDiscount) {
-                    discountValues = discountToArray(serviceDiscount);
-                    // Trouvez la réduction unitaire la plus proche.
-                    var closestUnitQty = null;
-                    for (var qty in discountValues) {
-                        if (qt >= parseInt(qty) && (closestUnitQty === null || parseInt(qty) > closestUnitQty)) {
-                            closestUnitQty = parseInt(qty);
-                        }
-                    }
-
-                    // Calculez le prix unitaire avec réduction.
-                    if (closestUnitQty !== null) {
-                        var unitDiscountValue = discountValues[closestUnitQty];
-
-                        if (Discount_type == "Pourcentage") {
-                            prixUnitaireAvecReduction = servicePrice * (1 - unitDiscountValue / 100);
-                        } else if (Discount_type == "Fixe") {
-                            prixUnitaireAvecReduction = unitDiscountValue * qt;
-                        }
-                    } else {
-
-                        prixUnitaireAvecReduction = servicePrice * qt;
-                    }
-
-                } else {
-                    prixUnitaireAvecReduction = servicePrice * qt;
-                }
-
-                // Appliquez ensuite la réduction globale sur le total.
-                if (GlobaldiscountValues) {
-                    discountValues = discountToArray(serviceDiscount);
-
-                    // Trouvez la réduction unitaire la plus proche.
-                    var closestUnitQty = null;
-                    for (var qty in discountValues) {
-                        if (qt >= parseInt(qty) && (closestUnitQty === null || parseInt(qty) > closestUnitQty)) {
-                            closestUnitQty = parseInt(qty);
-                        }
-                    }
-
-                    // Calculez le prix unitaire avec réduction.
-                    if (closestUnitQty !== null) {
-                        var unitDiscountValue = discountValues[closestUnitQty];
-
-                        if (Discount_type == "Pourcentage") {
-                            prixCalculé = prixUnitaireAvecReduction * (1 - unitDiscountValue / 100);
-                        } else if (Discount_type == "Fixe") {
-                            prixCalculé = (prixUnitaireAvecReduction * qt) - unitDiscountValue;
-                        }
-                    } else {
-                        prixCalculé = prixUnitaireAvecReduction;
-                    }
-                } else {
-                    prixCalculé = prixUnitaireAvecReduction;
-                }
-
-            } else if (discountScope == "Unit" || discountScope == "Global") {
-                // Déclaration initiale des variables.
-                var discountValues;
-                // Détermine les valeurs de réduction en fonction du contexte de remise.
-                if (serviceDiscount && discountScope == "Unit") {
-                    discountValues = discountToArray(serviceDiscount);
-                } else if (GlobaldiscountValues && discountScope == "Global") {
-                    discountValues = GlobaldiscountValues;
-                }
-
-                // Calcul du prix si des réductions sont applicables.
-                if (discountValues) {
-                    // Simplification de l'affectation de discountValues.
-                    discountValues = discountScope == "Global" ? GlobaldiscountValues : discountToArray(serviceDiscount);
-
-                    // Trouver la quantité la plus proche pour laquelle une réduction est applicable.
-                    var closestQty = null;
-                    for (var qty in discountValues) {
-                        if (qt >= parseInt(qty) && (closestQty === null || parseInt(qty) > closestQty)) {
-                            closestQty = parseInt(qty);
-                        }
-                    }
-
-                    // Application de la réduction si une quantité appropriée est trouvée.
-                    if (closestQty !== null) {
-                        var discountValue = discountValues[closestQty];
-                        // Calcul du prix avec réduction basé sur le type de réduction.
-                        if (Discount_type == "Pourcentage") {
-                            prixCalculé = (servicePrice * qt) * (1 - discountValue / 100);
-                        } else if (Discount_type == "Fixe") {
-                            if (discountScope == "Global") {
-                                prixCalculé = (servicePrice * qt) - discountValue;
-                            } else {
-                                prixCalculé = discountValue * qt;
-                            }
-                        }
-                    } else {
-                        // Prix sans réduction.
-                        prixCalculé = servicePrice * qt;
-                    }
-
-                    discountIndicator.style.display = discountValue > 0 ? "inline" : "none"; // Afficher/Cacher l'indicateur si la valeur n'est pas un nombre
-                    discountIndicator.innerHTML = `+ de ${closestQty} Nuit / <b>${Discount_type == 'Pourcentage' ? discountValue + '%': +discountValue}  Fr</b> la nuit au lieu de ${servicePrice}`;
-                } else {
-                    // Prix standard si aucune réduction n'est disponible.
-                    prixCalculé = parseInt(servicePrice * qt );
-                }
-            } else {
-
-                prixCalculé = parseInt(servicePrice * qt);
-            }
-
-            priceInput.value = prixCalculé.toFixed(0); // Prix sans décimales
-
-
-        } else {
-            priceInput.value = ""; // Effacez le champ de prix si la quantité n'est pas un nombre valide
+    for (let qty in discountValues) {
+        if (quantity >= parseInt(qty) && (closestQty === null || parseInt(qty) > closestQty)) {
+            closestQty = parseInt(qty);
+            discountValue = discountValues[closestQty];
         }
-        updateTotalInfo();
     }
+
+    return { closestQty, discountValue };
+}
+
+// Fonction pour calculer le prix avec réduction
+function calculateDiscountedPrice(qt, servicePrice, discountValue, discountType) {
+    if(discountValue>0){
+        if (discountType == "Pourcentage") {
+            return (servicePrice * qt) * (1 - discountValue / 100);
+        } else if (discountType == "Fixe") {
+            return discountValue * qt;
+        }
+    }
+    else{
+        return servicePrice * qt; // Retourner le prix sans réduction si le type de réduction n'est pas reconnu
+    }
+}
+
+// Fonction pour mettre à jour le prix en fonction de la quantité
+function updatePrice() {
+    const qt = parseInt(qtInput.value);
+    let prixCalculé = 0;
+    const selected_service = discountservice.find(service => service.Service_id === serviceSelect.value);
+
+    if (!isNaN(qt) && selected_service) {
+        // PRIX de la résa
+        const servicePrice = prices[serviceSelect.value];
+        // Get : Discount configuration or Discount Services -> OBJ
+        let discountValues = discountScope == "Global" ? GlobaldiscountValues : /* Unit */ discountToArray(serviceDiscount);
+        // Get : La discount la plus proche -> OBJ
+        let closestDiscount = getClosestDiscount(discountValues, qt);
+
+        let prixCalculé = calculateDiscountedPrice(qt, servicePrice, closestDiscount.discountValue, Discount_type);
+        if (closestDiscount.discountValue > 0) {
+            discountIndicator.style.display = "block";
+            discountIndicator.innerHTML = `
+        <div class="flex justify-between">
+            <div class="absolute" style="left: 85%">
+                <svg class="w-10 h-10 text-yellow-300 mt-1 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M13.8 4.2a2 2 0 0 0-3.6 0L8.4 8.4l-4.6.3a2 2 0 0 0-1.1 3.5l3.5 3-1 4.4c-.5 1.7 1.4 3 2.9 2.1l3.9-2.3 3.9 2.3c1.5 1 3.4-.4 3-2.1l-1-4.4 3.4-3a2 2 0 0 0-1.1-3.5l-4.6-.3-1.8-4.2Z"/>
+                </svg>
+            </div>
+            <div class="flex-grow">
+                <div class="">
+                    <b>Tarif par nuit:</b> <span class="text-orange">${Discount_type == 'Pourcentage' ? closestDiscount.discountValue + '%' : closestDiscount.discountValue.toLocaleString('fr-FR')}  Fr</span> &nbsp; <span class="text-xs line-through">${servicePrice.toLocaleString('fr-FR')} Fr</span> 
+                </div>
+                <div class="">
+                    <b> Quantité:</b> >= ${closestDiscount.closestQty} Nuits
+                </div>
+            </div>
+        </div>`;
+            
+        } else {
+            discountIndicator.style.display = "none";
+        }
+
+        priceInput.value = prixCalculé.toFixed(0).toLocaleString('fr-FR'); ; // Prix sans décimales
+    } else {
+        priceInput.value = ""; // Effacez le champ de prix si la quantité n'est pas un nombre valide
+    }
+    updateTotalInfo();
+}
+
 
     // Réinitialiser le flag lorsque la quantité change
     qtInput.addEventListener("input", function() {

@@ -166,7 +166,7 @@ class BookingModel extends Model
         return $result;
     }
 
-    public function getBookingsFromCustomer($customer_id){
+    public function getBookingsFromCustomer($customer_id, $Type_doc = false){
 
         $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
         wd_services.Color as service_color,
@@ -176,7 +176,10 @@ class BookingModel extends Model
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
         $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
-        $this->groupBy('wd_bookings.id');    
+        $this->groupBy('wd_bookings.id');  
+        if($Type_doc){
+            $this->where("wd_bookings.Type_doc", $Type_doc);
+        }
         $this->where("wd_bookings.Customer_id", $customer_id);
         $result = $this->findAll();
         return $result;

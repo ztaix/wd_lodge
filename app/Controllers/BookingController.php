@@ -64,7 +64,7 @@ class BookingController extends BaseController
             $startDate = new DateTime($booking['start']);
             $endDate = new DateTime($booking['end']);
             $nDays = $startDate->diff($endDate)->days;
-            
+
             while ($startDate <= $endDate) {
                 $date = $startDate->format('Y-m-d');
 
@@ -357,10 +357,10 @@ class BookingController extends BaseController
     public function getBookingsFromCustomer()
     {
         $customer_id = $this->request->getGet('customer_id');
+        $Type_doc = $this->request->getGet('Type_doc');
         $customer_info = $this->CustomerModel->get_customer_info($customer_id);
         if ($customer_id) {
-            // Votre logique pour récupérer les réservations        
-            $data = $this->BookingModel->getBookingsFromCustomer($customer_id);
+            $data = $this->BookingModel->getBookingsFromCustomer($customer_id,$Type_doc);
             return $this->response->setJSON([$data,$customer_info]);
         } else {
             var_dump('ERROR, paramètre manquant: ', $customer_id);

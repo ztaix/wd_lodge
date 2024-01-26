@@ -500,7 +500,6 @@ async function showBookingDetailsFromID(id) {
     Booking.QtTraveller;
   document.getElementById("booking_details_start_span").innerText = Booking.start;
   document.getElementById("booking_details_end_span").innerText = Booking.end;
-  console.log('Booking',Booking);
   document.getElementById("booking_details_price_span").innerHTML = totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays) + " Fr";
 
   let details_paid_div = document.getElementById('booking_details_progress_div');
@@ -622,6 +621,7 @@ function get_booking_list_from_customer(data) {
     method: "GET",
     data: {
       customer_id: customer_id,
+      Type_doc: "Facture",
     },
     success: function (response) {
       let bookings = response[0]; // Les réservations
@@ -636,11 +636,11 @@ function get_booking_list_from_customer(data) {
         (total, currentValue) => total + currentValue,
         0
       );
-      console.log('booking',paids_sum);
+      
       totalPaid += paids_sum;
-      totalPrice += totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);
+      totalPrice += totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.Qt);
       let rowPaid = paids_sum
-      let rowPrice = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);
+      let rowPrice = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.Qt);
         let newRow = document.createElement("tr");
         newRow.classList.add(
           "bg-white",
@@ -712,11 +712,11 @@ function get_booking_list_from_customer(data) {
       customer_finance_total.innerHTML = `
         <div class="text-center py-4 lg:px-4 w-full">
           <div class="customer-container w-full inline-flex items-center justify-center flex-wrap px-1 py-1 pr-4 text-gray-700  dark:text-white mb-2">
-            <span class="text-md font-bold text-blue-700 dark:text-white">Total ${totalPrice} Fr</span>
+            <span class="text-md font-bold text-blue-700 dark:text-white">Total Facture : ${totalPrice.toLocaleString('fr-FR')} Fr</span>
           </div>
 
     
-              <div class="flex justify-between font-bold text-xs" >
+              <div class="flex justify-between font-bold text-xs mx-4" >
               <div class="flex flex-grow-0 mr-3 text-slate-500"> 
               <svg class="w-3 h-3 text-slate-700  dark:text-white mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.905 1.316 15.633 6M18 10h-5a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h5m0-5a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1m0-5V7a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-3m-6.367-9L7.905 1.316 2.352 6h9.281Z"/>
@@ -725,7 +725,7 @@ function get_booking_list_from_customer(data) {
               </div>
               <div class="grow bg-slate-300 rounded-full dark:bg-gray-700">
               <div class=" text-white bg-blue-600  rounded-full" style="width: ${current_pourc_paid}%">${
-        totalPaid > 0 ? totalPaid + " Fr" : 0
+        totalPaid > 0 ? totalPaid.toLocaleString('fr-FR') + " Fr" : 0
       } </div>
               </div>
               
