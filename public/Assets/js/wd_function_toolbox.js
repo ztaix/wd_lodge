@@ -1,4 +1,8 @@
-async function existFile(url) {
+//
+//USEFULL 
+//
+  //Files
+  async function existFile(url) {
     try {
         const response = await fetch(url);
         const contentType = response.headers.get('Content-Type');
@@ -9,9 +13,24 @@ async function existFile(url) {
     } catch (error) {
         console.log('Erreur lors de la requête:', error);
         return false;
-    }
-}
+    } 
+  }
+  
+  //DATES
+  function parseDate(str) {
+    const [day, month, year] = str.split('-');
+    return new Date(year, month - 1, day);
+  }
+  function nDaysBetween(start,end){
+    const startDate = parseDate(start);
+    const endDate = parseDate(end);
+    const diffTime = Math.abs(endDate - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+    return parseInt(diffDays);
+    }
+
+//
 // MODAL CUSTOMER UPSERT function module
 //
   // Met à jour les champs du formulaire avec les données récupérées

@@ -63,7 +63,8 @@ class BookingController extends BaseController
 
             $startDate = new DateTime($booking['start']);
             $endDate = new DateTime($booking['end']);
-
+            $nDays = $startDate->diff($endDate)->days;
+            
             while ($startDate <= $endDate) {
                 $date = $startDate->format('Y-m-d');
 
@@ -96,6 +97,7 @@ class BookingController extends BaseController
 
                     $grouped[$date]['bookings'][$booking['id']] = [
                         'Date' => $date,
+                        'nDays' => $nDays,
                         'colors' => $booking['service_color'],
                         'services_titles' => $booking['service_title'],
                         'prices' => $booking['Price'],

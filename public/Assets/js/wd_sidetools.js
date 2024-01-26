@@ -18,7 +18,7 @@ document.addEventListener("keydown", function (event) {
 });
 
 function generateBookingElement(booking) {
-  let Total_price = parseInt(booking.Price) + (parseInt(booking.QtTraveller) * 200) + parseInt(booking.Fee);
+  let Total_price = totalBookingPriceCal(booking.Price,booking.QtTravellerbooking.Tax,booking.Fee,booking.nDays);
   return `
         <div class="flex space-x-4" >
           <!-- Colonne 1 -->
@@ -91,7 +91,6 @@ const newDateStr = [
     0
   );
     
-    
     let bookingElement = `
         <div id="booking_list_row_${
           booking.id
@@ -147,7 +146,7 @@ const newDateStr = [
                 <div class="flex-col justify-end bg-slate-100 dark:bg-slate-800 rounded-lg px-1">
                   <div class="inline-flex items-center" >
                       <span class="mr-1 text-xs text-slate-400">Tarif</span> 
-                      <span id="booking_total_${booking.id}">${ parseInt(booking.Price) + (parseInt(booking.QtTraveller) * parseInt(booking.Tax)) + parseInt(booking.Fee) }</span>
+                      <span id="booking_total_${booking.id}">${ totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays) }</span>
                       <span class="ml-1 text-xs">Fr</span>
 
                   </div>
@@ -418,7 +417,9 @@ async function showBookingDetailsFromID(id) {
       method: "GET",
     });
     if (response && response.id == id) {
-      // Assurez-vous que cette condition est correcte
+
+      let nDays = DaysDifferenceStartEnd(response.start,response.end);
+
       Booking = {
         id: response.id,
         Customer_id: response.Customer_id,
@@ -430,7 +431,9 @@ async function showBookingDetailsFromID(id) {
         Types_paids: response.types_paids,
         Paids_values: response.paids_values,
         Price: response.Price,
+        Tax: response.Tax,
         Fee: response.Fee,
+        nDays: nDays,
         Service_id: response.Service_id,
         booking_img: response.img,
         fullblocked: response.fullblocked,
@@ -497,12 +500,13 @@ async function showBookingDetailsFromID(id) {
     Booking.QtTraveller;
   document.getElementById("booking_details_start_span").innerText = Booking.start;
   document.getElementById("booking_details_end_span").innerText = Booking.end;
-  document.getElementById("booking_details_price_span").innerHTML = parseInt(Booking.Price) + parseInt(Booking.QtTraveller) * 200 + parseInt(Booking.Fee) + " Fr";
+  console.log('Booking',Booking);
+  document.getElementById("booking_details_price_span").innerHTML = totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays) + " Fr";
 
   let details_paid_div = document.getElementById('booking_details_progress_div');
   details_paid_div.innerText = paids_sum > 0 ? paids_sum + " Fr" : "0";
   if(paids_sum > 0){
-    let convert_pourc = Math.min(Math.round((parseInt(paids_sum) / (parseInt(Booking.Price) + (parseInt(Booking.QtTraveller) * 200) + parseInt(Booking.Fee) )) * 10000) / 100, 100);
+    let convert_pourc = Math.min(Math.round((parseInt(paids_sum) / totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays)) * 10000) / 100, 100);
     details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
   } else {details_paid_div.style.width = "24px"; }
 
@@ -634,9 +638,9 @@ function get_booking_list_from_customer(data) {
       );
       console.log('booking',paids_sum);
       totalPaid += paids_sum;
-      totalPrice += parseFloat(booking.Price) + (parseFloat(booking.QtTraveller) * parseInt(booking.Tax)) + parseInt(booking.Fee);
+      totalPrice += totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);
       let rowPaid = paids_sum
-      let rowPrice = parseFloat(booking.Price) + (parseFloat(booking.QtTraveller) * parseInt(booking.Tax)) + parseInt(booking.Fee);;
+      let rowPrice = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);
         let newRow = document.createElement("tr");
         newRow.classList.add(
           "bg-white",
@@ -981,11 +985,11 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
           // Réinitialiser le flag puisque la mise à jour vient du datepicker et non de l'utilisateur
           userChangedPrice = false;
 
-          InfoTotal();
+          updateTotalInfo();
           updatePrice();
 
         });            
-            InfoTotal();
+            updateTotalInfo();
             updatePrice();
             
             loader.style.display = 'none';
@@ -1134,4 +1138,21 @@ function DaysDifferenceStartEnd(start, end){
   let timeDifference = end_obj.getTime() - start_obj.getTime();
   let dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
   return dayDifference;
+}
+
+
+/**
+ * Calcule le prix total de la réservation.
+ * 
+ * @param {number} price - Le prix unitaire de la réservation.
+ * @param {number} qtTraveller - Quantité de voyageurs.
+ * @param {number} fee - Frais supplémentaires.
+ * @param {number} tax - Taxe applicable par voyageur et par jour.
+ * @param {number} days - Nombre de jours de la réservation.
+ * @return {number} Le prix total de la réservation.
+ */
+function totalBookingPriceCal(price, qtTraveller, tax, fee, days) {
+
+  let total = parseInt(price) + (parseInt(qtTraveller) * parseInt(tax) * parseInt(days)) + parseInt(fee);
+  return total;
 }

@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
         text: " ",
         click: function () {
           resetForm("addEventModal");
-          InfoTotal();
+          updateTotalInfo();
           updatePrice();
           openModal("addEventModal");
         },
@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           let status = "";
           let facture = booking.types_docs.charAt(0)=="F"? booking.types_docs.charAt(0):"";
-          let total_price = parseInt(booking.prices) + (parseInt(booking.QtTraveller) * parseInt(booking.Tax)) + parseInt(booking.Fee);
+          let total_price = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);
           
             if(parseInt(booking.paids) >= total_price){
 
@@ -300,7 +300,7 @@ const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'ut
             showBookingList(response.events, clickedDate);
           } else {
             resetForm("addEventModal",startdate,enddate);
-            InfoTotal();
+            updateTotalInfo();
             updatePrice();
             // Afficher le popup
             openModal("addEventModal");
@@ -337,7 +337,7 @@ function updateEventFromDetails() {
     success: function (response) {
       if (response.status == "success") {
         let row_id = response.id;
-        let row_price =  parseInt(response.data.Price) + (parseInt(response.data.QtTraveller) * 200) + parseInt(response.data.Fee);
+        let row_price =  totalBookingPriceCal(response.data.Price,response.data.QtTraveller,response.data.Tax,response.data.Fee,response.data.nDays);
         showBanner("Événement mise à jour avec succès !", true);
 
         if(ModalInStack('ListEventModal')){ // UPDATE SI RESPONSE VALIDE !! HORS PAIEMENTS !!
@@ -664,26 +664,13 @@ async function update_add_formEvent(data) {
   if (data) {
     await loadAndInitDatepicker(data.Service_id, data.start, data.end);
 
-    document.getElementById(
-      "addEventModal_title"
-    ).innerText = `Modifier #${data.id}`;
+    document.getElementById("addEventModal_title").innerText = `Modifier #${data.id}`;
     document.getElementById("Modaleventid").value = data.id;
     document.getElementById("ModaleventCustomer_id").value = data.Customer_id;
     $('#ModaleventCustomer_id').trigger('change'); // afin que le module SELECT2 reflète formulaire
 
     document.getElementById("ModaleventService_id").value = data.Service_id;
     document.getElementById("Modaleventfullblocked").checked = parseInt(data.fullblocked) === 1;
-    /* GESTION du STYLE FULLBLOCKED CHECKED PAR LA PAGE MODAL DIRECTEMENT  
-    var container_full_blocked = document.getElementById("container_eventfullblocked");
-      if (parseInt(data.fullblocked) === 1) {
-        // Appliquer un style lorsque la checkbox est cochée
-        container_full_blocked.style.border = "2px dashed red"; 
-    } else {
-        // Appliquer un style différent lorsque la checkbox n'est pas cochée
-        container_full_blocked.style.backgroundColor = "transparent"; // Exemple : Fond rouge
-        // Vous pouvez également réinitialiser le style d'autres éléments ici
-    }     */  
-
     document.getElementById("ModaleventQtTraveller").value = parseInt(data.QtTraveller);
     document.getElementById("ModaleventQt").value = data.Qt;
     document.getElementById("ModaleventPrice").value = data.Price;
@@ -691,7 +678,7 @@ async function update_add_formEvent(data) {
     document.getElementById("ModaleventComment").value = data.Comment;
 
     // APPEL des functions de mise à jours du prix total ET des informations
-    InfoTotal();
+    updateTotalInfo();
     updatePrice();
 
   }

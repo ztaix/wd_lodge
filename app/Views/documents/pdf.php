@@ -1,6 +1,5 @@
 <?php			
 $tax_value = 13;
-$tax_tourist = 200;
 $currency = '<span style="font-size:10px"> Fr</span>';
 if(isset($seller[0]) && isset($data)){
 	$seller = $seller[0];
@@ -17,7 +16,7 @@ if(isset($seller[0]) && isset($data)){
     $checkout = $seller[10]['Data'];
     $txt_bas_devis = $seller[11]['Data'];
     $txt_bas_facture = $seller[12]['Data'];
-
+	$tax_bool = $seller[15]['Data'];
 
     $s_client_nom = $data['customer_info']['Name'];
     $s_client_telephone = $data['customer_info']['Phone'];
@@ -32,6 +31,7 @@ if(isset($seller[0]) && isset($data)){
     $s_service = $data['booking_info']['service_title'];
     $s_comment = $data['booking_info']['Comment'];
     $s_fee = $data['booking_info']['Fee'];
+    $s_ndays = $data['booking_info']['nDays'];
     $s_tax = $data['booking_info']['Tax'];
     $s_qt = $data['booking_info']['Qt'] == 0 ? 1: $data['booking_info']['Qt'] ;
 	$count_paid =  count(explode(',',trim($data['booking_info']['paids_ids'])));
@@ -279,17 +279,22 @@ $due_date = $date->format('d/m/Y');
 					<td>Nuits</td>
 					<td>Tarif</td>
 				</tr>
-<?php 		$tax_bool = $seller[15]['Data'];
-			//$tax = ($tax_bool)? round(((100*$u_price)/(100+$tax_value))*($tax_value/100)): 0;
-			$total_tax = ($tax_bool)? ($s_QtTraveller*200): 0;
+<?php 	
+			$total_tax = ($tax_bool)? ($s_QtTraveller * $s_tax * $s_ndays): 0;
 			$plurial= $s_QtTraveller>1?'s':'';
 			?>
 				<tr class='item'>
-					<td><?='<b>'.$s_service.'</b> * '.$s_QtTraveller.' personne'.$plurial.' <br>'.$s_comment?></td>
+					<td>
+						<?='<b>'.$s_service.'</b> * '.$s_QtTraveller.' personne'.$plurial?> 
+						<?php if($s_comment){echo '<br>' . $s_comment; }?>
+						<br><span style='text-align: left; color: #aeaeae ;font-size:10px'>
+						(Taxe de <?=$s_tax." ".$currency?> / personne/ jour)</span>
+						
+					</td>
 					<td style="white-space: nowrap;"><?=$u_price.$currency?></td>
-					<td style="white-space: nowrap;"><?=($s_QtTraveller * $tax_tourist) ?></td>
+					<td style="white-space: nowrap;"><?=($s_QtTraveller * $s_tax * $s_ndays) ?></td>
 					<td><?=$s_qt?></td>
-					<td style="white-space: nowrap;"><?=($s_price + ($s_QtTraveller * $tax_tourist) + $s_fee).$currency?></td>
+					<td style="white-space: nowrap;"><?=($s_price + ($s_QtTraveller * $s_tax * $s_ndays) + $s_fee).$currency?></td>
 				</tr>    
 				<tr class='item'>
 					<td><i>Frais de ménage</i></td>
@@ -301,7 +306,7 @@ $due_date = $date->format('d/m/Y');
 				<tr class="total" style="white-space: nowrap;">
 					<?php if($tax_bool == true){
 						echo "<td colspan='4'>
-						<p >Taxes<span style='position: absolute; right : 0;margin: -15px 35px 0 0; color: #aeaeae ;font-size:10px'>(Taxe de 200 ".$currency." / personne)</span></p>
+						<p>Taxes</p>
 						<p>Total</p>
 					</td>	";
 					}
@@ -313,7 +318,7 @@ $due_date = $date->format('d/m/Y');
 					} ?>	
 					<td>
 						<p><?= $total_tax.$currency?></p>
-						<p><?=($s_price + ($s_QtTraveller * $tax_tourist) + $s_fee).$currency?></p>
+						<p><?=($s_price + ($s_QtTraveller * $s_tax * $s_ndays) + $s_fee).$currency?></p>
 					</td>
 				</tr>
 				<tr class="total" style="white-space: nowrap;" >

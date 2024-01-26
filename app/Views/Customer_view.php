@@ -119,7 +119,6 @@ $data['options_customers_id'] = $options_customers_id;
     const all_bookings = Array.from(document.querySelectorAll('.ROW'));
     const totalPages = Math.ceil(all_bookings.length / itemsPerPage);
 
-    console.log(all_bookings);
     function showPage(page) {
         const start = (page - 1) * itemsPerPage;
         const end = start + itemsPerPage;

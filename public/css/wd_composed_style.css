@@ -5676,7 +5676,7 @@ header {
   right: 10px;
 }
 
-#ListEventModal, #DetailsEventModal, #addEventModal, #SearchListEventModal, #CustomerInfoModal {
+#ListEventModal, #DetailsEventModal, #addEventModal, #SearchListEventModal, #CustomerInfoModal, #updateCustomerModal {
   z-index: 50;
   position: absolute;
   width: 100%;

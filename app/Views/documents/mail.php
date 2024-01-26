@@ -33,7 +33,8 @@ if (isset($seller[0]) && isset($data)) {
 	$s_qttraveller = $data['booking_info']['QtTraveller'];
 	$s_tax= $data['booking_info']['Tax'];
 	$s_fee= $data['booking_info']['Fee'];
-	$s_price = $data['booking_info']['Price'] + ($s_qttraveller * 200) + $s_fee;
+	$s_ndays= $data['booking_info']['nDays'];
+	$s_price = $data['booking_info']['Price'] + ($s_qttraveller * $s_tax * $s_ndays) + $s_fee;
 	$s_service = $data['booking_info']['service_title'];
 	$s_service_color = $data['booking_info']['service_color'];
 	$s_qt = $data['booking_info']['Qt'];

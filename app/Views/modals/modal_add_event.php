@@ -117,13 +117,13 @@ $modal_id = "addEventModal";
                         <label for="ModaleventQt" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Nombre de nuit</label>
                     </div>
                     
-                    <div class="relative">
+                    <div class="relative z-10 shadow-sm">
                         <input type="number" pattern="[0-9]*" inputmode="numeric" id="ModaleventPrice" name="ModaleventPrice" class="block w-full  text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder="" required>
                         <label for="ModaleventPrice" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Prix Total</label>
                     </div>    
                     
-                    <div class="relative">
-                        <div id="totalIndicator" class="p-1 border border-dashed border-gray-600 rounded-lg text-md font-bold text-slate-600"></div>
+                    <div class="relative z-0">
+                        <div id="totalIndicator" class="-mt-7 p-2 border border-dashed border-gray-400 bg-gray-50 rounded-b-lg border-t-0 text-md font-bold text-slate-600"></div>
                         <div id="discountIndicator" class="text-sm text-orange-400 hidden"></div>
                         <div id="numericIndicator" class="absolute top-0 left-0 text-sm text-red-600 hidden">Seules des valeurs numériques sont autorisées.</div>
                     </div>
@@ -157,10 +157,14 @@ $DiscountsType = $discountRules['Type']['Data'];
 $DiscountsScope = $discountRules['Scope']['Data'];
 ?>
 <script>
-    // BLOCKED DAY
+
+    // CATCHING elementID:
     var eventFull_Blocked = document.getElementById("Modaleventfullblocked");
     var container_full_blocked = document.getElementById("container_eventfullblocked");
     var container_global = document.getElementById("addEventModal");
+    var checkbox = document.getElementById('Modaleventfullblocked');
+    var DateStart = document.getElementById('ModaleventStart');
+    var DateEnd = document.getElementById('ModaleventEnd');
 
     var discountScope = '<?= $DiscountsScope ?>';
     var GlobaldiscountValues = <?= $DiscountsValues !== false ? $DiscountsValues : "'false'" ?>;
@@ -175,11 +179,11 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     var serviceDiscount = false;
     var E_Fee = document.getElementById('ModaleventFee');
     var E_Tax = document.getElementById('ModaleventTax');
-
-
+    
+    let service;
 
       // PAYMENT ROW
-      function addPaymentRow() {
+    function addPaymentRow() {
         const NotRegisteruniqueID = () => `temp_${Math.random().toString(36).substr(2, 5)}`;
         let uniqueID = NotRegisteruniqueID(); // Appelle la fonction pour obtenir un ID unique
         let payements_class = '';
@@ -193,10 +197,10 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         var restapayer = 0;
 
         serviceSelect.addEventListener("change", function() {
-        
+
         //GET SERVICE // from select
         service = discountservice.find(service => service.Service_id === this.value);
-    });
+        });
         filteredInputs.forEach(input => {
         // Convertir la valeur en nombre et l'ajouter à la somme
         sum += Number(input.value);
@@ -220,55 +224,65 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             </select>
             <input type="number" pattern="[0-9]*" value=${FillPaidInput} inputmode="numeric" id="rowPaid${uniqueID}" name="rowPaid${uniqueID}" class=" block w-full rounded-r-lg text-md text-gray-900 bg-transparent border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
         </div>
-    `;
+        `;
         container.insertAdjacentHTML('beforeend', newPaymentRow)
 
     }
 
-    // Lorsque l'utilisateur modifie manuellement le prix
-    function InfoTotal() {    
-        userChangedPrice = true; // Indiquer que l'utilisateur a changé le prix ou la quantité
-        var qtTraveller = parseInt(document.getElementById("ModaleventQtTraveller").value);
-        var price = parseInt(priceInput.value);
-        var total = 0;
-
-        serviceSelect.addEventListener("change", function() {
-        //Get service détails from select
-        service = discountservice.find(service => service.Service_id === this.value);
-    }
-        );
-        if (!isNaN(price) && !isNaN(qtTraveller)) {
-            total = price + (qtTraveller * parseInt(service.Tax) ) + parseInt(service.Fee);
+    // Déclaration globale des variables pour une meilleure visibilité
+    // Fonction pour mettre à jour les informations totales
+    function updateTotalInfo() {
+        let qtTraveller = parseInt(document.getElementById("ModaleventQtTraveller").value);
+        let price = parseInt(priceInput.value);
+        let total = 0;
+        let nDays = parseInt(document.getElementById("ModaleventQt").value);
+        
+        if (!isNaN(price) && !isNaN(qtTraveller) && service) {
+            // Calcul du prix total
+            total = price + (qtTraveller * parseInt(service.Tax) * parseInt(nDays))  + parseInt(service.Fee);
         }
-        totalIndicator.innerHTML = '<span class="font-normale text-xs text-slate-400">Taxe de séjour (<b>'+ qtTraveller +'*'+parseInt(service.Tax) +' Fr</b>) et frais de ménage (<b>'+ service.Fee +' Fr</b>) inclus:</span> ' + total + ' Fr';
-        numericIndicator.style.display = isNaN(price) || isNaN(qtTraveller) ? "inline" : "none"; // Afficher/Cacher l'indicateur si une des valeurs n'est pas un nombre
-    
+
+        totalIndicator.innerHTML = `
+        <div class="flex justify-between">
+            <div class="flex-grow">
+                <div class="font-normal text-xs text-slate-400">
+                    Tarif réservation: <b>${price}  Fr</b>
+                </div>
+                <div class="font-normal text-xs text-slate-400">
+                    Taxe de séjour: <b>${qtTraveller} Personne(s) * ${nDays} jour(s) * ${parseInt(service.Tax)} Fr</b>
+                </div>
+                <div class="font-normal text-xs text-slate-400">
+                Frais de ménage: <b>${service.Fee} Fr</b>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="text-right text-sm whitespace-nowrap">
+                    TOTAL
+                </div>           
+                <div class="text-right text-lg whitespace-nowrap">
+                    ${total} Fr
+                </div>
+            </div>
+        </div>`;
+        numericIndicator.style.display = (isNaN(price) || isNaN(qtTraveller)) ? "inline" : "none";
     }
+    function loadServiceDetails(serviceId) {
+        
+        service = discountservice.find(s => s.Service_id === serviceId);
+        
+        // MàJ datepicker
+       // loadAndInitDatepicker(serviceId);
 
-// Attacher l'écouteur aux deux champs
-document.getElementById("ModaleventPrice").addEventListener("change", InfoTotal);
-document.getElementById("ModaleventQtTraveller").addEventListener("change", InfoTotal);
+        serviceDiscount = service.Discount;
+        
+        //UPDATE UI:    
+        
+        // MàJ Total
+        priceInput.value = prices[serviceId];
+        E_Fee.value = parseInt(service.Fee);
+        E_Tax.value = parseInt(service.Tax);
 
-
-    // Mettre à jour le prix initial
-    priceInput.value = prices[serviceSelect.value];
-    service = discountservice.find(service => service.Service_id === serviceSelect.value);
-    E_Fee.value = parseInt(service.Fee);
-    E_Tax.value = parseInt(service.Tax);
-
-    serviceDiscount = service.Discount;
-
-    //initialise la gestion du checkbox par script de la privatisation
-    var checkbox = document.getElementById('Modaleventfullblocked');
-
-    // Mettre à jour le prix lorsque le service sélectionné change
-    serviceSelect.addEventListener("change", function() {
-        //Get service détails from select
-        service = discountservice.find(service => service.Service_id === this.value);
-
-        loadAndInitDatepicker(this.value);
-
-        var container_global = document.getElementById("addEventModal");
+        // MàJ Privatisation
         if (service.fullblocked == 1) {
             checkbox.checked = true;
             container_full_blocked.classList.add("bg-red-500");
@@ -277,7 +291,7 @@ document.getElementById("ModaleventQtTraveller").addEventListener("change", Info
             container_global.classList.add('border-dashed');
             container_global.classList.add('border-4');
             container_global.classList.add('border-red-400');
-      
+
         }
         else { 
             checkbox.checked = false;
@@ -288,17 +302,20 @@ document.getElementById("ModaleventQtTraveller").addEventListener("change", Info
             container_global.classList.remove('border-red-400'); 
         }
 
-        if (!userChangedPrice) { // Mettre à jour uniquement si l'utilisateur n'a pas modifié le prix
-            priceInput.value = prices[this.value];
-            updatePrice(); // Appeler la fonction de mise à jour du prix
+        if (!userChangedPrice) {
+            priceInput.value = prices[serviceId];
+            updateTotalInfo(); // Mettre à jour le total après avoir changé le service
         }
-        serviceDiscount = service.Discount;
-        InfoTotal();
-
-        //console.log("discountservice.value",discountservice.find(service => service.Service_id === this.value).fullblocked);
-    });
+    }
 
 
+    // Attacher des écouteurs d'événements aux éléments
+    document.getElementById("ModaleventPrice").addEventListener("change", function() {userChangedPrice = true;updateTotalInfo();});
+    document.getElementById("ModaleventQtTraveller").addEventListener("change", updateTotalInfo);
+    serviceSelect.addEventListener("change", function() { loadServiceDetails(this.value); });
+
+    // Initialiser les valeurs par défaut
+    loadServiceDetails(serviceSelect.value);
 
     // Fonction pour mettre à jour le prix en fonction de la quantité
     function updatePrice() {
@@ -430,8 +447,9 @@ document.getElementById("ModaleventQtTraveller").addEventListener("change", Info
         } else {
             priceInput.value = ""; // Effacez le champ de prix si la quantité n'est pas un nombre valide
         }
-        InfoTotal();
+        updateTotalInfo();
     }
+
     // Réinitialiser le flag lorsque la quantité change
     qtInput.addEventListener("input", function() {
         userChangedPrice = false; // Réinitialiser le flag si l'utilisateur modifie la quantité
@@ -456,11 +474,7 @@ document.getElementById("ModaleventQtTraveller").addEventListener("change", Info
 
     var fromServicepicker; // Déclare la variable à l'extérieur de la fonction pour qu'elle ait une portée globale.
 
-        var serviceSelect = document.getElementById('ModaleventService_id');
-
-        // Chargez et initiez le datepicker avec l'ID de service sélectionné au départ
-        //loadAndInitDatepicker(serviceSelect.value);
-// INUTILE ?????
+    var serviceSelect = document.getElementById('ModaleventService_id');
 
         // Ajoutez un écouteur d'événements pour réagir aux changements de sélection
         serviceSelect.addEventListener('change', function() {
@@ -469,21 +483,21 @@ document.getElementById("ModaleventQtTraveller").addEventListener("change", Info
                 fromServicepicker.destroy(); // Assurez-vous que la méthode `destroy` est bien définie par Easepick pour détruire l'instance
             }
 
-            InfoTotal();
+            updateTotalInfo();
             updatePrice();
 
         });
 
     // Tooltip même pour mobile
-        function toggleTooltip(element) {
-    var tooltip = element.querySelector('.tooltiptext');
-    if (tooltip.classList.contains('invisible')) {
-        tooltip.classList.remove('invisible');
-        tooltip.classList.add('visible');
-    } else {
-        tooltip.classList.remove('visible');
-        tooltip.classList.add('invisible');
+    function toggleTooltip(element) {
+        var tooltip = element.querySelector('.tooltiptext');
+        if (tooltip.classList.contains('invisible')) {
+            tooltip.classList.remove('invisible');
+            tooltip.classList.add('visible');
+        } else {
+            tooltip.classList.remove('visible');
+            tooltip.classList.add('invisible');
+        }
     }
 
-}
 </script>

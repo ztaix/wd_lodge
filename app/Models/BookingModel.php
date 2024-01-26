@@ -127,7 +127,8 @@ class BookingModel extends Model
         wd_services.Color as service_color,
         GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
         GROUP_CONCAT(wd_paid.type_paid) as types_paids,
-        GROUP_CONCAT(wd_paid.value) as paids_values');
+        GROUP_CONCAT(wd_paid.value) as paids_values,
+        DATEDIFF(wd_bookings.end, wd_bookings.start) as nDays'); // Ajout de nDays  
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
         $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
@@ -154,7 +155,8 @@ class BookingModel extends Model
         wd_services.Color as service_color,
         GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
         GROUP_CONCAT(wd_paid.type_paid) as types_paids,
-        GROUP_CONCAT(wd_paid.value) as paids_values');
+        GROUP_CONCAT(wd_paid.value) as paids_values,
+        DATEDIFF(wd_bookings.end, wd_bookings.start) as nDays'); // Ajout de nDays  
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
         $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
