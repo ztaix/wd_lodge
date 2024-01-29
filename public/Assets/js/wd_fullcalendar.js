@@ -263,11 +263,11 @@ document.addEventListener("DOMContentLoaded", function () {
             color = "red";
             message = "";
           }
-          else if(COUNTisBookingStartDay == 1  && fullblockedFound){ // privatisé
+          else if( (COUNTisBookingStartDay == 1  && fullblockedFound) || (fullblockedFound && nEventDay === 1) ){ // privatisé
             color = "red";
             message = "<span class='w-2/5 h-2/5 p-1 flex justify-center rounded-full bg-"+color+"-100 dark:bg-"+color+"-800'>"+nEventDay+"/"+availableServicesCount+"</span>";
           }
-          else if( (COUNTisBookingStartDay > 1 && fullblockedFound) || (fullblockedFound  && nEventDay > 1)|| (nEventDay > availableServicesCount)){ // Erreur dans les résa
+          else if( COUNTisBookingStartDay > 1 && fullblockedFound || (fullblockedFound  && nEventDay > 1)|| (nEventDay > availableServicesCount)){ // Erreur dans les résa
             color = "purple";
             message = "<span class='bg-red-500 dark:bg-red-200 rounded-full p-1 text-"+color+"-500 dark:text-"+color+"-300'>!</span>";
           }
