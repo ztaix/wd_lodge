@@ -155,7 +155,8 @@ header {
 
 .fc-daygrid-day-top .fc-daygrid-day-number {
     font-size: 3vh; /* Augmentez la taille des chiffres du jour si nécessaire */
-}
+    z-index: 30;
+  }
 
 .fc-daygrid-day-top .fc-daygrid-day-top-month {
     display: none; /* Cachez le nom du mois */

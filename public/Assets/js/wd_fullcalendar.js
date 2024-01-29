@@ -168,51 +168,117 @@ document.addEventListener("DOMContentLoaded", function () {
       let firstdayHtml = "";
       let currentdayHtml ="";
       let lastdayHtml = "";
-
+      
+      let nEventDay = Object.keys(bookings).length; // Vérifier le nom de service loués
+      let fullblockedFound = false; // Vérifie si il existe dans chaque jour une privatisation
+      
+      let fullServiceBooked = false; // Vérifie si tous les services sont bloqué 
 
       let margin_init = 0;
       // Ajouter une pastille pour chaque réservation avec la couleur du service
       /*colors.forEach(function (colors) {
         dotsHtml += `<span class="event-dot" style="background-color: ${colors};margin-left: ${margin_init}px"></span>`;
         margin_init+= 7;
+
+        bookings.some(objet => objet.fullblockeds === 1);
       });*/
+      const serviceTitlesObj = services_list.reduce((obj, service) => {
+        obj[service.Service_id] = service.Title;
+        return obj;
+      }, {});
+            
+      const availableServicesCount = Object.keys(serviceTitlesObj).length;
       
-      for (let bookingId in bookings) {
+      let availableServices = {...serviceTitlesObj};
+
+      if(bookings){
+
+        for (let id in bookings) {
+                      
+          if (bookings[id].fullblockeds === "1") {
+          fullblockedFound = true;
+          break; // Arrête la boucle si une réservation avec fullblockeds = 1 est trouvée
+        } 
+      } 
+    
+    }
+    
+    let html_construct = '';
+    let COUNTisBookingStartDay = 0;
+    let COUNTisBookingEndDay = 0;
+
+    for (let bookingId in bookings) {
         if (bookings.hasOwnProperty(bookingId)) {          
           let booking = bookings[bookingId];
+          let serviceBooked = bookings[bookingId].services_titles;
+          Object.entries(availableServices).forEach(([key, value]) => {
+            if (value === serviceBooked) {
+              foundKey = value;
+              delete availableServices[key];
+            }
+          });
+          let NotBookedServicesCount = Object.keys(availableServices).length;
           /// ALL INSTRUCTIONS DOWN ///
 
-
           let isBookingStartDay = booking.Date == booking.FirstDay.substring(0, 10);
-          let isBookingCurrentDay = booking.Date < booking.LastDay.substring(0, 10) && booking.Date > booking.FirstDay.substring(0, 10)
           let isBookingEndDay = booking.Date == booking.LastDay.substring(0, 10);
+
+          let message = "";
+          let color = "";
+
           
-          if (isBookingStartDay) {
-            firstdayHtml += `<div class="absolute" id="FIRST"> 
-            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0,100 100,0 ,100,100" class="opacity-20" style="fill: ${lightenHexColor(booking.colors,-20)}" ></polygon>
-
-            </svg>
-        </div>`;  
+          if (isBookingStartDay && COUNTisBookingStartDay === 0) {
+            COUNTisBookingStartDay++;
+            firstdayHtml += `<div class="relative flex justify-start flex-grow mr-0.5 mb-0.5"  id="FIRST"> 
+            <svg class="w-4 h-4 text-gray-800 dark:text-white"version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+            <g id="XMLID_1_">
+              <path id="XMLID_5_" d="M175.9,256H15.8v-64.2h160.1v-64.2l95.9,95.9l-95.9,96.8V256z M496.2,0v416.1L304.4,512v-95.9H111.7V287.7   h32.6v95.9h160.1V95.9l128.5-64.2H144.3v128.5h-31.7V0H496.2z"/>
+            </g>
+            </svg>            </div>`;  
           }
-          
-          if (isBookingCurrentDay) {
-            firstdayHtml += `<div class="absolute" id="CURRENT"> 
-            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0,0 0,100 100,100 100,0" class="opacity-20" style="fill: ${lightenHexColor(booking.colors,-20)}" ></polygon>
-
-            </svg>
-        </div>`;  
+          else if (isBookingStartDay && COUNTisBookingStartDay > 0){
+            COUNTisBookingStartDay++;
+            firstdayHtml += `<div class="absolute left-4 bottom-1.5 text-gray-800 dark:text-white font-bold">${COUNTisBookingStartDay}</div>`
           }
-          if (isBookingEndDay) {
-            lastdayHtml += `<div class="absolute" id="END" >
-            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0, 0, 0,100 ,100,100" class="opacity-20" style="fill: ${lightenHexColor(booking.colors,-20)}" ></polygon>
-
+          if (isBookingEndDay && COUNTisBookingEndDay === 0) {
+            COUNTisBookingEndDay++;
+            lastdayHtml += `<div class="relative w-full flex justify-end  mb-0.5" id="END" >
+            <svg class="w-4 h-4 text-gray-800 dark:text-white" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+            <g id="XMLID_1_">
+              <path id="XMLID_5_" d="M400.3,320.2V256H240.2v-64.2h160.1v-64.2l95.9,95.9L400.3,320.2z M367.7,287.7v128.5H207.6V512L15.8,416.1   V0h351.9v160.1h-31.7V31.7h-256l128.5,64.2v287.7H337v-95.9H367.7z"/>
+            </g>
             </svg>
-        </div>`;  
+          </div>`;  
+          }          
+          else if (isBookingEndDay && COUNTisBookingEndDay > 0){
+            COUNTisBookingEndDay++;
+            lastdayHtml += `<div class="absolute right-4 bottom-1.5 text-gray-800 dark:text-white font-bold">${COUNTisBookingEndDay}</div>`
           }
 
+          if(NotBookedServicesCount < availableServicesCount && !fullblockedFound){ // Occupé et disponible
+            color = "yellow";
+            message = "<span class='w-2/5 h-2/5 p-1 flex justify-center rounded-full bg-"+color+"-300 dark:bg-"+color+"-800'>"+nEventDay+"/"+availableServicesCount+"</span>";
+          }
+          else if(NotBookedServicesCount === availableServicesCount && !fullblockedFound){ // Complet
+            color = "red";
+            message = "";
+          }
+          else if(COUNTisBookingStartDay == 1  && fullblockedFound){ // privatisé
+            color = "red";
+            message = "<span class='w-2/5 h-2/5 p-1 flex justify-center rounded-full bg-"+color+"-100 dark:bg-"+color+"-800'>"+nEventDay+"/"+availableServicesCount+"</span>";
+          }
+          else if( (COUNTisBookingStartDay > 1 && fullblockedFound) || (fullblockedFound  && nEventDay > 1)|| (nEventDay > availableServicesCount)){ // Erreur dans les résa
+            color = "purple";
+            message = "<span class='bg-red-500 dark:bg-red-200 rounded-full p-1 text-"+color+"-500 dark:text-"+color+"-300'>!</span>";
+          }
+          else{
+            html_construct = ``; 
+          }
+
+
+          html_construct = `<div class="absolute text-black dark:text-white bg-${color}-200 dark:bg-${color}-700 w-full h-full">
+          <div class="relative h-full p-1 flex justify-start items-start">${message}</div></div>`; 
+          /*
           let status = "";
           let facture = booking.types_docs.charAt(0)=="F"? booking.types_docs.charAt(0):"";
           let total_price = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);
@@ -246,13 +312,15 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 nonShadowDotsHtml += dotHtml;
             }
+            */
         }
     }
 
-   let dotsHtml =  lastdayHtml + firstdayHtml + shadowDotsHtml + nonShadowDotsHtml;
+   let dotsHtml =  html_construct + firstdayHtml + lastdayHtml;
+  // let dotsHtml =  lastdayHtml + firstdayHtml + shadowDotsHtml + nonShadowDotsHtml;
     // Créer un élément HTML pour représenter l'événement
     let eventElement = document.createElement("div");
-    eventElement.className = `flex justify-center items-end h-full`;
+    eventElement.className = `relative flex justify-center items-end h-full`;
     eventElement.innerHTML = dotsHtml;
       return {
         domNodes: [eventElement],
@@ -417,6 +485,10 @@ function updateEventFromDetails() {
               }                
               if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
                 document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+                document.getElementById('booking_paid_status_'+row_id).innerText = 
+                encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
+                encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
+
               }
               if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
                 let details_paid_div = document.getElementById('booking_details_progress_div');
@@ -578,6 +650,10 @@ function addEvent() {
               
               if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
                 document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+                document.getElementById('booking_paid_status_'+row_id).innerText = 
+                encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
+                encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
+
               }
               if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
                 let details_paid_div = document.getElementById('booking_details_progress_div');

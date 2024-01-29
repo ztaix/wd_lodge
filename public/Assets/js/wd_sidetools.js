@@ -90,6 +90,10 @@ const newDateStr = [
     (total, currentValue) => total + currentValue,
     0
   );
+  let TOTALprice = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);  
+
+  let status_paid = paids_sum >= TOTALprice? "<b class='text-green-500 dark:text-green-100'>PAYE</b>" : 
+  paids_sum <= TOTALprice && paids_sum > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>": "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>";
     
     let bookingElement = `
         <div id="booking_list_row_${
@@ -146,7 +150,7 @@ const newDateStr = [
                 <div class="flex-col justify-end bg-slate-100 dark:bg-slate-800 rounded-lg px-1">
                   <div class="inline-flex items-center" >
                       <span class="mr-1 text-xs text-slate-400">Tarif</span> 
-                      <span id="booking_total_${booking.id}">${ totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays) }</span>
+                      <span id="booking_total_${booking.id}">${TOTALprice }</span>
                       <span class="ml-1 text-xs">Fr</span>
 
                   </div>
@@ -155,6 +159,9 @@ const newDateStr = [
                     <span class="font-bold" id="booking_paid_${booking.id}">${paids_sum}</span>
                     <span class="ml-1 text-xs">Fr</span>
                   </div>
+                  <div class="inline-flex items-center" >
+                  <span class="font-bold" id="booking_paid_status_${booking.id}">${status_paid}</span>
+                </div>
                 </div>
               </div>
             </div>
