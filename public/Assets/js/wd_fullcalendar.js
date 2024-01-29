@@ -182,11 +182,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         bookings.some(objet => objet.fullblockeds === 1);
       });*/
-      const serviceTitlesObj = services_list.reduce((obj, service) => {
+      const serviceTitlesObj = services_list
+      .filter(service => service.fullblocked !== "1")
+      .reduce((obj, service) => {
         obj[service.Service_id] = service.Title;
         return obj;
       }, {});
-            
+      
       const availableServicesCount = Object.keys(serviceTitlesObj).length;
       
       let availableServices = {...serviceTitlesObj};
@@ -225,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           let message = "";
           let color = "";
-
+console.log("NotBookedServicesCount",availableServices);
           
           if (isBookingStartDay && COUNTisBookingStartDay === 0) {
             COUNTisBookingStartDay++;
@@ -259,11 +261,11 @@ document.addEventListener("DOMContentLoaded", function () {
             color = "yellow";
             message = "<span class='w-2/5 h-2/5 p-1 flex justify-center rounded-full bg-"+color+"-300 dark:bg-"+color+"-800'>"+nEventDay+"/"+availableServicesCount+"</span>";
           }
-          else if(NotBookedServicesCount === availableServicesCount && !fullblockedFound){ // Complet
+          else if(NotBookedServicesCount === 0 && !fullblockedFound){ // Complet
             color = "red";
             message = "";
           }
-          else if( (COUNTisBookingStartDay == 1  && fullblockedFound) || (fullblockedFound && nEventDay === 1) ){ // privatisé
+          else if( (COUNTisBookingStartDay == 1  && fullblockedFound) || (fullblockedFound && nEventDay == 1) ){ // privatisé
             color = "red";
             message = "<span class='w-2/5 h-2/5 p-1 flex justify-center rounded-full bg-"+color+"-100 dark:bg-"+color+"-800'>"+nEventDay+"/"+availableServicesCount+"</span>";
           }
