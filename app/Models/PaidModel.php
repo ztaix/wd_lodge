@@ -161,9 +161,12 @@ class PaidModel extends Model
                 $Paid_ID = $this->insert($data, true);
                 if ($Paid_ID === false) {
                     $error = $this->errors();
+                    $result = false;
                     // Faites quelque chose avec l'erreur, comme la logger ou l'afficher.
-                }   else {$result = true; }
+                }   
+                else {$result = true; }
             }
+            
             $results[$Paid_ID] = [
                 'success' => $result,
                 'errors' => $result ? [] : ['message' => 'Echec dans la mise à jour : ' . $error . ' - Ligne:' . $Paid_ID . '/' . print_r($data)]

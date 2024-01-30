@@ -231,7 +231,25 @@ header {
   50% { opacity: 0.5; }
   100% { opacity: 1; }
 }
-
+@keyframes blink-1-0 {
+  0% { opacity: 1; }
+  50% { opacity: 0.1; }
+  100% { opacity: 1; }
+}
+@keyframes loopX {
+  0% { opacity: 1; transform: translate(0%, 0%); }
+  30% { opacity: 0.7;}
+  45% { opacity: 0.5; transform: translate(50%, 0%); }
+  55% { opacity: 0.8;}
+  100% { opacity:1; transform: translate(0%, 0%); }
+}
+@keyframes loopXNeg {
+  0% { opacity: 1; transform: translate(0%, 0%); }
+  30% { opacity: 0.7;}
+  45% { opacity: 0.5; transform: translate(-50%, 0%); }
+  55% { opacity: 0.8;}
+  100% { opacity:1; transform: translate(0%, 0%); }
+}
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -328,17 +346,25 @@ header {
 .transition-margin{
   transition: margin 0.3s ease-in-out;
 }
-  .fade_out {
-    opacity: 0;
-    transition: opacity 1s ease-out;
+.fade_out {
+  opacity: 0;
+  transition: opacity 1s ease-out;
 }
-  .blinking {
-    animation: blink 0.5s linear 6;
-  }
-
-  .notification-hidden {
-    display: none;
-  }
+.blinking {
+  animation: blink 0.5s linear 6;
+}
+.blink {
+  animation: blink-1-0 1s linear infinite;
+}
+.loopX {
+  animation: loopX 1.5s ease-in infinite;
+}
+.loopXNeg {
+  animation: loopXNeg 1.5s ease-in infinite;
+}
+.notification-hidden {
+  display: none;
+}
   
   .notification-visible {
     display: flex;

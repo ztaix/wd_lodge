@@ -1,37 +1,4 @@
 var count_row_found = 0;
-function getToday() {
-  var today = new Date();
-  var dd = String(today.getDate()).padStart(2, '0');
-  var mm = String(today.getMonth() + 1).padStart(2, '0'); // Janvier est 0 !
-  var yyyy = today.getFullYear();
-
-  return dd + '-' + mm + '-' + yyyy;
-}
-
-function lightenHexColor(hex, percent) {
-  // Convertir le hex en RGB
-  let r = parseInt(hex.substring(1, 3), 16);
-  let g = parseInt(hex.substring(3, 5), 16);
-  let b = parseInt(hex.substring(5, 7), 16);
-
-  // Augmenter chaque composant de couleur par le pourcentage donné
-  r = parseInt(r * (100 + percent) / 100);
-  g = parseInt(g * (100 + percent) / 100);
-  b = parseInt(b * (100 + percent) / 100);
-
-  // S'assurer que les valeurs restent dans les limites [0, 255]
-  r = r < 255 ? r : 255;
-  g = g < 255 ? g : 255;
-  b = b < 255 ? b : 255;
-
-  // Convertir les composants RGB de nouveau en une couleur hex
-  let rr = r.toString(16).padStart(2, '0');
-  let gg = g.toString(16).padStart(2, '0');
-  let bb = b.toString(16).padStart(2, '0');
-
-  return `#${rr}${gg}${bb}`;
-}
-
 var calendar; // Déclaration dans la portée globale
 var clickedDate = null; // Défini dans la portée globale
 
@@ -227,7 +194,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
           let message = "";
           let color = "";
-console.log("NotBookedServicesCount",availableServices);
           
           if (isBookingStartDay && COUNTisBookingStartDay === 0) {
             COUNTisBookingStartDay++;
@@ -406,11 +372,11 @@ function updateEventFromDetails() {
     data: formData,
     success: function (response) {
       if (response.status == "success") {
-        let row_id = response.id;
-        let row_price =  totalBookingPriceCal(response.data.Price,response.data.QtTraveller,response.data.Tax,response.data.Fee,response.data.nDays);
+        let updatedData = {};
+        updatedData[response.id] = response.data;
         showBanner("Événement mise à jour avec succès !", true);
-
-        if(ModalInStack('ListEventModal')){ // UPDATE SI RESPONSE VALIDE !! HORS PAIEMENTS !!
+        updateModal(updatedData);
+        /*if(ModalInStack('ListEventModal')){ // UPDATE SI RESPONSE VALIDE !! HORS PAIEMENTS !!
           document.getElementById('booking_total_'+row_id).innerText =  row_price;
           document.getElementById('booking_Comment_'+row_id).innerText = response.data.Comment;
           document.getElementById('booking_startDay_'+row_id).innerText = getDayOfWeek(format_date(response.data.start));
@@ -421,7 +387,7 @@ function updateEventFromDetails() {
           document.getElementById('booking_title_'+row_id).innerHTML = (services_list.find(item => item.Service_id === response.data.Service_id) || {}).Title + ' (' + DaysDifferenceStartEnd(response.data.start, response.data.end) + ' nuits)';
           document.getElementById("badge_id_"+row_id).innerText = row_id;
           document.getElementById("badge_type_"+row_id).innerText = response.data.Type_doc;
-        }
+        }*/
         if (calendar) {
           calendar.refetchEvents();
         }
@@ -488,8 +454,8 @@ function updateEventFromDetails() {
               if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
                 document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
                 document.getElementById('booking_paid_status_'+row_id).innerText = 
-                encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
-                encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
+                encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYÉ</b>":
+                encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYÉ</b>"  ;
 
               }
               if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
@@ -591,41 +557,41 @@ function addEvent() {
 
 
             // ADD PAYMENTS
-        let payments = []; // Initialise payments comme un tableau vide
-        document.querySelectorAll('.payment-row').forEach((row, index) => {
-          if(row.id.startsWith('temp_') === true ) {
-            // Pour un nouvel enregistrement (id non défini ou vide)
-            payments.push({
-              'booking_id': booking_id,
-              'type_paid': document.getElementById(`rowPaidType${row.id}`).value,
-              'value': document.getElementById(`rowPaid${row.id}`).value
-            });
-          }
-          else{
-            let id = document.getElementById(`rowPaidid${index}`).value;
-            if (id){
-              // Pour un enregistrement existant (avec un id défini)
+          let payments = []; // Initialise payments comme un tableau vide
+          document.querySelectorAll('.payment-row').forEach((row, index) => {
+            if(row.id.startsWith('temp_') === true ) {
+              // Pour un nouvel enregistrement (id non défini ou vide)
               payments.push({
-                'id': id, // Stocker l'id dans l'objet
                 'booking_id': booking_id,
-                'type_paid': document.getElementById(`rowPaidType${index}`).value,
-                'value': document.getElementById(`rowPaid${index}`).value
-              }); // Ajouter l'objet au tableau
+                'type_paid': document.getElementById(`rowPaidType${row.id}`).value,
+                'value': document.getElementById(`rowPaid${row.id}`).value
+              });
             }
-          }
+            else{
+              let id = document.getElementById(`rowPaidid${index}`).value;
+              if (id){
+                // Pour un enregistrement existant (avec un id défini)
+                payments.push({
+                  'id': id, // Stocker l'id dans l'objet
+                  'booking_id': booking_id,
+                  'type_paid': document.getElementById(`rowPaidType${index}`).value,
+                  'value': document.getElementById(`rowPaid${index}`).value
+                }); // Ajouter l'objet au tableau
+              }
+            }
         });
         let payments_filtred = payments.filter(item => item !== undefined);
         $.ajax({
           url: baseurl + "paids/upsert",
           method: "POST",
           data: { 'payments' : payments_filtred},
-          success: function (response) {
+          success: function (response_paid) {
             let allSuccess = true;
             let allErrors = [];
 
-            for (let key in response) {
-                if (response.hasOwnProperty(key)) {
-                    let res = response[key];
+            for (let key in response_paid) {
+                if (response_paid.hasOwnProperty(key)) {
+                    let res = response_paid[key];
                     if (!res.success) {
                         allSuccess = false;
                     }
@@ -638,18 +604,19 @@ function addEvent() {
             if (allSuccess) {
               var encaissement = 0;
               // Parcourez l'objet reponse
-              for (var key in response) {
-                if (response.hasOwnProperty(key)) {
+              for (var key in response_paid) {
+                if (response_paid.hasOwnProperty(key)) {
                   // Accédez à la valeur "value" de chaque objet
-                  var value = response[key].data.value;
+                  var value = response_paid[key].data.value;
                   
                   // Checker si c'est bien un chiffre
                   if (!isNaN(parseFloat(value))) {
                     encaissement += parseFloat(value);
                   }
                 }
-              }                
-              
+              }
+              console.log('response_paid.hasOwnProperty(key)',response_paid.hasOwnProperty(key)); 
+
               if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
                 document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
                 document.getElementById('booking_paid_status_'+row_id).innerText = 

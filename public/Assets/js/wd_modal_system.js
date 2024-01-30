@@ -6,11 +6,11 @@ var currentZIndex = 50; // Valeur initiale du zIndex
 var isClosingModal = false;
 
 function urlLocation(){
-   let segments = window.location.href.split('/');
+   let segments = window.location.href.split('?')[0].split('/');
    let dernierSegment = segments.pop() || segments.pop();
    
    let returnSegment = dernierSegment.toLowerCase().replace(/[^a-z0-9]/g, '');
-   returnSegment = returnSegment == '' ||  baseurl == window.location.href  ? "calendar" : returnSegment;
+   returnSegment = returnSegment == '' ||  baseurl == window.location.href ||  baseurl == 'public' ? "calendar" : returnSegment;
    return returnSegment;
 }
 

@@ -81,6 +81,20 @@ const newDateStr = [
   count_row_found = 0;
   response.forEach((booking) => {
     count_row_found++;
+    let Checkin = clickedDate == booking.start.slice(0,10);
+    let Checkout = clickedDate == booking.end.slice(0,10);
+    let isStart = Checkin ? 
+    `<svg class="loopXNeg w-5 h-5 mt-1 mr-2 "version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+      <g id="XMLID_1_">
+        <path id="XMLID_5_" d="M175.9,256H15.8v-64.2h160.1v-64.2l95.9,95.9l-95.9,96.8V256z M496.2,0v416.1L304.4,512v-95.9H111.7V287.7   h32.6v95.9h160.1V95.9l128.5-64.2H144.3v128.5h-31.7V0H496.2z"/>
+      </g>
+    </svg>` :  '';
+    let isEnd = Checkout ? 
+    `<svg class="loopX w-5 h-5 mt-1 mr-2" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+    <g id="XMLID_1_">
+      <path id="XMLID_5_" d="M400.3,320.2V256H240.2v-64.2h160.1v-64.2l95.9,95.9L400.3,320.2z M367.7,287.7v128.5H207.6V512L15.8,416.1   V0h351.9v160.1h-31.7V31.7h-256l128.5,64.2v287.7H337v-95.9H367.7z"/>
+    </g>
+    </svg>` :  '';
 
     let array_paids_values = booking.paids_values
     ? booking.paids_values.split(",").map(Number)
@@ -92,25 +106,46 @@ const newDateStr = [
   );
   let TOTALprice = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);  
 
-  let status_paid = paids_sum >= TOTALprice? "<b class='text-green-500 dark:text-green-100'>PAYE</b>" : 
-  paids_sum <= TOTALprice && paids_sum > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>": "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>";
-    
+  let status_paid = "";
+  let status_paid_bg = "";
+  
+  if(paids_sum >= TOTALprice){
+    status_paid = "<b class='text-green-500 dark:text-green-100'>PAYÉ</b>"; 
+    status_paid_bg = "green";
+  }
+  else if(paids_sum <= TOTALprice && paids_sum > 0){
+    status_paid = "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>"
+    status_paid_bg = "orange";
+  }
+  else {
+    status_paid = "<b class='text-red-500 dark:text-red-100'>IMPAYÉ</b>";
+    status_paid_bg = "red";
+  }
+
+
     let bookingElement = `
         <div id="booking_list_row_${
           booking.id
-        }" class="flex flex-col p-1 mt-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
+        }" class="group flex flex-col p-1 mt-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
           <!-- Colonne 1 -->
-          ${booking.fullblocked == 1 ? '<span class="flex mx-auto font-bold ">~ privatisé ~</span>':''}
+          ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark-text-red-900 bg-white group-hover:bg-slate-100 dark:group-hover:bg-slate-700 top-2 px-2 mx-auto font-bold">~ privatisé ~</span>':''}
+
           <div class="w-full flex-col group ${booking.fullblocked == 1 ? 'border p-2 border-dashed border-red-400 dark:border-red-900 rounded-lg':''}">
-            <div class="inline-flex text-slate-600 ${booking.fullblocked == 1 ? 'bg-red-200 text-red-700 dark:bg-red-700 dark:text-red-200 rounded-lg':''}">
-              <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex cursor-pointer font-bold">
-                <div class="justify-center items-center text-xs h-4 rounded-md text-white dark:text-black font-bold px-1 mx-1 my-auto inline" style="background-color: ${booking.service_color}; ">
-                  <span id='badge_type_${booking.id}'>${booking.Type_doc}</span> # <span id='badge_id_${booking.id}'>${booking.id}</span>
+            
+            <div class="flex justify-between text-slate-600 ">
+              <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex flex-wrap cursor-pointer font-bold">
+              
+                <div id="booking_title_${booking.id}" class="flex flex-initial transition-margin hover:mx-2 ">
+                  ${isStart + isEnd +' '+booking.service_title }
                 </div>
-                <div id="booking_title_${booking.id}" class="transition-margin m-0 hover:mx-2">
-                  ${booking.service_title + ' (' + DaysDifferenceStartEnd(booking.start,booking.end) + ' nuits)'}
-                </div>
-                
+
+              </div>
+              <div class="text-sm text-black font-bold ">
+                ${ Checkin == true ? '<b class="blink">CHECK-IN </b> / ': ''} 
+                ${ Checkout == true ? '<b class="blink">CHECK-OUT </b>/ ': ''} 
+                <span id='badge_type_${booking.id}'>${booking.Type_doc}</span>
+                # 
+                <span id='badge_id_${booking.id}'>${booking.id}</span>
               </div>
             </div>
             <div class="w-full inline-flex">
@@ -122,6 +157,7 @@ const newDateStr = [
                 <div class="flex-col flex-wrap">
                   <div class="w-full inline-flex items-center justify-between text-xs text-slate-400">
                     <span class="items-center" id="booking_startDay_${booking.id}">${getDayOfWeek(format_date(booking.start))}</span>
+                    <span class="items-center">${'('+DaysDifferenceStartEnd(booking.start,booking.end) + ' nuits)'}</span>
                     <span class="items-center" id="booking_endDay_${booking.id}">${getDayOfWeek(format_date(booking.end))}</span>
                   </div>
                   <div class="w-full inline-flex items-center justify-between ">
@@ -135,19 +171,8 @@ const newDateStr = [
               </div>
 
               <div class="flex flex-col grow items-end text-right font-bold ml-2">
-                <div class="absolute -mt-7 group">
-                  <a id="booking_a_${
-                    booking.id
-                  }" href="#" class="text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" onclick="(function() { deleteEvent(${
-                    booking.id
-                  }) })()" >
-                    <span class="absolute opacity-0 mt-1 right-10 group-hover:opacity-100 group-hover:right-6 transition-all ease-in-out duration-300 text-xs ">Supprimer</span>
-                    <svg  class="flex justify-center items-center  w-6 h-6  transition-transform duration-300 scale-100 group-hover:scale-75" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 7-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                    </svg>
-                  </a>
-                </div>
-                <div class="flex-col justify-end bg-slate-100 dark:bg-slate-800 rounded-lg px-1">
+                
+                <div class="flex-col justify-end bg-${status_paid_bg}-100 dark:bg-${status_paid_bg}-800 rounded-lg px-1">
                   <div class="inline-flex items-center" >
                       <span class="mr-1 text-xs text-slate-400">Tarif</span> 
                       <span id="booking_total_${booking.id}">${TOTALprice }</span>
@@ -160,9 +185,23 @@ const newDateStr = [
                     <span class="ml-1 text-xs">Fr</span>
                   </div>
                   <div class="inline-flex items-center" >
-                  <span class="font-bold" id="booking_paid_status_${booking.id}">${status_paid}</span>
+                    <span class="font-bold" id="booking_paid_status_${booking.id}">${status_paid}</span>
+                  </div>
                 </div>
+
+                <div class="relative mt-1 group">
+                  <a id="booking_a_${
+                    booking.id
+                  }" href="#" class="text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" onclick="(function() { deleteEvent(${
+                    booking.id
+                  }) })()" >
+                    <span class="absolute opacity-0 mt-1 right-10 group-hover:opacity-100 group-hover:right-6 transition-all ease-in-out duration-300 text-xs ">Supprimer</span>
+                    <svg  class="flex justify-center items-center  w-6 h-6  transition-transform duration-300 scale-100 group-hover:scale-75" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 7-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                    </svg>
+                  </a>
                 </div>
+
               </div>
             </div>
           `;
