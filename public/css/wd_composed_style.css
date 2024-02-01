@@ -1453,6 +1453,10 @@ input:checked + .toggle-bg {
   margin: 1.25rem;
 }
 
+.m-auto {
+  margin: auto;
+}
+
 .-mx-1 {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
@@ -2332,11 +2336,6 @@ input:checked + .toggle-bg {
 
 .-translate-x-1 {
   --tw-translate-x: -0.25rem;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.-translate-x-1\/2 {
-  --tw-translate-x: -50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -5766,6 +5765,8 @@ header {
   box-sizing: border-box;
   /* Assurez-vous que le padding et la bordure sont inclus dans la hauteur */
   width: 100%;
+  max-width: 750px;
+  height: calc(100vh - 10rem);
   margin: 0 auto;
   z-index: 0;
 }
@@ -6298,9 +6299,26 @@ header {
 
 /* Tooltip pour la case privatisation */
 
+#container_eventfullblocked .tooltiptext {
+  visibility: hidden;
+  transition: visibility 0.5s, opacity 0.5s linear;
+  /* transition pour le fade out */
+}
+
+#container_eventfullblocked .tooltiptext:not(.tooltip-hidden) {
+  visibility: visible;
+  animation: fadeIn 0.5s forwards;
+}
+
 #container_eventfullblocked:hover .tooltiptext {
   visibility: visible;
-  opacity: 1;
+  animation: fadeIn 0.5s forwards;
+  /* Applique l'animation fadeIn */
+}
+
+.tooltip-hidden {
+  visibility: hidden !important;
+  animation: fadeOut 0.5s forwards !important;
 }
 
 /* DARK MODE MODULE SWITCHER */
@@ -6404,6 +6422,26 @@ header {
     opacity: 0;
     transform: scale(0);
   }
+}
+
+@keyframes scroll {
+  0%{
+    transform: translateX(20%);
+  }
+
+  50% {
+    transform: translateX(-110%);
+  }
+
+  100% {
+    transform: translateX(20%);
+  }
+}
+
+.scroll-text {
+  display: inline-block;
+  animation: scroll 8s linear infinite;
+  max-width: 70px;
 }
 
 .after\:absolute::after {
@@ -6972,11 +7010,6 @@ header {
   background-color: rgb(99 49 18 / var(--tw-bg-opacity));
 }
 
-:is(.dark .dark\:bg-slate-200) {
-  --tw-bg-opacity: 1;
-  background-color: rgb(226 232 240 / var(--tw-bg-opacity));
-}
-
 :is(.dark .dark\:bg-opacity-80) {
   --tw-bg-opacity: 0.8;
 }
@@ -7064,6 +7097,11 @@ header {
 :is(.dark .dark\:text-slate-400) {
   --tw-text-opacity: 1;
   color: rgb(148 163 184 / var(--tw-text-opacity));
+}
+
+:is(.dark .dark\:text-slate-600) {
+  --tw-text-opacity: 1;
+  color: rgb(71 85 105 / var(--tw-text-opacity));
 }
 
 :is(.dark .dark\:text-white) {
@@ -7290,6 +7328,10 @@ header {
 
   .sm\:border-r {
     border-right-width: 1px;
+  }
+
+  .sm\:p-9 {
+    padding: 2.25rem;
   }
 
   .sm\:px-9 {

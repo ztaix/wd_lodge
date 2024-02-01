@@ -94,8 +94,9 @@ document.addEventListener("DOMContentLoaded", function () {
               url: baseurl  + "/booking/search",
               method: "GET",
               data: { text: searchInput },
-              success: function (response, data) {
+              success: function (response) {
                 if (response.status === "success" && response.data.length > 0) {
+                  
                   // Ouvrir la popup si elle n'est pas déjà ouverte
                   resultList.addClass("bg-slate-200 shadow-lg"); // Retirer le fond noir transparent
 
@@ -430,7 +431,7 @@ function addEvent() {
     { id: "ModaleventFee", key: "Fee" },
     { id: "ModaleventStart", key: "start", isDate: true },
     { id: "ModaleventEnd", key: "end", isDate: true }
-].forEach(({ id, key, isCheckbox, isDate }) => {
+  ].forEach(({ id, key, isCheckbox, isDate }) => {
     let element = document.getElementById(id);
     if (isCheckbox) {
         eventData[key] = element.checked ? 1 : 0;
@@ -475,106 +476,115 @@ function addEvent() {
 
 
             // ADD PAYMENTS
-          let payments = []; // Initialise payments comme un tableau vide
-          document.querySelectorAll('.payment-row').forEach((row, index) => {
-            if(row.id.startsWith('temp_') === true ) {
-              // Pour un nouvel enregistrement (id non défini ou vide)
-              payments.push({
-                'booking_id': booking_id,
-                'type_paid': document.getElementById(`rowPaidType${row.id}`).value,
-                'value': document.getElementById(`rowPaid${row.id}`).value
-              });
-            }
-            else{
-              let id = document.getElementById(`rowPaidid${index}`).value;
-              if (id){
-                // Pour un enregistrement existant (avec un id défini)
+            let payments = []; // Initialise payments comme un tableau vide
+            document.querySelectorAll('.payment-row').forEach((row, index) => {
+              if(row.id.startsWith('temp_') === true ) {
+                // Pour un nouvel enregistrement (id non défini ou vide)
                 payments.push({
-                  'id': id, // Stocker l'id dans l'objet
                   'booking_id': booking_id,
-                  'type_paid': document.getElementById(`rowPaidType${index}`).value,
-                  'value': document.getElementById(`rowPaid${index}`).value
-                }); // Ajouter l'objet au tableau
+                  'type_paid': document.getElementById(`rowPaidType${row.id}`).value,
+                  'value': document.getElementById(`rowPaid${row.id}`).value
+                });
               }
-            }
-        });
-        let payments_filtred = payments.filter(item => item !== undefined);
-        $.ajax({
-          url: baseurl + "paids/upsert",
-          method: "POST",
-          data: { 'payments' : payments_filtred},
-          success: function (response_paid) {
-            let allSuccess = true;
-            let allErrors = [];
+              else{
+                let id = document.getElementById(`rowPaidid${index}`).value;
+                if (id){
+                  // Pour un enregistrement existant (avec un id défini)
+                  payments.push({
+                    'id': id, // Stocker l'id dans l'objet
+                    'booking_id': booking_id,
+                    'type_paid': document.getElementById(`rowPaidType${index}`).value,
+                    'value': document.getElementById(`rowPaid${index}`).value
+                  }); // Ajouter l'objet au tableau
+                }
+              }
+            });
+            let payments_filtred = payments.filter(item => item !== undefined);
+            $.ajax({
+              url: baseurl + "paids/upsert",
+              method: "POST",
+              data: { 'payments' : payments_filtred},
+              success: function (response_paid) {
+                let allSuccess = true;
+                let allErrors = [];
 
-            for (let key in response_paid) {
-                if (response_paid.hasOwnProperty(key)) {
-                    let res = response_paid[key];
-                    if (!res.success) {
-                        allSuccess = false;
-                    }
-                    if (res.errors && res.errors.length > 0) {
-                        allErrors.push(...res.errors);
+                for (let key in response_paid) {
+                    if (response_paid.hasOwnProperty(key)) {
+                        let res = response_paid[key];
+                        if (!res.success) {
+                            allSuccess = false;
+                        }
+                        if (res.errors && res.errors.length > 0) {
+                            allErrors.push(...res.errors);
+                        }
                     }
                 }
-            }
 
-            if (allSuccess) {
-              var encaissement = 0;
-              // Parcourez l'objet reponse
-              for (var key in response_paid) {
-                if (response_paid.hasOwnProperty(key)) {
-                  // Accédez à la valeur "value" de chaque objet
-                  var value = response_paid[key].data.value;
-                  
-                  // Checker si c'est bien un chiffre
-                  if (!isNaN(parseFloat(value))) {
-                    encaissement += parseFloat(value);
+                if (allSuccess) {
+                  var encaissement = 0;
+                  // Parcourez l'objet reponse
+                  for (var key in response_paid) {
+                    if (response_paid.hasOwnProperty(key)) {
+                      // Accédez à la valeur "value" de chaque objet
+                      var value = response_paid[key].data.value;
+                      
+                      // Checker si c'est bien un chiffre
+                      if (!isNaN(parseFloat(value))) {
+                        encaissement += parseFloat(value);
+                      }
+                    }
                   }
-                }
-              }
+                  
+                  if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                    document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
+                    document.getElementById('booking_paid_status_'+row_id).innerText = 
+                    encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
+                    encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
 
-              if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-                document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
-                document.getElementById('booking_paid_status_'+row_id).innerText = 
-                encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
-                encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
-
-              }
-              if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-                let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
-                if(encaissement < row_price){
-                  details_paid_rest_div.innerText = row_price-encaissement + " Fr";
+                  }
+                  if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                    let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
+                    if(encaissement < row_price){
+                      details_paid_rest_div.innerText = row_price-encaissement + " Fr";
+                    }
+                    let details_paid_div = document.getElementById('booking_details_progress_div');
+                    details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
+                    if(encaissement > 0){
+                      let convert_pourc = Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100);
+                      details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
+                    } else {details_paid_div.style.width = "24px"; }
+                    
+                  }
+                    closeModalById('addEventModal');
+                    showBanner("Paiements mise à jour avec succès !", true);
+                } else {
+                    showBanner("Echec de la mise à jour des paiements !", false);
+                    console.log('Erreurs: ', allErrors);
                 }
-                let details_paid_div = document.getElementById('booking_details_progress_div');
-                details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
-                if(encaissement > 0){
-                  let convert_pourc = Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100);
-                  details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
-                } else {details_paid_div.style.width = "24px"; }
-                 
-              }
-                closeModalById('addEventModal');
-                showBanner("Paiements mise à jour avec succès !", true);
-            } else {
-                showBanner("Echec de la mise à jour des paiements !", false);
-                console.log('Erreurs: ', allErrors);
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                
+                // En cas d'échec de la requête AJAX
+                showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
+                console.error("AJAX Error:", errorThrown); // Log the error for debugging
+              },
+            });
+
+        } else {
+          // Gestion des erreurs de validation
+          let errorMessages = "Erreur(s) lors de l'ajout";
+          for (const field in response.error) {
+            if (field.toLowerCase().includes('customer')) {
+              errorMessages += "<br><h2>Le champ : <u> Client</u> est manquant !</h2>";
+              // Sélectionnez l'élément qui aura les classes ajoutées
+              let Modalevent_Container_Customer_id = document.getElementById('Modalevent_Container_Customer_id');
+              // Ajoutez les classes
+              Modalevent_Container_Customer_id.classList.add('border-2', 'border-dashed', 'border-red-500','rounded-lg','blinking');
             }
-          },
-          error: function (jqXHR, textStatus, errorThrown) {
-            
-            // En cas d'échec de la requête AJAX
-            showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
-            console.error("AJAX Error:", errorThrown); // Log the error for debugging
-          },
-        });
-
-          } else {
-            // Gestion des erreurs de validation
-            let errorMessages = "Erreur(s) lors de l'ajout";
-            errorMessages += "<br>" + response.error.Customer_id;
-            showBanner(errorMessages, false);
           }
+          showBanner(errorMessages, false);
+        }
+        
         } catch (e) {
           console.error("Erreur dans l'ajout de la réservation:", e.message);
           showBanner("Erreur dans l'ajout de la réservation:"+  e.message, false);
@@ -650,73 +660,75 @@ async function update_add_formEvent(data) {
   }
 }
 
-function deleteEvent(event_id, modal_id = false, paids_id = false) {
+// TODO, deleted les paids_id associé aux event_id
+function deleteEvent(event, event_id, modal_id = false, paids_id = false) {
+  event.stopPropagation(); // Empêche la propagation de l'événement au parent
   openModal("ConfirmDeleteModal");
-
   let modal = document.getElementById("ConfirmDeleteModal");
   modal.style.zIndex = "999";
   let yesconfirmButton = document.getElementById(
     "ConfirmDeleteModal_yes_button"
-  );
+    );
+    console.log('modal',modal);
+    
+    yesconfirmButton.onclick = function () {
+      $.ajax({
+        url: baseurl + "booking/deleteBooking", // URL de mise à jour
+        method: "POST",
+        data: {
+          id: event_id,
+        },
+        success: function (response) {
+          if (calendar) {
+            calendar.refetchEvents();
+          } 
+        }
+      });
 
-  yesconfirmButton.onclick = function () {
-    $.ajax({
-      url: baseurl + "booking/deleteBooking", // URL de mise à jour
-      method: "POST",
-      data: {
-        id: event_id,
-      },
-      success: function (response) {
-        if (calendar) {
-          calendar.refetchEvents();
-        } 
+      // GESTIONNAIRE DE RETOUR D'AFFICHAGE
+      if (ModalInStack("ListEventModal")) {
+        row_type = "booking_list_row_";
+        document
+          .getElementById('booking_'+event_id)
+          .classList.add("line-through");
+        document
+          .getElementById('badge_id_'+event_id)
+          .style.cssText = 'background-color: gray;';
+        document
+          .getElementById('booking_a_'+event_id)
+          .style.cssText = ' cursor : default;';
+          
+          let svgs = document.querySelectorAll('#booking_a_' + event_id + ' svg');
+
+          svgs.forEach(function(svg) {
+            svg.style.color = 'gray';
+        });
+
+        document
+          .getElementById('booking_list_row_hr_'+event_id)
+          .classList.add("fade_out");
+        count_row_found--;
+        document.getElementById(
+          "booking_list_row_found"
+        ).innerText = `Réservation trouvé : ${count_row_found}`;
+      } else {
+        row_type = "row_booking_";
       }
-      });
-
-    // GESTIONNAIRE DE RETOUR D'AFFICHAGE
-    if (ModalInStack("ListEventModal")) {
-      row_type = "booking_list_row_";
-      document
-        .getElementById('booking_'+event_id)
-        .classList.add("line-through");
-      document
-        .getElementById('badge_id_'+event_id)
-        .style.cssText = 'background-color: gray;';
-      document
-        .getElementById('booking_a_'+event_id)
-        .style.cssText = ' cursor : default;';
-        
-        let svgs = document.querySelectorAll('#booking_a_' + event_id + ' svg');
-
-        svgs.forEach(function(svg) {
-          svg.style.color = 'gray';
-      });
-
-      document
-        .getElementById('booking_list_row_hr_'+event_id)
-        .classList.add("fade_out");
-      count_row_found--;
-      document.getElementById(
-        "booking_list_row_found"
-      ).innerText = `Réservation trouvé : ${count_row_found}`;
-    } else {
-      row_type = "row_booking_";
-    }
-    setTimeout(() => {
-      $("." + row_type + event_id).addClass("fade_out");
-    }, 200);
-    setTimeout(() => {
-      $("." + row_type + event_id).css("display", "none");
-    }, 700);
-    showBanner("Suppression réalisée avec succès", true);
-    closeModalById("ConfirmDeleteModal");
-    if (modal_id) {
-      closeModalById(modal_id);
-    }
+      setTimeout(() => {
+        $("." + row_type + event_id).addClass("fade_out");
+      }, 200);
+      setTimeout(() => {
+        $("." + row_type + event_id).css("display", "none");
+      }, 700);
+      showBanner("Suppression réalisée avec succès", true);
+      closeModalById("ConfirmDeleteModal");
+      if (modal_id) {
+        closeModalById(modal_id);
+      }
     };
 
-  let noconfirmButton = document.getElementById("ConfirmDeleteModal_no_button");
-  noconfirmButton.onclick = function () {
-    closeModalById("ConfirmDeleteModal");
-  };
+    let noconfirmButton = document.getElementById("ConfirmDeleteModal_no_button");
+    noconfirmButton.onclick = function () {
+      closeModalById("ConfirmDeleteModal");
+    };
 }

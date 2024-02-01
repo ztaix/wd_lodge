@@ -3,7 +3,7 @@ $modal_id = "DetailsEventModal";
 ?>
 
 <!-- DETAILS EVENTS - Modal Container -->
-<div id="<?=$modal_id?>-shadow_modal" class="fixed bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
+<div id="<?= $modal_id ?>-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('<?= $modal_id ?>')"></div>
 <div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="max-w-md lg:max-w-lg flex flex-grow hidden" >
     <div class="relative  mx-auto">
 

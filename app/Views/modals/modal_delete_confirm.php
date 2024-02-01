@@ -1,10 +1,11 @@
 <?php
 $modal_id = "ConfirmDeleteModal";
 ?>
-<div id="<?=$modal_id?>-shadow_modal" class="fixed bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
+<div id="<?= $modal_id ?>-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('<?= $modal_id ?>')"></div>
 
-<div id="<?= $modal_id ?>" tabindex="-1" class="fixed w-full h-full mx-auto inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
-    <div class="relative mx-auto bg-slate-200 rounded-lg dark:bg-gray-700 max-w-3xl w-full">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed inset-0 flex items-center justify-center p-4 hidden">
+
+    <div class="bg-transparent max-w-md lg:max-w-lg w-full overflow-auto m-auto">
 
         <!-- Modal Header -->
         <div class="relative mx-auto px-6 py-6 flex justify-between items-center bg-white rounded-lg shadow dark:bg-gray-700">

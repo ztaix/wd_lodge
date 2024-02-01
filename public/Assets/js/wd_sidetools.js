@@ -17,51 +17,6 @@ document.addEventListener("keydown", function (event) {
   }
 });
 
-function generateBookingElement(booking) {
-  let Total_price = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);
-  return `
-        <div class="flex space-x-4" >
-          <!-- Colonne 1 -->
-          <div class="flex-grow">
-            <div class="rounded-md text-white font-bold text-sm px-1 inline" style="background-color: ${
-              booking.service_color
-            }; ">#${booking.id}</div>
-            
-            <a href="#" id='booking_${
-              booking.id
-            }' onclick="showBookingDetailsFromID('${
-    booking.id
-  }');" class="text-blue-500 hover:underline ">${
-    booking.customer_name + " - " + booking.service_title
-  }</a>
-            <div class="flex">${getDayOfWeek(
-              format_date(booking.start)
-            )} ${format_date(booking.start)} 
-                <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                </svg>${getDayOfWeek(format_date(booking.end))} ${format_date(
-    booking.end
-  )}</div>
-          </div>
-          <!-- Colonne 2 -->
-          <div class="flex flex-wrap justify-end font-bold">
-            <div class="svg-delete text-right">
-                <svg onclick="deleteEvent(${
-                  booking.id
-                },'ListEventModal',event)" class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
-                </svg>
-            </div>
-            <div class="flex w-full  justify-end" >
-                <svg class="w-4 h-4 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1M2 5h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm8 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
-                </svg> ${Total_price} Fr
-            </div>
-          </div>
-        </div>
-        <hr class="my-2">
-      `;
-}
 
 // Fonction pour afficher les détails dans la modal
 function showBookingList(response, clickedDate) {
@@ -196,9 +151,8 @@ response.sort((a, b) => {
                 <div class="relative mt-1 group">
                   <a id="booking_a_${
                     booking.id
-                  }" href="#" class="text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" onclick="(function() { deleteEvent(${
-                    booking.id
-                  }) })()" >
+                  }" href="#" class="text-red-400 hover:text-red-600 dark:text-red-500 hover:dark:text-red-800" 
+                  onclick="deleteEvent(event, '${booking.id}','ListEventModal')" >
                     <span class="absolute opacity-0 mt-1 right-10 group-hover:opacity-100 group-hover:right-6 transition-all ease-in-out duration-300 text-xs ">Supprimer</span>
                     <svg  class="flex justify-center items-center  w-6 h-6  transition-transform duration-300 scale-100 group-hover:scale-75" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 7-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
@@ -722,8 +676,8 @@ async function showBookingDetailsFromID(id) {
     update_add_formEvent(Booking);
   };
   let button_delete = document.getElementById("booking_details_delete_button");
-  button_delete.onclick = function () {
-    deleteEvent(Booking, "DetailsEventModal");
+  button_delete.onclick = function (event) {
+    deleteEvent(event, Booking, "DetailsEventModal");
   };
 }
 
@@ -733,8 +687,9 @@ function get_booking_list_from_customer(data) {
   closeModal();
   openModal("CustomerInfoModal");
   let customer_id = data.getAttribute("data-id");
+  let table_th = document.getElementById("CustomerInfoModal_th");
+  let tbody = document.getElementById("CustomerInfoModal_tbody");
 
-  let tbody = document.getElementById("CustomerDetailsContainer");
   // Gestionnaire d'événements délégués pour les lignes de tableau avec la classe "booking-row"
   tbody.addEventListener("click", function (event) {
     if (event.target.classList.contains("booking-row")) {
@@ -749,17 +704,14 @@ function get_booking_list_from_customer(data) {
 
   let totalPaid = 0;
   let totalPrice = 0;
+  ajaxCall("booking/getBookingsFromCustomer", "GET", {customer_id: customer_id, Type_doc: "Facture"}, function(response) {
 
-  $.ajax({
-    url: baseurl + "booking/getBookingsFromCustomer",
-    method: "GET",
-    data: {
-      customer_id: customer_id,
-      Type_doc: "Facture",
-    },
-    success: function (response) {
-      let bookings = response[0]; // Les réservations
-      let customerInfo = response[1]; // Les informations du client
+    if (!emptyObj(response.customers) && response.success) {
+      table_th.style.visibility = 'visible';
+
+    // Traiter la réponse
+      let bookings = response.bookings; // Les réservations
+      let customerInfo = response.customers; // Les informations du client
 
       bookings.forEach(function (booking) {
         // Mise à jour des sommes totales
@@ -784,34 +736,36 @@ function get_booking_list_from_customer(data) {
           "cursor-pointer" // Ajout de la classe spécifique
         );
         // Ensuite, ajouter la classe conditionnelle
-        if (response.length > 1) {
+        if (response.bookings.length > 1) {
           newRow.classList.add("border-b");
         }
         newRow.setAttribute("data-booking-id", booking.id); // Ajout de l'ID de la réservation comme attribut
 
         newRow.innerHTML = `
-                <td scope="row" class="px-3 py-3">
-                  ${booking.Type_doc}
-                </td>
-                <td scope="row" class="py-3 text-xs ">
-                  #${booking.id}
+                <td scope="row" class="pl-3 py-3 text-center whitespace-nowrap">
+                  ${booking.Type_doc.charAt(0)} #${booking.id}
                 </td>
                 <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   ${booking.service_title}
                 </th>
-                <td class="flex flex-col justify-center items-center px-3 py-3">
-                <span>${format_date(booking.start,0,true)} </span>
-                  <span>
-                    <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
-                    </svg>
-                  </span>
-                  <span>${format_date(booking.end,0,true)} </span>
-                </td>
-                <td class="px-3 py-3 ">${
+                <td class="whitespace-nowrap overflow-hidden flex flex-col justify-center items-center" >
+                <div>${booking.Qt} Nuit(s)</div>  
+                  <div class="scroll-text">
+                    <div  class="inline-flex">
+                      <div clas="flex">${format_date(booking.start,0,true)}</div>
+                      <div class="flex items-center">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
+                        </svg>
+                      </div>
+                      <div clas="flex">${format_date(booking.end,0,true)}</div>
+                    </div>
+                  </div>
+                  </td>
+                <td class="px-3 py-3 text-center ">${
                   rowPaid
                 }</td>
-                <td class="px-3 py-3">${
+                <td class="px-3 py-3 text-center">${
                   rowPrice
                 }</td>
             `;
@@ -866,8 +820,40 @@ function get_booking_list_from_customer(data) {
               </div>
               
             </div>`;
-    },
+
+      if(response.error){
+        table_th.style.visibility = 'hidden';
+        let thElements = table_th.querySelectorAll('th');
+        let thcount = thElements.length;
+        let newRow = document.createElement("tr");
+        newRow.classList.add(
+          "bg-white",
+          "dark:bg-gray-800",
+          "dark:border-gray-700",
+          "booking-row",
+          "text-center",
+          "font-bold"
+        );
+        newRow.innerHTML = 
+        `<td  colspan="${thcount}">
+          <div class="flex justify-center items-center">
+              <svg class="w-10 h-10 text-gray-400 dark:text-slate-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 4h-13m13 16h-13M8 20v-3.3c0-.5.1-.9.4-1.2l1.6-2.9a1 1 0 0 0 0-1.2L8.4 8.5A2 2 0 0 1 8 7.3V4h8v3.3c0 .5-.1.9-.4 1.2L14 11.4a1 1 0 0 0 0 1.2l1.6 2.9c.3.3.4.7.4 1.2V20H8Z"/>
+              </svg>
+          </div>
+          <div class="flex justify-center items-center my-2">
+            ${response.error}
+          </div>
+        </td>`;
+        tbody.appendChild(newRow);
+
+      }
+    }
+    else{
+      showBanner(response.error,false);
+    }
   });
+
 }
 
 function getPaidFromBookingId(booking_id) {
@@ -1136,161 +1122,4 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
       },
     });
   });
-}
-
-// TOOLBOX
-function getDayOfWeek(dateString) {
-  let [day, month, year] = dateString.split("-");
-  let date = new Date(year, month - 1, day);
-  let dayOfWeek = date.getDay();
-  let days = [
-    "Dimanche",
-    "Lundi",
-    "Mardi",
-    "Mercredi",
-    "Jeudi",
-    "Vendredi",
-    "Samedi",
-  ];
-
-  return days[dayOfWeek];
-}
-
-function check_date(input_date){
-
-    // Vérifier si input_date est déjà un objet Date valide
-    if (input_date instanceof Date && !isNaN(input_date)) {
-      return input_date;
-    }
-  // Expression régulière pour vérifier les formats de date
-  const regexFormats = {
-    "YYYY-MM-DD": /^\d{4}-\d{2}-\d{2}$/,
-    "DD/MM/YYYY": /^\d{2}\/\d{2}\/\d{4}$/,
-    "DD-MM-YYYY": /^\d{2}-\d{2}-\d{4}$/,
-    "YYYY-MM-DD HH:MM:SS": /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
-  };
-  
-  // Trouver le format correspondant
-  let dateFormat;
-  for (let format in regexFormats) {
-    if (regexFormats[format].test(input_date)) {
-      dateFormat = format;
-      break;
-    }
-  }
-  
-  if (!dateFormat) {
-    return 'Format de date invalide';
-  }
-  
-  // Convertir la date en format compatible avec l'objet Date de JavaScript
-  if (dateFormat === "DD/MM/YYYY") {
-    const [day, month, year] = input_date.split("/");
-    input_date = `${year}-${month}-${day}`;
-  } else if (dateFormat === "DD-MM-YYYY") {
-    const [day, month, year] = input_date.split("-");
-    input_date = `${year}-${month}-${day}`;
-  }
-  
-  // Convertir la date en format compatible avec l'objet Date de JavaScript
-  let dateObj;
-  if (dateFormat === "DD/MM/YYYY" || dateFormat === "DD-MM-YYYY" || dateFormat === "YYYY-MM-DD") {
-    const [year, month, day] = input_date.split("-");
-    dateObj = new Date(year, month - 1, day); // Les mois sont de 0 à 11, traité comme date locale
-  } else {
-    // Pour les formats avec heure, traiter comme date locale
-    const parts = input_date.split(/[- :]/);
-    dateObj = new Date(parts[0], parts[1] - 1, parts[2], parts[3] || 0, parts[4] || 0, parts[5] || 0);
-  }
-  // Vérifier si la date est valide
-  if (isNaN(dateObj.getTime())) {
-    return 'Date invalide';
-  }
-  return dateObj;
-}
-
-function format_date(input_date, daysToAdd = 0, shorter = false) {
-let dateObj = check_date(input_date);
-
-// Ajouter des jours si nécessaire
-dateObj.setDate(dateObj.getDate() + daysToAdd);
-
-// Récupérer le jour, le mois et l'année
-let day = String(dateObj.getDate()).padStart(2, "0");
-let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Les mois sont de 0 à 11
-let year = dateObj.getFullYear();
-// Formater la date
-if (shorter === true) {
-  result = shortenYearInDate(`${day}-${month}-${year}`);
-} 
-else if(shorter == 'DD-MM') {
-  result = `${day}-${month}`;
-}
-else if(shorter == 'DD/MM') {
-  result = `${day}/${month}`;
-}
-else if(shorter == 'DD') {
-  result = `${day}`;
-}
-else if(shorter == 'DD-Mois-YY') {
-  result = `${day} ${moisFrancais[month].substring(0, 3)}. ${year}`;
-}
-else if(shorter == 'DD-Mois') {
-  result = ` ${day} ${moisFrancais[month]}`;
-}
-else if(shorter == 'Mois') {
-  result = moisFrancais[month];
-}
-else {
-  result = `${day}-${month}-${year}`;
-}
-  return result;
-}
-
-
-function format_date_toSql(input_date) {
-  // Découpe la date en ses composantes (jour, mois, année)
-  let [day, month, year] = input_date.split("-");
-
-  // Recompose la date au format souhaité
-  return `${year}-${month}-${day} 00:00:00`;
-}
-function shortenYearInDate(date) {
-  let parts = date.split("-");
-  let yearShort = parts[2].substring(2); // Prend les deux derniers chiffres de l'année
-  return `${parts[0]}-${parts[1]}-${yearShort}`;
-}
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-function DaysDifferenceStartEnd(start, end){
-
-  let start_obj = check_date(start);
-  let end_obj = check_date(end);
-
-  let timeDifference = end_obj.getTime() - start_obj.getTime();
-  let dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
-  return dayDifference;
-}
-
-
-/**
- * Calcule le prix total de la réservation.
- * 
- * @param {number} price - Le prix unitaire de la réservation.
- * @param {number} qtTraveller - Quantité de voyageurs.
- * @param {number} fee - Frais supplémentaires.
- * @param {number} tax - Taxe applicable par voyageur et par jour.
- * @param {number} days - Nombre de jours de la réservation.
- * @return {number} Le prix total de la réservation.
- */
-function totalBookingPriceCal(price, qtTraveller, tax, fee, days) {
-
-  let total = parseInt(price) + (parseInt(qtTraveller) * parseInt(tax) * parseInt(days)) + parseInt(fee);
-  return total;
-}
-
-function handleAddEventClick(date =false, service_id = false) {
-  resetForm('addEventModal',date,false,service_id);
-  openModal('addEventModal');
 }

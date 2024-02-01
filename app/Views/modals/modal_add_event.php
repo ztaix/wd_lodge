@@ -1,7 +1,7 @@
 <?php
 $modal_id = "addEventModal";
 ?>
-<div id="<?=$modal_id?>-shadow_modal" class="absolute bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
+<div id="<?= $modal_id ?>-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('<?= $modal_id ?>')"></div>
 
 <!-- ADD EVENTS - Modal Container -->
 <div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-auto bg-white border border-gray-200 rounded-lg dark:bg-slate-800 dark:border-gray-800 shadow-2xl" >
@@ -78,7 +78,7 @@ $modal_id = "addEventModal";
                             </svg>
                         </span>
                         
-                            <select id="ModaleventService_id" name="ModaleventService_id" class="block w-full text-md text-gray-900 rounded-e-lg text-md bg-transparent rounded-r-lg border-1 border-gray-300 appearance-none dark:text-white dark:bg-slate-700 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+                            <select id="ModaleventService_id" name="ModaleventService_id" class="block w-full text-md text-gray-900 rounded-e-lg text-md bg-transparent rounded-r-lg border-1 border-gray-300 appearance-none dark:text-white dark:bg-slate-700 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer cursor-pointer">
                                 <?php foreach ($options_services_id as $id => $title) : ?>
                                     <option value="<?php echo $id; ?>"><?php echo $title; ?></option>
                                 <?php endforeach; ?>
@@ -89,7 +89,7 @@ $modal_id = "addEventModal";
                         <div id="container_eventfullblocked" class="flex ml-4 w-fit p-2 bg-transparent border border-gray-200 dark:border-red-900 rounded-lg"  onclick="toggleTooltip(this)">
                             <input disabled id="Modaleventfullblocked" name="Modaleventfullblocked" type="checkbox" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-slate-800 dark:border-gray-600">
                             <label for="Modaleventfullblocked" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Privatiser</label>
-                            <span class="tooltiptext absolute invisible bg-black text-white text-xs rounded py-1 px-2 z-10 left-1/2 transform -translate-x-1/2 -translate-y-6">Sélectionner "Maison" pour privatiser</span>
+                            <span class="tooltiptext tooltip-hidden absolute bg-black text-white text-xs rounded py-1 px-2 z-10 left-1/2 transform  -translate-y-6">Sélectionner "Maison" pour privatiser</span>
                         </div>
                     </div>
 
@@ -101,7 +101,7 @@ $modal_id = "addEventModal";
                                     <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                                 </svg>
                             </div>
-                            <input id="ModaleventStart" name="ModaleventStart" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Date de début">
+                            <input id="ModaleventStart" name="ModaleventStart" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 cursor-pointer" placeholder="Date de début">
                         </div>
                         <span class="mx-4 text-gray-500">
                             <svg class="w-4 h-4  dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
@@ -115,7 +115,7 @@ $modal_id = "addEventModal";
                                     <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                                 </svg>
                             </div>
-                            <input id="ModaleventEnd" name="ModaleventEnd" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Date de fin">
+                            <input id="ModaleventEnd" name="ModaleventEnd" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 cursor-pointer" placeholder="Date de fin">
                         </div>
                     </div>
                     <div class="relative pt-2">
@@ -194,6 +194,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     const uniqueID = `temp_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
 
     // Optimiser l'accès au DOM
+    const qt = parseInt(document.getElementById("ModaleventQt").value, 10);
     const qtTraveller = parseInt(document.getElementById("ModaleventQtTraveller").value, 10);
     const price = parseInt(priceInput.value, 10);
     const serviceTax = parseInt(service.Tax, 10);
@@ -204,7 +205,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
                     .reduce((acc, input) => acc + Number(input.value), 0);
 
     let FillPaidInput = !isNaN(price) && !isNaN(qtTraveller) ?
-                        (price + (qtTraveller * serviceTax) + serviceFee) - sum : 0;
+                        (price + (qtTraveller * serviceTax * qt) + serviceFee) - sum : 0;
 
     const newPaymentRow = `
     <div class="flex payment-row mt-1" id='${uniqueID}'>
@@ -429,16 +430,36 @@ function updatePrice() {
 
         });
 
-    // Tooltip même pour mobile
+    //TOOLTIP (beaucop de code pour peu...)
     function toggleTooltip(element) {
-        var tooltip = element.querySelector('.tooltiptext');
-        if (tooltip.classList.contains('invisible')) {
-            tooltip.classList.remove('invisible');
-            tooltip.classList.add('visible');
-        } else {
-            tooltip.classList.remove('visible');
-            tooltip.classList.add('invisible');
-        }
+    var tooltip = element.querySelector('.tooltiptext');
+    var isTooltipHidden = tooltip.classList.contains('tooltip-hidden');
+    // Fermer toutes les tooltips ouvertes
+    document.querySelectorAll('.tooltiptext').forEach(function(el) {
+        el.classList.add('tooltip-hidden');
+    });
+    // Afficher la tooltip actuelle si elle était cachée
+    if (isTooltipHidden) {
+        tooltip.classList.remove('tooltip-hidden');
     }
+
+    }
+
+    document.addEventListener('touchstart', function(event) {
+        if (!document.getElementById('container_eventfullblocked').contains(event.target)) {
+            document.querySelectorAll('.tooltiptext').forEach(function(el) {
+                el.classList.add('tooltip-hidden');
+            });
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!document.getElementById('container_eventfullblocked').contains(event.target)) {
+            document.querySelectorAll('.tooltiptext').forEach(function(el) {
+                el.classList.add('tooltip-hidden');
+            });
+        }
+    });
+
 
 </script>

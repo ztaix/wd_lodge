@@ -5,7 +5,7 @@ $html_form = '';
 
 foreach ($All_config as $row) {
     switch ($row['data_type']) {
-        case "radio":
+        /*case "radio":
             if(FreetextToVartext($row['Title']) == "portee_de_reduction"){
                 $both = $global = $unit = '';
                 if(strtolower($row['Data']) == strtolower('Both')){
@@ -70,7 +70,7 @@ foreach ($All_config as $row) {
                 ';
             }
 
-            break;
+            break;*/
         case "input":
             if (strtolower($row['Title']) == strtolower('logo')) {
                 $html_form .= '
@@ -95,7 +95,8 @@ foreach ($All_config as $row) {
             }
             break;
         case "textarea":
-            if (FreetextToVartext($row['Title']) == 'regles_de_reduction') {
+            // !!! PORTé de réduction EN CONSTRUCTION !!!! //
+            /*if (FreetextToVartext($row['Title']) == 'regles_de_reduction') {
                 $discountArray = DiscountToArray($row['Data']);
                 $html_discount = '';
                 if(is_array($discountArray)){
@@ -154,7 +155,9 @@ foreach ($All_config as $row) {
     </div>
 </div>
     ';
-            } else {
+            } else {*/
+
+            if (FreetextToVartext($row['Title']) !== 'regles_de_reduction') {
                 $html_form .= '
                 <div class="relative mb-5">
                     <textarea name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '" rows="4" class="block p-3.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-500 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:border-2" >' . $row['Data'] . '</textarea>
@@ -168,9 +171,12 @@ foreach ($All_config as $row) {
     }
 }
 ?>
-<header>Configuration</header>
-<div id="config" class="max-w-screen-md bg-gray-50 dark:bg-gray-900">
+<div id="history" class="max-w-screen-md bg-gray-50 dark:bg-gray-900">
+    
+    <header class="mb-2">Configuration</header>
+    
     <div class="mx-auto px-4">
+            <!-- Start Container -->
         <form method="post" action="<?= base_url('/Config/save') ?>" enctype="multipart/form-data">
 
             <div class="mb-10">
@@ -179,7 +185,7 @@ foreach ($All_config as $row) {
                 <?= $html_form; ?>
 
             </div>
-            <button type="submit" class="sticky bottom-16 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl">Enregistrer</button>
+            <button type="submit" class="sticky bottom-4 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl">Enregistrer</button>
         </form>
     </div>
 </div>

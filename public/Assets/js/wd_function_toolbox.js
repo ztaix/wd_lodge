@@ -1,6 +1,72 @@
 //
 //USEFULL 
 //
+  // AJAX CALL
+  /*** Fonction générique pour effectuer des appels AJAX.
+  * 
+  * Cette fonction simplifie la réalisation d'appels AJAX en encapsulant la méthode jQuery `$.ajax`.
+  * Elle peut être utilisée pour envoyer des données à un serveur et gérer la réponse de manière asynchrone.
+  *
+  * @param {string} url - L'URL de la requête AJAX. Cette URL sera concaténée avec `baseurl` défini globalement.
+  * @param {string} method - La méthode HTTP à utiliser pour la requête (ex. "GET", "POST").
+  * @param {Object} data - Un objet contenant les données à envoyer avec la requête. Pour les requêtes GET, ceci est ajouté à l'URL.
+  * @param {function} successCallback - Une fonction de rappel à exécuter si la requête réussit. La réponse du serveur est passée à cette fonction.
+  * 
+  * La fonction utilise la méthode `$.ajax` de jQuery pour effectuer la requête. Elle gère automatiquement les succès et les erreurs.
+  * En cas de succès, la `successCallback` est appelée avec la réponse du serveur.
+  * En cas d'échec, un message d'erreur est loggé dans la console.
+  * 
+  * Exemple d'utilisation :
+  * 
+  * ajaxCall("customer/update", "POST", { customer_info: data }, function(response) {
+  *     if (response.status === "success") {
+  *         // Traiter la réponse en cas de succès
+  *     }
+  * });
+  */
+  function ajaxCall(url, method, data, successCallback) {
+    $.ajax({
+        url: baseurl + url, // Concaténer baseurl avec l'URL fournie
+        type: method, // Utiliser la méthode fournie (GET, POST, etc.)
+        data: data, // Utiliser les données fournies
+        success: function(response) {
+            // Appeler la fonction de rappel en cas de succès
+            if (typeof successCallback === 'function') {
+                successCallback(response);
+            }
+        },
+        error: function(xhr, status, error) {
+            // Vous pouvez gérer l'erreur ici ou ajouter un autre paramètre à la fonction pour un callback d'erreur
+            console.error("Erreur lors de la requête AJAX :", status, error);
+        }
+    });
+  }
+
+//OBJET manipulation
+function emptyObj(obj) {
+  return Object.keys(obj).length === 0;
+}
+
+  // TEXT / STRING manipulation
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  //Math
+  /**
+   * Calcule le prix total de la réservation.
+   * @param {number} price - Le prix unitaire de la réservation.
+   * @param {number} qtTraveller - Quantité de voyageurs.
+   * @param {number} fee - Frais supplémentaires.
+   * @param {number} tax - Taxe applicable par voyageur et par jour.
+   * @param {number} days - Nombre de jours de la réservation.
+   * @return {number} Le prix total de la réservation.
+   */
+  function totalBookingPriceCal(price, qtTraveller, tax, fee, days) {
+
+    let total = parseInt(price) + (parseInt(qtTraveller) * parseInt(tax) * parseInt(days)) + parseInt(fee);
+    return total;
+  }
 
   //COLOR
   function lightenHexColor(hex, percent) {
@@ -43,6 +109,97 @@
   }
   
   //DATES
+  function check_date(input_date){
+
+    // Vérifier si input_date est déjà un objet Date valide
+    if (input_date instanceof Date && !isNaN(input_date)) {
+      return input_date;
+    }
+  // Expression régulière pour vérifier les formats de date
+  const regexFormats = {
+    "YYYY-MM-DD": /^\d{4}-\d{2}-\d{2}$/,
+    "DD/MM/YYYY": /^\d{2}\/\d{2}\/\d{4}$/,
+    "DD-MM-YYYY": /^\d{2}-\d{2}-\d{4}$/,
+    "YYYY-MM-DD HH:MM:SS": /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+  };
+  
+  // Trouver le format correspondant
+  let dateFormat;
+  for (let format in regexFormats) {
+    if (regexFormats[format].test(input_date)) {
+      dateFormat = format;
+      break;
+    }
+  }
+  
+  if (!dateFormat) {
+    return 'Format de date invalide';
+  }
+  
+  // Convertir la date en format compatible avec l'objet Date de JavaScript
+  if (dateFormat === "DD/MM/YYYY") {
+    const [day, month, year] = input_date.split("/");
+    input_date = `${year}-${month}-${day}`;
+  } else if (dateFormat === "DD-MM-YYYY") {
+    const [day, month, year] = input_date.split("-");
+    input_date = `${year}-${month}-${day}`;
+  }
+  
+  // Convertir la date en format compatible avec l'objet Date de JavaScript
+  let dateObj;
+  if (dateFormat === "DD/MM/YYYY" || dateFormat === "DD-MM-YYYY" || dateFormat === "YYYY-MM-DD") {
+    const [year, month, day] = input_date.split("-");
+    dateObj = new Date(year, month - 1, day); // Les mois sont de 0 à 11, traité comme date locale
+  } else {
+    // Pour les formats avec heure, traiter comme date locale
+    const parts = input_date.split(/[- :]/);
+    dateObj = new Date(parts[0], parts[1] - 1, parts[2], parts[3] || 0, parts[4] || 0, parts[5] || 0);
+  }
+  // Vérifier si la date est valide
+  if (isNaN(dateObj.getTime())) {
+    return 'Date invalide';
+  }
+  return dateObj;
+  }
+
+  function format_date(input_date, daysToAdd = 0, shorter = false) {
+    let dateObj = check_date(input_date);
+    
+    // Ajouter des jours si nécessaire
+    dateObj.setDate(dateObj.getDate() + daysToAdd);
+    
+    // Récupérer le jour, le mois et l'année
+    let day = String(dateObj.getDate()).padStart(2, "0");
+    let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Les mois sont de 0 à 11
+    let year = dateObj.getFullYear();
+    // Formater la date
+    if (shorter === true) {
+      result = shortenYearInDate(`${day}-${month}-${year}`);
+    } 
+    else if(shorter == 'DD-MM') {
+      result = `${day}-${month}`;
+    }
+    else if(shorter == 'DD/MM') {
+      result = `${day}/${month}`;
+    }
+    else if(shorter == 'DD') {
+      result = `${day}`;
+    }
+    else if(shorter == 'DD-Mois-YY') {
+      result = `${day} ${moisFrancais[month].substring(0, 3)}. ${year}`;
+    }
+    else if(shorter == 'DD-Mois') {
+      result = ` ${day} ${moisFrancais[month]}`;
+    }
+    else if(shorter == 'Mois') {
+      result = moisFrancais[month];
+    }
+    else {
+      result = `${day}-${month}-${year}`;
+    }
+      return result;
+  }
+  
   function parseDate(str) {
     const [day, month, year] = str.split('-');
     return new Date(year, month - 1, day);
@@ -65,83 +222,45 @@
     return dd + '-' + mm + '-' + yyyy;
   }
 
-//
-// MODAL CUSTOMER UPSERT function module
-//
-  // Met à jour les champs du formulaire avec les données récupérées
-  function updateCustomersFormFields(customer) {
-    document.getElementById("customer_id").value = customer.customer_id;
-    document.getElementById("customer_name").value = customer.name;
-    document.getElementById("customer_phone").value = customer.phone;
-    document.getElementById("customer_email").value = customer.email;
-    document.getElementById("customer_comment").value = customer.comment;
-    document.getElementById("Update_customer_Modal_title").innerText = `Modifier Client #${customer.customer_id}`;
+  function DaysDifferenceStartEnd(start, end){
+
+    let start_obj = check_date(start);
+    let end_obj = check_date(end);
+  
+    let timeDifference = end_obj.getTime() - start_obj.getTime();
+    let dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+    return dayDifference;
   }
 
-  function getCustomerFormData() {
-    return {
-      Customer_id: document.getElementById("customer_id").value,
-      Name: document.getElementById("customer_name").value,
-      Phone: document.getElementById("customer_phone").value,
-      Email: document.getElementById("customer_email").value,
-      Comment: document.getElementById("customer_comment").value,
-    };
+  function shortenYearInDate(date) {
+    let parts = date.split("-");
+    let yearShort = parts[2].substring(2); // Prend les deux derniers chiffres de l'année
+    return `${parts[0]}-${parts[1]}-${yearShort}`;
   }
-function updateModal(data){
-  console.log('updateModal activé');
-  let row_id = Object.keys(data);
-  let d = data[row_id];
-  let row_price = totalBookingPriceCal(d.Price,d.QtTraveller,d.Tax,d.Fee,d.Qt);
+  
+  function format_date_toSql(input_date) {
+    // Découpe la date en ses composantes (jour, mois, année)
+    let [day, month, year] = input_date.split("-");
 
-  /*Comment: "coucoucoucou ouzopd opsdjqpsd qsd qsdqsd qsdqsd"
-Customer_id: "8"
-Fee: "0"
-Price: "12000"
-Qt: "1"
-QtTraveller: "3"
-Service_id: "2"
-Tax: "0"​​
-Type_doc: "Devis"
-end: "2024-01-27 00:00:00"​
-fullblocked: "0"
-start: "2024-01-26 00:00:00"*/
-  if(ModalInStack('ListEventModal')){  // UPDATE BOOKING
-    document.getElementById('booking_total_'+row_id).innerText =  row_price;
-    document.getElementById('booking_Comment_'+row_id).innerText = d.Comment;
-    document.getElementById('booking_startDay_'+row_id).innerText = getDayOfWeek(format_date(d.start));
-    document.getElementById('booking_start_'+row_id).innerText = format_date(d.start,0,'DD/MM');
-    document.getElementById('booking_endDay_'+row_id).innerText = getDayOfWeek(format_date(d.end));
-    document.getElementById('booking_end_'+row_id).innerText = format_date(d.end,0,'DD/MM');
-
-    //Recherche dans le tableau services_list (déclaré dans le footer) et affiche le titre correspondant
-    document.getElementById('booking_title_'+row_id).innerHTML = (services_list.find(item => item.Service_id === d.Service_id) || {}).Title + ' (' + DaysDifferenceStartEnd(d.start, d.end) + ' nuits)';
-    document.getElementById("badge_id_"+row_id).innerText = row_id;
-    document.getElementById("badge_type_"+row_id).innerText = d.Type_doc;
-
-    document.getElementById('booking_paid_'+row_id).innerText = d.encaissement ;
-    document.getElementById('booking_paid_status_'+row_id).innerHTML = 
-    d.encaissement >= row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
-    d.encaissement < row_price && d.encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
-
+    // Recompose la date au format souhaité
+    return `${year}-${month}-${day} 00:00:00`;
   }
 
-  if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-    let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
-    //PAIEMENT PARTIEL = RESTE à payer sinon VIDE
-    d.encaissement < row_price ? details_paid_rest_div.innerText = (row_price-d.encaissement) + " Fr" : details_paid_rest_div.innerText = '';
-
-    let details_paid_div = document.getElementById('booking_details_progress_div');
-    //PAIEMENT Encaissement
-    details_paid_div.innerText = d.encaissement > 0 ? d.encaissement + " Fr" : "0";
-    if(d.encaissement > 0){
-      let convert_pourc = Math.min(Math.round((d.encaissement / row_price) * 10000) / 100, 100);
-      details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
-    } else {details_paid_div.style.width = "24px"; }
-     
+  function getDayOfWeek(dateString) {
+    let [day, month, year] = dateString.split("-");
+    let date = new Date(year, month - 1, day);
+    let dayOfWeek = date.getDay();
+    let days = [
+      "Dimanche",
+      "Lundi",
+      "Mardi",
+      "Mercredi",
+      "Jeudi",
+      "Vendredi",
+      "Samedi",
+    ];
+  
+    return days[dayOfWeek];
   }
-}
 
-function handleAddEventClick(date =false, service_id = false) {
-  resetForm('addEventModal',date,false,service_id);
-  openModal('addEventModal');
-}
+

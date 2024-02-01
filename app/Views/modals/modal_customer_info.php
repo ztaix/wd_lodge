@@ -3,9 +3,10 @@ $modal_id= "CustomerInfoModal";
 ?>
 
 <!-- DETAILS EVENTS - Modal Container -->
-<div id="<?=$modal_id?>-shadow_modal" class="fixed bg-black hidden h-screen w-screen" onclick="closeModalById('<?= $modal_id ?>')"></div>
+<div id="<?= $modal_id ?>-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('<?= $modal_id ?>')"></div>
 
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="max-w-md lg:max-w-lg mx-auto flex flex-col flex-grow hidden" >
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="max-w-md lg:max-w-lg mx-auto flex h-screen hidden" >
+    <div class="flex flex-col flex-grow w-full max-w-md lg:max-w-lg mx-auto bg-transparent overflow-hidden">
 
             <!-- Modal Header -->
             <div class="px-2 py-2 lg:px-8 flex justify-between items-center bg-white rounded-b-lg shadow-md ">
@@ -23,8 +24,8 @@ $modal_id= "CustomerInfoModal";
             </div>
 
             <!-- Modal Body -->
-            <div class="flex justify-center px-4 py-4 sm:px-9 sm:pb-9">
-            <div class="flex flex-col">
+            <div class="flex justify-center p-4 sm:p-9 overflow-y-auto">
+            <div class="w-full">
 
                 <div class="bg-white border border-gray-200 rounded-lg dark:bg-slate-800 dark:border-gray-800 shadow-2xl">
                 
@@ -60,14 +61,13 @@ $modal_id= "CustomerInfoModal";
 
                 <h3 id="modal-title_customer_finance_total" class="flex items-center text-lg leading-6 font-medium"><!-- JavaScript print Date du jour --></h3>
                 
-                <div class="flex flex-col ">
+                <div class="overflow-x-auto mb-2">
+
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <thead id="CustomerInfoModal_th" class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th scope="col" class="px-4 py-3">
-                                    Type
-                                </th>
-                                <th scope="col" class="px-2 py-3">
+                                <th scope="col" class="pl-4 py-3">
+                                    Réf.
                                 </th>
                                 <th scope="col" class="px-4 py-3">
                                     Service
@@ -83,7 +83,7 @@ $modal_id= "CustomerInfoModal";
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-transparent border-0" id="CustomerDetailsContainer">
+                        <tbody class="bg-transparent border-0" id="CustomerInfoModal_tbody">
 
                             <!-- JavaScript will populate this area -->
 
@@ -93,5 +93,5 @@ $modal_id= "CustomerInfoModal";
                 </div>
                 </div>
             </div>
-
+    </div>
 </div>

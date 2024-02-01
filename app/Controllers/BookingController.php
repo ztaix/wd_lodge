@@ -360,10 +360,17 @@ class BookingController extends BaseController
         $Type_doc = $this->request->getGet('Type_doc');
         $customer_info = $this->CustomerModel->get_customer_info($customer_id);
         if ($customer_id) {
-            $data = $this->BookingModel->getBookingsFromCustomer($customer_id,$Type_doc);
-            return $this->response->setJSON([$data,$customer_info]);
+            $bookings = $this->BookingModel->getBookingsFromCustomer($customer_id,$Type_doc);
+            if (!empty($bookings)) {
+                return $this->response->setJSON(['success' => true, 'error'=> null, 'bookings' => $bookings, 'customers' => $customer_info]);
+            }
+            else{
+                $error = "Aucune réservation trouvé.";
+                return $this->response->setJSON(['success' => true, 'error'=> $error, 'bookings' => $bookings, 'customers' => $customer_info]);
+            }
         } else {
-            var_dump('ERROR, paramètre manquant: ', $customer_id);
+            $error = "ERROR, Aucun client n'a été trouvé avec l'ID : " . $customer_id;
+            return $this->response->setJSON(['success' => false, 'error'=> $error, 'bookings' => null, 'customers' => $customer_id]);
         }
     }
 
@@ -413,7 +420,7 @@ class BookingController extends BaseController
             return $this->response->setJSON(['success' => true, 'id' => $result['id'], 'data' => $booking_data]);
         } else {
             $errors = $this->BookingModel->errors() ? $this->BookingModel->errors() : 'Unknown error';
-            return $this->response->setJSON(['success' => false, 'error' => $errors, 'booking_data' => $booking_data]);
+            return $this->response->setJSON(['success' => false, 'error' => $errors, 'data' => $booking_data]);
         }
     }
 
