@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
               return; // Arrêter l'exécution de la fonction ici
             }
             $.ajax({
-              url: "/kkl/public/booking/search",
+              url: baseurl  + "/booking/search",
               method: "GET",
               data: { text: searchInput },
               success: function (response, data) {
