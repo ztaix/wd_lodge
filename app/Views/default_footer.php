@@ -102,8 +102,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 if(!window.location.href.includes('Config')){
 
-
-
     // Initialisation du select recherche
     $(document).ready(function() {
 

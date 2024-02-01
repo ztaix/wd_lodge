@@ -9,13 +9,13 @@ $modal_id = "DetailsEventModal";
 
 
         <!-- Modal Header -->
-        <div class="px-2 py-2 lg:px-8 flex justify-between items-center bg-white rounded-b-lg shadow-md ">
+        <div class="px-2 py-2 lg:px-8 flex justify-between items-center bg-white dark:bg-slate-800  rounded-b-lg shadow-md ">
 
             <div class="flex-grow text-center">
                 <h3  class="text-center text-2xl font-bold text-gray-800 dark:text-white">Détails de réservation</h3>
             </div>    
-            <div>
-                <button type="button" class=" text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal" onclick="closeModalById('<?= $modal_id ?>')">
+            <div class=" text-gray-400 bg-transparent hover:bg-gray-200 hover:dark:bg-gray-600 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                <button type="button"  data-modal-hide="authentication-modal" onclick="closeModalById('<?= $modal_id ?>')">
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
@@ -31,7 +31,7 @@ $modal_id = "DetailsEventModal";
 
             <div class="flex flex-col">
 
-                <p class="text-xs flex justify-between m-2 text-white">
+                <p class="text-xs flex justify-between m-2 text-gray-800 dark:text-white">
                     <span id="booking_details_created_span" class="flex items-center">créer le :</span>
                     <span id="booking_details_updated_span" class="flex items-center">modifier le: </span>
                 </p>
@@ -101,8 +101,9 @@ $modal_id = "DetailsEventModal";
                                     Encaissé
                                 </span>
                             </span>
-                            <div class="w-full h-6 bg-slate-300 rounded-full dark:bg-gray-700">
+                            <div class="inline-flex w-full h-6 bg-slate-300 rounded-full dark:bg-gray-700">
                                 <div id="booking_details_progress_div" class="bg-green-600 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full h-full flex items-center justify-center"></div>
+                                <div id="booking_details_progress_rest_div" class="flex flex-grow text-xs font-medium text-gray-500 text-center p-0.5 leading-none rounded-full h-full items-center justify-center"></div>
                             </div>
                         </div>
                         <p class="flex justify-between items-center text-base text-gray-700 dark:text-gray-400 my-2">

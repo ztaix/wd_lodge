@@ -139,6 +139,7 @@ header {
   .fc-event {
     background: none;
     border: none;
+    cursor: pointer;
 }
 .fc-theme-standard td, .fc-theme-standard th{
   border: 0;
@@ -156,6 +157,7 @@ header {
 .fc-daygrid-day-top .fc-daygrid-day-number {
     font-size: 3vh; /* Augmentez la taille des chiffres du jour si nécessaire */
     z-index: 30;
+    cursor: pointer;
   }
 
 .fc-daygrid-day-top .fc-daygrid-day-top-month {
@@ -173,8 +175,13 @@ header {
   right: 0px;
   position: absolute;
 }
+
+
 .fc .fc-daygrid-event-harness, .fc-direction-ltr .fc-daygrid-event.fc-event-end, .fc-direction-rtl .fc-daygrid-event.fc-event-start, .fc-event .fc-event-main {
   height: 100%;
+}
+.fc-daygrid-day.fc-day-today {
+  border: 2px solid black;
 }
 
 /*** DARK MODE ***/
@@ -192,6 +199,7 @@ header {
 .dark .fc-daygrid-day.fc-day-today {
   background-color:#6e7e98;
   color: black;
+  border: 2px solid black;
 }
 .dark .fc-theme-standard td .fc-daygrid-day {
   border-bottom: 2px;
@@ -465,4 +473,73 @@ header {
 
 .Add_Event_blinking:hover{
   animation: blink 1.5s forwards; /* Applique l'animation slideUp */
+}
+
+
+.ball{
+  border-radius: 100%;
+  height: 25%;
+  width: 25%;
+  bottom: 0;
+  z-index: 99;
+}
+
+.ball-start {
+  left: 5%;
+  animation: start-bounce 700ms cubic-bezier(.20,-0.01,.1,.8) infinite;
+  animation-fill-mode: both;
+  animation-direction: alternate; 
+}
+.ball-end {
+  right:5%;
+  animation: end-bounce 4000ms linear infinite;
+  animation-fill-mode: both;
+  animation-delay: 1000ms;
+  animation-direction:normal; 
+}
+
+@keyframes start-bounce {
+  0% {
+    bottom: 5%;
+  }
+
+  100% {
+    bottom: 20%;
+  }
+}
+@keyframes end-bounce {
+  0% {
+    right: 5%;
+    bottom: -30%;
+    opacity: 0.5;
+  }
+  15%{
+    right: 5%;
+    bottom: 5%;
+    opacity: 1;
+  }
+  85%{
+    right: 5%;
+    bottom: 5%;
+    opacity: 1;
+  }
+
+  100%{
+    right: -10%;
+    bottom: 5%;
+    opacity: 0.3;
+  }
+
+}
+
+
+@keyframes shadow {
+  from {
+    opacity: 0.5;
+    transform: scale(100%);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0);
+  }
 }

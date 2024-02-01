@@ -42,16 +42,22 @@ $modal_id = "addEventModal";
                     <div class="flex w-full items-center">
                         <div class="flex-grow">
                             <!-- Votre liste déroulante des clients -->
-                            <label for="ModaleventCustomer_id" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Client :</label>
-                            <div class="flex">
+                            <div id="Modalevent_Container_Customer_id" class="flex">
+                                <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                        <path fill-rule="evenodd" d="M12 20a8 8 0 0 1-5-1.8v-.6c0-1.8 1.5-3.3 3.3-3.3h3.4c1.8 0 3.3 1.5 3.3 3.3v.6a8 8 0 0 1-5 1.8ZM2 12a10 10 0 1 1 10 10A10 10 0 0 1 2 12Zm10-5a3.3 3.3 0 0 0-3.3 3.3c0 1.7 1.5 3.2 3.3 3.2 1.8 0 3.3-1.5 3.3-3.3C15.3 8.6 13.8 7 12 7Z" clip-rule="evenodd"/>
+                                    </svg>
+                                </span>                               
                                 <select id="ModaleventCustomer_id" name="ModaleventCustomer_id" class="w-full text-md text-gray-900 border border-gray-300 rounded-l-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" style="width:100%;">
                                     <?php foreach ($options_customers_id as $id => $Name) : ?>
                                         <option value="<?php echo $id; ?>"><?php echo $Name; ?></option>
                                     <?php endforeach; ?>
                                 </select>
+                            
                             </div>
                         </div>
                     </div>
+  
                     <div class="relative flex">
                         
                         <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
@@ -68,7 +74,7 @@ $modal_id = "addEventModal";
                         <div class="flex flex-grow">
                         <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
                             <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
+                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
                             </svg>
                         </span>
                         
@@ -134,14 +140,14 @@ $modal_id = "addEventModal";
                         <div id="payments-subcontainer"></div>
                     </div>
                     <div class="flex justify-end">
-                        <div onclick="addPaymentRow()" class="flex w-fit p-2 cursor-pointer rounded-lg text-gray-600 dark:text-white bg-slate-400 hover:bg-slate-300 focus:ring-4 focus:ring-slate-300 font-medium text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-500 focus:outline-none dark:focus:ring-slate-800 shadow-sm" style="margin-top: 0.5rem;">Ajouter un encaissement</div>
+                        <div onclick="addPaymentRow()" class="flex w-fit p-2 cursor-pointer rounded-lg text-gray-600 dark:text-white bg-slate-400 hover:bg-slate-300 focus:ring-4 focus:ring-slate-300 font-medium text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-500 focus:outline-none dark:focus:ring-slate-800 shadow-sm dark:shadow-black" style="margin-top: 0.5rem;">Ajouter un encaissement</div>
                     </div>
                     <div position="relative">
                         <label for="ModaleventComment" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Commentaire :</label>
                         <textarea id="ModaleventComment" name="ModaleventComment" class="block p-2.5 w-full text-md text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Une chose à dire, c'est ici..."></textarea>
                     </div>
 
-                    <button type="button" id="cancel_submit_form" type="button" onclick="closeModalById('<?= $modal_id ?>');" class="sticky bottom-4 float-left mt-10 text-gray-600 bg-slate-200 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 font-bold rounded-full text-md px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-slate-800 focus:outline-none dark:focus:ring-gray-800 border-gray-500 shadow-xl shadow-gray-600">Annuler</button>
+                    <button type="button" id="cancel_submit_form" type="button" onclick="closeModalById('<?= $modal_id ?>');" class="sticky bottom-4 float-left mt-10 text-gray-600 dark:text-gray-200 bg-slate-200 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 font-bold rounded-full text-md px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-slate-800 focus:outline-none dark:focus:ring-gray-800 border-gray-500 shadow-xl shadow-gray-600">Annuler</button>
                     <button type="button" id="add_submit_form" type="button" onclick="addEvent();" class="sticky bottom-4 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-full text-md px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 border border-blue-500 shadow-xl shadow-blue-600">Enregistrer</button>
 
                 </form>

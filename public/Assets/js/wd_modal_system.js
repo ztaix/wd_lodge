@@ -10,7 +10,7 @@ function urlLocation(){
    let dernierSegment = segments.pop() || segments.pop();
    
    let returnSegment = dernierSegment.toLowerCase().replace(/[^a-z0-9]/g, '');
-   returnSegment = returnSegment == '' ||  baseurl == window.location.href ||  baseurl == 'public' ? "calendar" : returnSegment;
+   returnSegment = returnSegment == '' || returnSegment == 'public' ||  baseurl == window.location.href ? "calendar" : returnSegment;
    return returnSegment;
 }
 
@@ -45,7 +45,7 @@ function showSearch() {
   }
 
   
-async function resetForm(modalId, start = false , end = false){
+async function resetForm(modalId, start = false , end = false, service_id = false){
   if(modalId == "addEventModal"){
     const form_addEventModal = [
       "Modaleventid",
@@ -68,13 +68,20 @@ async function resetForm(modalId, start = false , end = false){
         document.getElementById(input).value = 1;
       }
       else if( input == "ModaleventService_id" ){
-        document.getElementById(input).value = discountservice[0].Service_id;
+        if(service_id){
+          document.getElementById(input).value = service_id;
+        }
+        else{
+          service_id = discountservice[0].Service_id;
+          document.getElementById(input).value = discountservice[0].Service_id;
+        }
       }
       else if( input == "ModaleventCustomer_id"){
         let ModaleventCustomer_id = $('#ModaleventCustomer_id'); // Utilisez jQuery pour sélectionner l'élément
         ModaleventCustomer_id.val(1); // Changez la valeur
         ModaleventCustomer_id.trigger('change'); // Mettez à jour l'affichage de Select2
-        
+        ModaleventCustomer_id.focus();
+        document.getElementById('Modalevent_Container_Customer_id').classList.add('blinking');        
       }
       else {
         document.getElementById(input).value = '';
@@ -100,7 +107,7 @@ async function resetForm(modalId, start = false , end = false){
         div.parentNode.removeChild(div);
       });
     } 
-    await loadAndInitDatepicker(1,date_start,date_end);
+    await loadAndInitDatepicker(service_id,date_start,date_end);
   }
 }
 

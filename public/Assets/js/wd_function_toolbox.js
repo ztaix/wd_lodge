@@ -88,9 +88,10 @@
     };
   }
 function updateModal(data){
+  console.log('updateModal activé');
   let row_id = Object.keys(data);
   let d = data[row_id];
-  let row_price =  totalBookingPriceCal(d.Price,d.QtTraveller,d.Tax,d.Fee,d.nDays);
+  let row_price = totalBookingPriceCal(d.Price,d.QtTraveller,d.Tax,d.Fee,d.Qt);
 
   /*Comment: "coucoucoucou ouzopd opsdjqpsd qsd qsdqsd qsdqsd"
 Customer_id: "8"
@@ -118,19 +119,29 @@ start: "2024-01-26 00:00:00"*/
     document.getElementById("badge_type_"+row_id).innerText = d.Type_doc;
 
     document.getElementById('booking_paid_'+row_id).innerText = d.encaissement ;
-    document.getElementById('booking_paid_status_'+row_id).innerText = 
+    document.getElementById('booking_paid_status_'+row_id).innerHTML = 
     d.encaissement >= row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
     d.encaissement < row_price && d.encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
 
   }
 
   if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+    let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
+    //PAIEMENT PARTIEL = RESTE à payer sinon VIDE
+    d.encaissement < row_price ? details_paid_rest_div.innerText = (row_price-d.encaissement) + " Fr" : details_paid_rest_div.innerText = '';
+
     let details_paid_div = document.getElementById('booking_details_progress_div');
+    //PAIEMENT Encaissement
     details_paid_div.innerText = d.encaissement > 0 ? d.encaissement + " Fr" : "0";
-    if(encaissement > 0){
+    if(d.encaissement > 0){
       let convert_pourc = Math.min(Math.round((d.encaissement / row_price) * 10000) / 100, 100);
       details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
     } else {details_paid_div.style.width = "24px"; }
      
   }
+}
+
+function handleAddEventClick(date =false, service_id = false) {
+  resetForm('addEventModal',date,false,service_id);
+  openModal('addEventModal');
 }

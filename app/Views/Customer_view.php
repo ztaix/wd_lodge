@@ -31,6 +31,7 @@ $data['options_customers_id'] = $options_customers_id;
 <?php echo view('modals/modal_booking_details', $data); ?>
 <?php echo view('modals/modal_bookings_list', $data); ?>
 <?php echo view('modals/modal_customer_info', $data); ?>
+<?php echo view('modals/modal_delete_confirm'); ?>
 
 <div id='calendar' class="hidden text-gray-900 dark:text-white  bg-slate-50 dark:bg-slate-800"></div>
 

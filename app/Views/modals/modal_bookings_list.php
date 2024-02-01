@@ -12,7 +12,7 @@ $modal_id = "ListEventModal";
 
         <div class="flex-grow text-center">
         <div class="w-full inline-flex p-2 mx-2 cursor-pointer Add_Event_blinking" onclick="handleAddEventClick()">
-                        <h2 class="px-4">Ajouter une réservation : </h2>
+                        <h1 class="px-4">Ajouter une réservation : </h1>
     
                         <h2 id="modal-title" class="text-center font-bold -ml-2"><!-- JavaScript print Date du jour --></h2>
                     </div>
@@ -39,6 +39,7 @@ $modal_id = "ListEventModal";
                             <div id="bookingListContainer" class="w-full text-md text-slate-500">
                                 <!-- JavaScript will populate this area -->
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -46,10 +47,3 @@ $modal_id = "ListEventModal";
         </div>
     </div>
 </div>
-
-<script>
-    function handleAddEventClick() {
-        resetForm('addEventModal');
-        openModal('addEventModal');
-    }
-</script>

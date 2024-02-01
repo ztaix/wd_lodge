@@ -1,4 +1,3 @@
-var count_row_found = 0;
 var calendar; // Déclaration dans la portée globale
 var clickedDate = null; // Défini dans la portée globale
 
@@ -133,22 +132,13 @@ document.addEventListener("DOMContentLoaded", function () {
       let nonShadowDotsHtml = "";
 
       let firstdayHtml = "";
-      let currentdayHtml ="";
+      let firstdayHtmlNumber = "";
       let lastdayHtml = "";
+      let lastdayHtmlNumber = "";
       
       let nEventDay = Object.keys(bookings).length; // Vérifier le nom de service loués
       let fullblockedFound = false; // Vérifie si il existe dans chaque jour une privatisation
-      
-      let fullServiceBooked = false; // Vérifie si tous les services sont bloqué 
 
-      let margin_init = 0;
-      // Ajouter une pastille pour chaque réservation avec la couleur du service
-      /*colors.forEach(function (colors) {
-        dotsHtml += `<span class="event-dot" style="background-color: ${colors};margin-left: ${margin_init}px"></span>`;
-        margin_init+= 7;
-
-        bookings.some(objet => objet.fullblockeds === 1);
-      });*/
       const serviceTitlesObj = services_list
       .filter(service => service.fullblocked !== "1")
       .reduce((obj, service) => {
@@ -194,101 +184,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
           let message = "";
           let color = "";
-          
-          if (isBookingStartDay && COUNTisBookingStartDay === 0) {
-            COUNTisBookingStartDay++;
-            firstdayHtml += `<div class="relative flex justify-start flex-grow mr-0.5 mb-0.5"  id="FIRST"> 
-            <svg class="w-4 h-4 text-gray-800 dark:text-white"version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-            <g id="XMLID_1_">
-              <path id="XMLID_5_" d="M175.9,256H15.8v-64.2h160.1v-64.2l95.9,95.9l-95.9,96.8V256z M496.2,0v416.1L304.4,512v-95.9H111.7V287.7   h32.6v95.9h160.1V95.9l128.5-64.2H144.3v128.5h-31.7V0H496.2z"/>
-            </g>
-            </svg>            </div>`;  
-          }
-          else if (isBookingStartDay && COUNTisBookingStartDay > 0){
-            COUNTisBookingStartDay++;
-            firstdayHtml += `<div class="absolute left-4 bottom-1.5 text-gray-800 dark:text-white font-bold">${COUNTisBookingStartDay}</div>`
-          }
-          if (isBookingEndDay && COUNTisBookingEndDay === 0) {
-            COUNTisBookingEndDay++;
-            lastdayHtml += `<div class="relative w-full flex justify-end  mb-0.5" id="END" >
-            <svg class="w-4 h-4 text-gray-800 dark:text-white" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-            <g id="XMLID_1_">
-              <path id="XMLID_5_" d="M400.3,320.2V256H240.2v-64.2h160.1v-64.2l95.9,95.9L400.3,320.2z M367.7,287.7v128.5H207.6V512L15.8,416.1   V0h351.9v160.1h-31.7V31.7h-256l128.5,64.2v287.7H337v-95.9H367.7z"/>
-            </g>
-            </svg>
-          </div>`;  
-          }          
-          else if (isBookingEndDay && COUNTisBookingEndDay > 0){
-            COUNTisBookingEndDay++;
-            lastdayHtml += `<div class="absolute right-4 bottom-1.5 text-gray-800 dark:text-white font-bold">${COUNTisBookingEndDay}</div>`
-          }
-
+      
+          // Status Color
           if(NotBookedServicesCount < availableServicesCount && !fullblockedFound){ // Occupé et disponible
             color = "yellow";
-            message = "<span class='w-2/5 h-2/5 p-1 flex justify-center rounded-full bg-"+color+"-300 dark:bg-"+color+"-800'>"+nEventDay+"/"+availableServicesCount+"</span>";
+            message = "<span class='p-1 -m-1 text-xs flex justify-center rounded-br-lg bg-yellow-200 dark:bg-yellow-500 opacity-50 group-hover:opacity-100'>"+nEventDay+"/"+availableServicesCount+"</span>";
           }
-          else if(NotBookedServicesCount === 0 && !fullblockedFound){ // Complet
+          else if( NotBookedServicesCount === 0 || (COUNTisBookingStartDay == 1  && fullblockedFound) || (fullblockedFound && nEventDay == 1) ){ // privatisé
             color = "red";
-            message = "";
-          }
-          else if( (COUNTisBookingStartDay == 1  && fullblockedFound) || (fullblockedFound && nEventDay == 1) ){ // privatisé
-            color = "red";
-            message = "<span class='w-2/5 h-2/5 p-1 flex justify-center rounded-full bg-"+color+"-100 dark:bg-"+color+"-800'>"+nEventDay+"/"+availableServicesCount+"</span>";
-          }
-          else if( COUNTisBookingStartDay > 1 && fullblockedFound || (fullblockedFound  && nEventDay > 1)|| (nEventDay > availableServicesCount)){ // Erreur dans les résa
-            color = "purple";
-            message = "<span class='bg-red-500 dark:bg-red-200 rounded-full p-1 text-"+color+"-500 dark:text-"+color+"-300'>!</span>";
+            message == "<span class='bg-red-200 dark:bg-red-500 rounded-full p-1 text-red-500 dark:text-red-300'></span>";
           }
           else{
             html_construct = ``; 
           }
+          // Start End Animation
+          if (isBookingStartDay) {
+            COUNTisBookingStartDay++;
+            firstdayHtml = `
+            <div class="w-full flex justify-start">
+                <div class="absolute w-1/4 h-1/4 bottom-0 rounded-full ball-start bg-${color}-200  dark:bg-${color}-500">
+                  <span class="blinking flex justify-center text-gray-800 dark:text-white font-bold mx-auto">${COUNTisBookingStartDay}</span>
+                </div>
+            </div>
+            `;
+          }
+          if (isBookingEndDay ) {
+            COUNTisBookingEndDay++;
+            lastdayHtml = `
+            <div class="w-full flex justify-end">
+              <div class="absolute w-1/4 h-1/4 bottom-0 rounded-full ball-end bg-${color}-200 dark:bg-${color}-500 ">
+                <span class="flex justify-center text-gray-800 dark:text-white font-bold mx-auto">${COUNTisBookingEndDay}</span>
+              </div>
+            </div>
+        `;  
+          }  
 
-
-          html_construct = `<div class="absolute text-black dark:text-white bg-${color}-200 dark:bg-${color}-700 w-full h-full">
+          html_construct = `<div class="absolute text-black dark:text-white bg-${color}-300 dark:bg-${color}-700 w-full h-full">
           <div class="relative h-full p-1 flex justify-start items-start">${message}</div></div>`; 
-          /*
-          let status = "";
-          let facture = booking.types_docs.charAt(0)=="F"? booking.types_docs.charAt(0):"";
-          let total_price = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);
-          
-            if(parseInt(booking.paids) >= total_price){
-
-                // PAID
-                status = `
-                <b class="flex justify-center items-center z-50" style="color: ${lightenHexColor(booking.colors,-65)};">${facture=="F"?facture:""}</b>
-                <div class="absolute" style="width: 15px;
-                height: 15px;
-                border-radius: 15px 15px 15px 15px;
-                background: linear-gradient(to top, green 10%, transparent 50%)
-            "></div>`;
-                class_paid = "paid"; 
-                margin_init = '2';
-            } else {
-                // UNPAID
-                status = `<b class="flex justify-center items-center" style="color: ${lightenHexColor(booking.colors,-50)};margin-top: 1px;">${facture=="F"?facture:""}</b>`;
-                class_paid = "unpaid";            
-
-            }
-
-
-            let fullblocked = booking.fullblockeds =='1';
-            let fullblocked_html  = fullblocked ? `<div class="absolute rounded-full p-2 border-2 border-spacing-2 shadow-md border-red-600"></div>` : "";
-            
-            let dotHtml = `<span id="event-dot" class="event-dot ${class_paid} mb-2 flex items-end justify-center" style="background-color: ${booking.colors}; margin-left: ${margin_init}px">${status} ${fullblocked_html}</span>`;
-            if (class_paid === "unpaid") {
-                shadowDotsHtml += dotHtml;
-            } else {
-                nonShadowDotsHtml += dotHtml;
-            }
-            */
         }
     }
 
-   let dotsHtml =  html_construct + firstdayHtml + lastdayHtml;
-  // let dotsHtml =  lastdayHtml + firstdayHtml + shadowDotsHtml + nonShadowDotsHtml;
+   let dotsHtml =  html_construct + firstdayHtml + firstdayHtmlNumber + lastdayHtml + lastdayHtmlNumber;
     // Créer un élément HTML pour représenter l'événement
     let eventElement = document.createElement("div");
-    eventElement.className = `relative flex justify-center items-end h-full`;
+    eventElement.className = `group relative flex justify-center items-end h-full overflow-hidden`;
     eventElement.innerHTML = dotsHtml;
       return {
         domNodes: [eventElement],
@@ -375,19 +314,7 @@ function updateEventFromDetails() {
         let updatedData = {};
         updatedData[response.id] = response.data;
         showBanner("Événement mise à jour avec succès !", true);
-        updateModal(updatedData);
-        /*if(ModalInStack('ListEventModal')){ // UPDATE SI RESPONSE VALIDE !! HORS PAIEMENTS !!
-          document.getElementById('booking_total_'+row_id).innerText =  row_price;
-          document.getElementById('booking_Comment_'+row_id).innerText = response.data.Comment;
-          document.getElementById('booking_startDay_'+row_id).innerText = getDayOfWeek(format_date(response.data.start));
-          document.getElementById('booking_start_'+row_id).innerText = format_date(response.data.start,0,'DD/MM');
-          document.getElementById('booking_endDay_'+row_id).innerText = getDayOfWeek(format_date(response.data.end));
-          document.getElementById('booking_end_'+row_id).innerText = format_date(response.data.end,0,'DD/MM');
-          //Recherche dans le tableau services_list (déclaré dans le footer) et affiche le titre correspondant
-          document.getElementById('booking_title_'+row_id).innerHTML = (services_list.find(item => item.Service_id === response.data.Service_id) || {}).Title + ' (' + DaysDifferenceStartEnd(response.data.start, response.data.end) + ' nuits)';
-          document.getElementById("badge_id_"+row_id).innerText = row_id;
-          document.getElementById("badge_type_"+row_id).innerText = response.data.Type_doc;
-        }*/
+        
         if (calendar) {
           calendar.refetchEvents();
         }
@@ -450,23 +377,14 @@ function updateEventFromDetails() {
                     encaissement += parseFloat(value);
                   }
                 }
-              }                
-              if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-                document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
-                document.getElementById('booking_paid_status_'+row_id).innerText = 
-                encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYÉ</b>":
-                encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYÉ</b>"  ;
+              }  
+              // Récupére l'ID de la résa
+              let updatedData_encaissement = Object.keys(updatedData);
+              //Ajouter au tableau d'update l'encaissement total
+              updatedData[updatedData_encaissement[0]].encaissement = encaissement;
 
-              }
-              if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-                let details_paid_div = document.getElementById('booking_details_progress_div');
-                details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
-                if(encaissement > 0){
-                  let convert_pourc = Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100);
-                  details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
-                } else {details_paid_div.style.width = "24px"; }
-                 
-              }
+              updateModal(updatedData);
+
               closeModalById('addEventModal');
                 showBanner("Paiements mise à jour avec succès !", true);
             } else {
@@ -615,7 +533,6 @@ function addEvent() {
                   }
                 }
               }
-              console.log('response_paid.hasOwnProperty(key)',response_paid.hasOwnProperty(key)); 
 
               if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
                 document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
@@ -625,6 +542,10 @@ function addEvent() {
 
               }
               if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
+                if(encaissement < row_price){
+                  details_paid_rest_div.innerText = row_price-encaissement + " Fr";
+                }
                 let details_paid_div = document.getElementById('booking_details_progress_div');
                 details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
                 if(encaissement > 0){

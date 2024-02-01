@@ -18,7 +18,7 @@ document.addEventListener("keydown", function (event) {
 });
 
 function generateBookingElement(booking) {
-  let Total_price = totalBookingPriceCal(booking.Price,booking.QtTravellerbooking.Tax,booking.Fee,booking.nDays);
+  let Total_price = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);
   return `
         <div class="flex space-x-4" >
           <!-- Colonne 1 -->
@@ -76,25 +76,30 @@ const newDateStr = [
   dateComponents[0],
 ].join("/");
 
-  document.getElementById("modal-title").innerHTML = getDayOfWeek(format_date(newDateStr)) + ' ' + newDateStr;
+document.getElementById("modal-title").innerHTML = getDayOfWeek(format_date(newDateStr)) + ' ' + newDateStr;
 
-  count_row_found = 0;
+
+response.sort((a, b) => {
+  // Convertissez les titres de service en minuscules pour assurer une comparaison insensible à la casse
+  let serviceTitleA = a.service_title.toLowerCase();
+  let serviceTitleB = b.service_title.toLowerCase();
+  
+  if (serviceTitleA < serviceTitleB) {
+          return -1; // a vient avant b
+      }
+      if (serviceTitleA > serviceTitleB) {
+          return 1; // a vient après b
+      }
+      
+      return 0; // a et b sont équivalents
+  });
+
+
+  let count_row_found = 0;
   response.forEach((booking) => {
     count_row_found++;
     let Checkin = clickedDate == booking.start.slice(0,10);
     let Checkout = clickedDate == booking.end.slice(0,10);
-    let isStart = Checkin ? 
-    `<svg class="loopXNeg w-5 h-5 mt-1 mr-2 "version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-      <g id="XMLID_1_">
-        <path id="XMLID_5_" d="M175.9,256H15.8v-64.2h160.1v-64.2l95.9,95.9l-95.9,96.8V256z M496.2,0v416.1L304.4,512v-95.9H111.7V287.7   h32.6v95.9h160.1V95.9l128.5-64.2H144.3v128.5h-31.7V0H496.2z"/>
-      </g>
-    </svg>` :  '';
-    let isEnd = Checkout ? 
-    `<svg class="loopX w-5 h-5 mt-1 mr-2" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-    <g id="XMLID_1_">
-      <path id="XMLID_5_" d="M400.3,320.2V256H240.2v-64.2h160.1v-64.2l95.9,95.9L400.3,320.2z M367.7,287.7v128.5H207.6V512L15.8,416.1   V0h351.9v160.1h-31.7V31.7h-256l128.5,64.2v287.7H337v-95.9H367.7z"/>
-    </g>
-    </svg>` :  '';
 
     let array_paids_values = booking.paids_values
     ? booking.paids_values.split(",").map(Number)
@@ -122,13 +127,12 @@ const newDateStr = [
     status_paid_bg = "red";
   }
 
-
     let bookingElement = `
         <div id="booking_list_row_${
           booking.id
         }" class="group flex flex-col p-1 mt-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
           <!-- Colonne 1 -->
-          ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark-text-red-900 bg-white group-hover:bg-slate-100 dark:group-hover:bg-slate-700 top-2 px-2 mx-auto font-bold">~ privatisé ~</span>':''}
+          ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark-text-red-900 bg-white dark:bg-gray-800 group-hover:bg-slate-100 dark:group-hover:bg-slate-700 top-2 px-2 mx-auto font-bold">~ privatisé ~</span>':''}
 
           <div class="w-full flex-col group ${booking.fullblocked == 1 ? 'border p-2 border-dashed border-red-400 dark:border-red-900 rounded-lg':''}">
             
@@ -136,13 +140,13 @@ const newDateStr = [
               <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex flex-wrap cursor-pointer font-bold">
               
                 <div id="booking_title_${booking.id}" class="flex flex-initial transition-margin hover:mx-2 ">
-                  ${isStart + isEnd +' '+booking.service_title }
+                ${ Checkin == true ? '<b class="blink text-cyan-700">CHECK-IN </b> / ': ''} 
+                ${ Checkout == true ? '<b class="blink text-amber-800 ">CHECK-OUT </b>/ ': ''} 
+                 ${booking.service_title }
                 </div>
 
               </div>
               <div class="text-sm text-black font-bold ">
-                ${ Checkin == true ? '<b class="blink">CHECK-IN </b> / ': ''} 
-                ${ Checkout == true ? '<b class="blink">CHECK-OUT </b>/ ': ''} 
                 <span id='badge_type_${booking.id}'>${booking.Type_doc}</span>
                 # 
                 <span id='badge_id_${booking.id}'>${booking.id}</span>
@@ -157,7 +161,7 @@ const newDateStr = [
                 <div class="flex-col flex-wrap">
                   <div class="w-full inline-flex items-center justify-between text-xs text-slate-400">
                     <span class="items-center" id="booking_startDay_${booking.id}">${getDayOfWeek(format_date(booking.start))}</span>
-                    <span class="items-center">${'('+DaysDifferenceStartEnd(booking.start,booking.end) + ' nuits)'}</span>
+                    <span class="items-center">${'<b>'+DaysDifferenceStartEnd(booking.start,booking.end) + ' nuit(s) </b>'}</span>
                     <span class="items-center" id="booking_endDay_${booking.id}">${getDayOfWeek(format_date(booking.end))}</span>
                   </div>
                   <div class="w-full inline-flex items-center justify-between ">
@@ -223,8 +227,70 @@ const newDateStr = [
           `;
     container.innerHTML += bookingElement;
   });
-  container.innerHTML += `          <div class="flex flex-wrap justify-end font-bold">
-  <div id="booking_list_row_found" class="text-slate-400 inline-flex" >Réservation trouvé : ${count_row_found}</div></div>`;
+  container.innerHTML += `          
+    <div class="flex flex-wrap justify-end font-bold">
+      <div id="booking_list_row_found" class="text-slate-400 inline-flex" >Réservation trouvé : ${count_row_found}</div>
+    </div>`;
+    
+    // Si besoin de voir les services disponible
+    const bookedServiceIds = new Set(response.map(booking => booking.Service_id));
+  // Vérifiez si un service réservé avec fullblocked = "1" existe
+  const isFullBlockedBooked = [...bookedServiceIds].some(serviceId => {
+    const bookedService = response.find(booking => booking.Service_id === serviceId);
+    return bookedService && bookedService.fullblocked === "1";
+  });
+
+  let unbookedServices = [];
+
+  if (isFullBlockedBooked) {
+    // Si un service avec fullblocked est réservé, ne retournez aucun service
+    unbookedServices = [];
+  } else {
+    // Sinon, filtrez les services non réservés et ceux avec fullblocked == "0"
+    unbookedServices = services_list.filter(service => !bookedServiceIds.has(service.Service_id) && service.fullblocked === "0");
+  }
+
+
+
+  if(unbookedServices.length > 0){
+    container.innerHTML += `          
+    <div class="flex flex-wrap justify-center font-bold border-t">
+      <div id="booking_list_row_found" class="text-slate-400 inline-flex" >Voir les services disponible ?</div>
+    </div>`;
+      unbookedServices.forEach((service, index) => {
+        container.innerHTML += `
+        <div class="flex justify-between">
+            <div class="flex flex-grow">
+                ${service.Title}
+            </div>  
+            <div class="flex">
+                <a href="#" class="add-event-link" data-index="${index}" data-date="${format_date(newDateStr)}" data-service-id="${service.Service_id}">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm11-4.2a1 1 0 1 0-2 0V11H7.8a1 1 0 1 0 0 2H11v3.2a1 1 0 1 0 2 0V13h3.2a1 1 0 1 0 0-2H13V7.8Z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    `;
+      });
+
+    document.querySelectorAll('.add-event-link').forEach(link => {
+      link.addEventListener('click', (event) => {
+          event.preventDefault(); // Empêche le lien de naviguer
+          const index = link.getAttribute('data-index');
+          const date = link.getAttribute('data-date');
+          const serviceId = link.getAttribute('data-service-id');
+          console.log('service',serviceId);
+          console.log('date',date);
+          handleAddEventClick(date, serviceId);
+      });
+    });
+
+
+    }
+      
+
+
 }
 
 function ShowCreateCustomer() {
@@ -423,33 +489,50 @@ function Deletepaid(ids) {
 }
 
 function DeleteCustomer(event, id) {
-  event.stopPropagation();
-  var data = {
-    Customer_id: id,
-    delete: true,
+ event.stopPropagation();
+  openModal("ConfirmDeleteModal");
+
+  let modal = document.getElementById("ConfirmDeleteModal");
+  modal.style.zIndex = "999";
+  let yesconfirmButton = document.getElementById(
+    "ConfirmDeleteModal_yes_button"
+  );
+
+  yesconfirmButton.onclick = function () {
+    var data = {
+      Customer_id: id,
+      delete: true,
+    };
+    $.ajax({
+      url: baseurl + "customer/update",
+      method: "POST",
+      data: {
+        customer_info: data, // Utilisez la variable locale ici
+      },
+      success: function (response) {
+        if (response.status === "success") {
+          showBanner("Suppression réalisée avec succès", true);
+          closeModalById("updateCustomerModal");
+          closeModalById("CustomerInfoModal");
+          closeModalById("ConfirmDeleteModal");
+          setTimeout(() => {
+            $(".row_customer_" + data.Customer_id).addClass("fade_out");
+          }, 200);
+          setTimeout(() => {
+            $(".row_customer_" + data.Customer_id).css("display", "none");
+          }, 700);
+        } else {
+          showBanner("Échec de la suppression", false);
+        }
+      },
+    });
+  }
+
+  let noconfirmButton = document.getElementById("ConfirmDeleteModal_no_button");
+  noconfirmButton.onclick = function () {
+    closeModalById("ConfirmDeleteModal");
   };
-  $.ajax({
-    url: baseurl + "customer/update",
-    method: "POST",
-    data: {
-      customer_info: data, // Utilisez la variable locale ici
-    },
-    success: function (response) {
-      if (response.status === "success") {
-        showBanner("Suppression réalisée avec succès", true);
-        closeModalById("updateCustomerModal");
-        closeModalById("CustomerInfoModal");
-        setTimeout(() => {
-          $(".row_customer_" + data.Customer_id).addClass("fade_out");
-        }, 200);
-        setTimeout(() => {
-          $(".row_customer_" + data.Customer_id).css("display", "none");
-        }, 700);
-      } else {
-        showBanner("Échec de la suppression", false);
-      }
-    },
-  });
+
 }
 
 //Bookings / DETAILS BOOKING
@@ -519,10 +602,8 @@ async function showBookingDetailsFromID(id) {
 
   existFile(baseurl + 'uploads/' + Booking.booking_img).then(fileExists => {
     if (fileExists) {
-      console.log(baseurl + 'uploads/' + Booking.booking_img);
       document.getElementById("booking_details_img").src =  baseurl + 'uploads/' + Booking.booking_img;
     } else {
-      console.log(baseurl + 'uploads/' + Booking.booking_img);
       document.getElementById("booking_details_div_img").classList.add("bg-gray-200");
       document.getElementById("booking_details_div_img").classList.add("rounded-t-lg");
       document.getElementById("booking_details_div_img").style.height =  "150px";
@@ -547,12 +628,19 @@ async function showBookingDetailsFromID(id) {
   document.getElementById("booking_details_start_span").innerText = Booking.start;
   document.getElementById("booking_details_end_span").innerText = Booking.end;
   document.getElementById("booking_details_price_span").innerHTML = totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays) + " Fr";
-
+  
+  let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
+  if(parseInt(paids_sum) < totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays)){
+    details_paid_rest_div.innerText = totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays)-parseInt(paids_sum) + " Fr";
+  }
+  else{
+    details_paid_rest_div.innerText = "";
+  }
   let details_paid_div = document.getElementById('booking_details_progress_div');
   details_paid_div.innerText = paids_sum > 0 ? paids_sum + " Fr" : "0";
   if(paids_sum > 0){
-    let convert_pourc = Math.min(Math.round((parseInt(paids_sum) / totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays)) * 10000) / 100, 100);
-    details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
+      let convert_pourc = Math.min(Math.round((parseInt(paids_sum) / totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays)) * 10000) / 100, 100);
+      details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
   } else {details_paid_div.style.width = "24px"; }
 
   document.getElementById("booking_details_customer_name_span").innerText =
@@ -877,16 +965,20 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
           const booking = bookings[key];
           const hasFirstDay = Object.values(booking.details_bookings).some(obj => obj.is_first_day === true);
           const hasLastDay = Object.values(booking.details_bookings).some(obj => obj.is_last_day === true);
-          const start = booking.start;
+          const date = booking.start;
           const fullblocked = booking.fullblocked;
 
-          return [start, fullblocked, hasFirstDay, hasLastDay];
-      });
+          return [date, fullblocked, hasFirstDay, hasLastDay];
+        });
 
-      const bookedDatesFormatted = bookedDates.map((dateArr) => {
-        const [day, month, year] = dateArr[0].split("-");
-        return `${year}-${month}-${day}`;
-      });
+
+        const filteredBookedDates = bookedDates.filter(([date, fullblocked, hasFirstDay, hasLastDay]) => !hasFirstDay && !hasLastDay);
+
+        const bookedDatesFormatted = filteredBookedDates.map((dateArr) => {
+          const [day, month, year] = dateArr[0].split("-");
+          return `${year}-${month}-${day}`;
+        });
+
         // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
         fromServicepicker = new easepick.create({
           element: document.getElementById("ModaleventStart"),
@@ -902,7 +994,12 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
               document.getElementById("ModaleventService_id").selectedIndex
             ].textContent +
             "</b>",
+            zIndex: 99,
+          lang: "fr-FR",
+          format: "DD-MM-YYYY",
+          
           plugins: ["RangePlugin", "LockPlugin"],
+          
           RangePlugin: {
             elementEnd: "#ModaleventEnd",
             tooltipNumber(num) {
@@ -913,14 +1010,12 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
               other: "Nuits",
             },
           },
-          zIndex: 99,
-          lang: "fr-FR",
-          format: "DD-MM-YYYY",
           LockPlugin: {
             minDate: new Date(), // Les réservations ne peuvent pas être faites dans le passé.
-            minDays: 2, // Nombre minimum de jours pouvant être sélectionnés.
-            inseparable: false, // Les jours sélectionnés doivent former une plage continue.
+            minDays: 1, // Nombre minimum de jours pouvant être sélectionnés.
+            inseparable: true, // Les jours sélectionnés doivent former une plage continue.
             filter(date, picked) {
+              //TRAVAIL de selection à faire car pour éviter la surréservation
               return bookedDatesFormatted.includes(date.format("DD-MM-YYYY"));
             },
           },
@@ -997,14 +1092,6 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
                     alert('existingSpan FirstDay && LastDay');
                   }
                 }
-                else{                  
-                  span = target.querySelector(".day-unavailable") || document.createElement("span");
-                  span.className = "day-unavailable";
-                  span.innerHTML = `<svg class="w-2 h-2 text-slate-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                </svg>`;
-                  target.append(span);
-                }
               }
             });
 
@@ -1039,7 +1126,7 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
             updatePrice();
             
             loader.style.display = 'none';
-        resolve(fromServicepicker); // Déplacez `resolve` ici
+        resolve(fromServicepicker); 
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.error(
@@ -1201,4 +1288,9 @@ function totalBookingPriceCal(price, qtTraveller, tax, fee, days) {
 
   let total = parseInt(price) + (parseInt(qtTraveller) * parseInt(tax) * parseInt(days)) + parseInt(fee);
   return total;
+}
+
+function handleAddEventClick(date =false, service_id = false) {
+  resetForm('addEventModal',date,false,service_id);
+  openModal('addEventModal');
 }
