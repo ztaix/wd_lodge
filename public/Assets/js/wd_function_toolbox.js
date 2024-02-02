@@ -68,6 +68,14 @@ function emptyObj(obj) {
     return total;
   }
 
+  // SUM the ARRRAY
+  function sumArray(paids_values){
+    let array_paids_values = paids_values ? paids_values.split(",").map(Number) : [0];
+    let paids_sum = array_paids_values.reduce((total, currentValue) => total + currentValue,0);
+
+    return paids_sum;
+  }
+
   //COLOR
   function lightenHexColor(hex, percent) {
     // Convertir le hex en RGB

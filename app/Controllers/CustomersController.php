@@ -64,29 +64,32 @@ class CustomersController extends BaseController
     }
     
     public function create_customer() {
-        $customer_info = $this->request->getPost();
+        $data = $this->request->getPost();
    
-        if ($customer_info) {
+        if ($row = $data['data']) {
 
-            $result = $this->CustomerModel->save($customer_info);
+            $result = $this->CustomerModel->save($row);
             // Vérifiez si l'insertion a réussi
-            if ($result === false) {
-                $errors = $this->CustomerModel->errors();
-                return $this->response->setJSON(['status' => 'error', 'message' => 'Erreur lors de l\'insertion des données.', 'errors' => $errors]);
+            if ($result == true) {
+                $data = ['id' => $this->CustomerModel->insertID(),
+                        'Name' => $row['Name'],
+                        'Phone' => $row['Phone'],
+                        'Email' => $row['Email'],
+                        'Comment' => $row['Comment'],
+                ];
+            return $this->response->setJSON([ 'success' => true, 'error'=> null, 'data'=> $data]); 
             }
-
-            $inserted_id = $this->CustomerModel->insertID();  // Récupère l'ID de la dernière ligne insérée
-            return $this->response->setJSON([
-                'status' => 'success', 
-                'id' => $inserted_id,
-                'Name' => $customer_info['Name'],
-                'Phone' => $customer_info['Phone'],
-                'Email' => $customer_info['Email'],
-                'Comment' => $customer_info['Comment'],
-            ]); 
+            else{
+                $errors = $this->CustomerModel->errors();
+                $error = 'Erreur lors de l\'insertion des données.';
+                foreach ($errors as $key => $value) {
+                    $error .= '<br>Le champs: '. $key.'<br> CODE: '.$value;
+                }
+                return $this->response->setJSON(['success' => false, 'error'=> $error, 'errors' => $row]);
+            }
         } else {
-            $errors = $this->CustomerModel->errors();
-            return $this->response->setJSON(['status' => 'error', 'message' => 'Les données envoyées ne correspondent pas aux exigences. Vérifiez les champs.', 'errors' => $errors]);
+            $error = 'Requète ne retourne aucune données:'. $row ;
+            return $this->response->setJSON(['success' => false, 'error' =>  $error]);
         }
     }
     

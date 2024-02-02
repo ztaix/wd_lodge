@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const resultList = $("#searchResults");
             if (!searchInput) {
               resultList.empty();
-              resultList.removeClass("bg-slate-200 shadow-lg"); // Retirer le fond noir transparent
+              resultList.removeClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
               return; // Arrêter l'exécution de la fonction ici
             }
             $.ajax({
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.status === "success" && response.data.length > 0) {
                   
                   // Ouvrir la popup si elle n'est pas déjà ouverte
-                  resultList.addClass("bg-slate-200 shadow-lg"); // Retirer le fond noir transparent
+                  resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
 
                   // Mettre à jour le contenu de la popup avec les résultats de la recherche
                   resultList.empty(); // Vider les anciens résultats
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   // Gérer l'échec de la requête ici
                   console.log("Échec de la Requête de recherche !");
                   resultList.empty(); // Vider les anciens résultats
-                  resultList.addClass("bg-slate-200 shadow-lg"); // Retirer le fond noir transparent
+                  resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
                   resultList.html("Aucun résultat trouvé avec: " + searchInput); // Ajouter le message
                 }
               },

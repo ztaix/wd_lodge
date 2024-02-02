@@ -149,6 +149,43 @@ if(!window.location.href.includes('Config')){
         (isDarkMode) ? document.getElementById('label_darkmode').innerHTML = svg_moon: document.getElementById('label_darkmode').innerHTML = svg_sun;
 
     });
+    //SCROLL MAX BOTTOM
+    let startY;
+    let isBottomReached = false;
+    let threshold = 400; // Distance en pixels pour déclencher l'action après avoir atteint le bas
+
+    window.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+    let moveY = e.touches[0].clientY;
+    let isScrollingDown = moveY < startY;
+
+    if (isScrollingDown && (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
+        // L'utilisateur atteint le bas de la page.
+        isBottomReached = true;
+    }
+
+    if (isBottomReached) {
+        let distanceScrolledAfterBottom = startY - moveY;
+        if (distanceScrolledAfterBottom > threshold) {
+        // L'utilisateur a continué à défiler de plus de 200px après avoir atteint le bas.
+        triggerFunction();
+        isBottomReached = false; // Réinitialiser le flag pour le prochain cycle de défilement
+        }
+    }
+    });
+
+    window.addEventListener('touchend', () => {
+    isBottomReached = false; // Réinitialiser quand l'utilisateur lève le doigt
+    });
+
+    function triggerFunction() {
+        closeModal();    // Placez ici le code de la fonction que vous souhaitez déclencher
+    }
+
+
 </script>
 </body>
 

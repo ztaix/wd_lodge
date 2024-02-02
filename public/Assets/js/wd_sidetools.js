@@ -66,21 +66,8 @@ response.sort((a, b) => {
   );
   let TOTALprice = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);  
 
-  let status_paid = "";
-  let status_paid_bg = "";
-  
-  if(paids_sum >= TOTALprice){
-    status_paid = "<b class='text-green-500 dark:text-green-100'>PAYÉ</b>"; 
-    status_paid_bg = "green";
-  }
-  else if(paids_sum <= TOTALprice && paids_sum > 0){
-    status_paid = "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>"
-    status_paid_bg = "orange";
-  }
-  else {
-    status_paid = "<b class='text-red-500 dark:text-red-100'>IMPAYÉ</b>";
-    status_paid_bg = "red";
-  }
+
+  let status_paidObj = generateStatusPaid(paids_sum,TOTALprice);
 
     let bookingElement = `
         <div id="booking_list_row_${
@@ -113,7 +100,7 @@ response.sort((a, b) => {
                   <div class="text-base text-slate-500"><span class="font-semibold">Client:</span> <span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
                   <div class="text-base text-slate-500"><span class="font-semibold">Nb personne:</span> <span id="booking_QtTraveller_${booking.id}">${booking.QtTraveller}</span></div>
                 </div>
-                <div class="flex-col flex-wrap">
+                <div class="m-1">
                   <div class="w-full inline-flex items-center justify-between text-xs text-slate-400">
                     <span class="items-center" id="booking_startDay_${booking.id}">${getDayOfWeek(format_date(booking.start))}</span>
                     <span class="items-center">${'<b>'+DaysDifferenceStartEnd(booking.start,booking.end) + ' nuit(s) </b>'}</span>
@@ -131,20 +118,20 @@ response.sort((a, b) => {
 
               <div class="flex flex-col grow items-end text-right font-bold ml-2">
                 
-                <div class="flex-col justify-end bg-${status_paid_bg}-100 dark:bg-${status_paid_bg}-800 rounded-lg px-1">
-                  <div class="inline-flex items-center" >
+                <div class="flex flex-col justify-end bg-${status_paidObj.color}-100 dark:bg-${status_paidObj.color}-800 rounded-lg px-1">
+                  <div class="inline-flex justify-end items-center" >
                       <span class="mr-1 text-xs text-slate-400">Tarif</span> 
                       <span id="booking_total_${booking.id}">${TOTALprice }</span>
                       <span class="ml-1 text-xs">Fr</span>
 
                   </div>
-                  <div class="inline-flex items-center" >
+                  <div class="inline-flex justify-end items-center" >
                     <span class="mr-1 text-xs text-slate-400">Encaissé</span>   
                     <span class="font-bold" id="booking_paid_${booking.id}">${paids_sum}</span>
                     <span class="ml-1 text-xs">Fr</span>
                   </div>
-                  <div class="inline-flex items-center" >
-                    <span class="font-bold" id="booking_paid_status_${booking.id}">${status_paid}</span>
+                  <div class="inline-flex justify-end items-center" >
+                    <span class="font-bold" id="booking_paid_status_${booking.id}">${status_paidObj.html}</span>
                   </div>
                 </div>
 
@@ -264,73 +251,58 @@ function CreateCustomer() {
     Email: $("#customer_email").val(),
     Comment: $("#customer_comment").val(),
   };
-
-  $.ajax({
-    url: baseurl + `customer/create`,
-    method: "POST",
-    data: customerData,
-    success: function (response) {
-      try {
-        if (response.status === "success") {
-          var newCustomerId = response.id;
+   ajaxCall("customer/create", "POST", { data: customerData }, function(response) {
+     if (response.success === true) {
+          // Traiter la réponse en cas de succès
+          let newId = response.data.id;
+          let d = response.data;
           
-          if(ModalInStack('addEventModal')){
-            
-          }
           $("#ModaleventCustomer_id").append(
-            new Option(customerData["Name"], newCustomerId, true, true)
+            new Option(d.name, newId, true, true)
             );
-            $('#ModaleventCustomer_id').trigger('change');
+          $('#ModaleventCustomer_id').trigger('change');
             
-            if(window.location.href.includes('Customers')){
-
+          if(window.location.href.includes('Customers')){
               // Génère la nouvelle ligne HTML
-              var newCustomerRow = `<tr class="border-b dark:border-gray-700 row_customer_${newCustomerId}" data-id="${newCustomerId}" data-Name="${
-            customerData["Name"]
-          }" data-Comment="${customerData["Comment"]}" data-Email="${
-            customerData["Email"]
-          }" data-Phone="${
-            customerData["Phone"]
-          }" onclick="get_booking_list_from_customer(this)">
-                  <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white service_${newCustomerId} cursor-pointer"><b>${
-            customerData["Name"]
-          }</b></th>
-          <td class="px-3 py-3">${customerData["Email"]}</td>
-          <td class="px-3 py-3">${customerData["Phone"]}</td>
-                      <td class="px-3 py-3 max-w-[150px] overflow-hidden overflow-ellipsis whitespace-nowrap customer_comment" id="comment_${newCustomerId}" onclick="toggleComment(event,  ${
-            "comment_" + newCustomerId
-          })">${customerData["Comment"]}</td>
-                      <td class="px-3 py-3" onclick="DeleteCustomer(event, ${newCustomerId})">
+              var newCustomerRow = `<tr class="border-b dark:border-gray-700 row_customer_${newId}" data-id="${newId}" data-Name="${
+                  customerData["Name"]
+                }" data-Comment="${customerData["Comment"]}" data-Email="${
+                  customerData["Email"]
+                }" data-Phone="${
+                  customerData["Phone"]
+                }" onclick="get_booking_list_from_customer(this)">
+                        <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white service_${newId} cursor-pointer"><b>${
+                  customerData["Name"]
+                }</b></th>
+                <td class="px-3 py-3">${d.Email}</td>
+                <td class="px-3 py-3">${d.Phone}</td>
+                            <td class="px-3 py-3 max-w-[150px] overflow-hidden overflow-ellipsis whitespace-nowrap customer_comment" id="comment_${newId}" onclick="toggleComment(event,  ${
+                  "comment_" + newId
+                })">${d.Comment}</td>
+                      <td class="px-3 py-3" onclick="DeleteCustomer(event, ${newId})">
                           <svg class="w-4 h-4 text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                           </svg>
                       </td>
                   </tr>`;
           
-          // Ajoute la nouvelle ligne au début du tbody
-          $(newCustomerRow)
-            .addClass("blinking")
-            .insertBefore("#items-container tr:first");
+            // Ajoute la nouvelle ligne au début du tbody
+            $(newCustomerRow)
+              .addClass("blinking")
+              .insertBefore("#items-container tr:first");
           }
 
           if(ModalInStack('updateCustomerModal')){
             closeModalById("updateCustomerModal");
           }
 
-          showBanner(`Le client ${response.Name} a été créé avec succès`, true);
+          showBanner(`Le client ${d.Name} a été créé avec succès`, true);
         } else {
-          alert("Erreur : " + response.message);
+          showBanner(response.error,false);
           console.error("Erreurs de validation de données:", response.errors);
         }
-      } catch (e) {
-        console.error(
-          "Erreur dans la fonction de création de client:",
-          e.message
-        );
-      }
-    },
-  });
-}
+      });
+  }
 
 async function showUpdateCustomer(id) {
   openModal("updateCustomerModal", false);
