@@ -5,29 +5,17 @@ $modal_id= "CustomerInfoModal";
 <!-- DETAILS EVENTS - Modal Container -->
 <div id="<?= $modal_id ?>-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('<?= $modal_id ?>')"></div>
 
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="max-w-md lg:max-w-lg mx-auto flex h-screen hidden" >
-    <div class="flex flex-col flex-grow w-full max-w-md lg:max-w-lg mx-auto bg-transparent overflow-hidden">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="flex h-full flex-grow hidden" onclick="closeModalById('<?= $modal_id ?>')">
+
+    <div class="mx-auto max-w-md lg:max-w-lg">
 
             <!-- Modal Header -->
-            <div class="px-2 py-2 lg:px-8 flex justify-between items-center bg-white rounded-b-lg shadow-md ">
-                <div class="flex-grow text-center">
-                    <h3  class="text-center text-2xl font-bold text-gray-800 dark:text-white">Historique Client</h3>
-                </div> 
-                <div>
-                    <button type="button" class=" text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal" onclick="closeModalById('<?= $modal_id ?>')">
-                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                        </svg>
-                        <span class=" sr-only">Fermer</span>
-                    </button>
-                </div>
-            </div>
+            <div id="header_<?= $modal_id ?>"></div>
 
             <!-- Modal Body -->
-            <div class="flex justify-center p-4 sm:p-9 overflow-y-auto">
-            <div class="w-full">
+            <div class="flex justify-center p-4 overflow-y-auto" onclick="event.stopPropagation()">
 
-                <div class="bg-white border border-gray-200 rounded-lg dark:bg-slate-800 dark:border-gray-800 shadow-2xl">
+                <div class="bg-white border border-gray-200 rounded-lg dark:bg-slate-800 dark:border-gray-800">
                 
                     <div class="px-4">
 
@@ -89,7 +77,6 @@ $modal_id= "CustomerInfoModal";
 
                         </tbody>
                     </table>
-                </div>
                 </div>
                 </div>
             </div>

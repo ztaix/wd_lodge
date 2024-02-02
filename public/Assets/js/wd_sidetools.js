@@ -236,6 +236,8 @@ response.sort((a, b) => {
 
 function ShowCreateCustomer() {
   openModal("updateCustomerModal");
+  document.getElementById('header_updateCustomerModal').innerHTML = header_modal('Client','updateCustomerModal');
+
   document.getElementById("customer_id").value = "";
   document.getElementById("customer_name").value = "";
   document.getElementById("customer_phone").value = "";
@@ -306,6 +308,8 @@ function CreateCustomer() {
 
 async function showUpdateCustomer(id) {
   openModal("updateCustomerModal", false);
+  document.getElementById('header_updateCustomerModal').innerHTML = header_modal('Client','updateCustomerModal');
+
   let customer;
   try {
     let response = await $.ajax({
@@ -465,6 +469,7 @@ function DeleteCustomer(event, id) {
 
 async function showBookingDetailsFromID(id) {
   openModal("DetailsEventModal", false);
+  document.getElementById('header_DetailsEventModal').innerHTML = header_modal('Détails réservation','DetailsEventModal');
   let Booking;
   try {
     let response = await $.ajax({
@@ -524,7 +529,7 @@ async function showBookingDetailsFromID(id) {
   );
   document.getElementById(
     "booking_details_id_h5"
-  ).innerHTML = `<span class="text-sm  text-white rounded-md p-1 mr-1.5" style="background-color: ${Booking.service_color}">${Booking.Type_doc} # ${Booking.id}</span> `;
+  ).innerHTML = `<span class="text-sm  text-white bg-slate-400 dark:text-slate-500 dark:bg-slate-950 rounded-md p-2" >${Booking.Type_doc} # ${Booking.id}</span> `;
 
   existFile(baseurl + 'uploads/' + Booking.booking_img).then(fileExists => {
     if (fileExists) {
@@ -537,15 +542,18 @@ async function showBookingDetailsFromID(id) {
       }
 });
 
-  document.getElementById("booking_details_service_h5").innerText =
-    Booking.service_title;
-  let h5_fullblocked = document.getElementById(
-    "booking_details_fullblocked_h5"
-  );
+  document.getElementById("booking_details_service_h5").innerText = Booking.service_title;
+    let div_fullblocked = document.getElementById("booking_details_fullblocked_div");
+    let h5_fullblocked = document.getElementById("booking_details_fullblocked_h5");
   if (Booking.fullblocked == 1) {
+    booking_details_service_h5.classList.add('text-white','dark:text-red-900');
+    div_fullblocked.classList.add('bg-red-600')
+    div_fullblocked.classList.add('dark:bg-red-500','dark:bg-gray-600')
     h5_fullblocked.style.display= "block";
-    h5_fullblocked.innerText = "- Logement entier privatisé -";
+    h5_fullblocked.innerText = "Privatisé";
   } else {
+    div_fullblocked.classList.remove('bg-red-600')
+    div_fullblocked.classList.remove('dark:bg-red-500','dark:bg-gray-600')
     h5_fullblocked.style.display = "none";
   }
   document.getElementById("booking_details_qt_span").innerText = Booking.Qt;
@@ -595,9 +603,9 @@ async function showBookingDetailsFromID(id) {
       .toLocaleDateString("fr-FR", { year: "numeric", month: "long" })
       .replace(/^\w/, (c) => c.toUpperCase());
   document.getElementById("booking_details_created_span").innerHTML =
-    "Créé le: " + Booking.created;
+    "Créé le: " + format_date(Booking.created);
   document.getElementById("booking_details_updated_span").innerHTML =
-    "Modifié le: " + Booking.updated;
+    "Modifié le: " + format_date(Booking.updated);
     
     let child_Span_Comment = document.getElementById("booking_details_comment_span");
     let parent_Span_Comment = child_Span_Comment.parentElement;
@@ -658,6 +666,8 @@ async function showBookingDetailsFromID(id) {
 function get_booking_list_from_customer(data) {
   closeModal();
   openModal("CustomerInfoModal");
+  document.getElementById('header_CustomerInfoModal').innerHTML = header_modal('Client','CustomerInfoModal');
+
   let customer_id = data.getAttribute("data-id");
   let table_th = document.getElementById("CustomerInfoModal_th");
   let tbody = document.getElementById("CustomerInfoModal_tbody");
@@ -701,9 +711,8 @@ function get_booking_list_from_customer(data) {
       let rowPrice = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.Qt);
         let newRow = document.createElement("tr");
         newRow.classList.add(
-          "bg-white",
-          "dark:bg-gray-800",
-          "dark:border-gray-700",
+          "hover:bg-slate-50",
+          "dark:shover:bg-slate-700",
           "booking-row",
           "cursor-pointer" // Ajout de la classe spécifique
         );
@@ -799,9 +808,6 @@ function get_booking_list_from_customer(data) {
         let thcount = thElements.length;
         let newRow = document.createElement("tr");
         newRow.classList.add(
-          "bg-white",
-          "dark:bg-gray-800",
-          "dark:border-gray-700",
           "booking-row",
           "text-center",
           "font-bold"

@@ -6,6 +6,28 @@
 @import 'tailwindcss/utilities';
 
 
+body.preload {
+  visibility: hidden;
+  opacity: 0;
+}
+
+body {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out;}
+
+body.preload::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(34, 33, 36); /* ou une autre couleur de fond de chargement */
+  z-index: 9999;
+}
+
+
 header {
   letter-spacing: -0.025rem;
   font-weight: 800;
@@ -54,9 +76,9 @@ header {
   z-index: 50;
   position: absolute;
   width: 100%;
-  height: auto;
-  max-height: 100%;
+  height: 100%;
   overflow-y: auto; /* Pour activer le défilement vertical */
+  overflow-x: hidden; /* Pour activer le défilement vertical */
 }
 
 

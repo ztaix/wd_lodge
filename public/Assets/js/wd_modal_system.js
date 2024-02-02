@@ -258,7 +258,6 @@ function handleAddEventClick(date =false, service_id = false) {
     document.getElementById("customer_phone").value = customer.phone;
     document.getElementById("customer_email").value = customer.email;
     document.getElementById("customer_comment").value = customer.comment;
-    document.getElementById("Update_customer_Modal_title").innerText = `Modifier Client #${customer.customer_id}`;
   }
 
   function getCustomerFormData() {

@@ -3,16 +3,16 @@ $modal_id = "ListEventModal";
 ?>
 <!-- LIST TODAY EVENTS - Modal Container -->
 <div id="<?= $modal_id ?>-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('<?= $modal_id ?>')"></div>
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-auto" >
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-auto" onclick="closeModalById('<?= $modal_id ?>')">
 
 <div class="relative mx-auto p-2 ">
 
     <!-- Modal Header -->
-    <div class="px-6 py-6 lg:px-8 flex justify-between items-center text-slate-500 bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+    <div class="px-6 py-6 lg:px-8 flex justify-between items-center text-slate-500 bg-white border border-gray-200  dark:bg-gray-800 dark:border-gray-700 rounded-lg shadow-md " onclick="event.stopPropagation()">
 
         <div class="flex-grow text-center">
-        <div class="w-full inline-flex p-2 mx-2 cursor-pointer Add_Event_blinking" onclick="handleAddEventClick()">
-                        <h1 class="px-4">Ajouter une réservation : </h1>
+        <div class="w-full  justify-center items-center flex-col p-2 mx-2 cursor-pointer Add_Event_blinking" onclick="handleAddEventClick()">
+                        <h1 class="font-bold text-lg px-4 whitespace-nowrap">Ajouter une réservation</h1>
     
                         <h2 id="modal-title" class="text-center font-bold -ml-2"><!-- JavaScript print Date du jour --></h2>
                     </div>
@@ -32,7 +32,7 @@ $modal_id = "ListEventModal";
 
             <div class="flex justify-center pt-2">
 
-                <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"  onclick="event.stopPropagation()">
                     <div class="px-4">
 
                         <div class="flex items-center my-2">

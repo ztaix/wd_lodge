@@ -34,35 +34,6 @@
 </div>
 <script>
 
-    svg_sun = `<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3V1m0 18v-2M5.05 5.05 3.636 3.636m12.728 12.728L14.95 14.95M3 10H1m18 0h-2M5.05 14.95l-1.414 1.414M16.364 3.636 14.95 5.05M14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/>
-  </svg>`;
-    svg_moon = `<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
-    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.509 5.75c0-1.493.394-2.96 1.144-4.25h-.081a8.5 8.5 0 1 0 7.356 12.746A8.5 8.5 0 0 1 8.509 5.75Z"/>
-  </svg>`;
-
-    function setCookie(name, value, days) {
-        var expires = '';
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = '; expires=' + date.toUTCString();
-        }
-        document.cookie = name + '=' + (value || '') + expires + '; path=/';
-    }
-
-    function getCookie(name) {
-        var nameEQ = name + '=';
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-    }
-
-
 
     // Footer active page:
     document.addEventListener("DOMContentLoaded", function() {
@@ -127,28 +98,6 @@ if(!window.location.href.includes('Config')){
         
     });
 
-    
-}
-    //DARKMODE
-    document.addEventListener('DOMContentLoaded', function() {
-        var body = document.body;
-        var isDarkMode = getCookie('darkMode') === '1';
-        var border;
-        if (isDarkMode) {
-            body.classList.add('dark');
-            document.getElementById('toggleDarkMode').checked = true;
-        } else {}
-
-        document.getElementById('toggleDarkMode').addEventListener('change', function() {
-            var isDarkModeEnabled = body.classList.toggle('dark');
-
-            setCookie('darkMode', isDarkModeEnabled ? '1' : '0', 1);
-
-            (isDarkModeEnabled) ? document.getElementById('label_darkmode').innerHTML = svg_moon: document.getElementById('label_darkmode').innerHTML = svg_sun;
-        });
-        (isDarkMode) ? document.getElementById('label_darkmode').innerHTML = svg_moon: document.getElementById('label_darkmode').innerHTML = svg_sun;
-
-    });
     //SCROLL MAX BOTTOM
     let startY;
     let isBottomReached = false;
@@ -171,7 +120,7 @@ if(!window.location.href.includes('Config')){
         let distanceScrolledAfterBottom = startY - moveY;
         if (distanceScrolledAfterBottom > threshold) {
         // L'utilisateur a continué à défiler de plus de 200px après avoir atteint le bas.
-        triggerFunction();
+        closeModal();
         isBottomReached = false; // Réinitialiser le flag pour le prochain cycle de défilement
         }
     }
@@ -181,11 +130,7 @@ if(!window.location.href.includes('Config')){
     isBottomReached = false; // Réinitialiser quand l'utilisateur lève le doigt
     });
 
-    function triggerFunction() {
-        closeModal();    // Placez ici le code de la fonction que vous souhaitez déclencher
-    }
-
-
+} 
 </script>
 </body>
 

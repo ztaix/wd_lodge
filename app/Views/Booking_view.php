@@ -33,9 +33,9 @@ $data['options_customers_id'] = $options_customers_id;
 
 
 <div class="flex flex-col w-full ">
-<header class="text-gray-900 dark:text-white bg-slate-50 dark:bg-slate-900">
-    <?= $All_config[0]['Data']; ?>
-</header>
+    <header class="text-gray-900 dark:text-white bg-slate-50 dark:bg-slate-900">
+        <?= $All_config[0]['Data']; ?>
+    </header>
     
-<div id='calendar' class="text-gray-900 dark:text-white  bg-slate-50 dark:bg-slate-900"></div>
+    <div id='calendar' class="text-gray-900 dark:text-white  bg-slate-50 dark:bg-slate-900"></div>
 </div>
