@@ -166,6 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let html_construct = '';
     let COUNTisBookingStartDay = 0;
     let COUNTisBookingEndDay = 0;
+    let service_booked = 0;
 
     for (let bookingId in bookings) {
         if (bookings.hasOwnProperty(bookingId)) {          
@@ -178,54 +179,83 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           });
           let NotBookedServicesCount = Object.keys(availableServices).length;
-          /// ALL INSTRUCTIONS DOWN ///
-
           let isBookingStartDay = booking.Date == booking.FirstDay.substring(0, 10);
+          let isCurrentDay = booking.Date;
           let isBookingEndDay = booking.Date == booking.LastDay.substring(0, 10);
 
           let message = "";
           let color = "";
-      
-          // Status Color
-          if(NotBookedServicesCount < availableServicesCount && !fullblockedFound){ // Occupé et disponible
-            color = "yellow";
-            message = "<span class='p-1 -m-1 text-xs flex justify-center rounded-br-lg bg-yellow-200 dark:bg-yellow-500 opacity-50 group-hover:opacity-100'>"+nEventDay+"/"+availableServicesCount+"</span>";
+
+          /// ALL INSTRUCTIONS DOWN ///
+
+          // Start End Animation
+          
+          if (isBookingEndDay ) {
+            COUNTisBookingEndDay++;
+
+            lastdayHtml = `
+            <div class="absolute flex justify-start w-full ">
+                <div class="flex flex-col w-1/2 h-full bg-gray-600  dark:bg-white ">
+                  <div class="relative group-hover:small-down-OUT flex items-end justify-center text-white dark:text-black font-bold mx-auto">
+                    OUT
+                  </div>
+                  <div class="flex items-end justify-center mb-1 text-white dark:text-black font-bold mx-auto">
+                  ${COUNTisBookingEndDay}
+                  </div>
+                </div>
+            </div>
+        `;  
+          }
+          if (isBookingStartDay) {
+            COUNTisBookingStartDay++;
+            ++service_booked;
+
+            let bg_div = 'bg-white';
+            if(fullblockedFound || nEventDay >= availableServicesCount){
+              bg_div = 'bg-red-600';
+            }
+            else if(NotBookedServicesCount < availableServicesCount){
+              bg_div = 'bg-green-500';
+            }
+
+            firstdayHtml = `
+            <div class="absolute flex justify-end h-full w-full">
+            <div class="flex flex-col justify-end items-end w-1/2 h-full ${bg_div} dark:bg-white overflow-hidden">
+              <div class="relative group-hover:small-down-IN flex items-center justify-center text-white dark:text-black font-bold mx-auto">
+                IN
+              </div>
+              <div class="flex items-center justify-center mb-1 text-white dark:text-black font-bold mx-auto">
+                ${COUNTisBookingStartDay}
+              </div>
+            </div>
+          </div>
+          
+            `;
+          }
+
+
+          if(isCurrentDay && !isBookingEndDay & !isBookingStartDay){
+            ++service_booked;
+            }  
+
+          // STATUS available
+          if(service_booked < availableServicesCount && !fullblockedFound){ // Occupé et disponible
+            color = "green";
           }
           else if( NotBookedServicesCount === 0 || (COUNTisBookingStartDay == 1  && fullblockedFound) || (fullblockedFound && nEventDay == 1) ){ // privatisé
             color = "red";
-            message == "<span class='bg-red-200 dark:bg-red-500 rounded-full p-1 text-red-500 dark:text-red-300'></span>";
           }
-          else{
-            html_construct = ``; 
-          }
-          // Start End Animation
-          if (isBookingStartDay) {
-            COUNTisBookingStartDay++;
-            firstdayHtml = `
-            <div class="w-full flex justify-start">
-                <div class="absolute w-1/4 h-1/4 bottom-0 rounded-full ball-start bg-${color}-200  dark:bg-${color}-500">
-                  <span class="blinking flex justify-center text-gray-800 dark:text-white font-bold mx-auto">${COUNTisBookingStartDay}</span>
-                </div>
-            </div>
-            `;
-          }
-          if (isBookingEndDay ) {
-            COUNTisBookingEndDay++;
-            lastdayHtml = `
-            <div class="w-full flex justify-end">
-              <div class="absolute w-1/4 h-1/4 bottom-0 rounded-full ball-end bg-${color}-200 dark:bg-${color}-500 ">
-                <span class="flex justify-center text-gray-800 dark:text-white font-bold mx-auto">${COUNTisBookingEndDay}</span>
-              </div>
-            </div>
-        `;  
-          }  
 
+          message = service_booked + "/" + availableServicesCount;
+
+         
           html_construct = `<div class="absolute text-black dark:text-white bg-${color}-300 dark:bg-${color}-700 w-full h-full">
           <div class="relative h-full p-1 flex justify-start items-start">${message}</div></div>`; 
+        
         }
     }
 
-   let dotsHtml =  html_construct + firstdayHtml + firstdayHtmlNumber + lastdayHtml + lastdayHtmlNumber;
+   let dotsHtml =  html_construct + lastdayHtml + lastdayHtmlNumber + firstdayHtml + firstdayHtmlNumber;
     // Créer un élément HTML pour représenter l'événement
     let eventElement = document.createElement("div");
     eventElement.className = `group relative flex justify-center items-end h-full overflow-hidden`;

@@ -12,6 +12,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // Ajouter group-hover pour toutes les classes nécessaires, ici pour small-down-IN
+      smallDownIN: ['group-hover'],
+      smallDownOUT: ['group-hover'],
       fontSize: {
         'xxs': '.65rem',
       },

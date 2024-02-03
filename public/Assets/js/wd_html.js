@@ -93,3 +93,7 @@ function generateBookingElement(booking) {
       </div>
     </div>`;
   }
+
+  function generateTable(data){
+    //create function to generate html
+  }

@@ -508,62 +508,59 @@ header {
 }
 
 
-.ball{
-  border-radius: 100%;
-  height: 25%;
-  width: 25%;
+.group:hover .group-hover\:small-down-IN {  
+  opacity: 1;
   bottom: 0;
-  z-index: 99;
-}
-
-.ball-start {
-  left: 5%;
-  animation: start-bounce 700ms cubic-bezier(.20,-0.01,.1,.8) infinite;
+  animation: small-down-IN 2000ms ease infinite;
   animation-fill-mode: both;
-  animation-direction: alternate; 
-}
-.ball-end {
-  right:5%;
-  animation: end-bounce 4000ms linear infinite;
-  animation-fill-mode: both;
-  animation-delay: 1000ms;
   animation-direction:normal; 
 }
 
-@keyframes start-bounce {
-  0% {
-    bottom: 5%;
-  }
-
-  100% {
-    bottom: 20%;
-  }
+.group:hover .group-hover\:small-down-OUT {
+  opacity: 1;
+  top: 0;
+  animation: small-down-OUT 2000ms ease infinite;
+  animation-fill-mode: both;
+  animation-direction:normal; 
 }
-@keyframes end-bounce {
-  0% {
-    right: 5%;
-    bottom: -30%;
-    opacity: 0.5;
-  }
-  15%{
-    right: 5%;
-    bottom: 5%;
-    opacity: 1;
-  }
-  85%{
-    right: 5%;
-    bottom: 5%;
-    opacity: 1;
-  }
 
+
+@keyframes small-down-IN {
+  0% {
+    bottom: 100%;
+    opacity: 0;
+  }
+  20%{
+    opacity: 1;
+    bottom: 0;
+  }
+  90%{
+    opacity: 1;
+    bottom: 0;
+  }
   100%{
-    right: -10%;
-    bottom: 5%;
-    opacity: 0.3;
+    opacity: 0;
+    bottom: 0;
   }
-
 }
-
+@keyframes small-down-OUT {
+  0% {
+    top: 100%;
+    opacity: 0;
+  }
+  20%{
+    opacity: 1;
+    top: 0;
+  }
+  90%{
+    opacity: 1;
+    top: 0;
+  }
+  100%{
+    opacity: 0;
+    top: 0;
+  }
+}
 
 @keyframes shadow {
   from {
