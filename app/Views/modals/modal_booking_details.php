@@ -25,9 +25,10 @@ $modal_id = "DetailsEventModal";
                     <div class="bg-white border border-gray-200 rounded-lg dark:bg-slate-800 dark:border-gray-800">
                         
                         <h5 id="booking_details_id_h5" class="absolute p-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">ID</h5>
-                        <div id="booking_details_div_img" class="flex justify-center items-center rounded-t dark:bg-slate-900 max-h-32">
-                            <img id="booking_details_img" class="rounded-t-lg max-h-32" src="./img/lodge.jpeg" alt="" />
+                        <div id="booking_details_div_img" class="flex justify-center items-center rounded-t dark:bg-slate-900 h-32 overflow-hidden">
+                            <img id="booking_details_img" class="rounded-t-lg object-cover w-full h-full" src="./img/lodge.jpeg" alt="" />
                         </div>
+
                         
                         <div class="px-4">
                             
@@ -66,8 +67,8 @@ $modal_id = "DetailsEventModal";
                                 <span id="booking_details_updated_span" class="flex items-center">modifier le: </span>
                             </p>
                             
-                            <div id="booking_details_fullblocked_div" class="w-full inline-flex justify-between text-base rounded-lg text-gray-700 dark:text-gray-400">
-                                <h5 id="booking_details_service_h5" class="flex items-center justify-start ml-2 text-lg font-extrabold dark:text-white">Titre du service</h5>
+                            <div id="booking_details_fullblocked_div" class="w-full inline-flex justify-between text-base border-b rounded-lg text-gray-700 dark:text-gray-400">
+                                <h5 id="booking_details_service_h5" class="flex items-center justify-start ml-2 text-lg font-extrabold text-gray-700 dark:text-white">Titre du service</h5>
                                 <h5 id="booking_details_fullblocked_h5" class=" flex items-center justify-end mr-2 text-lg font-extrabold text-red-300 dark:text-red-950">FullBlocked</h5>
                             </div>
                             <p class="flex items-center justify-between text-base text-gray-700 dark:text-gray-400 my-2">
