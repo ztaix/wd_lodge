@@ -129,9 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     eventContent: function (args) {
       let bookings = args.event.extendedProps.bookings; 
-      let shadowDotsHtml = "";
-      let nonShadowDotsHtml = "";
-
+console.log('args',args);
       let firstdayHtml = "";
       let firstdayHtmlNumber = "";
       let lastdayHtml = "";
@@ -167,6 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let COUNTisBookingStartDay = 0;
     let COUNTisBookingEndDay = 0;
     let service_booked = 0;
+    let roomsAvailable = availableServicesCount; // initialiser avec le nombre total de chambres
 
     for (let bookingId in bookings) {
         if (bookings.hasOwnProperty(bookingId)) {          
@@ -182,49 +181,50 @@ document.addEventListener("DOMContentLoaded", function () {
           let isBookingStartDay = booking.Date == booking.FirstDay.substring(0, 10);
           let isCurrentDay = booking.Date;
           let isBookingEndDay = booking.Date == booking.LastDay.substring(0, 10);
-
           let message = "";
           let color = "";
-
+          
           /// ALL INSTRUCTIONS DOWN ///
 
           // Start End Animation
           
-          if (isBookingEndDay ) {
+          if (isBookingEndDay ) { // OUT
             COUNTisBookingEndDay++;
+            roomsAvailable++; // Incrémenter car une chambre se libère
 
             lastdayHtml = `
-            <div class="absolute flex justify-start w-full ">
-                <div class="flex flex-col w-1/2 h-full bg-gray-600  dark:bg-white ">
-                  <div class="relative group-hover:small-down-OUT flex items-end justify-center text-white dark:text-black font-bold mx-auto">
+                <div class="absolute flex justify-start w-full ">
+                  <div class="flex flex-col w-2/5 h-full rounded-r-xl bg-gray-400 dark:bg-gray-800 ">
+                    <div class="relative group-hover:small-down-OUT flex items-end justify-center font-bold mx-auto">
                     OUT
-                  </div>
-                  <div class="flex items-end justify-center mb-1 text-white dark:text-black font-bold mx-auto">
-                  ${COUNTisBookingEndDay}
+                    </div>
+                    <div class="flex items-end justify-center mb-1 font-bold mx-auto">
+                      ${COUNTisBookingEndDay}
+                    </div>
                   </div>
                 </div>
-            </div>
-        `;  
-          }
-          if (isBookingStartDay) {
+                  `;  
+                }
+          if (isBookingStartDay) { // IN
             COUNTisBookingStartDay++;
             ++service_booked;
+            roomsAvailable--; // Décrémenter car une chambre est réservée
 
-            let bg_div = 'bg-white';
-            if(fullblockedFound || nEventDay >= availableServicesCount){
-              bg_div = 'bg-red-600';
+            let bg_div = 'bg-white dark:bg-slate-900';
+            if (fullblockedFound || roomsAvailable < 0) { // Changer ici pour vérifier roomsAvailable
+              bg_div = 'bg-red-600 dark:bg-red-700';
             }
-            else if(NotBookedServicesCount < availableServicesCount){
-              bg_div = 'bg-green-500';
+            else if(roomsAvailable > 0){
+              bg_div = 'bg-green-500 dark:bg-green-700';
             }
 
             firstdayHtml = `
             <div class="absolute flex justify-end h-full w-full">
-            <div class="flex flex-col justify-end items-end w-1/2 h-full ${bg_div} dark:bg-white overflow-hidden">
-              <div class="relative group-hover:small-down-IN flex items-center justify-center text-white dark:text-black font-bold mx-auto">
+            <div class="flex flex-col justify-end items-end w-1/2 h-full ${bg_div} rounded-l-xl overflow-hidden">
+              <div class="relative group-hover:small-down-IN flex items-center justify-center font-bold mx-auto">
                 IN
               </div>
-              <div class="flex items-center justify-center mb-1 text-white dark:text-black font-bold mx-auto">
+              <div class="flex items-center justify-center mb-1 font-bold mx-auto">
                 ${COUNTisBookingStartDay}
               </div>
             </div>
@@ -237,28 +237,44 @@ document.addEventListener("DOMContentLoaded", function () {
           if(isCurrentDay && !isBookingEndDay & !isBookingStartDay){
             ++service_booked;
             }  
+            if(roomsAvailable<availableServicesCount && fullblockedFound ){
+              service_booked = availableServicesCount;
+            }
 
-          // STATUS available
-          if(service_booked < availableServicesCount && !fullblockedFound){ // Occupé et disponible
-            color = "green";
+          // Déterminez la couleur en fonction des conditions
+          if (!fullblockedFound && (
+            (!isBookingStartDay && !isBookingEndDay && (isCurrentDay || booking.FirstDay.substring(0, 10) !== isCurrentDay && booking.LastDay.substring(0, 10) !== isCurrentDay) && service_booked < availableServicesCount) ||
+            (COUNTisBookingStartDay >= 1 && COUNTisBookingEndDay >= 1 && service_booked > 1)
+          )) {
+          color = "green";
+          } else if (!isBookingStartDay && !isBookingEndDay && (
+            fullblockedFound && (NotBookedServicesCount === 0 || COUNTisBookingStartDay == 1 || nEventDay == 1) ||
+            nEventDay > 1
+          )) {
+          color = fullblockedFound ? "red" : "purple";
+          } else {
+          color = 'gray';
           }
-          else if( NotBookedServicesCount === 0 || (COUNTisBookingStartDay == 1  && fullblockedFound) || (fullblockedFound && nEventDay == 1) ){ // privatisé
-            color = "red";
-          }
+
 
           message = service_booked + "/" + availableServicesCount;
 
          
-          html_construct = `<div class="absolute text-black dark:text-white bg-${color}-300 dark:bg-${color}-700 w-full h-full">
-          <div class="relative h-full p-1 flex justify-start items-start">${message}</div></div>`; 
+          html_construct = `
+          <div class="absolute w-full h-full ">
+            <div class="relative h-full p-1 flex justify-start items-start bg-${color}-300 dark:bg-${color}-700">
+            ${message}
+            </div>
+          </div>`; 
         
         }
-    }
+      }
 
    let dotsHtml =  html_construct + lastdayHtml + lastdayHtmlNumber + firstdayHtml + firstdayHtmlNumber;
     // Créer un élément HTML pour représenter l'événement
     let eventElement = document.createElement("div");
-    eventElement.className = `group relative flex justify-center items-end h-full overflow-hidden`;
+    eventElement.className = `group relative flex justify-center items-end h-full pb-1 text-black dark:text-white overflow-hidden
+    ${args.isPast?'opacity-50':''}  `;
     eventElement.innerHTML = dotsHtml;
       return {
         domNodes: [eventElement],

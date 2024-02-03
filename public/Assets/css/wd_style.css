@@ -204,9 +204,19 @@ header {
 .fc .fc-daygrid-event-harness, .fc-direction-ltr .fc-daygrid-event.fc-event-end, .fc-direction-rtl .fc-daygrid-event.fc-event-start, .fc-event .fc-event-main {
   height: 100%;
 }
-.fc-daygrid-day.fc-day-today {
-  border: 2px solid black;
+
+.fc .fc-daygrid-day.fc-day-today{
+  background-color: rgb(255, 221, 0);
 }
+.fc-daygrid-day:hover {
+  cursor:pointer;
+  background-color: rgb(255, 241, 114);
+}
+.dark .fc-daygrid-day:hover {
+  cursor:pointer;
+  background-color: rgb(144, 134, 47);
+}
+
 
 /*** DARK MODE ***/
 .dark .fc-multimonth-title, .dark .fc-multimonth-header, .dark div.fc-view-harness.fc-view-harness-active div.fc-multiMonthYear-view.fc-view.fc-multimonth.fc-multimonth-singlecol div.fc-multimonth-month div.fc-multimonth-header table.fc-multimonth-header-table thead{
@@ -220,21 +230,13 @@ header {
 .dark .fc-day-future{
   background-color: #2a3e60;
 }
-.dark .fc-daygrid-day.fc-day-today {
-  background-color:#6e7e98;
-  color: black;
-  border: 2px solid black;
-}
+
 .dark .fc-theme-standard td .fc-daygrid-day {
   border-bottom: 2px;
   border-color:#101825;
 }
 
 
-.dark .fc-daygrid-day:hover {
-  background-color: rgb(49, 85, 148);
-  cursor:pointer;
-}
 
 .dark .fc-day-disabled{
   background-color: #263755;

@@ -26,7 +26,7 @@ $modal_id = "DetailsEventModal";
                         
                         <h5 id="booking_details_id_h5" class="absolute p-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">ID</h5>
                         <div id="booking_details_div_img" class="flex justify-center items-center rounded-t dark:bg-slate-900 max-h-32">
-                            <img id="booking_details_img" class="rounded-t-lg" src="./img/lodge.jpeg" alt="" />
+                            <img id="booking_details_img" class="rounded-t-lg max-h-32" src="./img/lodge.jpeg" alt="" />
                         </div>
                         
                         <div class="px-4">
