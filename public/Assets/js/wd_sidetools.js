@@ -731,8 +731,7 @@ function get_booking_list_from_customer(data) {
                 </th>
                 <td class="whitespace-nowrap overflow-hidden flex flex-col justify-center items-center" >
                 <div>${booking.Qt} Nuit(s)</div>  
-                  <div class="scroll-text">
-                    <div  class="inline-flex">
+                  <div class="scroll-text inline-flex">
                       <div clas="flex">${format_date(booking.start,0,true)}</div>
                       <div class="flex items-center">
                         <svg class="w-4 h-4 text-gray-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -740,7 +739,6 @@ function get_booking_list_from_customer(data) {
                         </svg>
                       </div>
                       <div clas="flex">${format_date(booking.end,0,true)}</div>
-                    </div>
                   </div>
                   </td>
                 <td class="px-3 py-3 text-center ">${

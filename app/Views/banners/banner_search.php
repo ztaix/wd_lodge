@@ -6,14 +6,14 @@
 <!-- SEARCH BANNER -->
 
 <div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed w-full flex flex-col hidden top-0 overflow-auto" >
-    <div class="mx-auto max-w-md lg:max-w-lg">
-        <div class="px-6 pt-20 lg:px-8 flex justify-between items-center ">
+    <div class="w-full mx-auto max-w-md lg:max-w-lg">
+        <div class="px-2 pt-20 lg:px-8 flex justify-between items-center ">
                 <div class="absolute  flex items-center pl-3 pointer-events-none">
                     <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                     </svg>
                 </div>
-                <input type="search" id="default-search" class="shadow-lg block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Rechercher: Client, ID de résa, date, service, Encaissé, Tarif..." required>
+                <input type="search" id="default-search" class="shadow-lg block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Client, Date, Service, Tarif, Réf..." required>
                         
                 
             <div class="flex-shrink-0 ml-2"> <!-- Remplacement de grow-0 par flex-shrink-0 -->
@@ -25,7 +25,7 @@
                 </button>
             </div>
         </div>
-        <div id="searchResults" class="text-slate-400 rounded-xl m-5 p-5">
+        <div id="searchResults" class="text-slate-400 rounded-xl m-5 p-2">
                 <!-- Les résultats de la recherche seront insérés ici -->
         </div>
     </div>

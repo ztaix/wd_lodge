@@ -588,7 +588,6 @@ header {
 }
 
 .scroll-text {
-  display: inline-block;
   animation: scroll 8s linear infinite;
   max-width: 70px;
 }

@@ -90,35 +90,32 @@ document.addEventListener("DOMContentLoaded", function () {
               resultList.removeClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
               return; // Arrêter l'exécution de la fonction ici
             }
-            $.ajax({
-              url: baseurl  + "/booking/search",
-              method: "GET",
-              data: { text: searchInput },
-              success: function (response) {
-                if (response.status === "success" && response.data.length > 0) {
-                  
-                  // Ouvrir la popup si elle n'est pas déjà ouverte
-                  resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
 
-                  // Mettre à jour le contenu de la popup avec les résultats de la recherche
-                  resultList.empty(); // Vider les anciens résultats
-
-                  response.data.forEach((booking) => {
-                    const bookingElement = generateBookingElement(booking);
-                    resultList.append(bookingElement);
-                  });
-                } else {
-                  // Gérer l'échec de la requête ici
-                  console.log("Échec de la Requête de recherche !");
-                  resultList.empty(); // Vider les anciens résultats
-                  resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
-                  resultList.html("Aucun résultat trouvé avec: " + searchInput); // Ajouter le message
-                }
-              },
-            });
-          });
-        },
-      },
+            ajaxCall("booking/search", "GET", { text: searchInput }, function(response) {
+                 if (response.status === "success" && response.data.length > 0) {
+                     // Traiter la réponse en cas de succès
+                     
+                     // Ouvrir la popup si elle n'est pas déjà ouverte
+                     resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
+        
+                     // Mettre à jour le contenu de la popup avec les résultats de la recherche
+                     resultList.empty(); // Vider les anciens résultats
+        
+                     response.data.forEach((booking) => {
+                       const bookingElement = generateSearchRows(booking);
+                       resultList.append(bookingElement);
+                     });
+                   } else {
+                     // Gérer l'échec de la requête ici
+                     console.log("Échec de la Requête de recherche !");
+                     resultList.empty(); // Vider les anciens résultats
+                     resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
+                     resultList.html("Aucun résultat trouvé avec: " + searchInput); // Ajouter le message
+                 }
+             });//END AJAX
+          });//END $("#default-search").on("input",...
+        },//END click: function () 
+      },//END SearchIpunt
     },
     buttonText: {
       today: "Aujourd'hui",
@@ -129,7 +126,6 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     eventContent: function (args) {
       let bookings = args.event.extendedProps.bookings; 
-console.log('args',args);
       let firstdayHtml = "";
       let firstdayHtmlNumber = "";
       let lastdayHtml = "";
@@ -184,73 +180,66 @@ console.log('args',args);
           let message = "";
           let color = "";
           
-          /// ALL INSTRUCTIONS DOWN ///
+        // Start End Animation
+        // OUT
+        if (isBookingEndDay ) {
+          COUNTisBookingEndDay++;
+          roomsAvailable++; // Incrémenter car une chambre se libère
 
-          // Start End Animation
-          
-          if (isBookingEndDay ) { // OUT
-            COUNTisBookingEndDay++;
-            roomsAvailable++; // Incrémenter car une chambre se libère
-
-            lastdayHtml = `
-                <div class="absolute flex justify-start w-full ">
-                  <div class="flex flex-col w-2/5 h-full rounded-r-xl bg-gray-400 dark:bg-gray-800 ">
-                    <div class="relative group-hover:small-down-OUT flex items-end justify-center font-bold mx-auto">
-                    OUT
-                    </div>
-                    <div class="flex items-end justify-center mb-1 font-bold mx-auto">
-                      ${COUNTisBookingEndDay}
-                    </div>
+          lastdayHtml = `
+              <div class="absolute flex justify-start w-full ">
+                <div class="flex flex-col w-2/5 h-full rounded-r-xl bg-gray-400 dark:bg-gray-800 ">
+                  <div class="relative group-hover:small-down-OUT flex items-center justify-center font-bold mx-auto">
+                  OUT
+                  </div>
+                  <div class="flex items-end justify-center mb-1 font-bold mx-auto">
+                    ${COUNTisBookingEndDay}
                   </div>
                 </div>
-                  `;  
-                }
-          if (isBookingStartDay) { // IN
-            COUNTisBookingStartDay++;
-            ++service_booked;
-            roomsAvailable--; // Décrémenter car une chambre est réservée
-
-            let bg_div = 'bg-white dark:bg-slate-900';
-            if (fullblockedFound || roomsAvailable < 0) { // Changer ici pour vérifier roomsAvailable
-              bg_div = 'bg-red-600 dark:bg-red-700';
-            }
-            else if(roomsAvailable > 0){
-              bg_div = 'bg-green-500 dark:bg-green-700';
-            }
-
-            firstdayHtml = `
-            <div class="absolute flex justify-end h-full w-full">
-            <div class="flex flex-col justify-end items-end w-1/2 h-full ${bg_div} rounded-l-xl overflow-hidden">
-              <div class="relative group-hover:small-down-IN flex items-center justify-center font-bold mx-auto">
-                IN
               </div>
-              <div class="flex items-center justify-center mb-1 font-bold mx-auto">
-                ${COUNTisBookingStartDay}
+                `;  
+        }
+        // IN
+        if (isBookingStartDay) {
+          COUNTisBookingStartDay++;
+          fullblockedFound ? service_booked = availableServicesCount : service_booked++;
+          roomsAvailable--; // Décrémenter car une chambre est réservée
+
+          let bg_div = 'bg-white dark:bg-slate-900';
+          if (fullblockedFound || roomsAvailable < 0) { // Changer ici pour vérifier roomsAvailable
+            bg_div = 'bg-red-600 dark:bg-red-700';
+          }
+          else if(roomsAvailable > 0){
+            bg_div = 'bg-green-500 dark:bg-green-700';
+          }
+
+          firstdayHtml = `
+            <div class="absolute flex justify-end h-full w-full">
+              <div class="flex flex-col justify-end items-end w-1/2 h-full ${bg_div} rounded-l-xl overflow-hidden">
+                <div class="relative group-hover:small-down-IN flex items-center justify-center font-bold mx-auto">
+                  IN
+                </div>
+                <div class="flex items-center justify-center mb-1 font-bold mx-auto">
+                  ${COUNTisBookingStartDay}
+                </div>
               </div>
             </div>
-          </div>
-          
+
             `;
           }
 
 
-          if(isCurrentDay && !isBookingEndDay & !isBookingStartDay){
-            ++service_booked;
-            }  
-            if(roomsAvailable<availableServicesCount && fullblockedFound ){
-              service_booked = availableServicesCount;
-            }
+          if(isCurrentDay && !isBookingEndDay & !isBookingStartDay & !fullblockedFound){
+            service_booked++;
+          }  
+          if(fullblockedFound && !isBookingEndDay){
+            service_booked = availableServicesCount;
+          }
 
           // Déterminez la couleur en fonction des conditions
-          if (!fullblockedFound && (
-            (!isBookingStartDay && !isBookingEndDay && (isCurrentDay || booking.FirstDay.substring(0, 10) !== isCurrentDay && booking.LastDay.substring(0, 10) !== isCurrentDay) && service_booked < availableServicesCount) ||
-            (COUNTisBookingStartDay >= 1 && COUNTisBookingEndDay >= 1 && service_booked > 1)
-          )) {
+          if ((!fullblockedFound && (service_booked < availableServicesCount)) && !isBookingEndDay) {
           color = "green";
-          } else if (!isBookingStartDay && !isBookingEndDay && (
-            fullblockedFound && (NotBookedServicesCount === 0 || COUNTisBookingStartDay == 1 || nEventDay == 1) ||
-            nEventDay > 1
-          )) {
+          } else if (service_booked == availableServicesCount) {
           color = fullblockedFound ? "red" : "purple";
           } else {
           color = 'gray';
@@ -274,7 +263,7 @@ console.log('args',args);
     // Créer un élément HTML pour représenter l'événement
     let eventElement = document.createElement("div");
     eventElement.className = `group relative flex justify-center items-end h-full pb-1 text-black dark:text-white overflow-hidden
-    ${args.isPast?'opacity-50':''}  `;
+    ${args.isPast?'opacity-30':''}  `;
     eventElement.innerHTML = dotsHtml;
       return {
         domNodes: [eventElement],
