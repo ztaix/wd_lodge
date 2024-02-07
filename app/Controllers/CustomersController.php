@@ -111,11 +111,12 @@ class CustomersController extends BaseController
                 if ($updated === false) {
                     // Utilisez la méthode errors() pour obtenir les messages d'erreur
                     $errors = $this->errors();
+                    $message = 'Erreur dans la mise à jour de l\'utilisateur avec l\'ID: '. $id ;
                     log_message('error', 'Erreur de mise à jour: ' . json_encode($errors));
-                    return $this->response->setJSON(['status' => 'error', 'errors' => $errors]);
+                    return $this->response->setJSON(['success' => false, 'error' => $message,  'errors' => $errors]);
                 }
-                
-                return $this->response->setJSON(['status' => 'success', 'id' => $customer_info['Customer_id']]);
+                $message = $delete ? 'Suppression de du client avec l\'ID: '.$id: 'Mise à jours du client avec l\'ID: '. $id;
+                return $this->response->setJSON(['success' => true, 'error' => $message, 'id' => $customer_info['Customer_id']]);
                 
             } catch (\Exception $e) {
                 log_message('error', "Exception lors de la mise à jour: Message: " . $e->getMessage() .
@@ -124,10 +125,12 @@ class CustomersController extends BaseController
                                     ", Line: " . $e->getLine() .
                                     ", Trace: " . $e->getTraceAsString()
                 );
-                return $this->response->setJSON(['status' => 'error', 'message' => 'Une erreur est survenue lors de la mise à jour.']);
+                $message = 'Une erreur est survenue lors de la mise à jour.';
+                return $this->response->setJSON(['success' => false, 'error' => $message]);
             }
         } else {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'Paramètre manquant ou incorrect.']);
+            $message = 'Aucune informations reçu par le serveur, paramètre du client manquant ou incorrect.';
+            return $this->response->setJSON(['success' => false, 'error' => $message]);
         }
     }
     

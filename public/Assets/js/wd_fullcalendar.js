@@ -87,7 +87,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const resultList = $("#searchResults");
             if (!searchInput) {
               resultList.empty();
-              resultList.removeClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
+              resultList.addClass("close-animate"); 
+              resultList.removeClass("animate"); 
+              resultList.removeClass("bg-white dark:bg-slate-700 shadow-lg"); 
               return; // Arrêter l'exécution de la fonction ici
             }
 
@@ -96,20 +98,25 @@ document.addEventListener("DOMContentLoaded", function () {
                      // Traiter la réponse en cas de succès
                      
                      // Ouvrir la popup si elle n'est pas déjà ouverte
-                     resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
-        
+                     resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); 
+                     resultList.removeClass("close-animate"); 
+                     resultList.addClass("animate"); 
                      // Mettre à jour le contenu de la popup avec les résultats de la recherche
                      resultList.empty(); // Vider les anciens résultats
         
                      response.data.forEach((booking) => {
                        const bookingElement = generateSearchRows(booking);
                        resultList.append(bookingElement);
+                       // Appliquez l'animation de défilement après l'insertion
+                      applyScrollAnimation();
                      });
                    } else {
                      // Gérer l'échec de la requête ici
                      console.log("Échec de la Requête de recherche !");
                      resultList.empty(); // Vider les anciens résultats
                      resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
+                     resultList.removeClass("close-animate"); // Retirer le fond noir transparent
+                     resultList.addClass("animate"); // Retirer le fond noir transparent
                      resultList.html("Aucun résultat trouvé avec: " + searchInput); // Ajouter le message
                  }
              });//END AJAX
@@ -189,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
           lastdayHtml = `
               <div class="absolute flex justify-start w-full ">
                 <div class="flex flex-col w-2/5 h-full rounded-r-xl bg-gray-400 dark:bg-gray-800 ">
-                  <div class="relative group-hover:small-down-OUT flex items-center justify-center font-bold mx-auto">
+                  <div class="relative group-hover:small-down-OUT  items-center justify-center hidden md:flex">
                   OUT
                   </div>
                   <div class="flex items-end justify-center mb-1 font-bold mx-auto">
@@ -216,10 +223,10 @@ document.addEventListener("DOMContentLoaded", function () {
           firstdayHtml = `
             <div class="absolute flex justify-end h-full w-full">
               <div class="flex flex-col justify-end items-end w-1/2 h-full ${bg_div} rounded-l-xl overflow-hidden">
-                <div class="relative group-hover:small-down-IN flex items-center justify-center font-bold mx-auto">
+                <div class="relative group-hover:small-down-IN items-center justify-center mx-auto hidden md:flex">
                   IN
                 </div>
-                <div class="flex items-center justify-center mb-1 font-bold mx-auto">
+                <div class="flex items-center justify-center mb-1 mx-auto font-bold">
                   ${COUNTisBookingStartDay}
                 </div>
               </div>
@@ -571,8 +578,8 @@ function addEvent() {
                   }
                   
                   if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-                    document.getElementById('booking_paid_'+row_id).innerText = encaissement ;
-                    document.getElementById('booking_paid_status_'+row_id).innerText = 
+                    document.getElementById('booking_paid_'+booking_id).innerText = encaissement ;
+                    document.getElementById('booking_paid_status_'+booking_id).innerText = 
                     encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
                     encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
 
@@ -615,6 +622,7 @@ function addEvent() {
               let Modalevent_Container_Customer_id = document.getElementById('Modalevent_Container_Customer_id');
               // Ajoutez les classes
               Modalevent_Container_Customer_id.classList.add('border-2', 'border-dashed', 'border-red-500','rounded-lg','blinking');
+              document.getElementById("ModaleventCustomer_id").focus();
             }
           }
           showBanner(errorMessages, false);
@@ -649,121 +657,3 @@ function addEvent() {
   }
 }
 
-async function update_add_formEvent(data) {
-  openModal("addEventModal");
-
-  // Changer le texte du bouton et son action pour l'ajout
-  let submitButton = document.getElementById("add_submit_form");
-  submitButton.onclick = function () {
-    updateEventFromDetails();
-  }; // Ajouter un nouvel événement
-  try {
-    let paids = await getPaidFromBookingId(data.id);
-    let paymentsHtml = '';
-    if(paids.length > 0){
-      paids.forEach((paid, index) => {
-          paymentsHtml += createPaymentHtml(paid, index, paids.length);
-      });
-    }
-    document.getElementById('payments-subcontainer').innerHTML = paymentsHtml; 
-
-} catch (error) {
-    console.error("Erreur lors de la récupération des paids: ", error);
-    // Gérez l'erreur comme vous le souhaitez
-}
-
-  if (data) {
-    await loadAndInitDatepicker(data.Service_id, data.start, data.end);
-
-    document.getElementById("addEventModal_title").innerText = `Modifier #${data.id}`;
-    document.getElementById("Modaleventid").value = data.id;
-    document.getElementById("ModaleventCustomer_id").value = data.Customer_id;
-    $('#ModaleventCustomer_id').trigger('change'); // afin que le module SELECT2 reflète formulaire
-
-    document.getElementById("ModaleventService_id").value = data.Service_id;
-    document.getElementById("Modaleventfullblocked").checked = parseInt(data.fullblocked) === 1;
-    document.getElementById("ModaleventQtTraveller").value = parseInt(data.QtTraveller);
-    document.getElementById("ModaleventQt").value = data.Qt;
-    document.getElementById("ModaleventPrice").value = data.Price;
-    document.getElementById("ModaleventType_doc").value = data.Type_doc;
-    document.getElementById("ModaleventComment").value = data.Comment;
-
-    // APPEL des functions de mise à jours du prix total ET des informations
-    updateTotalInfo();
-    updatePrice();
-
-  }
-}
-
-// TODO, deleted les paids_id associé aux event_id
-function deleteEvent(event, event_id, modal_id = false, paids_id = false) {
-  event.stopPropagation(); // Empêche la propagation de l'événement au parent
-  openModal("ConfirmDeleteModal");
-  let modal = document.getElementById("ConfirmDeleteModal");
-  modal.style.zIndex = "999";
-  let yesconfirmButton = document.getElementById(
-    "ConfirmDeleteModal_yes_button"
-    );
-    console.log('modal',modal);
-    
-    yesconfirmButton.onclick = function () {
-      $.ajax({
-        url: baseurl + "booking/deleteBooking", // URL de mise à jour
-        method: "POST",
-        data: {
-          id: event_id,
-        },
-        success: function (response) {
-          if (calendar) {
-            calendar.refetchEvents();
-          } 
-        }
-      });
-
-      // GESTIONNAIRE DE RETOUR D'AFFICHAGE
-      if (ModalInStack("ListEventModal")) {
-        row_type = "booking_list_row_";
-        document
-          .getElementById('booking_'+event_id)
-          .classList.add("line-through");
-        document
-          .getElementById('badge_id_'+event_id)
-          .style.cssText = 'background-color: gray;';
-        document
-          .getElementById('booking_a_'+event_id)
-          .style.cssText = ' cursor : default;';
-          
-          let svgs = document.querySelectorAll('#booking_a_' + event_id + ' svg');
-
-          svgs.forEach(function(svg) {
-            svg.style.color = 'gray';
-        });
-
-        document
-          .getElementById('booking_list_row_hr_'+event_id)
-          .classList.add("fade_out");
-        count_row_found--;
-        document.getElementById(
-          "booking_list_row_found"
-        ).innerText = `Réservation trouvé : ${count_row_found}`;
-      } else {
-        row_type = "row_booking_";
-      }
-      setTimeout(() => {
-        $("." + row_type + event_id).addClass("fade_out");
-      }, 200);
-      setTimeout(() => {
-        $("." + row_type + event_id).css("display", "none");
-      }, 700);
-      showBanner("Suppression réalisée avec succès", true);
-      closeModalById("ConfirmDeleteModal");
-      if (modal_id) {
-        closeModalById(modal_id);
-      }
-    };
-
-    let noconfirmButton = document.getElementById("ConfirmDeleteModal_no_button");
-    noconfirmButton.onclick = function () {
-      closeModalById("ConfirmDeleteModal");
-    };
-}

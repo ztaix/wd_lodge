@@ -430,14 +430,22 @@ class BookingController extends BaseController
         $booking_id = $this->request->getPost('id'); // Récupérez l'ID de la réservation à supprimer depuis la requête POST
 
         // Utilisez la fonction deleteBooking pour supprimer la réservation
-        $result = $this->BookingModel->deleteBooking($booking_id) && $this->PaidModel->deletePaidsFromBooking($booking_id);
+        $bookingDelete = $this->BookingModel->deleteBooking($booking_id);
 
-        if ($result) {
-            // La suppression a réussi
-            echo 'La réservation a été supprimée avec succès.';
+        if ($bookingDelete) {
+            $paidBookingDelete = $this->PaidModel->deletePaidsFromBooking($booking_id);
+            if($paidBookingDelete){
+                // La suppression a réussi
+                return $this->response->setJSON(['success' => true]);
+            }
+            else{
+                // La suppression a réussi
+                return $this->response->setJSON(['success' => true]);
+            }
         } else {
             // La suppression a échoué
-            echo 'La suppression de la réservation a échoué.';
+            $message = "La suppression à échoué"; 
+            return $this->response->setJSON(['success' => false, 'error' => $message]);
         }
     }
 

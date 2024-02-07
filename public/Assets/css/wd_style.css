@@ -93,20 +93,20 @@ header {
 /* Classe pour l'animation */
 .animate {
   top:0;
-  animation: slideUp 0.5s forwards; /* Applique l'animation slideUp */
+  animation: slideUp 0.3s forwards; /* Applique l'animation slideUp */
   opacity: 1;
 }
 .close-animate {
   top:0;
-  animation: slideDown 0.5s forwards; /* Applique l'animation slideDown */
+  animation: slideDown 0.2s forwards; /* Applique l'animation slideDown */
 }
 /* Classe pour l'animation */
 .animate_shadow_modal {
-  animation: slideUpShadow 0.5s forwards; /* Applique l'animation slideUp */
+  animation: slideUpShadow 0.3s forwards; /* Applique l'animation slideUp */
   opacity: 0.5;
 }
 .close-animate_shadow_modal {
-  animation: slideDownShadow 0.5s forwards; /* Applique l'animation slideDown */
+  animation: slideDownShadow 0.2s forwards; /* Applique l'animation slideDown */
 }
 
 
@@ -294,7 +294,7 @@ header {
 }
 @keyframes slideUp {
     from {
-      top: -1000px; /* Part du bas, hors de l'écran */
+      top: -30px; /* Part du bas, hors de l'écran */
       opacity: 0;
     }
     to {
@@ -308,7 +308,7 @@ header {
       opacity: 1;
     }
     to {
-      top: -1000px; /* Descend en dehors de l'écran */
+      top: -30px; /* Descend en dehors de l'écran */
       opacity: 0;
     }
   }
@@ -317,12 +317,12 @@ header {
       opacity: 0;
     }
     to {
-      opacity: 0.5;
+      opacity: 0.2;
     }
   }
   @keyframes slideDownShadow {
     from {
-      opacity: 0.5;
+      opacity: 0.2;
     }
     to {
       opacity: 0;
@@ -590,4 +590,26 @@ header {
 .scroll-text {
   animation: scroll 8s linear infinite;
   max-width: 70px;
+}
+
+.scroll-text_smooth {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.animate-text {
+  animation: scroll-text 10s linear infinite;
+  animation-delay: 2000ms;
+}
+
+@keyframes scroll-text {
+  0%, 100% {
+    transform: translateX(0%);
+  }
+  30% {
+    transform: translateX(-50%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
 }

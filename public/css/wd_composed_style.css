@@ -1209,6 +1209,14 @@ input:checked + .toggle-bg {
   bottom: 1.5rem;
 }
 
+.bottom-7 {
+  bottom: 1.75rem;
+}
+
+.bottom-8 {
+  bottom: 2rem;
+}
+
 .bottom-\[60px\] {
   bottom: 60px;
 }
@@ -2202,9 +2210,18 @@ input:checked + .toggle-bg {
   min-width: fit-content;
 }
 
+.min-w-full {
+  min-width: 100%;
+}
+
 .min-w-max {
   min-width: -moz-max-content;
   min-width: max-content;
+}
+
+.min-w-min {
+  min-width: -moz-min-content;
+  min-width: min-content;
 }
 
 .max-w-2xl {
@@ -4419,6 +4436,11 @@ input:checked + .toggle-bg {
   padding-right: 0.625rem;
 }
 
+.px-20 {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -5622,6 +5644,11 @@ input:checked + .toggle-bg {
   --tw-shadow: var(--tw-shadow-colored);
 }
 
+.shadow-white {
+  --tw-shadow-color: #ffffff;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -5903,27 +5930,27 @@ header {
 
 .animate {
   top:0;
-  animation: slideUp 0.5s forwards;
+  animation: slideUp 0.3s forwards;
   /* Applique l'animation slideUp */
   opacity: 1;
 }
 
 .close-animate {
   top:0;
-  animation: slideDown 0.5s forwards;
+  animation: slideDown 0.2s forwards;
   /* Applique l'animation slideDown */
 }
 
 /* Classe pour l'animation */
 
 .animate_shadow_modal {
-  animation: slideUpShadow 0.5s forwards;
+  animation: slideUpShadow 0.3s forwards;
   /* Applique l'animation slideUp */
   opacity: 0.5;
 }
 
 .close-animate_shadow_modal {
-  animation: slideDownShadow 0.5s forwards;
+  animation: slideDownShadow 0.2s forwards;
   /* Applique l'animation slideDown */
 }
 
@@ -6195,7 +6222,7 @@ header {
 
 @keyframes slideUp {
   from {
-    top: -1000px;
+    top: -30px;
     /* Part du bas, hors de l'écran */
     opacity: 0;
   }
@@ -6215,7 +6242,7 @@ header {
   }
 
   to {
-    top: -1000px;
+    top: -30px;
     /* Descend en dehors de l'écran */
     opacity: 0;
   }
@@ -6227,13 +6254,13 @@ header {
   }
 
   to {
-    opacity: 0.5;
+    opacity: 0.2;
   }
 }
 
 @keyframes slideDownShadow {
   from {
-    opacity: 0.5;
+    opacity: 0.2;
   }
 
   to {
@@ -6533,6 +6560,30 @@ header {
   max-width: 70px;
 }
 
+.scroll-text_smooth {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.animate-text {
+  animation: scroll-text 10s linear infinite;
+  animation-delay: 2000ms;
+}
+
+@keyframes scroll-text {
+  0%, 100% {
+    transform: translateX(0%);
+  }
+
+  30% {
+    transform: translateX(-50%);
+  }
+
+  50% {
+    transform: translateX(0%);
+  }
+}
+
 .after\:absolute::after {
   content: var(--tw-content);
   position: absolute;
@@ -6597,9 +6648,22 @@ header {
   margin-right: 0.5rem;
 }
 
+.hover\:border-l-2:hover {
+  border-left-width: 2px;
+}
+
+.hover\:border-l-4:hover {
+  border-left-width: 4px;
+}
+
 .hover\:border-gray-300:hover {
   --tw-border-opacity: 1;
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
+
+.hover\:border-l-slate-200:hover {
+  --tw-border-opacity: 1;
+  border-left-color: rgb(226 232 240 / var(--tw-border-opacity));
 }
 
 .hover\:bg-blue-800:hover {
@@ -6660,6 +6724,16 @@ header {
 .hover\:bg-white:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-slate-200:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(226 232 240 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-red-500:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(240 82 82 / var(--tw-bg-opacity));
 }
 
 .hover\:text-blue-600:hover {
@@ -6798,11 +6872,6 @@ header {
 
 .group:hover .group-hover\:translate-x-2 {
   --tw-translate-x: 0.5rem;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.group:hover .group-hover\:translate-x-3 {
-  --tw-translate-x: 0.75rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -7065,6 +7134,11 @@ header {
   background-color: rgb(200 30 30 / var(--tw-bg-opacity));
 }
 
+:is(.dark .dark\:bg-red-800) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(155 28 28 / var(--tw-bg-opacity));
+}
+
 :is(.dark .dark\:bg-slate-500) {
   --tw-bg-opacity: 1;
   background-color: rgb(100 116 139 / var(--tw-bg-opacity));
@@ -7154,14 +7228,29 @@ header {
   color: rgb(222 247 236 / var(--tw-text-opacity));
 }
 
+:is(.dark .dark\:text-green-200) {
+  --tw-text-opacity: 1;
+  color: rgb(188 240 218 / var(--tw-text-opacity));
+}
+
 :is(.dark .dark\:text-orange-100) {
   --tw-text-opacity: 1;
   color: rgb(254 236 220 / var(--tw-text-opacity));
 }
 
+:is(.dark .dark\:text-orange-200) {
+  --tw-text-opacity: 1;
+  color: rgb(252 217 189 / var(--tw-text-opacity));
+}
+
 :is(.dark .dark\:text-red-100) {
   --tw-text-opacity: 1;
   color: rgb(253 232 232 / var(--tw-text-opacity));
+}
+
+:is(.dark .dark\:text-red-200) {
+  --tw-text-opacity: 1;
+  color: rgb(251 213 213 / var(--tw-text-opacity));
 }
 
 :is(.dark .dark\:text-red-500) {
@@ -7202,6 +7291,11 @@ header {
 :is(.dark .dark\:text-slate-600) {
   --tw-text-opacity: 1;
   color: rgb(71 85 105 / var(--tw-text-opacity));
+}
+
+:is(.dark .dark\:text-slate-800) {
+  --tw-text-opacity: 1;
+  color: rgb(30 41 59 / var(--tw-text-opacity));
 }
 
 :is(.dark .dark\:text-white) {
@@ -7285,11 +7379,6 @@ header {
 :is(.dark .dark\:hover\:bg-slate-500:hover) {
   --tw-bg-opacity: 1;
   background-color: rgb(100 116 139 / var(--tw-bg-opacity));
-}
-
-:is(.dark .dark\:hover\:bg-slate-600:hover) {
-  --tw-bg-opacity: 1;
-  background-color: rgb(71 85 105 / var(--tw-bg-opacity));
 }
 
 :is(.dark .dark\:hover\:bg-slate-700:hover) {
@@ -7422,6 +7511,10 @@ header {
     display: flex;
   }
 
+  .sm\:hidden {
+    display: none;
+  }
+
   .sm\:border-b-0 {
     border-bottom-width: 0px;
   }
@@ -7433,9 +7526,22 @@ header {
   .sm\:p-9 {
     padding: 2.25rem;
   }
+
+  .sm\:text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .sm\:font-thin {
+    font-weight: 100;
+  }
 }
 
 @media (min-width: 768px) {
+  .md\:flex {
+    display: flex;
+  }
+
   .md\:w-1\/2 {
     width: 50%;
   }

@@ -103,7 +103,12 @@ $modal_id = "addEventModal";
                             </div>
                             <input id="ModaleventStart" name="ModaleventStart" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 cursor-pointer" placeholder="Date de début">
                         </div>
-                        <span class="mx-4 text-gray-500">
+                        <!-- Nombre de nuit auto-Calculé -->
+                        <input hidden type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="ModaleventQt" name="ModaleventQt" >
+                        <span class="flex flex-col justify-center items-center mx-4 text-gray-500">
+                            <div id="ModaleventNights" class="flex text-center text-xs ">
+                                2 Nuits
+                            </div>
                             <svg class="w-4 h-4  dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
                             </svg>
@@ -116,11 +121,8 @@ $modal_id = "addEventModal";
                                 </svg>
                             </div>
                             <input id="ModaleventEnd" name="ModaleventEnd" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 cursor-pointer" placeholder="Date de fin">
+                            
                         </div>
-                    </div>
-                    <div class="relative pt-2">
-                        <input disabled type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="ModaleventQt" name="ModaleventQt" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
-                        <label for="ModaleventQt" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Nombre de nuit</label>
                     </div>
                     
                     <div class="relative z-10 shadow-sm">
@@ -163,7 +165,7 @@ $DiscountsType = $discountRules['Type']['Data'];
 $DiscountsScope = $discountRules['Scope']['Data'];
 ?>
 <script>
-
+    document.getElementById('ModaleventNights').innerText = document.getElementById('ModaleventQt').value + ' Nuit(s)';
     // CATCHING elementID:
     var eventFull_Blocked = document.getElementById("Modaleventfullblocked");
     var container_full_blocked = document.getElementById("container_eventfullblocked");
@@ -460,6 +462,7 @@ function updatePrice() {
             });
         }
     });
+
 
 
 </script>

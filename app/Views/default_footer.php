@@ -72,36 +72,39 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 if(!window.location.href.includes('Config')){
-
-    // Initialisation du select recherche
-    $(document).ready(function() {
-
-        $('#ModaleventCustomer_id').select2({
-            tags: true,
-            tokenSeparators: [',', ' '],
-            placeholder: "Recherchez ou ajoutez un nouveau client",
-            createTag: function(params) {
-                return {
-                    id: params.term,
-                    text: params.term,
-                    newOption: true,
-                    width: 'resolve',
-
-                }
+    // SELECT2 Initialisation du select recherche pour customer_id
+    $('#ModaleventCustomer_id').select2({
+        tags: true,
+        tokenSeparators: [',', ' '],
+        placeholder: "Recherchez ou ajoutez un nouveau client",
+        createTag: function(params) {
+            return {
+                id: params.term,
+                text: params.term,
+                newOption: true,
             }
-        }).on("select2:select", function(e) {
-            if (e.params.data.newOption) {
-                ShowCreateCustomer(); // Ouvrir le popup d'ajout avec le texte prérempli
-                document.getElementById('customer_name').value = e.params.data.text;
-            }
-        });
+        }
+    }).on("select2:select", function(e) {
+    var data = e.params.data;
+    if (data.newOption) {
         
-    });
+        document.getElementById('customer_name').value = data.text;
+        
+        // Ouvrir le popup d'ajout avec le texte prérempli
+        ShowCreateCustomer(data.text, function(response) {
+            // Ici, vous recevez l'ID et le nom du nouveau client créé
+            // Créez l'option et ajoutez-la au select
+            var newOption = new Option(response.Name, response.id, true, true);
+            $('#ModaleventCustomer_id').append(newOption).trigger('change');
+        });
+    }
+
+});
 
     //SCROLL MAX BOTTOM
     let startY;
     let isBottomReached = false;
-    let threshold = 400; // Distance en pixels pour déclencher l'action après avoir atteint le bas
+    let threshold = 500; // Distance en pixels pour déclencher l'action après avoir atteint le bas
 
     window.addEventListener('touchstart', (e) => {
     startY = e.touches[0].clientY;

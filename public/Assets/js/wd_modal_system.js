@@ -4,6 +4,7 @@ var modalStack = []; // Pile pour stocker les fenêtres modales ouvertes
 var ShadowmodalStack = []; // Pile pour stocker les fenêtres modales ouvertes
 var currentZIndex = 50; // Valeur initiale du zIndex
 var isClosingModal = false;
+let isAnimating = false; // Indicateur pour suivre l'état de l'animation
 
 function urlLocation(){
    let segments = window.location.href.split('?')[0].split('/');
@@ -96,8 +97,10 @@ async function resetForm(modalId, start = false , end = false, service_id = fals
     document.getElementById("addEventModal_title").innerText = 'Ajouter';
     let date_start = '';
     let date_end = '';
+    console.log('start',start);
     if(start){
       start_date = format_date(start);
+      console.log('start_date',start_date);
       date_end = end ? format_date(end) : format_date(start,1);
     }else {
       date_start = format_date(getToday());
@@ -117,9 +120,11 @@ async function resetForm(modalId, start = false , end = false, service_id = fals
 }
 
 function openModal(modalId) {
-  
+  if (isAnimating) return; // Sort si une animation est déjà en cours
+  isAnimating = true; // Active l'indicateur d'animation
   let modalElement = document.getElementById(modalId);
   let shadow_modal = document.getElementById(modalId + '-shadow_modal');
+
   if (modalElement) {
 
     shadow_modal.style.zIndex = currentZIndex+1;
@@ -145,10 +150,17 @@ function openModal(modalId) {
 
   var current_page_DIV = document.getElementById(urlLocation());
     current_page_DIV.classList.add('blur-lg');
+
+  setTimeout(function() {
+    isAnimating = false; // Désactive l'indicateur d'animation une fois la modale fermée
+  }, 350); // Assurez-vous que cette durée correspond à la durée de votre animation
 }
 
 // Ferme la dernière fenêtre modale ouverte
 function closeModal() {
+  if (isAnimating) return; // Sort si une animation est déjà en cours
+  isAnimating = true; // Active l'indicateur d'animation
+
   if(modalStack.length > 1 ){
 
   var currentModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
@@ -166,7 +178,7 @@ function closeModal() {
   setTimeout(() => {
     currentModal.classList.add("hidden");
     lastShadowModal.classList.add("hidden");
-  }, 500);  
+  }, 300);  
 
   }
   else if(modalStack.length === 1 ){  
@@ -181,15 +193,22 @@ function closeModal() {
     setTimeout(() => {
       currentModal.classList.add("hidden");
       lastShadowModal.classList.add("hidden");
-    }, 500);  
+    }, 300);  
   }
   if(modalStack.length === 0  ){
        var current_page_DIV = document.getElementById(urlLocation())
        current_page_DIV.classList.remove('blur-lg');
   }
+
+  setTimeout(function() {
+    isAnimating = false; // Désactive l'indicateur d'animation une fois la modale fermée
+  }, 350); // Assurez-vous que cette durée correspond à la durée de votre animation
 }
 
 function closeModalById(modalId) {
+  if (isAnimating) return; // Sort si une animation est déjà en cours
+  isAnimating = true; // Active l'indicateur d'animation
+
   let modalElement = document.getElementById(modalId);
   let shadow_modal = document.getElementById(modalId + '-shadow_modal');
 
@@ -204,7 +223,7 @@ function closeModalById(modalId) {
     setTimeout(function() {
       modalElement.classList.add("hidden");
       shadow_modal.classList.add("hidden");
-  }, 500);
+  }, 300);
   
     // Si une fenêtre modale est toujours dans la pile, alors la rouvrir
     if (modalStack.length > 1) {
@@ -219,7 +238,10 @@ function closeModalById(modalId) {
   
   // Retire la fenêtre modale spécifiée de la pile
   modalStack = modalStack.filter((modal) => modal.id !== modalId);
-
+  
+  setTimeout(function() {
+    isAnimating = false; // Désactive l'indicateur d'animation une fois la modale fermée
+  }, 350); // Assurez-vous que cette durée correspond à la durée de votre animation
 }
 
 function closex(modalId) {
@@ -234,8 +256,9 @@ function closex(modalId) {
 }
 
 function ModalInStack(modalId) {
+
   return modalStack.some(function (modal) {
-    return modal.id.includes(modalId);
+    return modal.id === modalId;
   });
 }
 
@@ -287,6 +310,7 @@ function handleAddEventClick(date =false, service_id = false) {
     end: "2024-01-27 00:00:00"​
     fullblocked: "0"
     start: "2024-01-26 00:00:00"*/
+
     if(ModalInStack('ListEventModal')){  // UPDATE BOOKING
       document.getElementById('booking_total_'+row_id).innerText =  row_price;
       document.getElementById('booking_Comment_'+row_id).innerText = d.Comment;
@@ -322,3 +346,5 @@ function handleAddEventClick(date =false, service_id = false) {
       
     }
   }
+
+  

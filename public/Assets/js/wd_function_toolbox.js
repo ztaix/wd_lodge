@@ -37,7 +37,7 @@
         },
         error: function(xhr, status, error) {
             // Vous pouvez gérer l'erreur ici ou ajouter un autre paramètre à la fonction pour un callback d'erreur
-            console.error("Erreur lors de la requête AJAX :", status, error);
+            console.error("Erreur lors de la requête AJAX :", status, error,xhr);
         }
     });
   }
