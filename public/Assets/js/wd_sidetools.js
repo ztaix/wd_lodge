@@ -20,19 +20,19 @@ document.addEventListener("keydown", function (event) {
 
 // Fonction pour afficher les détails dans la modal
 function showBookingList(response, clickedDate) {
-  openModal("ListEventModal");
+  const dateComponents = clickedDate.split("-"); // ["2023", "10", "27"]
+  const newDateStr = [
+    dateComponents[2],
+    dateComponents[1],
+    dateComponents[0],
+  ].join("/");
+  
+  let modalTitle = document.getElementById("modal-title")
   let container = document.getElementById("bookingListContainer");
-  container.innerHTML = ""; // Efface les anciennes données
-// Place la date dans le titre
-const dateComponents = clickedDate.split("-"); // ["2023", "10", "27"]
-const newDateStr = [
-  dateComponents[2],
-  dateComponents[1],
-  dateComponents[0],
-].join("/");
-
-document.getElementById("modal-title").innerHTML = getDayOfWeek(format_date(newDateStr)) + ' ' + newDateStr;
-
+  
+  container.innerHTML = ""; 
+  modalTitle.innerHTML = getDayOfWeek(format_date(newDateStr)) + ' ' + newDateStr;
+  
 
 response.sort((a, b) => {
   // Convertissez les titres de service en minuscules pour assurer une comparaison insensible à la casse
@@ -170,33 +170,19 @@ response.sort((a, b) => {
     <div class="flex flex-wrap justify-end font-bold">
       <div id="booking_list_row_found" class="text-slate-400 inline-flex" >Réservation trouvé : ${count_row_found}</div>
     </div>`;
+ 
+    let availableServices = availableListServices(newDateStr,services_list,response); 
     
-    // Si besoin de voir les services disponible
-    const bookedServiceIds = new Set(response.map(booking => booking.Service_id));
-  // Vérifiez si un service réservé avec fullblocked = "1" existe
-  const isFullBlockedBooked = [...bookedServiceIds].some(serviceId => {
-    const bookedService = response.find(booking => booking.Service_id === serviceId);
-    return bookedService && bookedService.fullblocked === "1" && !( format_date(bookedService.end) == format_date(newDateStr));
-  });
 
-  let unbookedServices = [];
-
-  if (isFullBlockedBooked) {
-    // Si un service avec fullblocked est réservé, ne retournez aucun service
-    unbookedServices = [];
-  } else {
-    // Sinon, filtrez les services non réservés et ceux avec fullblocked == "0"
-    unbookedServices = services_list.filter(service => !bookedServiceIds.has(service.Service_id) && service.fullblocked === "0");
-  }
-
-
+  let h1 = document.getElementById('ListEventModal').querySelector('h1');
+  let parentH1 = h1.parentElement;
   // Si il existe encore des service de disponible
-  if(unbookedServices.length > 0){
+  if(availableServices.length > 0){
     container.innerHTML += `          
     <div class="flex flex-wrap justify-center font-bold border-t">
       <div id="booking_list_row_found" class="text-slate-400 inline-flex" >Voir les services disponible ?</div>
     </div>`;
-      unbookedServices.forEach((service, index) => {
+    availableServices.forEach((service, index) => {
         container.innerHTML += `
         <div class="flex justify-between">
             <div class="flex flex-grow">
@@ -223,24 +209,24 @@ response.sort((a, b) => {
           handleAddEventClick(date, serviceId);
       });
     });
-      // Si aucun services disponible
-    }else{
-      let h1 = document.getElementById('ListEventModal').querySelector('h1');
-      let parentH1 = h1.parentElement;
+
+    h1.innerHTML  = "<b>Ajouter une réservation</b>";
+    parentH1.classList.add('cursor-pointer');
+    parentH1.onclick = () => handleAddEventClick(format_date(newDateStr),availableServices[0].Service_id);
+
+    // Si aucun services disponible
+  }else{
       h1.innerHTML  = "<b>Complet</b>";
       parentH1.classList.remove('cursor-pointer');
       parentH1.onclick = null;
     }
       
-
-
+    openModal("ListEventModal");
 }
 
 function ShowCreateCustomer(customerName ="" , callback) {
-  openModal("updateCustomerModal");
 
   document.getElementById('header_updateCustomerModal').innerHTML = header_modal('Client','updateCustomerModal');
-
   document.getElementById("customer_id").value = "";
   document.getElementById("customer_name").value = customerName; // Préremplit le nom du client
   document.getElementById("customer_phone").value = "";
@@ -252,6 +238,7 @@ function ShowCreateCustomer(customerName ="" , callback) {
       CreateCustomer(callback); // Passe le callback à CreateCustomer
   };
 
+  openModal("updateCustomerModal");
 }
 
 function CreateCustomer(callback) {
@@ -723,7 +710,7 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
 
     // Si un datepicker existe déjà, retirez-le avant de créer un nouveau
     if (fromServicepicker) {
-      fromServicepicker.destroy(); 
+      fromServicepicker = "";
     }
 
     $.ajax({
@@ -748,8 +735,6 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
           return `${year}-${month}-${day}`;
         });
 
-        let startDate = null;
-        let endDate = null;
         // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
         fromServicepicker = new easepick.create({
           element: document.getElementById("ModaleventStart"),
@@ -816,7 +801,6 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
               const formattedDate = date ? date.format("YYYY-MM-DD") : null;
               
               if (view === "CalendarDay" && daytoShow[formattedDate]) {
-                let span;
                 let span1;
                 let span2;
                 let FirstDay = daytoShow[formattedDate]['FirstDay'];

@@ -115,7 +115,9 @@ async function resetForm(modalId, start = false , end = false, service_id = fals
         div.parentNode.removeChild(div);
       });
     } 
+
     await loadAndInitDatepicker(service_id,date_start,date_end);
+
   }
 }
 
@@ -268,6 +270,7 @@ function shadowUndermodal(modal_id){
 
 function handleAddEventClick(date =false, service_id = false) {
   resetForm('addEventModal',date,false,service_id);
+
   openModal('addEventModal');
 }
 

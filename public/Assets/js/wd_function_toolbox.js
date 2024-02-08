@@ -271,4 +271,49 @@ function emptyObj(obj) {
     return days[dayOfWeek];
   }
 
+// SERVICE Liste
+  /**
+   * Renvoi une liste de service disponible pour la date sélectionné
+   * @param {date} clickedDate - Date du jour
+   * @param {array} listService - Liste fixe des services disponible (Array)
+   * @param {array} booked - Liste des résa donnée à une date donnée (Array)
+   * @return {array} liste des services disponible
+   */
+function availableListServices(clickedDate,listService,booked){
+  let availableServices = [];
 
+  const isFullBlocked = booked.some(reservation => 
+    reservation.fullblocked === "1" && format_date(reservation.end) >= clickedDate
+  );
+  // Vérifier si un service est déjà réservé
+  const isAnyServiceBooked = booked.some(reservation => 
+    format_date(reservation.end) >= clickedDate
+  );
+
+  if (!isFullBlocked) {
+
+      // Convertir la liste des réservations en un ensemble des services non disponibles
+      const unavailableServiceIds = booked.reduce((set, reservation) => {
+        //te Si la date de fin est strictement supérieure à todayDa, le service est considéré comme indisponible
+        if (format_date(reservation.end) > format_date(clickedDate)) {
+          set.add(reservation.Service_id);
+        }
+        return set;
+      }, new Set());
+      
+      availableServices = listService.filter(service => {
+        // Si un service est déjà réservé, exclure tous les services avec `fullblocked`
+        if (isAnyServiceBooked && service.fullblocked === "1") {
+            return false;
+        }
+        // Sinon, filtrer normalement en se basant sur unavailableServiceIds
+        return !unavailableServiceIds.has(service.Service_id) ||
+            booked.some(reservation => 
+                reservation.Service_id === service.Service_id && format_date(reservation.end) === clickedDate
+            );
+    });
+  }
+
+  return availableServices;
+
+}

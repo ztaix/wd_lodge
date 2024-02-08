@@ -25,7 +25,7 @@ $modal_id = "DetailsEventModal";
                     <div class="bg-white border border-gray-200 rounded-lg dark:bg-slate-800 dark:border-gray-800">
                         
                         <h5 id="booking_details_id_h5" class="absolute p-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">ID</h5>
-                        <div id="booking_details_div_img" class="flex justify-center items-center rounded-t dark:bg-slate-900 h-32 overflow-hidden">
+                        <div id="booking_details_div_img" class="flex justify-center items-center rounded-t dark:bg-slate-900 h-32 max-w-lg overflow-hidden">
                             <img id="booking_details_img" class="rounded-t-lg object-cover w-full h-full" src="./img/lodge.jpeg" alt="" />
                         </div>
 
@@ -77,7 +77,7 @@ $modal_id = "DetailsEventModal";
                                     </svg>
                                     <span class="font-bold">Tarif</span>
                                     <span class="ml-auto flex flex-col items-end">
-                                        <span id="booking_details_price_span" class="w-fit text-md bg-yellow-100 text-yellow-800 font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Yellow</span>
+                                        <span id="booking_details_price_span" class="w-fit text-md bg-yellow-100 text-yellow-800 font-medium px-2.5 py-0.5  dark:bg-yellow-900 dark:text-yellow-300">Yellow</span>
                                         <span class='text-xs italic text-slate-300 dark:text-slate-600'>(taxe voyageur et frais de ménages inclus)</span>
                                     </span>
                                 </p>

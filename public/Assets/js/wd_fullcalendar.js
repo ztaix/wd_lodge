@@ -4,7 +4,6 @@ var clickedDate = null; // Défini dans la portée globale
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
   calendar = new FullCalendar.Calendar(calendarEl, {
-
     locale: "fr",
     firstDay: 1,
     initialView: "multiMonthYear",
@@ -206,10 +205,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
           let bg_div = 'bg-white dark:bg-slate-900';
           if (fullblockedFound || roomsAvailable < 0) { // Changer ici pour vérifier roomsAvailable
-            bg_div = 'bg-red-600 dark:bg-red-700';
+            bg_div = 'bg-red-600 dark:bg-red-600';
           }
           else if(roomsAvailable > 0){
-            bg_div = 'bg-green-500 dark:bg-green-700';
+            bg_div = 'bg-green-500 dark:bg-green-600';
           }
 
           firstdayHtml = `
@@ -236,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
 
           // Déterminez la couleur en fonction des conditions
-          if ((!fullblockedFound && (service_booked < availableServicesCount)) && !isBookingEndDay) {
+          if (service_booked < availableServicesCount) {
           color = "green";
           } else if (service_booked == availableServicesCount) {
           color = fullblockedFound ? "red" : "purple";
@@ -250,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
          
           html_construct = `
           <div class="absolute w-full h-full ">
-            <div class="relative h-full p-1 flex justify-start items-start bg-${color}-300 dark:bg-${color}-700">
+            <div class="relative h-full pt-2 pl-1 flex justify-start items-start bg-${color}-300 dark:bg-${color}-800">
             ${message}
             </div>
           </div>`; 

@@ -11,7 +11,7 @@ $modal_id = "ListEventModal";
     <div class="px-6 py-6 lg:px-8 flex justify-between items-center text-slate-500 bg-white border border-gray-200  dark:bg-gray-800 dark:border-gray-700 rounded-lg shadow-md " onclick="event.stopPropagation()">
 
         <div class="flex-grow text-center">
-        <div class="w-full  justify-center items-center flex-col p-2 mx-2 cursor-pointer Add_Event_blinking" onclick="handleAddEventClick()">
+        <div class="w-full  justify-center items-center flex-col p-2 mx-2 cursor-pointer Add_Event_blinking">
                         <h1 class="font-bold text-lg px-4 whitespace-nowrap">Ajouter une réservation</h1>
     
                         <h2 id="modal-title" class="text-center font-bold -ml-2"><!-- JavaScript print Date du jour --></h2>
