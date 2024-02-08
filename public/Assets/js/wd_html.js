@@ -186,10 +186,18 @@ async function showBookingDetailsFromID(id) {
     (total, currentValue) => total + currentValue,
     0
   );
-  document.getElementById(
-    "booking_details_id_h5"
-  ).innerHTML = `<span class="text-sm  text-white bg-slate-400 dark:text-slate-500 dark:bg-slate-950 rounded-md p-2" >${Booking.Type_doc} # ${Booking.id}</span> `;
+  let booking_details_h5 = document.getElementById("booking_details_id_h5");
+  booking_details_h5.innerHTML = `<span class="text-md font-bold tracking-tight p-2" >${Booking.Type_doc} # ${Booking.id}</span> `;
+  // Ajouter des classes qui ne dépendent pas de la condition
+  booking_details_h5.classList.add('rounded-md');
 
+  // Ajouter des classes basées sur la condition
+
+  if (Booking.Type_doc === 'Devis') {
+    booking_details_h5.classList.add('bg-slate-400','text-slate-800', 'dark:text-slate-500', 'dark:bg-slate-950');
+  } else {
+    booking_details_h5.classList.add('bg-sky-200', 'dark:bg-sky-800', 'text-sky-800', 'dark:text-sky-400');
+  }
   existFile(baseurl + 'uploads/' + Booking.booking_img).then(fileExists => {
     if (fileExists) {
       document.getElementById("booking_details_img").src =  baseurl + 'uploads/' + Booking.booking_img;
@@ -205,14 +213,11 @@ async function showBookingDetailsFromID(id) {
     let div_fullblocked = document.getElementById("booking_details_fullblocked_div");
     let h5_fullblocked = document.getElementById("booking_details_fullblocked_h5");
   if (Booking.fullblocked == 1) {
-    booking_details_service_h5.classList.add('text-white','dark:text-red-900');
-    div_fullblocked.classList.add('bg-red-600')
-    div_fullblocked.classList.add('dark:bg-red-500','dark:bg-gray-600')
+    div_fullblocked.classList.add('border-red-300','dark:border-red-500'),
     h5_fullblocked.style.display= "block";
     h5_fullblocked.innerText = "Privatisé";
   } else {
-    div_fullblocked.classList.remove('bg-red-600')
-    div_fullblocked.classList.remove('dark:bg-red-500','dark:bg-gray-600')
+    div_fullblocked.classList.remove('border-red-300','dark:border-red-500');
     h5_fullblocked.style.display = "none";
   }
   document.getElementById("booking_details_qt_span").innerText = Booking.Qt;
@@ -227,8 +232,9 @@ async function showBookingDetailsFromID(id) {
     details_paid_rest_div.innerText = totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays)-parseInt(paids_sum) + " Fr";
   }
   else{
-    details_paid_rest_div.innerText = "";
+    details_paid_rest_div.classList.add('hidden');
   }
+ 
   let details_paid_div = document.getElementById('booking_details_progress_div');
   details_paid_div.innerText = paids_sum > 0 ? paids_sum + " Fr" : "0";
   if(paids_sum > 0){
@@ -242,6 +248,9 @@ async function showBookingDetailsFromID(id) {
     (function (customerId) {
       return function () {
         showUpdateCustomer(customerId);
+        if(!Booking.customer_comment){
+        document.getElementById('customer_comment').focus()
+        }
       };
     })(Booking.Customer_id);
 

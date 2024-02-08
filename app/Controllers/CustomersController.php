@@ -115,7 +115,7 @@ class CustomersController extends BaseController
                     log_message('error', 'Erreur de mise à jour: ' . json_encode($errors));
                     return $this->response->setJSON(['success' => false, 'error' => $message,  'errors' => $errors]);
                 }
-                $message = $delete ? 'Suppression de du client avec l\'ID: '.$id: 'Mise à jours du client avec l\'ID: '. $id;
+                $message = $delete ? 'Suppression du client avec l\'ID: '.$id : 'Mise à jours du client avec l\'ID: '. $id;
                 return $this->response->setJSON(['success' => true, 'error' => $message, 'id' => $customer_info['Customer_id']]);
                 
             } catch (\Exception $e) {

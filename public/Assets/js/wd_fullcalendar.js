@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
          
           html_construct = `
           <div class="absolute w-full h-full ">
-            <div class="relative h-full pt-2 pl-1 flex justify-start items-start bg-${color}-300 dark:bg-${color}-800">
+            <div class="relative h-full pt-2 pl-1 flex justify-start items-start bg-${color}-300 dark:bg-${color}-800 ">
             ${message}
             </div>
           </div>`; 
@@ -346,12 +346,7 @@ function updateEventFromDetails() {
     success: function (response) {
       if (response.status == "success") {
         let updatedData = {};
-        updatedData[response.id] = response.data;
-        showBanner("Événement mise à jour avec succès !", true);
-        
-        if (calendar) {
-          calendar.refetchEvents();
-        }
+        updatedData[response.id] = response.data;        
        
         // UPDATE FORM PAID
         let payments = []; // Initialise payments comme un tableau vide
@@ -420,7 +415,10 @@ function updateEventFromDetails() {
               updateModal(updatedData);
 
               closeModalById('addEventModal');
-                showBanner("Paiements mise à jour avec succès !", true);
+              if (calendar) {
+                calendar.refetchEvents();
+              }
+              showBanner("Evènment mise à jour avec succès !", true);
             } else {
                 showBanner("Echec de la mise à jour des paiements !", false);
                 console.log('Erreurs: ', allErrors);
@@ -435,7 +433,7 @@ function updateEventFromDetails() {
         });
       } else {
         showBanner("Echec de la mise à jour ! <br>" + response.message.Customer_id, false);
-        console.log(response.message.Customer_id);
+        console.log('Customer ID: ',response.message.Customer_id);
       }
     },
     error: function (jqXHR, textStatus, errorThrown) {
@@ -489,13 +487,13 @@ function addEvent() {
           if (response.success === true) {
 
             let booking_id = response.id;
+            let ModaleventStart = document.getElementById("ModaleventStart").value;
+            let ModaleventEnd = document.getElementById("ModaleventEnd").value;
             // Traitez la réponse ici
             showBanner(
               `<div class="flex flex-col">Evènement ajouté avec succès !</div>
                 <div class="text-center">
-                  Du <b>${document.getElementById("ModaleventStart").value}</b> au <b>${
-                document.getElementById("ModaleventEnd").value
-              }</b>
+                  Du <b>${ModaleventStart}</b> au <b>${ ModaleventEnd }</b>
               </div>
               `,
               true
@@ -509,29 +507,33 @@ function addEvent() {
 
 
             // ADD PAYMENTS
-            let payments = []; // Initialise payments comme un tableau vide
-            document.querySelectorAll('.payment-row').forEach((row, index) => {
-              if(row.id.startsWith('temp_') === true ) {
-                // Pour un nouvel enregistrement (id non défini ou vide)
-                payments.push({
-                  'booking_id': booking_id,
-                  'type_paid': document.getElementById(`rowPaidType${row.id}`).value,
-                  'value': document.getElementById(`rowPaid${row.id}`).value
-                });
-              }
-              else{
-                let id = document.getElementById(`rowPaidid${index}`).value;
-                if (id){
-                  // Pour un enregistrement existant (avec un id défini)
+            
+              let payments = []; // Initialise payments comme un tableau vide
+              document.querySelectorAll('.payment-row').forEach((row, index) => {
+                if(row.id.startsWith('temp_') === true ) {
+                  // Pour un nouvel enregistrement (id non défini ou vide)
                   payments.push({
-                    'id': id, // Stocker l'id dans l'objet
                     'booking_id': booking_id,
-                    'type_paid': document.getElementById(`rowPaidType${index}`).value,
-                    'value': document.getElementById(`rowPaid${index}`).value
-                  }); // Ajouter l'objet au tableau
+                    'type_paid': document.getElementById(`rowPaidType${row.id}`).value,
+                    'value': document.getElementById(`rowPaid${row.id}`).value
+                  });
                 }
-              }
-            });
+                else{
+                  let id = document.getElementById(`rowPaidid${index}`).value;
+                  if (id){
+                    // Pour un enregistrement existant (avec un id défini)
+                    payments.push({
+                      'id': id, // Stocker l'id dans l'objet
+                      'booking_id': booking_id,
+                      'type_paid': document.getElementById(`rowPaidType${index}`).value,
+                      'value': document.getElementById(`rowPaid${index}`).value
+                    }); // Ajouter l'objet au tableau
+                  }
+                }
+              });
+            
+           
+
             let payments_filtred = payments.filter(item => item !== undefined);
             $.ajax({
               url: baseurl + "paids/upsert",
@@ -567,29 +569,38 @@ function addEvent() {
                       }
                     }
                   }
-                  
-                  if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-                    document.getElementById('booking_paid_'+booking_id).innerText = encaissement ;
-                    document.getElementById('booking_paid_status_'+booking_id).innerText = 
-                    encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
-                    encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
+                  if(booking_id){
+                    if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                      let encaissement_div = document.getElementById('booking_paid_'+booking_id);
+                      console.log('encaissement_div',encaissement_div);
+                      if(encaissement_div !== null){
+                        document.getElementById('booking_paid_'+booking_id).innerText = encaissement ;
+                        document.getElementById('booking_paid_status_'+booking_id).innerText = 
+                        encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
+                        encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
 
-                  }
-                  if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-                    let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
-                    if(encaissement < row_price){
-                      details_paid_rest_div.innerText = row_price-encaissement + " Fr";
+                      }
+  
                     }
-                    let details_paid_div = document.getElementById('booking_details_progress_div');
-                    details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
-                    if(encaissement > 0){
-                      let convert_pourc = Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100);
-                      details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
-                    } else {details_paid_div.style.width = "24px"; }
-                    
+                    if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                      let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
+                      if(encaissement < row_price){
+                        details_paid_rest_div.innerText = row_price-encaissement + " Fr";
+                      }
+                      else{
+                        booking_details_progress_rest_div.classList.add('hidden');
+                      }
+                      let details_paid_div = document.getElementById('booking_details_progress_div');
+                      details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
+                      if(encaissement > 0){
+                        let convert_pourc = Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100);
+                        details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
+                      } else {details_paid_div.style.width = "24px"; }
+                      
+                    }
                   }
                     closeModalById('addEventModal');
-                    showBanner("Paiements mise à jour avec succès !", true);
+                    showBanner("Mise à jour avec succès !", true);
                 } else {
                     showBanner("Echec de la mise à jour des paiements !", false);
                     console.log('Erreurs: ', allErrors);

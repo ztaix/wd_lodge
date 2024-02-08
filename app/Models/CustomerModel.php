@@ -127,6 +127,7 @@ class CustomerModel extends Model
             $this->update($id, $modify);
             return true;
         } elseif ($modify) {
+            return false;
             // Gérer l'erreur, car $modify n'est pas au format attendu
         }
 

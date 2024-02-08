@@ -389,6 +389,7 @@ class BookingController extends BaseController
 
         $id = $this->request->getPost('id');
         unset($data['id']);
+        $data['Type_doc'] = $data['Type_doc'] == "1"? "Facture" : "Devis";
 
         if ($this->BookingModel->validate($data)) {  // Utilisez les règles de validation définies dans le modèle
             if ($this->BookingModel->update($id, $data)) {

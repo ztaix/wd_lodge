@@ -58,6 +58,7 @@ async function resetForm(modalId, start = false , end = false, service_id = fals
       "ModaleventQt",
       "ModaleventPrice",
       "ModaleventComment",
+      "payments-subcontainer",
     ];
 
     
@@ -67,6 +68,9 @@ async function resetForm(modalId, start = false , end = false, service_id = fals
       }
       else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" ){
         document.getElementById(input).value = 1;
+      }
+      else if(input =="payments-subcontainer" ){
+        document.getElementById(input).innerText = "";
       }
       else if(input =="Modaleventfullblocked" || document.getElementById(input).value == 1 ){
         document.getElementById(modalId).classList.remove('border', 'border-dashed', 'border-4', 'border-red-400');
@@ -133,7 +137,6 @@ function openModal(modalId) {
     shadow_modal.classList.add("animate_shadow_modal");
     shadow_modal.classList.remove("close-animate_shadow_modal");
     shadow_modal.classList.remove("hidden");
-
     modalElement.style.zIndex = currentZIndex+2;
     modalElement.classList.add("animate");
     modalElement.classList.remove("close-animate");
@@ -337,7 +340,7 @@ function handleAddEventClick(date =false, service_id = false) {
     if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
       let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
       //PAIEMENT PARTIEL = RESTE à payer sinon VIDE
-      d.encaissement < row_price ? details_paid_rest_div.innerText = (row_price-d.encaissement) + " Fr" : details_paid_rest_div.innerText = '';
+      d.encaissement < row_price ? details_paid_rest_div.innerText = (row_price-d.encaissement) + " Fr" : details_paid_rest_div.classList.add('hidden');
 
       let details_paid_div = document.getElementById('booking_details_progress_div');
       //PAIEMENT Encaissement

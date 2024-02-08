@@ -613,3 +613,16 @@ header {
     transform: translateX(0%);
   }
 }
+
+  /* Ajout de styles spécifiques pour la transition du cercle */
+  input:checked ~ .dot {
+    transform: translateX(3.5rem);
+  }
+
+  input:checked ~ .dot #label-devis {
+    opacity: 0;
+  }
+
+  input:checked ~ .dot #label-facture {
+    opacity: 100;
+  }

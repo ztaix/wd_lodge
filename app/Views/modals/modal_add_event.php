@@ -4,12 +4,12 @@ $modal_id = "addEventModal";
 <div id="<?= $modal_id ?>-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('<?= $modal_id ?>')"></div>
 
 <!-- ADD EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-auto bg-white border border-gray-200 rounded-lg dark:bg-slate-800 dark:border-gray-800 shadow-2xl" >
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-auto bg-white border border-gray-200 dark:bg-slate-800 dark:border-gray-800" >
 <div class="relative  mx-auto">
 
 
     <!-- Modal Header -->
-    <div class="px-6 py-6 lg:px-8 flex justify-between items-center">
+    <div id="addEventModal_header" class="px-6 py-6 lg:px-8 flex justify-between items-center">
 
         <div class="flex-grow text-center">
             <h3 id="addEventModal_title" class="text-center text-2xl font-bold text-gray-800 dark:text-white">Réservation</h3>
@@ -33,11 +33,39 @@ $modal_id = "addEventModal";
                     <input type="hidden" id="ModaleventTax" name="Tax">
                     <input type="hidden" id="ModaleventFee" name="Fee">
                     <div>
-                        <select id="ModaleventType_doc" name="ModaleventType_doc" class="block w-full p-4 text-xl font-bold text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option value="Devis" selected>Devis</option>
-                            <option value="Facture">Facture</option>
-                        </select>
+                        <div class="absolute top-6">
+                            <label for="ModaleventType_doc" class="group flex items-center cursor-pointer overflow-hidden">
+                                <!-- Le conteneur du toggle -->
+                                <div class="relative">
+                                <!-- Le toggle lui-même -->
+                                    <input type="checkbox" id="ModaleventType_doc" value="Devis" class="sr-only" onchange="updateToggleLabel()">
+                                    <!-- Le chemin du toggle -->
+                                    <div id="ModaleventType_doc_bgtoggle" class="block bg-gray-600 w-24 h-10 rounded-full shadow-inner shadow-slate-800"></div>
+                                    <!-- Le cercle à bouger -->
+                                    <div id="ModaleventType_doc_bgtoggleDot" class="dot absolute left-1 top-1 bg-white dark:bg-slate-700 group-hover:bg-slate-200 group-hover:dark:bg-slate-500 w-8 h-8 rounded-full transition transform ">
+                                        <div class="flex items-center justify-center h-full">
+                                        <!-- Les étiquettes Devis et Facture -->
+                                        <span class="relative left-16 text-white text-xs " id="label-devis">Devis</span>
+                                        <span class="relative right-16 text-white text-xs opacity-0" id="label-facture">Facture</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
                     </div>
+<script>
+function updateToggleLabel() {
+  const isChecked = document.getElementById('ModaleventType_doc').checked;
+  document.getElementById('ModaleventType_doc').value = isChecked ? 'Facture' : 'Devis';
+  document.getElementById('label-devis').style.opacity = isChecked ? '0' : '100';
+  document.getElementById('label-facture').style.opacity = isChecked ? '100' : '0';
+  document.getElementById('addEventModal_header').classList.add(isChecked ? 'dark:bg-sky-800' : 'dark:bg-slate-800');
+  document.getElementById('addEventModal_header').classList.add(isChecked ? 'bg-sky-200' : 'bg-white');
+  document.getElementById('addEventModal_header').classList.remove(isChecked ? 'bg-white' : 'bg-sky-200');
+  document.getElementById('addEventModal_header').classList.remove(isChecked ? 'dark:bg-slate-800' : 'dark:bg-sky-800');
+}
+</script>
 
                     <div class="flex w-full items-center">
                         <div class="flex-grow">
@@ -424,7 +452,7 @@ function updatePrice() {
         serviceSelect.addEventListener('change', function() {
             // Vérifiez si le datepicker a déjà été initialisé et détruisez-le si c'est le cas
             if (fromServicepicker) {
-                fromServicepicker.destroy(); // Assurez-vous que la méthode `destroy` est bien définie par Easepick pour détruire l'instance
+                fromServicepicker= ""; // Assurez-vous que la méthode `destroy` est bien définie par Easepick pour détruire l'instance
             }
 
             updateTotalInfo();
