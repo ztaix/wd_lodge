@@ -45,6 +45,7 @@ $RECYCLE.BIN/
 .vagrant
 Vagrantfile
 
+
 #-------------------------
 # Temporary Files
 #-------------------------
@@ -125,3 +126,4 @@ nb-configuration.xml
 /phpunit*.xml
 /.phpunit.*.cache
 
+node_modules

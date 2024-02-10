@@ -56,6 +56,7 @@
     // Liste des services
     let services_list = <?= json_encode($services_list); ?>;
 </script>
+<!--
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
 <script src="Assets/js/select2.min.js"></script>
@@ -63,7 +64,9 @@
 <script src="Assets/js/wd_modal_system.js"></script>
 <script src="Assets/js/wd_html.js"></script>
 <script src="Assets/js/wd_fullcalendar.js"></script>
-<script src="Assets/js/wd_sidetools.js"></script>
+<script src="Assets/js/wd_fullcalendar.min.js"></script>
+<script src="Assets/js/wd_sidetools.js"></script>-->
+<script src="Assets/js/all/all.min.js"></script>
 <script>
 // LOADER
 document.addEventListener('DOMContentLoaded', function() {
@@ -121,20 +124,18 @@ if(!window.location.href.includes('Config')){
 
     if (isBottomReached) {
         let distanceScrolledAfterBottom = startY - moveY;
-        if (distanceScrolledAfterBottom > threshold-300) {
+        /*if (distanceScrolledAfterBottom > threshold-300) {
         // L'utilisateur a continué à défiler de plus de 200px après avoir atteint le bas.
         let stack = modalStack[modalStack.length-1].id;
         let modal_body = document.getElementById('body_'+stack);
         modal_body.classList.remove('flex', 'justify-center');
         let height = document.getElementById('body_'+stack).style.height = 100-distanceScrolledAfterBottom +'%';
         //height = 100 +'px;';
-        
         console.log('modal_body.style.height',distanceScrolledAfterBottom);
         document.addEventListener('touchend', handleRelease);
         document.addEventListener('mouseup', handleRelease);
+    }*/
 
-        
-    }
         if (distanceScrolledAfterBottom > threshold) {
         // L'utilisateur a continué à défiler de plus de 200px après avoir atteint le bas.
         closeModal();

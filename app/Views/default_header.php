@@ -72,7 +72,7 @@
       </script>
 
   
-  <script src="Assets/js/wd_datepicker.js"></script>
+  <script src="Assets/js/easepick.js"></script>
     <!-- LOADER PAGE FOR LOADING PAGE -->
   <div class="loader"></div>
 
