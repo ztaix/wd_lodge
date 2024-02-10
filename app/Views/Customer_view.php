@@ -85,7 +85,7 @@ $data['options_customers_id'] = $options_customers_id;
                         $customers_list_reversed = array_reverse($customers_list);
                         foreach ($customers_list_reversed as $customer) {
                         ?>
-                            <tr class="ROW hover:bg-gray-50 border-b dark:border-gray-700 cursor-pointer whitespace-nowrap row_customer_<?= $customer['Customer_id']; ?>" data-id="<?= $customer['Customer_id']; ?>" data-Name="<?= $customer['Name']; ?>" data-Comment="<?= $customer['Comment']; ?>" data-Email="<?= $customer['Email']; ?>" data-Phone="<?= $customer['Phone']; ?>" onclick="get_booking_list_from_customer(this)">
+                            <tr class="ROW hover:bg-gray-50 hover:dark:bg-gray-900 border-b dark:border-slate-700 cursor-pointer whitespace-nowrap row_customer_<?= $customer['Customer_id']; ?>" data-id="<?= $customer['Customer_id']; ?>" data-Name="<?= $customer['Name']; ?>" data-Comment="<?= $customer['Comment']; ?>" data-Email="<?= $customer['Email']; ?>" data-Phone="<?= $customer['Phone']; ?>" onclick="get_booking_list_from_customer(this)">
 
                                 <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white service_<?= $customer['Customer_id']; ?> cursor-pointer"><b><?= $customer['Name']; ?></b></th>
                                 <td class="px-3 py-3"><?= $customer['Email']; ?></td>

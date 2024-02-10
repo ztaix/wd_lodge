@@ -101,10 +101,8 @@ async function resetForm(modalId, start = false , end = false, service_id = fals
     document.getElementById("addEventModal_title").innerText = 'Ajouter';
     let date_start = '';
     let date_end = '';
-    console.log('start',start);
     if(start){
       start_date = format_date(start);
-      console.log('start_date',start_date);
       date_end = end ? format_date(end) : format_date(start,1);
     }else {
       date_start = format_date(getToday());

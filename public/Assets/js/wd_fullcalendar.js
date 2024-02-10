@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
               resultList.empty();
               resultList.addClass("close-animate"); 
               resultList.removeClass("animate"); 
-              resultList.removeClass("bg-white dark:bg-slate-700 shadow-lg"); 
+              resultList.removeClass("bg-white dark:bg-slate-950 shadow-lg"); 
               return; // Arrêter l'exécution de la fonction ici
             }
 
@@ -89,15 +89,17 @@ document.addEventListener("DOMContentLoaded", function () {
                      // Traiter la réponse en cas de succès
                      
                      // Ouvrir la popup si elle n'est pas déjà ouverte
-                     resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); 
+                     resultList.addClass("bg-white dark:bg-slate-950 shadow-lg"); 
                      resultList.removeClass("close-animate"); 
                      resultList.addClass("animate"); 
                      // Mettre à jour le contenu de la popup avec les résultats de la recherche
                      resultList.empty(); // Vider les anciens résultats
         
-                     response.data.forEach((booking) => {
-                       const bookingElement = generateSearchRows(booking);
-                       resultList.append(bookingElement);
+                    response.data.forEach((booking, index) => {
+                      const bgColorClass = index % 2 === 0 ? 'bg-slate-100 hover:bg-yellow-100 dark:bg-slate-900 dark:hover:bg-yellow-400' : 'bg-white hover:bg-yellow-100 dark:bg-slate-950 dark:hover:bg-yellow-400';
+                      const bookingElement = generateSearchRows(booking, bgColorClass);
+
+                      resultList.append(bookingElement);
                        // Appliquez l'animation de défilement après l'insertion
                       applyScrollAnimation();
                      });
@@ -105,10 +107,10 @@ document.addEventListener("DOMContentLoaded", function () {
                      // Gérer l'échec de la requête ici
                      console.log("Échec de la Requête de recherche !");
                      resultList.empty(); // Vider les anciens résultats
-                     resultList.addClass("bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
+                     resultList.addClass("p-4 bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
                      resultList.removeClass("close-animate"); // Retirer le fond noir transparent
                      resultList.addClass("animate"); // Retirer le fond noir transparent
-                     resultList.html("Aucun résultat trouvé avec: " + searchInput); // Ajouter le message
+                     resultList.html("Aucun résultat trouvé avec: <b>" + searchInput + "</b>"); // Ajouter le message
                  }
              });//END AJAX
           });//END $("#default-search").on("input",...
@@ -489,27 +491,15 @@ function addEvent() {
             let booking_id = response.id;
             let ModaleventStart = document.getElementById("ModaleventStart").value;
             let ModaleventEnd = document.getElementById("ModaleventEnd").value;
-            // Traitez la réponse ici
-            showBanner(
-              `<div class="flex flex-col">Evènement ajouté avec succès !</div>
-                <div class="text-center">
-                  Du <b>${ModaleventStart}</b> au <b>${ ModaleventEnd }</b>
-              </div>
-              `,
-              true
-            );
-            closeModal();
-            setTimeout(() => {
-              if (calendar) {
-                calendar.refetchEvents();
-              }
-            }, 200);
 
 
             // ADD PAYMENTS
+            let payments = []; // Initialise payments comme un tableau vide
+            let payLine = document.querySelectorAll('.payment-row');
             
-              let payments = []; // Initialise payments comme un tableau vide
-              document.querySelectorAll('.payment-row').forEach((row, index) => {
+            if (payLine.length >0){
+
+              payLine.forEach((row, index) => {
                 if(row.id.startsWith('temp_') === true ) {
                   // Pour un nouvel enregistrement (id non défini ou vide)
                   payments.push({
@@ -531,88 +521,100 @@ function addEvent() {
                   }
                 }
               });
-            
-           
-
-            let payments_filtred = payments.filter(item => item !== undefined);
-            $.ajax({
-              url: baseurl + "paids/upsert",
-              method: "POST",
-              data: { 'payments' : payments_filtred},
-              success: function (response_paid) {
-                let allSuccess = true;
-                let allErrors = [];
-
-                for (let key in response_paid) {
-                    if (response_paid.hasOwnProperty(key)) {
-                        let res = response_paid[key];
-                        if (!res.success) {
-                            allSuccess = false;
+              let payments_filtred = payments.filter(item => item !== undefined);
+              $.ajax({
+                url: baseurl + "paids/upsert",
+                method: "POST",
+                data: { 'payments' : payments_filtred},
+                success: function (response_paid) {
+                  let allSuccess = true;
+                  let allErrors = [];
+  
+                  for (let key in response_paid) {
+                      if (response_paid.hasOwnProperty(key)) {
+                          let res = response_paid[key];
+                          if (!res.success) {
+                              allSuccess = false;
+                          }
+                          if (res.errors && res.errors.length > 0) {
+                              allErrors.push(...res.errors);
+                          }
+                      }
+                  }
+  
+                  if (allSuccess) {
+                    var encaissement = 0;
+                    // Parcourez l'objet reponse
+                    for (var key in response_paid) {
+                      if (response_paid.hasOwnProperty(key)) {
+                        // Accédez à la valeur "value" de chaque objet
+                        var value = response_paid[key].data.value;
+                        
+                        // Checker si c'est bien un chiffre
+                        if (!isNaN(parseFloat(value))) {
+                          encaissement += parseFloat(value);
                         }
-                        if (res.errors && res.errors.length > 0) {
-                            allErrors.push(...res.errors);
-                        }
-                    }
-                }
-
-                if (allSuccess) {
-                  var encaissement = 0;
-                  // Parcourez l'objet reponse
-                  for (var key in response_paid) {
-                    if (response_paid.hasOwnProperty(key)) {
-                      // Accédez à la valeur "value" de chaque objet
-                      var value = response_paid[key].data.value;
-                      
-                      // Checker si c'est bien un chiffre
-                      if (!isNaN(parseFloat(value))) {
-                        encaissement += parseFloat(value);
                       }
                     }
-                  }
-                  if(booking_id){
-                    if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-                      let encaissement_div = document.getElementById('booking_paid_'+booking_id);
-                      console.log('encaissement_div',encaissement_div);
-                      if(encaissement_div !== null){
-                        document.getElementById('booking_paid_'+booking_id).innerText = encaissement ;
-                        document.getElementById('booking_paid_status_'+booking_id).innerText = 
-                        encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
-                        encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
-
+                    if(booking_id){
+  
+                      if(ModalInStack('ListEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                        let encaissement_div = document.getElementById('booking_paid_'+booking_id);
+                        if(encaissement_div !== null){
+                          document.getElementById('booking_paid_'+booking_id).innerText = encaissement ;
+                          document.getElementById('booking_paid_status_'+booking_id).innerText = 
+                          encaissement >=row_price ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>":
+                          encaissement < row_price && encaissement > 0 ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>" : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>"  ;
+                        }
+                      }
+  
+                      if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
+                        let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
+                        if(encaissement < row_price){
+                          details_paid_rest_div.innerText = row_price-encaissement + " Fr";
+                        }
+                        else{
+                          booking_details_progress_rest_div.classList.add('hidden');
+                        }
+                        let details_paid_div = document.getElementById('booking_details_progress_div');
+                        details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
+                        if(encaissement > 0){
+                          let convert_pourc = Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100);
+                          details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
+                        } else {details_paid_div.style.width = "24px"; }
                       }
   
                     }
-                    if(ModalInStack('DetailsEventModal')){ // SI UPDATE PAIEMENT RESPONSE VALIDE
-                      let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
-                      if(encaissement < row_price){
-                        details_paid_rest_div.innerText = row_price-encaissement + " Fr";
-                      }
-                      else{
-                        booking_details_progress_rest_div.classList.add('hidden');
-                      }
-                      let details_paid_div = document.getElementById('booking_details_progress_div');
-                      details_paid_div.innerText = encaissement > 0 ? encaissement + " Fr" : "0";
-                      if(encaissement > 0){
-                        let convert_pourc = Math.min(Math.round((encaissement / row_price) * 10000) / 100, 100);
-                        details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
-                      } else {details_paid_div.style.width = "24px"; }
-                      
-                    }
-                  }
-                    closeModalById('addEventModal');
-                    showBanner("Mise à jour avec succès !", true);
-                } else {
+                  } else {
                     showBanner("Echec de la mise à jour des paiements !", false);
                     console.log('Erreurs: ', allErrors);
-                }
-              },
-              error: function (jqXHR, textStatus, errorThrown) {
-                
-                // En cas d'échec de la requête AJAX
-                showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
-                console.error("AJAX Error:", errorThrown); // Log the error for debugging
-              },
-            });
+                  }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                  
+                  // En cas d'échec de la requête AJAX
+                  showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
+                  console.error("AJAX Error:", errorThrown); // Log the error for debugging
+                },
+              });
+
+            }
+            
+          // Traitez la réponse ici
+          showBanner(
+            `<div class="flex flex-col">Evènement ajouté avec succès !</div>
+              <div class="text-center">
+                Du <b>${ModaleventStart}</b> au <b>${ ModaleventEnd }</b>
+            </div>
+            `,
+            true
+          );
+          closeModal();
+          setTimeout(() => {
+            if (calendar) {
+              calendar.refetchEvents();
+            }
+          }, 200);
 
         } else {
           // Gestion des erreurs de validation

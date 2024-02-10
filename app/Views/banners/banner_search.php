@@ -2,7 +2,7 @@
 
 <!-- BANNER SEARCH -->
 <div id="<?= $modal_id ?>-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('<?= $modal_id ?>')"></div>
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="flex h-full flex-grow hidden "  onclick="closeModalById('<?= $modal_id ?>')">
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="flex h-full flex-grow hidden"  onclick="closeModalById('<?= $modal_id ?>')">
     <div class="mx-auto w-full max-w-xl ">
         <div onclick="event.stopPropagation()">
             <div class="mx-auto max-w-sm pt-20 lg:px-8 flex justify-between items-center ">
@@ -22,7 +22,7 @@
             </div>
             </div>
             
-            <div id="searchResults" class="relative text-slate-400 rounded-xl m-5 p-2">
+            <div id="searchResults" class="relative text-slate-600 dark:text-slate-200 rounded-xl mt-4">
                     <!-- Les résultats de la recherche seront insérés ici -->
             </div>
 

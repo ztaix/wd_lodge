@@ -13,7 +13,7 @@ $modal_id= "CustomerInfoModal";
             <div id="header_<?= $modal_id ?>"></div>
 
             <!-- Modal Body -->
-            <div class="flex justify-center p-4 overflow-y-auto" onclick="event.stopPropagation()">
+            <div id="body_<?= $modal_id ?>" class="flex justify-center p-4 overflow-y-auto" onclick="event.stopPropagation()">
 
                 <div class="bg-white border border-gray-200 rounded-lg dark:bg-slate-800 dark:border-gray-800">
                 

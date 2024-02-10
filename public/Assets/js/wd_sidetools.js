@@ -33,7 +33,6 @@ function showBookingList(response, clickedDate) {
   container.innerHTML = ""; 
   modalTitle.innerHTML = getDayOfWeek(format_date(newDateStr)) + ' ' + newDateStr;
   
-console.log('response',response);
 // Supposons que newDateStr contienne la date du jour au format "YYYY-MM-DD"
 const newDateStr2 = new Date().toISOString().split('T')[0];
 
@@ -68,9 +67,7 @@ response.sort((a, b) => {
     return 0; // a et b sont équivalents
   });
   
-  
-  console.log('response sorted',response);
-  
+    
   let count_row_found = 0;
   response.forEach((booking) => {
     count_row_found++;
@@ -91,13 +88,13 @@ response.sort((a, b) => {
   let status_paidObj = generateStatusPaid(paids_sum,TOTALprice);
 
     let bookingElement = `
-        <div id="booking_list_row_${booking.id}" class="group flex flex-col p-1 mt-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700" >
+        <div id="booking_list_row_${booking.id}" class="group flex flex-col px-4 rounded-t-lg text-slate-500 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 border-b-2 hover:rounded-none border-slate-300 dark:border-slate-700" >
           <!-- Colonne 1 -->
-          ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark-text-red-900 bg-white dark:bg-gray-800 group-hover:bg-slate-100 dark:group-hover:bg-slate-700 top-2 px-2 mx-auto font-bold">~ privatisé ~</span>':''}
+          ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark:text-red-700 bg-white dark:bg-gray-800 group-hover:bg-slate-100 dark:group-hover:bg-slate-700 top-2 px-2 mx-auto capitalize">Privatisé</span>':''}
 
-          <div class="w-full flex-col group ${booking.fullblocked == 1 ? 'border p-2 border-dashed border-red-400 dark:border-red-900 rounded-lg':''}">
+          <div class="w-full flex-col group ${booking.fullblocked == 1 ? 'p-1 border-t-2 border-red-400 dark:border-red-700 rounded-lg':''}">
             
-            <div class="flex justify-between text-slate-600 ">
+            <div class="flex justify-between">
               <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex flex-wrap cursor-pointer font-bold">
               
                 <div id="booking_title_${booking.id}" class="flex flex-initial transition-margin hover:mx-2 ">
@@ -107,7 +104,7 @@ response.sort((a, b) => {
                 </div>
 
               </div>
-              <div class="text-sm text-black font-bold ">
+              <div class="font-bold ">
                 <span id='badge_type_${booking.id}'>${booking.Type_doc}</span>
                 # 
                 <span id='badge_id_${booking.id}'>${booking.id}</span>
@@ -116,18 +113,18 @@ response.sort((a, b) => {
             <div class="w-full inline-flex">
               <div class="w-full flex flex-wrap items-center justify-between cursor-pointer" onclick="showBookingDetailsFromID('${booking.id}');">
                 <div class="flex-col">
-                  <div class="text-base text-slate-500"><span class="font-semibold">Client:</span> <span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
-                  <div class="text-base text-slate-500"><span class="font-semibold">Nb personne:</span> <span id="booking_QtTraveller_${booking.id}">${booking.QtTraveller}</span></div>
+                  <div class="text-base "><span class="font-semibold text-slate-400 dark:text-slate-500">Client:</span> <span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
+                  <div class="text-base"><span class="font-semibold text-slate-400 dark:text-slate-500">Nb personne:</span> <span id="booking_QtTraveller_${booking.id}">${booking.QtTraveller}</span></div>
                 </div>
                 <div class="m-1">
-                  <div class="w-full inline-flex items-center justify-between text-xs text-slate-400">
+                  <div class="w-full inline-flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
                     <span class="items-center" id="booking_startDay_${booking.id}">${getDayOfWeek(format_date(booking.start))}</span>
                     <span class="items-center">${'<b>'+DaysDifferenceStartEnd(booking.start,booking.end) + ' nuit(s) </b>'}</span>
                     <span class="items-center" id="booking_endDay_${booking.id}">${getDayOfWeek(format_date(booking.end))}</span>
                   </div>
                   <div class="w-full inline-flex items-center justify-between ">
                     <span class="items-center" id="booking_start_${booking.id}"> ${format_date(booking.start,0,'DD/MM')}</span>
-                    <svg class="w-3 h-3 text-slate-500 dark:text-white" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                    <svg class="w-3 h-3" style="margin: auto 0.5rem auto 0.5rem;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                     </svg>
                     <span class="items-center" id="booking_end_${booking.id}">${format_date(booking.end,0,'DD/MM')}</span>
@@ -139,13 +136,13 @@ response.sort((a, b) => {
                 
                 <div class="flex flex-col justify-end bg-${status_paidObj.color}-100 dark:bg-${status_paidObj.color}-800 rounded-lg px-1">
                   <div class="inline-flex justify-end items-center" >
-                      <span class="mr-1 text-xs text-slate-400">Tarif</span> 
+                      <span class="mr-1 text-xs text-slate-400 dark:text-slate-500">Tarif</span> 
                       <span id="booking_total_${booking.id}">${TOTALprice }</span>
                       <span class="ml-1 text-xs">Fr</span>
 
                   </div>
                   <div class="inline-flex justify-end items-center" >
-                    <span class="mr-1 text-xs text-slate-400">Encaissé</span>   
+                    <span class="mr-1 text-xs text-slate-400 dark:text-slate-500">Encaissé</span>   
                     <span class="font-bold" id="booking_paid_${booking.id}">${paids_sum}</span>
                     <span class="ml-1 text-xs">Fr</span>
                   </div>
@@ -175,21 +172,20 @@ response.sort((a, b) => {
             comment_display = 'block';
           }
             bookingElement += `
-              <div class="flex ${comment_display} flex-col text-xs bg-slate-50 group-hover:bg-slate-100 rounded-xl border border-dashed border-slate-200 group-hover:border-slate-100 mt-1 p-2">
-                <span class="mr-1 text-xs text-slate-400">Commentaire: </span>   
+              <div class="flex ${comment_display} flex-col text-xs bg-slate-50 group-hover:bg-slate-100 dark:bg-slate-900 dark:group-hover:bg-slate-800 rounded-xl border border-dashed border-slate-200 group-hover:border-slate-100 dark:border-slate-950 dark:group-hover:border-slate-900 mt-1 p-2">
+                <span class="mr-1 text-xs text-slate-400 dark:text-slate-500">Commentaire: </span>   
                 <span id="booking_Comment_${booking.id}">${booking.Comment} </span>
               </div>`;
 
           bookingElement += `
               </div>
             </div>
-            <hr id="booking_list_row_hr_${booking.id}" class="my-2">
           `;
     container.innerHTML += bookingElement;
   });
   container.innerHTML += `          
-    <div class="flex flex-wrap justify-end font-bold">
-      <div id="booking_list_row_found" class="text-slate-400 inline-flex" >Réservation trouvé : ${count_row_found}</div>
+    <div class="flex flex-wrap justify-end font-bold rounded-b-lg border-b-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500">
+      <div id="booking_list_row_found" class="inline-flex p-2" >Réservation trouvé : ${count_row_found}</div>
     </div>`;
  
     let availableServices = availableListServices(newDateStr,services_list,response); 
@@ -200,12 +196,12 @@ response.sort((a, b) => {
   // Si il existe encore des service de disponible
   if(availableServices.length > 0){
     container.innerHTML += `          
-    <div class="flex flex-wrap justify-center font-bold border-t">
-      <div id="booking_list_row_found" class="text-slate-400 inline-flex" >Voir les services disponible ?</div>
+    <div class="p-2 flex flex-wrap justify-start font-bold text-slate-400 dark:text-slate-500">
+      <div id="booking_list_row_found" class="inline-flex " >Disponible: </div>
     </div>`;
     availableServices.forEach((service, index) => {
         container.innerHTML += `
-        <div class="flex justify-between">
+        <div class="px-2 flex justify-between">
             <div class="flex flex-grow">
                 ${service.Title}
             </div>  
@@ -451,9 +447,15 @@ function DeleteCustomer(event, id) {
     ajaxCall("customer/update", "POST", { customer_info: data }, function(response) {
         if (response.success === true) {
           showBanner("Suppression réalisée avec succès", true);
-          closeModalById("updateCustomerModal");
-          closeModalById("CustomerInfoModal");
+          if(ModalInStack('updateCustomerModal')){
+            closeModalById("updateCustomerModal");
+          }
+          if(ModalInStack('CustomerInfoModal')){
+            closeModalById("CustomerInfoModal");
+          }
+
           closeModalById("ConfirmDeleteModal");
+
           setTimeout(() => {
             $(".row_customer_" + data.Customer_id).addClass("fade_out");
           }, 200);

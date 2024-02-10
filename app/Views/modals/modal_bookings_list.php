@@ -28,20 +28,16 @@ $modal_id = "ListEventModal";
     </div>
 
         <!-- Modal Body -->
-        <div class="flex flex-col max-w-xl mx-auto">
+        <div id="body_<?= $modal_id ?>" class="flex flex-col max-w-xl mx-auto">
 
             <div class="flex justify-center pt-2">
 
                 <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"  onclick="event.stopPropagation()">
-                    <div class="px-4">
 
-                        <div class="flex items-center my-2">
-                            <div id="bookingListContainer" class="w-full text-md text-slate-500">
-                                <!-- JavaScript will populate this area -->
-                            </div>
-                            
-                        </div>
+                    <div id="bookingListContainer" class="w-full text-md">
+                        <!-- JavaScript will populate this area -->
                     </div>
+
                 </div>
             </div>
         </div>

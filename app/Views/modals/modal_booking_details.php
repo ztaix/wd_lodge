@@ -11,9 +11,8 @@ $modal_id = "DetailsEventModal";
         <!-- Modal Header -->
         <div id="header_<?= $modal_id ?>"></div>
 
-            <!-- Modal Body -->
-            
-        <div class="flex flex-col max-w-xl mx-auto">
+        <!-- Modal Body -->
+        <div id="body_<?= $modal_id ?>"class="flex flex-col max-w-xl mx-auto">
             
             <div class="flex justify-center pt-2">
                 
@@ -58,11 +57,8 @@ $modal_id = "DetailsEventModal";
                                         </div>                 
                                         
                                     </div>
-                                    
-                                    
-                                    
-                                    
-                                    <p class="text-xs italic text-slate-200 dark:text-slate-700 flex justify-between mx-2">
+
+                                    <p class="text-xs italic text-slate-300 dark:text-slate-600 flex justify-between mx-2">
                                         <span id="booking_details_created_span" class="flex items-center">créer le :</span>
                                         <span id="booking_details_updated_span" class="flex items-center">modifier le: </span>
                                     </p>

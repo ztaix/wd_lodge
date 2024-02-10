@@ -104,7 +104,7 @@ if(!window.location.href.includes('Config')){
     //SCROLL MAX BOTTOM
     let startY;
     let isBottomReached = false;
-    let threshold = 500; // Distance en pixels pour déclencher l'action après avoir atteint le bas
+    let threshold = 300; // Distance en pixels pour déclencher l'action après avoir atteint le bas
 
     window.addEventListener('touchstart', (e) => {
     startY = e.touches[0].clientY;
@@ -121,9 +121,24 @@ if(!window.location.href.includes('Config')){
 
     if (isBottomReached) {
         let distanceScrolledAfterBottom = startY - moveY;
+        if (distanceScrolledAfterBottom > threshold-300) {
+        // L'utilisateur a continué à défiler de plus de 200px après avoir atteint le bas.
+        let stack = modalStack[modalStack.length-1].id;
+        let modal_body = document.getElementById('body_'+stack);
+        modal_body.classList.remove('flex', 'justify-center');
+        let height = document.getElementById('body_'+stack).style.height = 100-distanceScrolledAfterBottom +'%';
+        //height = 100 +'px;';
+        
+        console.log('modal_body.style.height',distanceScrolledAfterBottom);
+        document.addEventListener('touchend', handleRelease);
+        document.addEventListener('mouseup', handleRelease);
+
+        
+    }
         if (distanceScrolledAfterBottom > threshold) {
         // L'utilisateur a continué à défiler de plus de 200px après avoir atteint le bas.
         closeModal();
+        console.log('close modal',distanceScrolledAfterBottom);
         isBottomReached = false; // Réinitialiser le flag pour le prochain cycle de défilement
         }
     }
@@ -133,6 +148,18 @@ if(!window.location.href.includes('Config')){
     isBottomReached = false; // Réinitialiser quand l'utilisateur lève le doigt
     });
 
+    function handleRelease() {
+        let stack = modalStack[modalStack.length-1].id;
+        let modal_body = document.getElementById('body_'+stack);
+        modal_body.classList.add('flex', 'justify-center');
+        document.getElementById('body_'+stack).style.height = '';
+
+        console.log('Le doigt ou le bouton de la souris a été relâché');
+        // Votre logique ici, par exemple :
+        if (isBottomReached) {
+            // Effectuez des actions spécifiques après le relâchement si le bas a été atteint
+        }
+    }
 } 
 </script>
 </body>

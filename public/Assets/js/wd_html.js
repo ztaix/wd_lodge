@@ -9,7 +9,7 @@ function applyScrollAnimation() {
   });
 }
 
-function generateSearchRows(booking) {
+function generateSearchRows(booking, bgclass) {
   // MAX WIDTH 576px
   let startDate = format_date(booking.start.slice(0,10));
   let endDate = format_date(booking.end.slice(0,10));
@@ -18,7 +18,7 @@ function generateSearchRows(booking) {
   let status_paidObj = generateStatusPaid(booking.total_paid,Total_price);
 
   let html =`
-  <div class="relative hover:border-l-4 hover:border-l-slate-200 rounded-lg border-b border-slate-200 dark:border-slate-800 border-dashed mx-1 mt-1 cursor-pointer" onclick="showBookingDetailsFromID('${booking.id}');">
+  <div class="relative ${bgclass} rounded-t-lg border-b dark:border-b-slate-900 p-2 cursor-pointer" onclick="showBookingDetailsFromID('${booking.id}');">
 
     <div class="relative flex justify-between">
 
@@ -26,7 +26,7 @@ function generateSearchRows(booking) {
         <div class="mx-1 text-lg font-bold scroll-text_smooth">${booking.customer_name}</div>
       </div>  
       
-      <div class="flex items-center ml-2 text-slate-300 dark:text-slate-800 font-bold whitespace-nowrap">${booking.Type_doc.charAt(0)} #${booking.id}</div>
+      <div class="flex items-center ml-2 text-slate-400 dark:text-slate-700 font-bold whitespace-nowrap">${booking.Type_doc.charAt(0)} #${booking.id}</div>
 
     </div>
 
@@ -65,7 +65,7 @@ function generateSearchRows(booking) {
         <span class="mx-1">${booking.service_title}</span>
       </div>
 
-      <div class="ml-auto p-1 m-1 inline-flex justify-center items-center bg-${status_paidObj.color}-200 dark:bg-${status_paidObj.color}-800 rounded-lg whitespace-nowrap">
+      <div class="ml-auto p-1 m-1 inline-flex justify-center  items-center bg-${status_paidObj.color}-200 dark:bg-${status_paidObj.color}-800 rounded-lg whitespace-nowrap">
         <svg class="w-4 h-4 text-${status_paidObj.color}-600 dark:text-${status_paidObj.color}-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17.3a5 5 0 0 0 2.6 1.7c2.2.6 4.5-.5 5-2.3.4-2-1.3-4-3.6-4.5-2.3-.6-4-2.7-3.5-4.5.5-1.9 2.7-3 5-2.3 1 .2 1.8.8 2.5 1.6m-3.9 12v2m0-18v2.2"/>
         </svg>
@@ -115,14 +115,7 @@ function generateSearchRows(booking) {
           </button>
       </div>
     </div>`;
-  }
-
-  function generateTable(data){
-    //create function to generate html
-  }
-
-
-  
+  }  
 
   /// A TRAVAILLER POUR AMELIORATION :
 
@@ -392,38 +385,40 @@ function deleteEvent(event, booking_id, modal_id = false) {
       ajaxCall("booking/deleteBooking", "POST", { id: booking_id }, function(response) {
           if (response.success === true) {
             calendar.refetchEvents();
-          
-          // GESTIONNAIRE DE RETOUR D'AFFICHAGE
-      if (ModalInStack("ListEventModal")) {
-        row_type = "booking_list_row_";
-        document.getElementById('booking_'+booking_id).classList.add("line-through");
-        document.getElementById('badge_id_'+booking_id).style.cssText = 'background-color: gray;';
-        document.getElementById('booking_a_'+booking_id).style.cssText = 'cursor : default;';
-          
-          let svgs = document.querySelectorAll('#booking_a_' + booking_id + ' svg');
+            
+            // GESTIONNAIRE DE RETOUR D'AFFICHAGE
+            if (ModalInStack("ListEventModal")) {
+              document.getElementById('booking_'+booking_id).classList.add("line-through");
+              document.getElementById('badge_id_'+booking_id).style.cssText = 'background-color: gray;';
+              document.getElementById('booking_a_'+booking_id).style.cssText = 'cursor : default;';
+                
+                let svgs = document.querySelectorAll('#booking_a_' + booking_id + ' svg');
 
-          svgs.forEach(function(svg) {svg.style.color = 'gray';});
+                svgs.forEach(function(svg) {svg.style.color = 'gray';});
 
-        document.getElementById('booking_list_row_hr_'+booking_id).classList.add("fade_out");
+              document.getElementById('booking_list_row_hr_'+booking_id).classList.add("fade_out");
+            }
+            if(urlLocation() == 'history'){
+              let tr =  document.querySelector('.row_booking_' + booking_id);
+              if(tr){
+                  setTimeout(() => {
+                    tr.classList.add("fade_out");
+                  }, 200);
+                  setTimeout(() => {
+                    tr.classList.add('hidden');
+                  }, 700);
+                }
+            } 
+            
+            showBanner("Suppression réalisée avec succès", true);
+            closeModalById("ConfirmDeleteModal");
 
-        
-              setTimeout(() => {
-                document.getElementById(row_type + booking_id).classList.add("fade_out");
-              }, 200);
-              setTimeout(() => {
-                document.getElementById(row_type + booking_id).style.cssText = "display: none;";
-              }, 700);
-      } 
-      
-      showBanner("Suppression réalisée avec succès", true);
-      closeModalById("ConfirmDeleteModal");
 
-
-      if (modal_id) {
-        closeModalById(modal_id);
-      }
-          
-          }
+            if (modal_id) {
+              closeModalById(modal_id);
+            }
+            
+        }
       });
     };
 
