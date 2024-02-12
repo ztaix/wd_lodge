@@ -99,16 +99,18 @@ async function resetForm(modalId, start = false , end = false, service_id = fals
     });
     discountIndicator.innerText = '';
     document.getElementById("addEventModal_title").innerText = 'Ajouter';
+
+
     let date_start = '';
     let date_end = '';
-    if(start){
-      start_date = format_date(start);
-      date_end = end ? format_date(end) : format_date(start,1);
-    }else {
+    if(!start){
       date_start = format_date(getToday());
       date_end = format_date(date_start,1);
+    }else {
+      date_start = start;
+      date_end = end;
     }
-
+    
     //RESET PAYMENT ROW
     let temp_payments_row = document.querySelectorAll('div[id^="temp_"]');
     if(temp_payments_row.length > 0){
@@ -117,8 +119,9 @@ async function resetForm(modalId, start = false , end = false, service_id = fals
         div.parentNode.removeChild(div);
       });
     } 
-
+    
     await loadAndInitDatepicker(service_id,date_start,date_end);
+    console.log('end reform post loadandinitidatepicker');
 
   }
 }
@@ -285,6 +288,8 @@ function handleAddEventClick(date =false, service_id = false) {
     document.getElementById("customer_phone").value = customer.phone;
     document.getElementById("customer_email").value = customer.email;
     document.getElementById("customer_comment").value = customer.comment;
+    let button_update = document.getElementById("update_customer_submit_form");
+    button_update.onclick = function () { updateCustomerinfo(customer) };
   }
 
   function getCustomerFormData() {
@@ -350,5 +355,3 @@ function handleAddEventClick(date =false, service_id = false) {
       
     }
   }
-
-  

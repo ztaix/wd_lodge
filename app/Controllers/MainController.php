@@ -21,7 +21,13 @@ class MainController extends Controller
         return $calendarController->ReturnView();
 
     }
+    public function Calender()
+    {
+        // Logique pour la page d'accueil (calendrier)
+        $calendarController = new \App\Controllers\BookingController();
+        return $calendarController->ReturnView();
 
+    }
     public function Customers()
     {
         // Logique pour la page d'accueil (calendrier)
@@ -41,5 +47,12 @@ class MainController extends Controller
         // Logique pour la page d'accueil (calendrier)
         $configController = new \App\Controllers\ConfigurationController();
         return $configController->ReturnView();
+    }
+
+    public function Login()
+    {
+        // Logique pour la page de login
+        $LoginController = new \App\Controllers\LoginController();
+        return $LoginController->ReturnView();
     }
 }

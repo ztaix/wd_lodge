@@ -24,28 +24,61 @@
   *     }
   * });
   */
-  function ajaxCall(url, method, data, successCallback) {
-    $.ajax({
-        url: baseurl + url, // Concaténer baseurl avec l'URL fournie
-        type: method, // Utiliser la méthode fournie (GET, POST, etc.)
-        data: data, // Utiliser les données fournies
-        success: function(response) {
-            // Appeler la fonction de rappel en cas de succès
-            if (typeof successCallback === 'function') {
-                successCallback(response);
+
+  function ajaxCall(url, method, data, successCallback, errorCallback) {
+    return new Promise((resolve, reject) => {
+      var token = localStorage.getItem('token');
+      if (!window.location.pathname.endsWith('auth') && !token) {
+        alert("Vous devez être connecté pour accéder à cette ressource.");
+        // Redirigez vers la page de connexion après un court délai
+        console.error("Token JWT non trouvé dans le localStorage.");
+        if (typeof errorCallback === 'function') errorCallback("Token JWT non trouvé dans le localStorage.");
+        reject("Token JWT non trouvé dans le localStorage.");
+        return;
+      }
+      
+      var processData = true, contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
+      
+      $.ajax({
+          url: baseurl + url,
+          type: method,
+          data: data,
+          processData: processData,
+          contentType: contentType,
+          headers: {
+              'Authorization': 'Bearer ' + token
+          },
+          success: function(response) {
+              if (typeof successCallback === 'function') successCallback(response);
+              resolve(response);
+          },
+          error: function(xhr, status, error) {
+            console.log('error Ajax');
+            if (xhr.status === 401) { // Unauthorized
+                var currentPage = window.location.pathname;
+                var loginPage = baseurl + '/auth'; // Assurez-vous que cette URL est correcte
+                
+                // Vérifiez si l'utilisateur n'est pas déjà sur la page de connexion
+                if (!currentPage.endsWith(loginPage)) {
+                    alert("Vous devez être connecté pour accéder à cette ressource.");
+                    // Redirigez vers la page de connexion après un court délai
+                     window.location.href = loginPage;
+                    
+                }
+            } else {
+                console.error("Erreur lors de la requête AJAX :", status, error);
             }
-        },
-        error: function(xhr, status, error) {
-            // Vous pouvez gérer l'erreur ici ou ajouter un autre paramètre à la fonction pour un callback d'erreur
-            console.error("Erreur lors de la requête AJAX :", status, error,xhr);
-        }
+            if (typeof errorCallback === 'function') errorCallback(xhr, status, error);
+          }
+      });
     });
   }
+  
 
-//OBJET manipulation
-function emptyObj(obj) {
-  return Object.keys(obj).length === 0;
-}
+  //OBJET manipulation
+  function emptyObj(obj) {
+    return Object.keys(obj).length === 0;
+  }
 
   // TEXT / STRING manipulation
   function capitalizeFirstLetter(string) {
@@ -317,3 +350,59 @@ function availableListServices(clickedDate,listService,booked){
   return availableServices;
 
 }
+
+// AJAX service
+function updatePayments(payments_filtered, updatedData) {
+  ajaxCall("paids/upsert", "POST", {payments: payments_filtered}, function(response) {
+    if (response.success === true) {
+      let allSuccess = true;
+      let allErrors = [];
+
+      for (let key in response.data) {
+          if (response.data.hasOwnProperty(key)) {
+              let res = response.data[key];
+              if (!res.success) {
+                  allSuccess = false;
+              }
+              if (res.errors && res.errors.length > 0) {
+                  allErrors.push(...res.errors);
+              }
+          }
+      }
+
+      if (allSuccess) {
+        var encaissement = 0;
+        // Parcourez l'objet reponse
+        for (var key in response.data) {
+          if (response.data.hasOwnProperty(key)) {
+            // Accédez à la valeur "value" de chaque objet
+            var value = response.data[key].data.value;
+            
+            // Checker si c'est bien un chiffre
+            if (!isNaN(parseFloat(value))) {
+              encaissement += parseFloat(value);
+            }
+          }
+        }  
+        // Récupére l'ID de la résa
+        let updatedData_encaissement = Object.keys(updatedData);
+        //Ajouter au tableau d'update l'encaissement total
+        updatedData[updatedData_encaissement[0]].encaissement = encaissement;
+
+        finalizeUpdate(updatedData);
+      } else {
+          showBanner("Echec de la mise à jour des paiements !", false);
+          console.log('Erreurs: ', allErrors);
+      }
+    }
+  });
+}
+  // Mettre à jour la modale, fermer la modale, mettre à jour le calendrier, etc.
+  function finalizeUpdate(updatedData) {
+    updateModal(updatedData);
+    closeModalById('addEventModal');
+    if (calendar) {
+        calendar.refetchEvents();
+    }
+    showBanner("Evènement mis à jour avec succès !", true);
+  }

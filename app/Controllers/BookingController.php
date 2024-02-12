@@ -2,7 +2,8 @@
 
 namespace App\Controllers;
 use CodeIgniter\HTTP\ResponseInterface;
-
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use DateTime;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -81,16 +82,18 @@ class BookingController extends BaseController
                     
                     $booking_paids = [];
                     $booking_paids_ids = [];
-                    if (strlen($booking['paids_ids']) > 1) {
+
+                    if (!is_null($booking['paids_ids']) && strlen($booking['paids_ids']) > 1) {
                         $booking_paids_ids = explode(',', $booking['paids_ids']);
                     }
-            
-                    $types_paids = explode(',', $booking['types_paids']);
-                    $paids_values =  explode(',', $booking['paids_values']);
+                    $types_paids = is_null($booking['types_paids']) ? [] : explode(',', $booking['types_paids']);
+                    $paids_values = is_null($booking['paids_values']) ? [] : explode(',', $booking['paids_values']);
                     $paids_sum = array_sum($paids_values);
+                    
                     foreach ($booking_paids_ids as $index => $id) {
                         $booking_paids[$id] = [
-                            'type_paid' => $types_paids[$index] ?? null, // Utilisez l'opérateur null coalescent pour éviter les erreurs d'index
+                            // Utiliser l'opérateur null coalescent pour éviter les erreurs d'index
+                            'type_paid' => $types_paids[$index] ?? null, 
                             'value' => $paids_values[$index] ?? null
                         ];
                     }
@@ -184,11 +187,15 @@ class BookingController extends BaseController
                     
                     $booking_paids = [];
                     $booking_paids_ids = [];
-                    if (strlen($booking['paids_ids']) > 1) {
+                    if (!empty($booking['paids_ids']) && strlen($booking['paids_ids']) > 1) {
                         $booking_paids_ids = explode(',', $booking['paids_ids']);
                     }
+
+                    $paids_values = [];
+                    if (!empty($booking['paids_values'])) {
+                        $paids_values = explode(',', $booking['paids_values']);
+                    }
             
-                    $paids_values =  explode(',', $booking['paids_values']);
                     $paids_sum = array_sum($paids_values);
                     foreach ($booking_paids_ids as $index => $id) {
                         $booking_paids[$id] = [
@@ -244,7 +251,7 @@ class BookingController extends BaseController
         }
 
 
-        return $this->response->setJSON($events);
+        return $this->response->setJSON(['success' => true, 'data' => $events]);
     }
 
 
@@ -331,16 +338,20 @@ class BookingController extends BaseController
 
     public function getBookingsFromDate()
     {
-        $date = $this->request->getPost('date');
+        
+        $date = $this->request->getGet('date');
         $BookingModel = $this->BookingModel->getBookingsFromDate($date);
+        if($BookingModel){
+            $response = [
+                'events' => $BookingModel,
+                'clickedDate' => $date
+            ];
+            return $this->response->setJSON(['success' => true, 'data' => $response]);
+        }
+        else{
+            return $this->response->setJSON(['success' => false, 'data' => null]);
+        }
 
-        $response = [
-            'events' => $BookingModel,
-            'clickedDate' => $date
-        ];
-
-        return $this->response->setJSON($response);
-        // Créez un tableau associatif contenant à la fois les événements et la date cliquée
     }
 
     public function getBookingFromID($booking_id = false)
@@ -384,21 +395,25 @@ class BookingController extends BaseController
 
     public function updateBooking()
     {
-
-        $data = $this->request->getPost();
-
-        $id = $this->request->getPost('id');
-        unset($data['id']);
-        $data['Type_doc'] = $data['Type_doc'] == "1"? "Facture" : "Devis";
+        $data = $this->request->getPost('data');
+        $id = $data['id'] ?? null; // Utilisation de l'opérateur null coalescent
+    
+        // Assurez-vous que $id et $data contiennent des valeurs valides
+        if ($id === null || empty($data)) {
+            return $this->response->setJSON(['success' => false, 'error' => 'ID ou données manquantes.', 'data' => $data]);
+        }
+    
+        unset($data['id']); // Retirez 'id' de $data avant la mise à jour
+    
 
         if ($this->BookingModel->validate($data)) {  // Utilisez les règles de validation définies dans le modèle
             if ($this->BookingModel->update($id, $data)) {
-                return $this->response->setJSON(['status' => 'success', 'id' => $id, 'data' => $data]);
+                return $this->response->setJSON(['success' => true, 'id' => $id, 'data' => $data]);
             } else {
-                return $this->response->setJSON(['status' => 'fail', 'message' => 'Une erreur dans les données envoyées, vérifier la syntaxe des textes']);
+                return $this->response->setJSON(['success' => false, 'error' => 'Une erreur dans les données envoyées, vérifier la syntaxe des textes']);
             }
         } else {
-            return $this->response->setJSON(['status' => 'fail', 'message' => $this->BookingModel->errors()]);
+            return $this->response->setJSON(['success' => false, 'error' => $this->BookingModel->errors()]);
         }
     }
 
@@ -481,79 +496,107 @@ class BookingController extends BaseController
 
     public function generatePDF($origine = 'booking', $id = 1, $show = true)
     {
+        // Nom du cookie où le token JWT est stocké
+        $cookieName = 'token';
+        // Récupérer le token JWT du cookie
+        $jwt = $this->request->getCookie($cookieName);
 
-        $entreprise = $this->ConfigModel->get_enteprise_name();
-
-        if ($origine == 'booking') {
-            $bookingData = $this->BookingModel->getBookingFromID($id); // Vos données de réservation
-            if (isset($bookingData['Customer_id'])) {
-                $customerData = $this->CustomerModel->get_customer_info($bookingData['Customer_id']);
-                $data = [
-                    'booking_info' => $bookingData,
-                    'customer_info' => $customerData
-                ];
-            }
-        } else {
-            $data = $this->BookingModel->getBookingsFromCustomer($id); // Vos données de réservation
+        if (!$jwt) {
+            // Gérer l'absence de token
+            return $this->response->setStatusCode(401)->setBody('Token non fourni ++');
+        }
+        // Vérifier si $jwt est un objet ou un tableau, et obtenir la valeur du cookie comme chaîne de caractères
+        if (is_array($jwt) || is_object($jwt)) {
+            $jwt = $jwt['value'] ?? ''; // Ajustez la clé 'value' si nécessaire
         }
 
-        $seller = [$this->ConfigModel->get_all_config()];
-        // Charger la vue et passer les données de réservation
-        $html = view('documents/pdf', ['data' => $data, 'seller' => $seller]);
+        try {
+            // Remplacer 'your_key' par votre clé secrète utilisée pour signer les tokens
+            // Assurez-vous d'utiliser une clé secrète sécurisée et unique à votre application
+            $decoded = JWT::decode($jwt, new Key('votre_cle_secrete', 'HS256'));
 
-        $contxt = stream_context_create([
-            'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-            ]
-        ]);
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('HttpContext', $contxt);
+            $entreprise = $this->ConfigModel->get_enteprise_name();
 
-        $dompdf = new Dompdf($options);
-
-        // Charger le HTML dans Dompdf
-        $dompdf->loadHtml($html);
-
-        // Paramétrer le papier et l'orientation
-        $dompdf->setPaper('A4', 'portrait');
-
-        // Rendu du PDF (génère le PDF en mémoire)
-        $dompdf->render();
-
-        // Envoyer les en-têtes HTTP appropriés
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: inline; filename="' . "$origine-$id.pdf" . '"');
-
-        if ($show === true) {
-            // Envoyer le PDF au navigateur
-            $dompdf->stream("$origine-$id.pdf", array("Attachment" => false, 'mime' => 'application/pdf'));
-            $pdfOutput = $dompdf->output();
-            return $this->response->setStatusCode(200)
-                ->setContentType('application/pdf')
-                ->setBody($pdfOutput);
-        } else {
-            // Sauvegarder le PDF dans un fichier temporaire
-            $output = $dompdf->output();
-            $tempDir = WRITEPATH . 'uploads/temp/';
-            //$fileName = uniqid("pdf_") . ".pdf"; // Générer un nom de fichier unique
-            $fileName = $entreprise ."_".$bookingData['Type_doc']."#".$id . ".pdf"; // Générer un nom de fichier unique
-            $filePath = $tempDir . $fileName;
-
-            // Assurez-vous que le répertoire temporaire existe
-            if (!is_dir($tempDir)) {
-                mkdir($tempDir, 0777, true);
+            if ($origine == 'booking') {
+                $bookingData = $this->BookingModel->getBookingFromID($id); // Vos données de réservation
+                if (isset($bookingData['Customer_id'])) {
+                    $customerData = $this->CustomerModel->get_customer_info($bookingData['Customer_id']);
+                    $data = [
+                        'booking_info' => $bookingData,
+                        'customer_info' => $customerData
+                    ];
+                }
+            } else {
+                $data = $this->BookingModel->getBookingsFromCustomer($id); // Vos données de réservation
             }
 
-            file_put_contents($filePath, $output); // Sauvegarde le PDF
-            return $filePath; // Retourne le chemin du fichier
+            $seller = [$this->ConfigModel->get_all_config()];
+            // Charger la vue et passer les données de réservation
+            $html = view('documents/pdf', ['data' => $data, 'seller' => $seller]);
+
+            $contxt = stream_context_create([
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                ]
+            ]);
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('HttpContext', $contxt);
+
+            $dompdf = new Dompdf($options);
+
+            // Charger le HTML dans Dompdf
+            $dompdf->loadHtml($html);
+
+            // Paramétrer le papier et l'orientation
+            $dompdf->setPaper('A4', 'portrait');
+
+            // Rendu du PDF (génère le PDF en mémoire)
+            $dompdf->render();
+
+
+            if ($show === true) {
+                // Envoyer les en-têtes HTTP appropriés
+                header('Content-Type: application/pdf');
+                header('Content-Disposition: inline; filename="' . "$origine-$id.pdf" . '"');
+        
+                // Envoyer le PDF au navigateur
+                $dompdf->stream("$origine-$id.pdf", array("Attachment" => false, 'mime' => 'application/pdf'));
+                $pdfOutput = $dompdf->output();
+                return $this->response->setStatusCode(200)
+                    ->setContentType('application/pdf')
+                    ->setBody($pdfOutput);
+            } else {
+                // Sauvegarder le PDF dans un fichier temporaire
+                $output = $dompdf->output();
+                $tempDir = WRITEPATH . 'uploads/temp/';
+                //$fileName = uniqid("pdf_") . ".pdf"; // Générer un nom de fichier unique
+                $fileName = $entreprise ."_".$bookingData['Type_doc']."#".$id . ".pdf"; // Générer un nom de fichier unique
+                $filePath = $tempDir . $fileName;
+
+                // Assurez-vous que le répertoire temporaire existe
+                if (!is_dir($tempDir)) {
+                    mkdir($tempDir, 0777, true);
+                }
+
+                file_put_contents($filePath, $output); // Sauvegarde le PDF
+                return $filePath; // Retourne le chemin du fichier
+            }
+
+        } catch (\Firebase\JWT\ExpiredException $e) {
+            // Gérer un token expiré
+            return $this->response->setStatusCode(401)->setJSON(['success' => false, 'message' => 'Token expiré']);
+        } catch (\Exception $e) {
+            // Gérer les autres erreurs de JWT
+            return $this->response->setStatusCode(401)->setJSON(['success' => false, 'message' => 'Token invalide']);
         }
     }
 
     public function Sendmail($booking_id)
     {
+
         helper(['text', 'email']); // Chargement des helpers nécessaires
 
         $bookingData = $this->BookingModel->getBookingFromID($booking_id); // Vos données de réservation
@@ -581,8 +624,6 @@ class BookingController extends BaseController
                 'customer_info' => $customerData
             ];
         } else {
-            log_message('non success', 'customer data = 0');
-
             return [
                 'success' => false,
                 'message' => 'ID client non défini dans les données de réservation.'

@@ -1,18 +1,37 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  purge: false,
   mode : 'jit',
   content: [
     './app/Views/**/*.php', // cherche les classes dans tous les fichiers PHP du dossier Views
-    './public/css/*.css', // cherche également dans tous les fichiers HTML du dossier actuel
-    './public/js/*.js', // cherche également dans tous les fichiers HTML du dossier actuel
-    './public/Assets/js/*.js', // cherche également dans tous les fichiers HTML du dossier actuel
-    './public/Assets/css/*.css', // cherche également dans tous les fichiers HTML du dossier actuel
-    "./node_modules/flowbite/**/*.js"
+    './public/css/*.css', 
+    './public/js/*.js', 
+    './public/Assets/js/*.js', 
+    './public/Assets/css/*.css', 
   ],
+  darkMode: 'class',
   theme: {
     extend: {
-      // Ajouter group-hover pour toutes les classes nécessaires, ici pour small-down-IN
+      backgroundColor: {
+        'black-90': 'rgba(0, 0, 0, 0.9)', 
+        'black-80': 'rgba(0, 0, 0, 0.8)', 
+        'black-70': 'rgba(0, 0, 0, 0.7)', 
+        'black-60': 'rgba(0, 0, 0, 0.6)', 
+        'black-50': 'rgba(0, 0, 0, 0.5)', 
+        'black-40': 'rgba(0, 0, 0, 0.4)', 
+        'black-30': 'rgba(0, 0, 0, 0.3)', 
+        'black-20': 'rgba(0, 0, 0, 0.2)', 
+        'black-10': 'rgba(0, 0, 0, 0.1)', 
+        'white-90': 'rgba(255, 255, 255, 0.9)', 
+        'white-80': 'rgba(255, 255, 255, 0.8)', 
+        'white-70': 'rgba(255, 255, 255, 0.7)', 
+        'white-60': 'rgba(255, 255, 255, 0.6)', 
+        'white-50': 'rgba(255, 255, 255, 0.5)', 
+        'white-40': 'rgba(255, 255, 255, 0.4)', 
+        'white-30': 'rgba(255, 255, 255, 0.3)', 
+        'white-20': 'rgba(255, 255, 255, 0.2)', 
+        'white-10': 'rgba(255, 255, 255, 0.1)', 
+
+      },      // Ajouter group-hover pour toutes les classes nécessaires, ici pour small-down-IN
       smallDownIN: ['group-hover'],
       smallDownOUT: ['group-hover'],
       fontSize: {
@@ -51,28 +70,8 @@ module.exports = {
     'Segoe UI Symbol', 
     'Noto Color Emoji'
   ],
-      'sans': [
-    'Inter', 
-    'ui-sans-serif', 
-    'system-ui', 
-    '-apple-system', 
-    'system-ui', 
-    'Segoe UI', 
-    'Roboto', 
-    'Helvetica Neue', 
-    'Arial', 
-    'Noto Sans', 
-    'sans-serif', 
-    'Apple Color Emoji', 
-    'Segoe UI Emoji', 
-    'Segoe UI Symbol', 
-    'Noto Color Emoji'
-  ]
   }
 },
-  plugins: [
-    require('flowbite/plugin')
-]
 
 }
 

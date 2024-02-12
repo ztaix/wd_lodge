@@ -25,6 +25,13 @@ if(isset($seller[0]) && isset($data)){
     $s_created = $data['booking_info']['Created_at'];
     $s_start = $data['booking_info']['start'];
     $s_end = $data['booking_info']['end'];
+
+	$start_obj = new DateTime($s_start);
+	$start = $start_obj->format('d/m/Y');
+
+	$end_obj = new DateTime($s_end);
+	$end = $end_obj->format('d/m/Y');
+
     $s_type = $data['booking_info']['Type_doc'];
     $s_QtTraveller = $data['booking_info']['QtTraveller'];
     $s_price = $data['booking_info']['Price'];
@@ -34,9 +41,9 @@ if(isset($seller[0]) && isset($data)){
     $s_ndays = $data['booking_info']['nDays'];
     $s_tax = $data['booking_info']['Tax'];
     $s_qt = $data['booking_info']['Qt'] == 0 ? 1: $data['booking_info']['Qt'] ;
-	$count_paid =  count(explode(',',trim($data['booking_info']['paids_ids'])));
-	$types_paids = explode(',',trim($data['booking_info']['types_paids']));
-	$paids_values = explode(',',trim($data['booking_info']['paids_values']));
+	$count_paid =  count(explode(',',trim($data['booking_info']['paids_ids'] ?? '')));
+	$types_paids = explode(',', trim($data['booking_info']['types_paids'] ?? ''));
+	$paids_values = explode(',', trim($data['booking_info']['paids_values'] ?? ''));	
     $s_paid = array_sum($paids_values);
 	$payments = [];
 	for ($i = 0; $i < $count_paid; $i++) {$payments[] = array($types_paids[$i] => $paids_values[$i]);}
@@ -71,6 +78,7 @@ else{
 $dateOrigine = str_replace('/', '-', $s_created);
 $date = new DateTime($dateOrigine);
 $created_date = $date->format('d/m/Y');
+
 $date->add(new DateInterval('P1M'));
 $due_date = $date->format('d/m/Y');
 
@@ -285,7 +293,8 @@ $due_date = $date->format('d/m/Y');
 			?>
 				<tr class='item'>
 					<td>
-						<?='<b>'.$s_service.'</b> * '.$s_QtTraveller.' personne'.$plurial?> 
+						<?='<b>'.$s_service.'</b> * '.$s_QtTraveller.' personne'.$plurial?>
+						<br> Du <?= substr($start,0,10)?> au <?= substr($end,0,10)?>
 						<?php if($s_comment){echo '<br>' . $s_comment; }?>
 						<br><span style='text-align: left; color: #aeaeae ;font-size:10px'>
 						(Taxe de <?=$s_tax." ".$currency?> / personne/ jour)</span>

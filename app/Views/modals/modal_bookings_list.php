@@ -32,7 +32,7 @@ $modal_id = "ListEventModal";
 
             <div class="flex justify-center pt-2">
 
-                <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"  onclick="event.stopPropagation()">
+                <div class="w-full bg-white-70 dark:bg-black-50 border border-gray-200 rounded-lg shadow  dark:border-gray-950"  onclick="event.stopPropagation()">
 
                     <div id="bookingListContainer" class="w-full text-md">
                         <!-- JavaScript will populate this area -->

@@ -24,26 +24,26 @@ $modal_id = "addEventModal";
         </div>
 
         <!-- Modal Form -->
-        <div id="body_<?= $modal_id ?>" class="px-6 py-6 lg:px-8 mb-20 rounded-lg">
+        <div id="body_<?= $modal_id ?>" class="w-full px-6 py-6 lg:px-8 mb-20 rounded-lg">
             <form id="eventForm" class="space-y-6">
                 <input type="hidden" id="Modaleventid" name="id">
                 <input type="hidden" id="ModaleventTax" name="Tax">
                 <input type="hidden" id="ModaleventFee" name="Fee">
                 <div>
-                    <div class="absolute top-6">
-                        <label for="ModaleventType_doc" class="group flex items-center cursor-pointer overflow-hidden">
+                    <div class="relative flex items-center justify-center text-white text-md font-bold">
+                        <label for="ModaleventType_doc" class="flex items-center cursor-pointer overflow-hidden">
                             <!-- Le conteneur du toggle -->
                             <div class="relative">
                             <!-- Le toggle lui-même -->
                                 <input type="checkbox" id="ModaleventType_doc" value="Devis" class="sr-only" onchange="updateToggleLabel()">
                                 <!-- Le chemin du toggle -->
-                                <div id="ModaleventType_doc_bgtoggle" class="block bg-gray-600 w-24 h-10 rounded-full shadow-inner shadow-slate-800"></div>
+                                <div id="ModaleventType_doc_bgtoggle" class="block bg-gray-600 w-28 h-10 rounded-full shadow-inner shadow-slate-800"></div>
                                 <!-- Le cercle à bouger -->
-                                <div id="ModaleventType_doc_bgtoggleDot" class="dot absolute left-1 top-1 bg-white dark:bg-slate-700 group-hover:bg-slate-200 group-hover:dark:bg-slate-500 w-8 h-8 rounded-full transition transform ">
+                                <div id="ModaleventType_doc_bgtoggleDot" class="dot absolute left-1 top-1 bg-white dark:bg-slate-700 w-8 h-8 rounded-full transition transform ">
                                     <div class="flex items-center justify-center h-full">
                                     <!-- Les étiquettes Devis et Facture -->
-                                    <span class="relative left-16 text-white text-xs " id="label-devis">Devis</span>
-                                    <span class="relative right-16 text-white text-xs opacity-0" id="label-facture">Facture</span>
+                                    <span class="relative ml-2 left-16 " id="label-devis">Devis</span>
+                                    <span class="relative mr-2 right-16 opacity-0" id="label-facture">Facture</span>
                                     </div>
                                 </div>
                             </div>
@@ -55,110 +55,137 @@ $modal_id = "addEventModal";
                 function updateToggleLabel() {
                 const isChecked = document.getElementById('ModaleventType_doc').checked;
                 document.getElementById('ModaleventType_doc').value = isChecked ? 'Facture' : 'Devis';
+                document.getElementById('ModaleventType_doc_bgtoggleDot').classList.add(!isChecked ? 'bg-white' : 'bg-blue-400');
+                document.getElementById('ModaleventType_doc_bgtoggleDot').classList.remove(isChecked ? 'bg-white' : 'bg-blue-400');
                 document.getElementById('label-devis').style.opacity = isChecked ? '0' : '100';
                 document.getElementById('label-facture').style.opacity = isChecked ? '100' : '0';
-                document.getElementById('addEventModal_header').classList.add(isChecked ? 'dark:bg-sky-800' : 'dark:bg-slate-800');
-                document.getElementById('addEventModal_header').classList.add(isChecked ? 'bg-sky-200' : 'bg-white');
-                document.getElementById('addEventModal_header').classList.remove(isChecked ? 'bg-white' : 'bg-sky-200');
-                document.getElementById('addEventModal_header').classList.remove(isChecked ? 'dark:bg-slate-800' : 'dark:bg-sky-800');
                 }
                 </script>
 
-                <div class="flex w-full items-center">
-                    <div class="flex-grow">
-                        <!-- Votre liste déroulante des clients -->
-                        <div id="Modalevent_Container_Customer_id" class="flex">
-                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                    <path fill-rule="evenodd" d="M12 20a8 8 0 0 1-5-1.8v-.6c0-1.8 1.5-3.3 3.3-3.3h3.4c1.8 0 3.3 1.5 3.3 3.3v.6a8 8 0 0 1-5 1.8ZM2 12a10 10 0 1 1 10 10A10 10 0 0 1 2 12Zm10-5a3.3 3.3 0 0 0-3.3 3.3c0 1.7 1.5 3.2 3.3 3.2 1.8 0 3.3-1.5 3.3-3.3C15.3 8.6 13.8 7 12 7Z" clip-rule="evenodd"/>
-                                </svg>
-                            </span>                               
-                            <select id="ModaleventCustomer_id" name="ModaleventCustomer_id" class="w-full text-md text-gray-900 border border-gray-300 rounded-l-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" style="width:100%;">
-                                <?php foreach ($options_customers_id as $id => $Name) : ?>
+                <!-- Customer id -->
+                <div class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700" >
+                    <div id="Modalevent_Container_Customer_id" class="w-full flex justify-between items-center gap-x-5">
+                        <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" d="M12 20a8 8 0 0 1-5-1.8v-.6c0-1.8 1.5-3.3 3.3-3.3h3.4c1.8 0 3.3 1.5 3.3 3.3v.6a8 8 0 0 1-5 1.8ZM2 12a10 10 0 1 1 10 10A10 10 0 0 1 2 12Zm10-5a3.3 3.3 0 0 0-3.3 3.3c0 1.7 1.5 3.2 3.3 3.2 1.8 0 3.3-1.5 3.3-3.3C15.3 8.6 13.8 7 12 7Z" clip-rule="evenodd"/>
+                        </svg>
+                        <div class="grow">
+                            <select id="ModaleventCustomer_id"  name="ModaleventCustomer_id" class="w-full py-1 bg-white border-0 rounded-lg dark:bg-slate-900" style="width:100%;">
+                            <?php foreach ($options_customers_id as $id => $Name) : ?>
                                     <option value="<?php echo $id; ?>"><?php echo $Name; ?></option>
                                 <?php endforeach; ?>
                             </select>
-                        
+                        </div>          
+                    </div>
+                </div>
+        
+
+                <!-- Input Number QtTraveller -->
+                <div class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700" data-hs-input-number>
+                    <div class="w-full flex justify-between items-center gap-x-5">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                            <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+                        </svg>
+                        <div class="grow">
+                        <span class="block text-xs text-gray-500 dark:text-gray-400">
+                            Nombre de voyageur
+                        </span>
+                        <input id="ModaleventQtTraveller" class="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 dark:text-white
+                        focus:outline-none" type="text" value="1" inputmode="numeric" pattern="[0-9]*" data-hs-input-number-input>
+                        </div>
+                        <div class="flex justify-end items-center gap-x-1.5">
+                        <button type="button" class="w-6 h-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600" data-hs-input-number-decrement>
+                            <svg class="flex-shrink-0 w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                        </button>
+                        <button type="button" class="w-6 h-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600" data-hs-input-number-increment>
+                            <svg class="flex-shrink-0 w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        </button>
                         </div>
                     </div>
                 </div>
+                <!-- End Input Number -->
 
-                <div class="relative flex">
-                    
-                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                            <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
-                        </svg>
-                    </span>
-                    <input type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="ModaleventQtTraveller" name="ModaleventQtTraveller" class="block w-full rounded-e-lg text-md text-gray-900 bg-transparent rounded-r-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
-                    <label for="ModaleventQtTraveller" class="absolute ml-10 text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Nombre de voyageur</label>
-                </div>
+
                 
-                <div class="flex items-center justify-between">
-                    <!-- Liste déroulante de services -->
-                    <div class="flex flex-grow">
-                    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                <!-- Liste déroulante de services -->
+                <div class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700" >
+                    <div class="w-full flex justify-between items-center gap-x-5">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
                         </svg>
-                    </span>
-                    
-                        <select id="ModaleventService_id" name="ModaleventService_id" class="block w-full text-md text-gray-900 rounded-e-lg text-md bg-transparent rounded-r-lg border-1 border-gray-300 appearance-none dark:text-white dark:bg-slate-700 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer cursor-pointer">
-                            <?php foreach ($options_services_id as $id => $title) : ?>
-                                <option value="<?php echo $id; ?>"><?php echo $title; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <!-- Case à cocher -->
-                    <div id="container_eventfullblocked" class="flex ml-4 w-fit p-2 bg-transparent border border-gray-200 dark:border-red-900 rounded-lg"  onclick="toggleTooltip(this)">
-                        <input disabled id="Modaleventfullblocked" name="Modaleventfullblocked" type="checkbox" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-slate-800 dark:border-gray-600">
-                        <label for="Modaleventfullblocked" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Privatiser</label>
-                        <span class="tooltiptext tooltip-hidden absolute bg-black text-white text-xs rounded py-1 px-2 z-10 left-1/2 transform  -translate-y-6">Sélectionner "Maison" pour privatiser</span>
+                        <div class="grow">
+                            <select id="ModaleventService_id"  name="ModaleventService_id" class="w-full py-1 bg-white border-0 rounded-lg dark:bg-slate-900 " >
+                                <?php foreach ($options_services_id as $id => $title) : ?>
+                                    <option class="bg-white  dark:bg-slate-900" value="<?php echo $id; ?>"><?php echo $title; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>          
+                        <!-- Case à cocher -->
+                        <div id="container_eventfullblocked" class="flex items-center w-fit p-2 bg-transparent   rounded-lg"  onclick="toggleTooltip(this)">
+                            <input disabled id="Modaleventfullblocked" name="Modaleventfullblocked" type="checkbox" class="w-4 h-4 text-red-600 bg-gray-100  rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-slate-800">
+                            <label for="Modaleventfullblocked" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Privatiser</label>
+                            <span class="tooltiptext tooltip-hidden absolute bg-black text-white text-xs rounded py-1 px-2 z-10 left-1/2 transform  -translate-y-6">Sélectionner "Maison" pour privatiser</span>
+                        </div>
                     </div>
                 </div>
 
-                <div date-rangepicker id="dateranger" class="flex items-center justify-between">
-                    <div class="relative">
-                        <label for="ModaleventStart" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Début</label>
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                            </svg>
-                        </div>
-                        <input id="ModaleventStart" name="ModaleventStart" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 cursor-pointer" placeholder="Date de début">
-                    </div>
-                    <!-- Nombre de nuit auto-Calculé -->
-                    <input hidden type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="ModaleventQt" name="ModaleventQt" >
-                    <span class="flex flex-col justify-center items-center mx-4 text-gray-500">
-                        <div id="ModaleventNights" class="flex text-center text-xs ">
-                            2 Nuits
-                        </div>
-                        <svg class="w-4 h-4  dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+
+                <div date-rangepicker id="dateranger" class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700" data-hs-input-number>
+                    <div class="w-full flex justify-between items-center gap-x-5">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 8v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0Zm12 7h-1v1a1 1 0 0 1-2 0v-1H8a1 1 0 0 1 0-2h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 0 1 0 2Z"/>
                         </svg>
-                    </span>
-                    <div class="relative">
-                        <label for="ModaleventEnd" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Fin</label>
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                            </svg>
+  
+                        <div class="grow">
+                        <span class="block text-xs text-gray-500 dark:text-gray-400">
+                            Période
+                        </span>
+                        <input id="ModaleventDatepicker" class="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 dark:text-white
+                        focus:outline-none" type="text" value="1" inputmode="numeric" pattern="[0-9]*" data-hs-input-number-input>
                         </div>
-                        <input id="ModaleventEnd" name="ModaleventEnd" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 cursor-pointer" placeholder="Date de fin">
-                        
+                        <div class="flex justify-end items-center gap-x-1.5">
+                            <input hidden type="number" pattern="[0-9]*" value="1" inputmode="numeric" id="ModaleventQt" name="ModaleventQt" >
+                            <span class="flex flex-col justify-center items-center mx-4 text-gray-500">
+                                <div id="ModaleventNights" class="flex text-center text-xs ">
+                                    2 Nuits
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="relative z-10 shadow-sm">
-                    <input type="number" pattern="[0-9]*" inputmode="numeric" id="ModaleventPrice" name="ModaleventPrice" class="block w-full  text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder="" required>
-                    <label for="ModaleventPrice" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Prix Total</label>
-                </div>    
                 
+               <!-- Input Number -->
+               <div class="py-2 px-3 bg-white border border-gray-200 rounded-t-lg dark:bg-slate-900 dark:border-gray-700" data-hs-input-number>
+                    <div class="w-full flex justify-between items-center gap-x-5">
+
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17.3a5 5 0 0 0 2.6 1.7c2.2.6 4.5-.5 5-2.3.4-2-1.3-4-3.6-4.5-2.3-.6-4-2.7-3.5-4.5.5-1.9 2.7-3 5-2.3 1 .2 1.8.8 2.5 1.6m-3.9 12v2m0-18v2.2"/>
+                        </svg>
+                        <div class="grow">
+                        <span class="block text-xs text-gray-500 dark:text-gray-400">
+                            Prix total
+                        </span>
+                        <input id="ModaleventPrice" class="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 dark:text-white
+                        focus:outline-none" type="text" value="1" inputmode="numeric" pattern="[0-9]*" data-hs-input-number-input>
+                        </div>
+                        <!-- TODO, fix init value of increment && decrement
+                        <div class="flex justify-end items-center gap-x-1.5">
+                        <button type="button" class="w-6 h-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600" data-hs-input-number-decrement>
+                            <svg class="flex-shrink-0 w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                        </button>
+                        <button type="button" class="w-6 h-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600" data-hs-input-number-increment>
+                            <svg class="flex-shrink-0 w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        </button>
+                        </div>-->
+                    </div>
+                </div>
+                <!-- End Input Number -->
+
+
                 <div class="relative z-0">
-                    <div id="totalIndicator" class="-mt-7 p-2 border border-dashed border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t-0 text-sm text-slate-600 dark:text-slate-400"></div>
+                    <div id="totalIndicator" class="-mt-6 p-2 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t-0 text-sm text-slate-600 dark:text-slate-400"></div>
                     <div id="discountIndicator" class="-mt-2 p-2 border border-dashed border-gray-400 dark:border-yellow-600 bg-yellow-200 dark:bg-yellow-800 rounded-b-lg border-t-0 text-md text-yellow-500 dark:text-yellow-200 hidden"></div>
-                    <div id="numericIndicator" class="absolute top-0 left-0 text-sm text-red-600 hidden">Seules des valeurs numériques sont autorisées.</div>
+                    <div id="numericIndicator" class="absolute -top-4 left-0 text-sm text-red-600 hidden">Seules des valeurs numériques sont autorisées.</div>
                 </div>
                 
 
@@ -171,7 +198,7 @@ $modal_id = "addEventModal";
                 </div>
                 <div position="relative">
                     <label for="ModaleventComment" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Commentaire :</label>
-                    <textarea id="ModaleventComment" name="ModaleventComment" class="block p-2.5 w-full text-md text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Une chose à dire, c'est ici..."></textarea>
+                    <textarea id="ModaleventComment" name="ModaleventComment" class="block p-2.5 w-full text-md text-gray-900 bg-gray-50 rounded-lg border border-gray-300  dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Une chose à dire, c'est ici..."></textarea>
                 </div>
 
                 <button type="button" id="cancel_submit_form" type="button" onclick="closeModalById('<?= $modal_id ?>');" class="sticky bottom-4 float-left mt-10 text-gray-600 dark:text-gray-200 bg-slate-200 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 font-bold rounded-full text-md px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-slate-800 focus:outline-none dark:focus:ring-gray-800 border-gray-500 shadow-xl shadow-gray-600">Annuler</button>
@@ -196,6 +223,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     var container_full_blocked = document.getElementById("container_eventfullblocked");
     var container_global = document.getElementById("addEventModal");
     var checkbox = document.getElementById('Modaleventfullblocked');
+    var Datepicker = document.getElementById('ModaleventDatepicker');
     var DateStart = document.getElementById('ModaleventStart');
     var DateEnd = document.getElementById('ModaleventEnd');
 
@@ -278,7 +306,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
                     <b>Frais de ménage:</b>  ${service.Fee.toLocaleString('fr-FR')} Fr
                 </div>
             </div>
-            <div class="flex-col">
+            <div class="flex-col ml-2">
                 <div class="text-right text-sm whitespace-nowrap">
                     TOTAL
                 </div>           
@@ -293,10 +321,8 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     function loadServiceDetails(serviceId) {
         
         service = discountservice.find(s => s.Service_id === serviceId);
-        
         // MàJ datepicker
         if(fromServicepicker){
-
             loadAndInitDatepicker(serviceId);
         }
   
@@ -314,19 +340,14 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             checkbox.checked = true;
             container_full_blocked.classList.add("bg-red-500");
             container_full_blocked.classList.remove("bg-transparent");
-            container_global.classList.add('border');
-            container_global.classList.add('border-dashed');
-            container_global.classList.add('border-4');
-            container_global.classList.add('border-red-400');
-
+            container_global.classList.add('border','border-dashed','border-4','border-red-300');
+            container_global.classList.add('dark:border-red-800');
         }
         else { 
             checkbox.checked = false;
             container_full_blocked.classList.remove("bg-red-500");
-            container_global.classList.remove('border');
-            container_global.classList.remove('border-dashed');
-            container_global.classList.remove('border-4');
-            container_global.classList.remove('border-red-400'); 
+            container_global.classList.remove('border','border-dashed','border-4','border-red-300');
+            container_global.classList.remove('dark:border-red-800');
         }
 
         if (!userChangedPrice) {
@@ -426,6 +447,7 @@ function updatePrice() {
 
     });
 
+   
     function discountToArray(input) {
         let result = {};
         let lines = input.trim().split("\n");

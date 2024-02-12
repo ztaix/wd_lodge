@@ -116,13 +116,20 @@ class BookingModel extends Model
     }
 
     public function getBookingsFromDate($date){
+        // Vérifier si la date est nulle ou vide
+        if (empty($date)) {
+            // Gérer l'erreur ou retourner une valeur par défaut / message d'erreur
+            return null; // ou une réponse appropriée
+        }
+
         try {
             $dt = new DateTime($date);
             $formattedDate = $dt->format('Y-m-d');
         } catch (Exception $e) {
-            // La date est mal formée
-            return null;
+            // La date est mal formée, gérer l'erreur
+            return null; // ou une réponse appropriée
         }
+   
         $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
         wd_services.Color as service_color,
         GROUP_CONCAT(wd_paid.paid_id) as paids_ids,

@@ -5,11 +5,13 @@
   <title>Kaipekalodge - Gestion Réservation</title>
   <link href="css/wd_composed_style.css" rel="stylesheet">
   <link href="css/select2.min.css" rel="stylesheet">
-  <!--<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />-->
+  <meta http-equiv="Expires" content="0" />
   <!-- Responsive design : system css viewport et utilisation des unités vh et vw) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
 </head>
 
 <body class="preload">
@@ -22,54 +24,58 @@
     </label>
   </div>
   <script>
-    //DARKMODE
-    
-    svg_sun = `<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3V1m0 18v-2M5.05 5.05 3.636 3.636m12.728 12.728L14.95 14.95M3 10H1m18 0h-2M5.05 14.95l-1.414 1.414M16.364 3.636 14.95 5.05M14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/>
-  </svg>`;
-    svg_moon = `<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
-    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.509 5.75c0-1.493.394-2.96 1.144-4.25h-.081a8.5 8.5 0 1 0 7.356 12.746A8.5 8.5 0 0 1 8.509 5.75Z"/>
-  </svg>`;
+  // Définitions des icônes SVG pour le soleil et la lune
+  const svgSun = `<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3V1m0 18v-2M5.05 5.05 3.636 3.636m12.728 12.728L14.95 14.95M3 10H1m18 0h-2M5.05 14.95l-1.414 1.414M16.364 3.636 14.95 5.05M14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/></svg>`;
+  const svgMoon = `<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.509 5.75c0-1.493.394-2.96 1.144-4.25h-.081a8.5 8.5 0 1 0 7.356 12.746A8.5 8.5 0 0 1 8.509 5.75Z"/></svg>`;
 
-    function setCookie(name, value, days) {
-        var expires = '';
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = '; expires=' + date.toUTCString();
-        }
-        document.cookie = name + '=' + (value || '') + expires + '; path=/';
+  // Fonctions pour la gestion des cookies
+  function setCookie(name, value, days) {
+    var expires = '';
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = '; expires=' + date.toUTCString();
     }
+    document.cookie = name + '=' + (value || '') + expires + '; path=/';
+  }
 
-    function getCookie(name) {
-        var nameEQ = name + '=';
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-      }
-      // Vérification immédiate du cookie et application du thème sombre si nécessaire
-      var isDarkMode = getCookie('darkMode') === '1';
-      if (isDarkMode) {
-          document.body.classList.add('dark');
-          document.getElementById('toggleDarkMode').checked = true;
-        }
-        
-        document.getElementById('toggleDarkMode').addEventListener('change', function() {
-          var isDarkModeEnabled = document.body.classList.toggle('dark');
-          setCookie('darkMode', isDarkModeEnabled ? '1' : '0', 1);
-          (isDarkModeEnabled) ? document.getElementById('label_darkmode').innerHTML = svg_moon: document.getElementById('label_darkmode').innerHTML = svg_sun;
-        });
-        (isDarkMode) ? document.getElementById('label_darkmode').innerHTML = svg_moon: document.getElementById('label_darkmode').innerHTML = svg_sun;
-        
-        // Supprimez la classe preload après avoir configuré le mode sombre
-        window.addEventListener('load', () => {
-          document.body.classList.remove('preload');
-        });   
-      </script>
+  function getCookie(name) {
+    var nameEQ = name + '=';
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
+
+  // Initialisation et écouteur d'événement pour le toggle du mode sombre
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleDarkMode = document.getElementById('toggleDarkMode');
+    const labelDarkmode = document.getElementById('label_darkmode');
+    let isDarkMode = getCookie('darkMode') === '1';
+
+    const updateIcon = () => {
+      labelDarkmode.innerHTML = isDarkMode ? svgMoon : svgSun;
+    };
+
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+      toggleDarkMode.checked = true;
+    }
+    updateIcon();
+
+    toggleDarkMode.addEventListener('change', function() {
+      isDarkMode = !isDarkMode;
+      document.body.classList.toggle('dark', isDarkMode);
+      setCookie('darkMode', isDarkMode ? '1' : '0', 365);
+      updateIcon();
+    });
+
+    document.body.classList.remove('preload');
+  });
+</script>
 
   
   <script src="Assets/js/easepick.js"></script>
@@ -77,3 +83,4 @@
   <div class="loader"></div>
 
   <div class="flex flex-col h-screen w-full justify-center items-center text-gray-900 dark:text-white bg-slate-50 dark:bg-slate-900">
+

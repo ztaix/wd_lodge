@@ -71,62 +71,43 @@ class PaidsController extends BaseController
     }
 
 
-    public function upsert()
-    {
-        $existId = true;
-        $payments = $this->request->getPost('payments');
+public function upsert()
+{
+    $payments = $this->request->getPost('payments');
+    $results = []; // Initialiser le tableau des résultats
+    $allSuccess = true; // Pour suivre si toutes les opérations sont réussies
 
-        if (is_array($payments) && (empty($payments[0]) || (is_array($payments[0]) && count($payments[0]) == 0))) {
-            $firstKey = key($payments); // Récupère la clé du premier élément
-            unset($payments[$firstKey]); // Supprime le premier élément sans réinitialiser les clés
-        }
+    if (empty($payments)) {
+        return $this->response->setJSON(['success' => false, 'error' => 'Données manquantes ou invalides', 'data' => null]);
+    }
 
-        // Validation des données
-        if (empty($payments)) {
-            return [
+    foreach ($payments as $pay) {
+        $existId = array_key_exists('id', $pay);
+        $result = $this->PaidModel->upsert($pay, $existId ? $pay['id'] : false);
+
+        if (!$result) {
+            $allSuccess = false; // Marquer le succès global comme faux si une opération échoue
+            $errors = $this->PaidModel->errors();
+            $payResult = [
                 'success' => false,
-                'errors' => ['message' => 'Données manquantes ou invalides']
+                'data' => $pay,
+                'errors' => $errors
+            ];
+        } else {
+            $payResult = [
+                'success' => true,
+                'data' => $pay,
+                'errors' => []
             ];
         }
-        foreach ($payments as $pay) {
-            if ($existId = array_key_exists('id', $pay)) {
-    
-                if ($result = $this->PaidModel->upsert($pay, $pay['id'] )) {
 
-                    $results[$pay['id']] = [
-                        'success' => $result[$pay['id']]['success'],
-                        'data' => $pay,
-                        'errors' => $result[$pay['id']]['errors']
-                    ];
-                } else {
-                    $errors = $this->PaidModel->errors();
-                    $results[$pay['id']] = [
-                        'success' => false,
-                        'data' => $pay,
-                        'errors' => [$errors, ['message'] => 'Erreur dans le ModelPaid']
-                    ];
-                }
-            } else {
-                $existId = false;
-                
-                if ($result = $this->PaidModel->upsert($pay, $existId)) {
-                    $results[] = [
-                        'success' =>  $result,
-                        'data' => $pay
-                    ];
-                } else {
-                    $errors = $this->PaidModel->errors();
-                    $results = [
-                        'success' => false,
-                        'data' => $pay,
-                        'errors' => [$errors, ['message'] => 'Les paiements n\'ont pas été reçus.Le POST est vide.']
-                    ];
-                }
-            }
-        }
-
-        return $this->response->setJSON($results);
+        $results[] = $payResult; // Ajouter le résultat de chaque paiement au tableau des résultats
     }
+
+    // Retourner une réponse globale après avoir traité tous les paiements
+    return $this->response->setJSON(['success' => $allSuccess, 'error' => '', 'data' => $results]);
+}
+
 
     public function deletePaid()
     {

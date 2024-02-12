@@ -124,10 +124,7 @@ async function showBookingDetailsFromID(id) {
   document.getElementById('header_DetailsEventModal').innerHTML = header_modal('Détails réservation','DetailsEventModal');
   let Booking;
   try {
-    let response = await $.ajax({
-      url: baseurl + "booking/getBookingFromID?id=" + id,
-      method: "GET",
-    });
+    let response = await ajaxCall('booking/getBookingFromID?id=' + id, 'GET', null); 
     if (response && response.id == id) {
 
       let nDays = DaysDifferenceStartEnd(response.start,response.end);
@@ -277,36 +274,30 @@ async function showBookingDetailsFromID(id) {
       parent_Span_Comment.classList.add('hidden'); 
     }
   document.getElementById("booking_details_pdf").href =
-    baseurl + "booking/generatePDF/booking/" + Booking.id;
+    baseurl + "generatePDF/booking/" + Booking.id;
   document.getElementById("booking_details_pdf").innerHTML =
     download_ico + " Télécharger PDF";
   document.getElementById("booking_details_sendmail").innerHTML =
     send_ico + "Envoyer EMAIL";
 
-    document.getElementById("booking_details_sendmail").addEventListener("click", function(event) {
+ document.getElementById("booking_details_sendmail").addEventListener("click",function(event) {
       event.preventDefault(); // Empêche le comportement par défaut du lien
       var loader = document.querySelector('.loader');
       loader.style.display = 'block';
       loader.style.zIndex = 999;
       // Requête AJAX pour envoyer l'e-mail
-      $.ajax({
-        url: baseurl + "booking/sendmail/" + Booking.id,
-        method: "GET",
-        success: function (response) {
+      ajaxCall("sendmail/" + Booking.id, "GET", null, function(response) {
+        console.log(response); // Log la réponse pour débogage
+
           if (response.success === true) {
             showBanner('Ok envoyé', true);
-            loader.style.display = 'none';
           } 
           else{
             showBanner('Erreur lors de l\'envoi', false);
-            loader.style.display = 'none';
           }
+
+          loader.style.display = 'none';
         
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.error('Erreur AJAX : ' + textStatus + ', ' + errorThrown);
-            showBanner('Erreur lors de la connexion au serveur', false);
-        }
         });
       
   });
@@ -325,7 +316,7 @@ async function showBookingDetailsFromID(id) {
 
 async function update_add_formEvent(data) {
   openModal("addEventModal");
-
+console.log('update_add_formEvent : data',data);
   // Changer le texte du bouton et son action pour l'ajout
   let submitButton = document.getElementById("add_submit_form");
   submitButton.onclick = function () {
@@ -347,6 +338,10 @@ async function update_add_formEvent(data) {
 }
 
   if (data) {
+    console.log('update_add_formEvent : data.Service_id',data.Service_id);
+    console.log('update_add_formEvent : data.start',data.start);
+    console.log('update_add_formEvent : data.end',data.end);
+
     await loadAndInitDatepicker(data.Service_id, data.start, data.end);
 
     document.getElementById("addEventModal_title").innerText = `Modifier #${data.id}`;
@@ -395,8 +390,6 @@ function deleteEvent(event, booking_id, modal_id = false) {
                 let svgs = document.querySelectorAll('#booking_a_' + booking_id + ' svg');
 
                 svgs.forEach(function(svg) {svg.style.color = 'gray';});
-
-              document.getElementById('booking_list_row_hr_'+booking_id).classList.add("fade_out");
             }
             if(urlLocation() == 'history'){
               let tr =  document.querySelector('.row_booking_' + booking_id);
@@ -427,3 +420,54 @@ function deleteEvent(event, booking_id, modal_id = false) {
       closeModalById("ConfirmDeleteModal");
     };
 }
+
+// CUSTOMER, mets à jours le bouton envoyé
+function setupButtonAction(callback) {
+  let button = document.getElementById("update_customer_submit_form");
+  button.onclick = function() {
+    // Déterminez ici si vous devez créer ou mettre à jour, peut-être basé sur une valeur de formulaire
+    let isUpdate = document.getElementById("customer_id").value !== "";
+    
+    if (isUpdate) {
+      updateCustomerInfo(); // Supposons que cette fonction fait maintenant le travail de mise à jour
+    } else {
+
+
+        CreateCustomer(callback);
+
+      
+      // Appeler 'CreateCustomer' avec le 'callback' défini.
+    }
+  };
+}
+function updateCustomerinfo (data){
+    ajaxCall("customer/update", "POST", { customer_info: data }, function(response) {
+        if (response.success === true) {
+            // Traiter la réponse en cas de succès
+          var newCustomerId = response.id;
+          
+          if(ModalInStack('CustomerInfoModal')){
+            document.getElementById('history_customer_name_span').innerText = data.Name;
+            document.getElementById('history_customer_phone_span').innerText = data.Phone;
+            document.getElementById('history_customer_email_span').innerText = data.Email;
+            document.getElementById('history_customer_comment_span').innerText = data.Comment;
+          }
+          if(ModalInStack('DetailsEventModal')){
+            document.getElementById('booking_details_customer_name_span').innerText = data.Name;
+            document.getElementById('booking_details_customer_phone_span').innerText = data.Phone;
+            document.getElementById('booking_details_customer_email_span').innerText = data.Email;
+            document.getElementById('booking_details_customer_comment_span').innerText = data.Comment;
+          }
+
+          if(ModalInStack('updateCustomerModal')){
+            closeModalById("updateCustomerModal");
+          }
+      
+          showBanner("Modification réalisée avec succès", true);
+        } else {
+          showBanner("Échec de la modification", false);
+        }
+      
+    });
+}
+// Appeler setupButtonAction après avoir configuré votre page ou modale pour s'assurer que le bouton a le bon gestionnaire d'événements.

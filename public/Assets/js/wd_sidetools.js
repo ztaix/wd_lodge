@@ -17,6 +17,77 @@ document.addEventListener("keydown", function (event) {
   }
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+  // Vérifie si l'utilisateur est sur la page de connexion
+  var onLoginPage = window.location.pathname.endsWith('/auth') || window.location.href.includes('/auth');
+  var token = localStorage.getItem('token');
+
+    // Si l'utilisateur est sur la page de connexion et qu'un token est trouvé
+    if (onLoginPage && token) {
+      // Rediriger vers la page d'accueil
+      window.location.href = baseurl;
+      return; // Stopper l'exécution supplémentaire du script
+  }
+
+    // Si l'utilisateur n'est pas sur la page de connexion et qu'aucun token n'est trouvé
+    if (!onLoginPage && !token) {
+      // Rediriger vers la page de connexion
+      window.location.href = baseurl + 'auth';
+      return; // Stopper l'exécution supplémentaire du script
+  }
+
+  // Code spécifique pour la page de connexion
+  if (onLoginPage) {
+      var loginForm = document.getElementById('loginForm');
+      if (loginForm) {
+          loginForm.addEventListener('submit', function(e) {
+              e.preventDefault(); // Empêche la soumission classique du formulaire
+
+              // Création d'un objet JavaScript à partir des données du formulaire
+              var formDataObj = {};
+              var formData = new FormData(this);
+              formData.forEach(function(value, key) {
+                  formDataObj[key] = value;
+              });
+
+              // Appel de la fonction ajaxCall pour se connecter
+              console.log('formDataObj',formDataObj);
+              ajaxCall('auth/verif', 'POST', formDataObj, function(response) {
+                  // Parsez la réponse JSON reçue
+                  if (response.jwt) {
+                      // Stockez le JWT dans le localStorage ou les cookies
+                      localStorage.setItem('token', response.jwt);
+
+                      // Redirigez l'utilisateur vers la page d'accueil ou le tableau de bord
+                      window.location.href = baseurl;
+                  } else {
+                      // Gérez les erreurs, par exemple en affichant un message à l'utilisateur
+                      alert(response.error ? response.error : 'Échec de la connexion');
+                  }
+              }, function(xhr, status, error) {
+                if (typeof errorCallback === 'function') {
+                  errorCallback(xhr, status, error ? error : "Erreur inconnue");
+                } else {
+                  console.error("Erreur lors de la requête AJAX :", status, error ? error : "Erreur inconnue");
+                  reject(xhr);
+                }
+                alert('Échec de la requete de connexion : ' + error);
+              });
+          });
+      }
+  }
+});
+
+  
+function logout() {
+  // Supprimer le token du localStorage
+  localStorage.removeItem('token');
+
+  // Rediriger l'utilisateur vers la page de connexion
+  // Adaptez '/login' à l'URL de votre page de connexion si nécessaire
+  window.location.href = baseurl + 'auth';
+}
+
 
 // Fonction pour afficher les détails dans la modal
 function showBookingList(response, clickedDate) {
@@ -88,19 +159,19 @@ response.sort((a, b) => {
   let status_paidObj = generateStatusPaid(paids_sum,TOTALprice);
 
     let bookingElement = `
-        <div id="booking_list_row_${booking.id}" class="group flex flex-col px-4 rounded-t-lg text-slate-500 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 border-b-2 hover:rounded-none border-slate-300 dark:border-slate-700" >
+        <div id="booking_list_row_${booking.id}" class="group flex flex-col px-4 rounded-t-lg text-slate-700 dark:text-white hover:bg-white-50 dark:hover:bg-black-50 border-b-2 hover:rounded-none border-slate-300 dark:border-slate-700" >
           <!-- Colonne 1 -->
-          ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark:text-red-700 bg-white dark:bg-gray-800 group-hover:bg-slate-100 dark:group-hover:bg-slate-700 top-2 px-2 mx-auto capitalize">Privatisé</span>':''}
+          ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark:text-red-700  top-2 px-2 mx-auto capitalize">Privatisé</span>':''}
 
           <div class="w-full flex-col group ${booking.fullblocked == 1 ? 'p-1 border-t-2 border-red-400 dark:border-red-700 rounded-lg':''}">
             
             <div class="flex justify-between">
               <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex flex-wrap cursor-pointer font-bold">
               
-                <div id="booking_title_${booking.id}" class="flex flex-initial transition-margin hover:mx-2 ">
-                ${ Checkin == true ? '<b class="blink text-cyan-700">CHECK-IN </b> / ': ''} 
-                ${ Checkout == true ? '<b class="blink text-amber-800 ">CHECK-OUT </b>/ ': ''} 
-                 ${booking.service_title }
+                <div id="booking_title_${booking.id}" class="flex flex-initial transition-margin hover:mx-2 text-slate-800 dark:text-white">
+                ${booking.service_title }
+                ${ Checkin == true ? '&nbsp;<b class="blink text-cyan-700">CHECK-IN </b>': ''} 
+                ${ Checkout == true ? '&nbsp;<b class="blink text-amber-800 ">CHECK-OUT </b> ': ''} 
                 </div>
 
               </div>
@@ -113,11 +184,11 @@ response.sort((a, b) => {
             <div class="w-full inline-flex">
               <div class="w-full flex flex-wrap items-center justify-between cursor-pointer" onclick="showBookingDetailsFromID('${booking.id}');">
                 <div class="flex-col">
-                  <div class="text-base "><span class="font-semibold text-slate-400 dark:text-slate-500">Client:</span> <span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
-                  <div class="text-base"><span class="font-semibold text-slate-400 dark:text-slate-500">Nb personne:</span> <span id="booking_QtTraveller_${booking.id}">${booking.QtTraveller}</span></div>
+                  <div class="text-base "><span class="font-semibold text-slate-500 ">Client:</span> <span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
+                  <div class="text-base"><span class="font-semibold text-slate-500 ">Nb personne:</span> <span id="booking_QtTraveller_${booking.id}">${booking.QtTraveller}</span></div>
                 </div>
                 <div class="m-1">
-                  <div class="w-full inline-flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+                  <div class="w-full inline-flex items-center justify-between text-xs text-slate-500 ">
                     <span class="items-center" id="booking_startDay_${booking.id}">${getDayOfWeek(format_date(booking.start))}</span>
                     <span class="items-center">${'<b>'+DaysDifferenceStartEnd(booking.start,booking.end) + ' nuit(s) </b>'}</span>
                     <span class="items-center" id="booking_endDay_${booking.id}">${getDayOfWeek(format_date(booking.end))}</span>
@@ -134,15 +205,15 @@ response.sort((a, b) => {
 
               <div class="flex flex-col grow items-end text-right font-bold ml-2">
                 
-                <div class="flex flex-col justify-end bg-${status_paidObj.color}-100 dark:bg-${status_paidObj.color}-800 rounded-lg px-1">
+                <div class="flex flex-col justify-end rounded-lg px-1">
                   <div class="inline-flex justify-end items-center" >
-                      <span class="mr-1 text-xs text-slate-400 dark:text-slate-500">Tarif</span> 
+                      <span class="mr-1 text-xs text-slate-500">Tarif</span> 
                       <span id="booking_total_${booking.id}">${TOTALprice }</span>
                       <span class="ml-1 text-xs">Fr</span>
 
                   </div>
                   <div class="inline-flex justify-end items-center" >
-                    <span class="mr-1 text-xs text-slate-400 dark:text-slate-500">Encaissé</span>   
+                    <span class="mr-1 text-xs text-slate-500">Encaissé</span>   
                     <span class="font-bold" id="booking_paid_${booking.id}">${paids_sum}</span>
                     <span class="ml-1 text-xs">Fr</span>
                   </div>
@@ -184,7 +255,7 @@ response.sort((a, b) => {
     container.innerHTML += bookingElement;
   });
   container.innerHTML += `          
-    <div class="flex flex-wrap justify-end font-bold rounded-b-lg border-b-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500">
+    <div class="flex flex-wrap justify-end font-bold rounded-b-lg border-b-2 dark:bg-black-50 border-slate-300 dark:border-slate-900 text-slate-400 dark:text-slate-600">
       <div id="booking_list_row_found" class="inline-flex p-2" >Réservation trouvé : ${count_row_found}</div>
     </div>`;
  
@@ -249,13 +320,13 @@ function ShowCreateCustomer(customerName ="" , callback) {
   document.getElementById("customer_phone").value = "";
   document.getElementById("customer_email").value = "";
   document.getElementById("customer_comment").value = "";
-
-    // Modifie l'action du bouton de soumission pour appeler CreateCustomer avec un callback
-    document.getElementById("update_customer_submit_form").onclick = function() {
-      CreateCustomer(callback); // Passe le callback à CreateCustomer
-  };
-
+  
+  
   openModal("updateCustomerModal");
+  // Modifie l'action du bouton de soumission pour appeler CreateCustomer avec un callback
+  document.getElementById("customer_name").focus(); // Préremplit le nom du client
+  
+  setupButtonAction(callback);
 }
 
 function CreateCustomer(callback) {
@@ -321,76 +392,38 @@ function CreateCustomer(callback) {
       });
   }
 
-async function showUpdateCustomer(id) {
+function showUpdateCustomer(id) {
   openModal("updateCustomerModal", false);
   document.getElementById('header_updateCustomerModal').innerHTML = header_modal('Client','updateCustomerModal');
 
   let customer;
-  try {
-    let response = await $.ajax({
-      url: baseurl + `customer/get_customer_info?customer_id=${id}`,
-      method: "GET",
-    });
-    if (response && response.id == id) {
-      customer = {
-        customer_id: response.Customer_id,
-        name: response.Name,
-        phone: response.Phone,
-        email: response.Email,
-        comment: response.Comment,
-      };
-      document.getElementById("customer_name").value = customer.name;
-    } else {
-      console.error(
-        `Échec get_customer_info: aucun enregistrement trouvé pour l'id : ${id}`
-      );
-      return; // Arrête la fonction ici si aucune donnée n'est trouvée
-    }
 
-    } catch (error) {
-      console.error("Échec get_customer_info: ", error);
-      console.error("Status Code:", error.status);
-      console.error("Response Text:", error.responseText);
-
-      return;
-    }
-
-  updateCustomersFormFields(customer);
-
-  let button_update = document.getElementById("update_customer_submit_form");
-  button_update.onclick = function () {
-    let data = getCustomerFormData(); // Récupère les données du formulaire
-
-    ajaxCall("customer/update", "POST", { customer_info: data }, function(response) {
+    ajaxCall(`customer/get_customer_info?customer_id=${id}`, "GET", null, function(response) {
         if (response.success === true) {
-            // Traiter la réponse en cas de succès
-          var newCustomerId = response.id;
-          
-          if(ModalInStack('CustomerInfoModal')){
-            document.getElementById('history_customer_name_span').innerText = data.Name;
-            document.getElementById('history_customer_phone_span').innerText = data.Phone;
-            document.getElementById('history_customer_email_span').innerText = data.Email;
-            document.getElementById('history_customer_comment_span').innerText = data.Comment;
-          }
-          if(ModalInStack('DetailsEventModal')){
-            document.getElementById('booking_details_customer_name_span').innerText = data.Name;
-            document.getElementById('booking_details_customer_phone_span').innerText = data.Phone;
-            document.getElementById('booking_details_customer_email_span').innerText = data.Email;
-            document.getElementById('booking_details_customer_comment_span').innerText = data.Comment;
-          }
-
-          if(ModalInStack('updateCustomerModal')){
-            closeModalById("updateCustomerModal");
-          }
-      
-          showBanner("Modification réalisée avec succès", true);
-        } else {
-          showBanner("Échec de la modification", false);
+          customer = {
+            customer_id: response.data.Customer_id,
+            name: response.data.Name,
+            phone: response.data.Phone,
+            email: response.data.Email,
+            comment: response.data.Comment,
+          };
+          updateCustomersFormFields(customer);
+          return customer;
         }
-      
+        else{
+          console.error(
+            `Échec get_customer_info: aucun enregistrement trouvé pour l'id : ${id}`
+          );
+          return;
+        }
     });
-  };
+  
 }
+
+
+
+
+
 function Deletepaid(ids) {
   let idsArray = Array.isArray(ids) ? ids : [ids];
 
@@ -646,21 +679,22 @@ function get_booking_list_from_customer(data) {
 
 }
 
+
 function getPaidFromBookingId(booking_id) {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url: baseurl + "paids/bookings/" + booking_id,
-      method: "GET",
-      success: function (paids) {
-        resolve(paids); // Résoudre la promesse avec les données
-      },
-      error: function (error) {
-        console.error("Erreur lors de la récupération des paids: ", error);
-        reject(error); // Rejeter la promesse en cas d'erreur
-      },
+  // Utilisez directement ajaxCall avec les paramètres nécessaires
+  return ajaxCall("paids/bookings/" + booking_id, "GET", null)
+    .then(paids => {
+      return paids; // Cette ligne est en fait optionnelle ici, car `.then(paids => paids)` est redondant
+    })
+    .catch(error => {
+      // Logique en cas d'erreur
+      console.error("Erreur lors de la récupération des paids: ", error);
+      throw error; // Propager l'erreur pour une gestion ultérieure
     });
-  });
 }
+
+
+
 
 function createPaymentHtml(paid, index, lenght) {
   let payements_class = "";
@@ -730,188 +764,187 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
 
     // Si un datepicker existe déjà, retirez-le avant de créer un nouveau
     if (fromServicepicker) {
-      fromServicepicker = "";
+      fromServicepicker.destroy();
     }
+    ajaxCall("booking/datepicker/" + service_id + "/true", "GET", null, function(bookings) {
+        if (bookings.success === true) {
+          let d = bookings.data;
+            // Traiter la réponse en cas de succès
 
-    $.ajax({
-      url: baseurl + "booking/datepicker/" + service_id + "/true",
-      method: "GET",
-      success: function (bookings) {
-        const bookedDates = Object.keys(bookings).map((key) => {
-          const booking = bookings[key];
-          const hasFirstDay = Object.values(booking.details_bookings).some(obj => obj.is_first_day === true);
-          const hasLastDay = Object.values(booking.details_bookings).some(obj => obj.is_last_day === true);
-          const date = booking.start;
-          const fullblocked = booking.fullblocked;
+          let bookedDates = Object.keys(d).map((key) => {
+          let booking = d[key];
+          let hasFirstDay = Object.values(booking.details_bookings).some(obj => obj.is_first_day === true);
+          let hasLastDay = Object.values(booking.details_bookings).some(obj => obj.is_last_day === true);
+          let date = booking.start;
+          let fullblocked = booking.fullblocked;
 
           return [date, fullblocked, hasFirstDay, hasLastDay];
-        });
+          });
 
 
-        const filteredBookedDates = bookedDates.filter(([date, fullblocked, hasFirstDay, hasLastDay]) => !hasFirstDay && !hasLastDay);
+          let filteredBookedDates = bookedDates.filter(([date, fullblocked, hasFirstDay, hasLastDay]) => !hasFirstDay && !hasLastDay);
 
-        const bookedDatesFormatted = filteredBookedDates.map((dateArr) => {
-          const [day, month, year] = dateArr[0].split("-");
-          return `${year}-${month}-${day}`;
-        });
+          let bookedDatesFormatted = filteredBookedDates.map((dateArr) => {
+            let [day, month, year] = dateArr[0].split("-");
+            return `${year}-${month}-${day}`;
+          });
 
-        // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
-        fromServicepicker = new easepick.create({
-          element: document.getElementById("ModaleventStart"),
-          css: ["css/wd_datepicker.css"],
-          firstDay: 1, // 0 - Sunday, 1 - Monday, 2 - Tuesday
-          grid: 1, // Number of calendar columns
-          calendars: 1, // Number of visible months.
-          opens: "top",
-          autoApply: true,
-          header:
-            "<b>" +
-            document.getElementById("ModaleventService_id").options[
-              document.getElementById("ModaleventService_id").selectedIndex
-            ].textContent +
-            "</b>",
-            zIndex: 99,
-          lang: "fr-FR",
-          format: "DD-MM-YYYY",
-          
-          plugins: ["RangePlugin", "LockPlugin"],
-          
-          LockPlugin: {
-            minDate: new Date(), // Les réservations ne peuvent pas être faites dans le passé.
-            minDays: 1, // Nombre minimum de jours pouvant être sélectionnés.
-            inseparable: true, // Les jours sélectionnés doivent former une plage continue.
-            filter(date, picked) {
-              //TRAVAIL de selection à faire car pour éviter la surréservation
-              return bookedDatesFormatted.includes(date.format("DD-MM-YYYY"));
-            },
-          },
-          RangePlugin: {
-            elementEnd: "#ModaleventEnd",
-            tooltipNumber(num) {
-              return num - 1;
-            },
-            locale: {
-              one: "Nuit",
-              other: "Nuits",
-            },
+          // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
+          fromServicepicker = new easepick.create({
+            element: document.getElementById("ModaleventDatepicker"),
+            css: ["css/wd_datepicker.css"],
+            firstDay: 1, // 0 - Sunday, 1 - Monday, 2 - Tuesday
+            grid: 1, // Number of calendar columns
+            calendars: 1, // Number of visible months.
+            opens: "top",
+            autoApply: true,
+            header:
+              `<b>
+              ${document.getElementById("ModaleventService_id").options[
+                document.getElementById("ModaleventService_id").selectedIndex
+              ].textContent}
+              </b>         
+              <!-- <span id="toggleLockIcon" style="cursor: pointer;">🔒</span>-->
+
+              `,
+              zIndex: 99,
+            lang: "fr-FR",
+            format: "DD-MM-YYYY",
             
-          },
-
-          onShow(instance) {
-            const header = document.getElementById("datepicker-header");
-            const pickerElem = instance.picker.outerNode;
-            pickerElem.insertBefore(header, pickerElem.firstChild);
-          },
-          setup(fromServicepicker) {
-            const daytoShow = {};
-
-            bookedDates.forEach(([Date, Fullblocked, hasFirstDay, hasLastDay]) => {
-              if (!daytoShow[Date]) {
-                daytoShow[Date] = {};
-              }
-              daytoShow[Date]["fullblocked"] = Fullblocked;
-              daytoShow[Date]["FirstDay"] = hasFirstDay;
-              daytoShow[Date]["LastDay"] = hasLastDay;
-            });
+            plugins: ["RangePlugin", "LockPlugin"],
             
-            
-            // Ajouter le type de document à l'élément du jour
-            fromServicepicker.on("view", (evt) => {
-              const { view, date, target } = evt.detail;
-              const formattedDate = date ? date.format("YYYY-MM-DD") : null;
+            LockPlugin: {
+              minDate: new Date(), // Les réservations ne peuvent pas être faites dans le passé.
+              minDays: 1, // Nombre minimum de jours pouvant être sélectionnés.
+              inseparable: true, // Les jours sélectionnés doivent former une plage continue.
+              filter(date, picked) {
+                //TRAVAIL de selection à faire car pour éviter la surréservation
+                return bookedDatesFormatted.includes(date.format("DD-MM-YYYY"));
+              },
+            },
+            RangePlugin: {
+              tooltipNumber(num) {
+                return num - 1;
+              },
+              locale: {
+                one: "Nuit",
+                other: "Nuits",
+              },
               
-              if (view === "CalendarDay" && daytoShow[formattedDate]) {
-                let span1;
-                let span2;
-                let FirstDay = daytoShow[formattedDate]['FirstDay'];
-                let LastDay = daytoShow[formattedDate]['LastDay'];
-                let existingSpan;
+            },
 
-                if (FirstDay && !LastDay) {       
-                  existingSpan = target.querySelector(".start-date-triangle");
-                  if (!existingSpan) {
-                    span1 = document.createElement("span");
-                    span1.className = "day-unavailable start-date-triangle";
-                    span1.innerHTML += `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
-                  </svg>`;
-                    target.append(span1);
+            onShow(instance) {
+              let header = document.getElementById("datepicker-header");
+              let pickerElem = instance.picker.outerNode;
+              pickerElem.insertBefore(header, pickerElem.firstChild);
+
+            },
+            setup(fromServicepicker) {
+              let daytoShow = {};
+
+              bookedDates.forEach(([Date, Fullblocked, hasFirstDay, hasLastDay]) => {
+                if (!daytoShow[Date]) {
+                  daytoShow[Date] = {};
+                }
+                daytoShow[Date]["fullblocked"] = Fullblocked;
+                daytoShow[Date]["FirstDay"] = hasFirstDay;
+                daytoShow[Date]["LastDay"] = hasLastDay;
+              });
+              
+              
+              // Ajouter le type de document à l'élément du jour
+              fromServicepicker.on("view", (evt) => {
+                let { view, date, target } = evt.detail;
+                let formattedDate = date ? date.format("DD-MM-YYYY") : null;
+                
+                if (view === "CalendarDay" && daytoShow[formattedDate]) {
+                  let span1;
+                  let span2;
+                  let FirstDay = daytoShow[formattedDate]['FirstDay'];
+                  let LastDay = daytoShow[formattedDate]['LastDay'];
+                  let existingSpan;
+
+                  if (FirstDay && !LastDay) {       
+                    existingSpan = target.querySelector(".start-date-triangle");
+                    if (!existingSpan) {
+                      span1 = document.createElement("span");
+                      span1.className = "day-unavailable start-date-triangle";
+                      span1.innerHTML += `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                    </svg>`;
+                      target.append(span1);
+                    }
+                  }
+                  else if(!FirstDay && LastDay){
+                    existingSpan = target.querySelector(".end-date-triangle");
+                    if (!existingSpan) {
+                      span1 = document.createElement("span");
+                      span1.className = "day-unavailable end-date-triangle";
+                      span1.innerHTML += `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                    </svg>`;
+
+                      target.append(span1);
+                    }
+                  }
+                  else if(FirstDay && LastDay){
+                    existingSpan = target.querySelector(".start-date-triangle .end-date-triangle");
+                    if (!existingSpan) {
+                      span1 = document.createElement("span");
+                      span1.className = "day-unavailable start-date-triangle";
+                      span1.innerHTML = `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                    </svg>`;
+                      target.append(span1);
+                      span2 = document.createElement("span");
+                      span2.className = "day-unavailable end-date-triangle";
+                      span2.innerHTML = `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                    </svg>`;
+                      target.append(span2);
+                    }else{
+                      alert('existingSpan FirstDay && LastDay');
+                    }
                   }
                 }
-                else if(!FirstDay && LastDay){
-                  existingSpan = target.querySelector(".end-date-triangle");
-                  if (!existingSpan) {
-                    span1 = document.createElement("span");
-                    span1.className = "day-unavailable end-date-triangle";
-                    span1.innerHTML += `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
-                  </svg>`;
-
-                    target.append(span1);
-                  }
-                }
-                else if(FirstDay && LastDay){
-                  existingSpan = target.querySelector(".start-date-triangle .end-date-triangle");
-                  if (!existingSpan) {
-                    span1 = document.createElement("span");
-                    span1.className = "day-unavailable start-date-triangle";
-                    span1.innerHTML = `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
-                  </svg>`;
-                    target.append(span1);
-                    span2 = document.createElement("span");
-                    span2.className = "day-unavailable end-date-triangle";
-                    span2.innerHTML = `<svg class="w-2 h-2 text-slate-500 dark:text-white"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
-                  </svg>`;
-                    target.append(span2);
-                  }else{
-                    alert('existingSpan FirstDay && LastDay');
-                  }
-                }
-              }
-            });
+              });
 
 
-          },
-        });
+            },
+          });
 
-        if (start_date && end_date) {
-          fromServicepicker.setStartDate(start_date);
-          fromServicepicker.setEndDate(end_date);
-        }
+          if (start_date && end_date) {
+            fromServicepicker.setStartDate(start_date);
+            fromServicepicker.setEndDate(end_date);
+          }
+  
+          fromServicepicker.on("select", function (event) {
+            // Récupérer les dates de début et de fin
+            //const startDate = new Date(event.detail.start); 
+            //const endDate = new Date(event.detail.end);
 
-        fromServicepicker.on("select", function (event) {
-          // Récupérer les dates de début et de fin
-          //const startDate = new Date(event.detail.start); 
-          //const endDate = new Date(event.detail.end);
+            // Calculer la différence en jours
+            let dayDifference = DaysDifferenceStartEnd(event.detail.start,event.detail.end);
 
-          // Calculer la différence en jours
-          const dayDifference = DaysDifferenceStartEnd(event.detail.start,event.detail.end);
+            // Mettre à jour le champ 'eventQt'
+            document.getElementById("ModaleventQt").value = dayDifference;
+            document.getElementById("ModaleventNights").innerText = dayDifference + ' Nuit(s)';
 
-          // Mettre à jour le champ 'eventQt'
-          document.getElementById("ModaleventQt").value = dayDifference;
-          document.getElementById("ModaleventNights").innerText = dayDifference + ' Nuit(s)';
+            // Réinitialiser le flag puisque la mise à jour vient du datepicker et non de l'utilisateur
+            userChangedPrice = false;
 
-          // Réinitialiser le flag puisque la mise à jour vient du datepicker et non de l'utilisateur
-          userChangedPrice = false;
+            updateTotalInfo();
+            updatePrice();
+
+          });
 
           updateTotalInfo();
           updatePrice();
+          
+          loader.style.display = 'none';
+          resolve(fromServicepicker); 
+      }
+    }); //End ajaxCall
 
-        });            
-            updateTotalInfo();
-            updatePrice();
-            
-            loader.style.display = 'none';
-        resolve(fromServicepicker); 
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.error(
-          "Erreur lors de la récupération des dates réservées: " + textStatus,
-          errorThrown
-        );
-      },
-    });
   });
 }

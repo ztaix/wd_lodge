@@ -17,24 +17,60 @@ $modal_id = "updateCustomerModal";
                     <form id="customerForm" class="space-y-6" method="post">
                         <input type="hidden" id="customer_id" name="customer_id">
                         
-                        <div class="relative">
-                            <input type="text" value='' id="customer_name" name="Name" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" >                        
-                            <label for="customer_name" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Client</label>
-                        </div>
+                        
+                        <div class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700" data-hs-input-number>
+                            <div class="w-full flex justify-between items-center gap-x-5">
 
-                        <div class="relative">
-                            <input type="text" value='' id="customer_phone" name="Phone" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" >                        
-                            <label for="customer_phone" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Téléphone</label>
-                        </div>                    
-                        <div class="relative">
-                            <input type="email" value='' id="customer_email" name="Email" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" >                        
-                            <label for="customer_email" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Email</label>
+                                <div class="grow">
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">
+                                    Client
+                                </span>
+                                <input id="customer_name" class="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 dark:text-white
+                                focus:outline-none" type="text" value="" name="Name" >
+                                </div>
+                            </div>
                         </div>
-                        <div class="relative">
-                            <textarea rows="3" value='' id="customer_comment" name="Comment" class="block w-full text-md text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" ></textarea>                        
-                            <label for="customer_comment" class="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-slate-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Commentaire</label>
+                        
+                        <div class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700" data-hs-input-number>
+                            <div class="w-full flex justify-between items-center gap-x-5">
+
+                                <div class="grow">
+                                    <span class="block text-xs text-gray-500 dark:text-gray-400">
+                                    Téléphone
+                                </span>
+                                <input id="customer_phone" name="Phone" class="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 dark:text-white
+                                focus:outline-none" type="text" value="" name="Phone" >
+                            </div>
+                            </div>
                         </div>
-                        <button type="button" id="update_customer_submit_form" type="button"  class="sticky bottom-4 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ">Enregistrer</button>
+                        
+                        <div class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700" data-hs-input-number>
+                            <div class="w-full flex justify-between items-center gap-x-5">
+                                
+                                <div class="grow">
+                                    <span class="block text-xs text-gray-500 dark:text-gray-400">
+                                        Email
+                                    </span>
+                                <input id="customer_email" class="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 dark:text-white
+                                focus:outline-none" type="email" value="" name="Email" >
+                            </div>
+                            </div>
+                        </div>
+                        
+                        <div class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700" data-hs-input-number>
+                            <div class="w-full flex justify-between items-center gap-x-5">
+
+                                <div class="grow">
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">
+                                    Commentaire
+                                </span>
+                                <textarea rows="3" id="customer_comment" class="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 dark:text-white
+                                focus:outline-none"  value="" name="Comment" ></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="update_customer_submit_form"  type="button"  class="sticky bottom-4 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ">Enregistrer</button>
                     </form>
                 </div>
             </div>

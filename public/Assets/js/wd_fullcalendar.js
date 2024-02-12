@@ -12,29 +12,20 @@ document.addEventListener("DOMContentLoaded", function () {
     eventResizableFromStart: false, // Permet le redimensionnement à partir du début
     timeZone: "Pacific/Tahiti", // Spécifiez le fuseau horaire de Tahiti
     eventSources: [
-      {
-        url: baseurl + "booking", // Votre URL pour récupérer les événements
-        method: "GET",
-        success: function (response) {
-          // Vous pouvez traiter la réponse et afficher un message de succès, si nécessaire
-          if (response && response.length === 0) {
-            alert("Aucune réservation trouvée pour les dates sélectionnées.");
-          } else {
-            console.log(
-              "Calendrier rechargé: Réservations chargées avec succès"
-              );
-          }
-        },
-        failure: function (error) {
-          // Affichez une notification plus détaillée en cas d'échec
-          console.error("Erreur lors du chargement des réservations:", error);
-         /* alert(
-            "Il y a eu une erreur lors du chargement des réservations. Veuillez vérifier la console pour plus de détails."
-          );*/
-        },
-      },
-    ],
-    
+        function(fetchInfo, successCallback, failureCallback) {
+          // Utiliser ajaxCall pour charger les événements
+          ajaxCall("booking", "GET", {}, 
+            function(response) { // Callback de succès
+              // Supposer que 'response' est un tableau d'événements
+              successCallback(response);
+            }, 
+            function(xhr, status, error) { // Callback d'erreur
+              console.error("Erreur lors du chargement des événements:", error);
+              failureCallback(error); // Signaler l'échec à FullCalendar
+            }
+          );
+        }
+      ],
     viewDidMount: function (view, element) {
       var cellWidth = $(".fc-daygrid-day").width();
       $(".fc-daygrid-day").css("height", cellWidth + "px");
@@ -49,11 +40,33 @@ document.addEventListener("DOMContentLoaded", function () {
       var cellWidth = $(".fc-daygrid-day").width();
       $(".fc-daygrid-day").css("height", cellWidth + "px");
     },
+    datesSet: function(dateInfo) {
+      // Trouvez tous les éléments fc-multimonth-title après le rendu/mise à jour du calendrier
+      document.querySelectorAll('.fc-multimonth-title').forEach(function(title) {
+          // Vérifiez si le div personnalisé n'a pas déjà été ajouté
+          if (!title.querySelector('.calendarLegend')) {
+              // Créez le div personnalisé
+              var customDiv = document.createElement('div');
+              title.classList.add('flex','justify-between','text-md','capitalize');
+              customDiv.classList.add('inline-flex','items-center');
+              customDiv.innerHTML = `
+              <div class="flex space-x-2 mr-2 items-center text-sm font-light text-slate-600 dark:text-slate-200">
+              <div class="flex items-center">Vide: <span class="w-4 h-4 inline-block bg-white border border-slate-200"></span></div>
+              <div class="flex items-center">Disponibilité: <span class="w-4 h-4 inline-block bg-green-500 border border-slate-200"></span></div>
+              <div class="flex items-center">Complet: <span class="w-4 h-4 inline-block bg-red-500 border border-slate-200"></span></div>
+              </div>
+              `;
+
+              title.appendChild(customDiv);
+          }
+      });
+  },
     headerToolbar: {
       left: "prev,next", // Ajoutez ici les boutons personnalisés
       center: "title",
       right: "AddEventButton,SearchIpunt",
     },
+    
     customButtons: {
       AddEventButton: {
         text: " ",
@@ -128,6 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let bookings = args.event.extendedProps.bookings; 
       let firstdayHtml = "";
       let firstdayHtmlNumber = "";
+      let currentdayHtml = "";
       let lastdayHtml = "";
       let lastdayHtmlNumber = "";
       
@@ -164,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let roomsAvailable = availableServicesCount; // initialiser avec le nombre total de chambres
 
     for (let bookingId in bookings) {
-        if (bookings.hasOwnProperty(bookingId)) {          
+        if (bookings.hasOwnProperty(bookingId)) {
           let booking = bookings[bookingId];
           let serviceBooked = bookings[bookingId].services_titles;
           Object.entries(availableServices).forEach(([key, value]) => {
@@ -180,54 +194,40 @@ document.addEventListener("DOMContentLoaded", function () {
           let message = "";
           let color = "";
           
-        // Start End Animation
-        // OUT
-        if (isBookingEndDay ) {
-          COUNTisBookingEndDay++;
-          roomsAvailable++; // Incrémenter car une chambre se libère
-
-          lastdayHtml = `
-              <div class="absolute flex justify-start w-full ">
-                <div class="flex flex-col w-2/5 h-full rounded-r-xl bg-gray-400 dark:bg-gray-800 ">
-                  <div class="relative group-hover:small-down-OUT  items-center justify-center hidden md:flex">
-                  OUT
-                  </div>
-                  <div class="flex items-end justify-center mb-1 font-bold mx-auto">
-                    ${COUNTisBookingEndDay}
-                  </div>
+          // Start End Animation
+          // Fonction pour créer le HTML de la marque du jour
+          function createDayMarker({ position, count, text, additionalClasses = "" }) {
+            const baseHtml = `
+                <div class="absolute flex justify-${position} w-full z-20 ">
+                    <div class="flex flex-col h-full ${additionalClasses} ${position.includes("end")  ? "rounded-l-lg " : position.includes("start") ?"rounded-r-lg ":""} 
+                    shadow-inner ${position.includes("end") ? " shadow-gray-800" : position.includes("start") ? "shadow-gray-800": "shadow-inner shadow-gray-800"}" style="background-color: rgba(0, 0, 0, 0.2);">
+                        <div class="relative hidden md:flex items-center justify-center mx-auto">
+                            ${text}
+                        </div>
+                        <div class="flex items-center justify-center my-0.5 font-bold mx-auto">
+                            ${count > 0 ? count : "&nbsp;"}
+                        </div>
+                    </div>
                 </div>
-              </div>
-                `;  
-        }
-        // IN
-        if (isBookingStartDay) {
-          COUNTisBookingStartDay++;
-          fullblockedFound ? service_booked = availableServicesCount : service_booked++;
-          roomsAvailable--; // Décrémenter car une chambre est réservée
-
-          let bg_div = 'bg-white dark:bg-slate-900';
-          if (fullblockedFound || roomsAvailable < 0) { // Changer ici pour vérifier roomsAvailable
-            bg_div = 'bg-red-600 dark:bg-red-600';
-          }
-          else if(roomsAvailable > 0){
-            bg_div = 'bg-green-500 dark:bg-green-600';
-          }
-
-          firstdayHtml = `
-            <div class="absolute flex justify-end h-full w-full">
-              <div class="flex flex-col justify-end items-end w-1/2 h-full ${bg_div} rounded-l-xl overflow-hidden">
-                <div class="relative group-hover:small-down-IN items-center justify-center mx-auto hidden md:flex">
-                  IN
-                </div>
-                <div class="flex items-center justify-center mb-1 mx-auto font-bold">
-                  ${COUNTisBookingStartDay}
-                </div>
-              </div>
-            </div>
-
             `;
+            return baseHtml;
+          }
+          if (isBookingEndDay) {
+            COUNTisBookingEndDay++;
+            roomsAvailable++; // Une chambre se libère
+            lastdayHtml = createDayMarker({ position: "start z-20", count: COUNTisBookingEndDay, text: "OUT", additionalClasses: "w-2/5" });
           }
 
+          if (isBookingStartDay) {
+            COUNTisBookingStartDay++;
+            fullblockedFound ? service_booked = availableServicesCount : service_booked++;
+            roomsAvailable--; // Une chambre est réservée
+            firstdayHtml = createDayMarker({ position: "end z-20", count: COUNTisBookingStartDay, text: "IN" , additionalClasses: "w-2/5" });
+          }
+
+          if (isCurrentDay && !isBookingStartDay && !isBookingEndDay) {
+            currentdayHtml = createDayMarker({ position: "center z-10", count: 0, text: "&nbsp;", additionalClasses: "w-full" });
+          }
 
           if(isCurrentDay && !isBookingEndDay & !isBookingStartDay & !fullblockedFound){
             service_booked++;
@@ -236,33 +236,37 @@ document.addEventListener("DOMContentLoaded", function () {
             service_booked = availableServicesCount;
           }
 
-          // Déterminez la couleur en fonction des conditions
+          // Déterminer la couleur du BG
+          let classNameBg = "";
+          let classNameDarkBg = "";
+          
           if (service_booked < availableServicesCount) {
-          color = "green";
+            classNameBg = "bg-green-300";
+            classNameDarkBg = "dark:bg-green-800";
           } else if (service_booked == availableServicesCount) {
-          color = fullblockedFound ? "red" : "purple";
+            classNameBg = fullblockedFound ? "bg-red-300" : "bg-purple-300";
+            classNameDarkBg = fullblockedFound ? "dark:bg-red-800" : "dark:bg-purple-800";
           } else {
-          color = 'gray';
+            classNameBg = "bg-gray-300";
+            classNameDarkBg = "dark:bg-gray-800";
           }
-
-
+          
           message = service_booked + "/" + availableServicesCount;
-
-         
+          
           html_construct = `
-          <div class="absolute w-full h-full ">
-            <div class="relative h-full pt-2 pl-1 flex justify-start items-start bg-${color}-300 dark:bg-${color}-800 ">
-            ${message}
+          <div class="absolute w-full h-full">
+            <div class="relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg} ${classNameDarkBg}">
+              ${message}
             </div>
-          </div>`; 
+          </div>`;
         
         }
       }
 
-   let dotsHtml =  html_construct + lastdayHtml + lastdayHtmlNumber + firstdayHtml + firstdayHtmlNumber;
+   let dotsHtml =  html_construct + lastdayHtml + lastdayHtmlNumber + currentdayHtml + firstdayHtml + firstdayHtmlNumber;
     // Créer un élément HTML pour représenter l'événement
     let eventElement = document.createElement("div");
-    eventElement.className = `group relative flex justify-center items-end h-full pb-1 text-black dark:text-white overflow-hidden
+    eventElement.className = `group relative flex justify-center items-end h-full text-black dark:text-white overflow-hidden
     ${args.isPast?'opacity-30':''}  `;
     eventElement.innerHTML = dotsHtml;
       return {
@@ -271,44 +275,16 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     eventClick: function (info) {
 
-const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'utilisateur a cliqué
+      const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'utilisateur a cliqué
       // Faire une requête AJAX pour obtenir les événements de cette date
-
-      $.ajax({
-        url: baseurl + "booking/getBookingsFromDate", // Votre URL pour récupérer les événements
-        method: "POST",
-        data: { date: clickedDate },
-        success: function (response) {
-          // $response = [
-          //  'events' => $BookingModel,
-          //  'clickedDate' => $date
-
-          showBookingList(response.events, clickedDate);
-          // Afficher le popup
-        },
-      });
-    },
-    dateClick: function (info) {
-      //const clickedDate = info.date;  // Récupère la date cliquée
-      const clickedDate = info.dateStr; // Récupère la date sur laquelle l'utilisateur a cliqué
-      // Faire une requête AJAX pour obtenir les événements de cette date
-      $.ajax({
-        url: baseurl + "booking/getBookingsFromDate", // Votre URL pour récupérer les événements
-        method: "POST",
-        data: { date: clickedDate },
-        success: function (response) {
-
+      ajaxCall("booking/getBookingsFromDate", "GET", { date: clickedDate }, function(response) {
+        const startdate = format_date(clickedDate);
+        const enddate = format_date(clickedDate, 1);
+        if (response.success && response.data.events.length > 0) {
           // Attribution d'office à la modal d'ajout la date cliqué.
-          const startdate = format_date(response.clickedDate);
-          const enddate = format_date(response.clickedDate, 1);
 
-
-          document.getElementById("ModaleventStart").value = startdate;
-          document.getElementById("ModaleventEnd").value = enddate;
-
-          if (response.events.length > 0) {
             // Si la réponse contient des événements, exécutez votre code ici
-            showBookingList(response.events, clickedDate);
+            showBookingList(response.data.events, clickedDate);
           } else {
             resetForm("addEventModal",startdate,enddate);
             updateTotalInfo();
@@ -316,10 +292,30 @@ const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'ut
             // Afficher le popup
             openModal("addEventModal");
           }
-        },
-        error: function () {
-          console.log("date error");
-        },
+      });
+
+    },
+    dateClick: function (info) {
+      //const clickedDate = info.date;  // Récupère la date cliquée
+      const clickedDate = info.dateStr; // Récupère la date sur laquelle l'utilisateur a cliqué
+      // Faire une requête AJAX pour obtenir les événements de cette date
+      ajaxCall("booking/getBookingsFromDate", "GET", { date: clickedDate }, function(response) {
+        const startdate = format_date(clickedDate);
+        const enddate = format_date(clickedDate, 1);
+        if (response.success && response.data.events.length > 0) {
+          // Attribution d'office à la modal d'ajout la date cliqué.
+
+            // Si la réponse contient des événements, exécutez votre code ici
+            showBookingList(response.data.events, clickedDate);
+          } else {
+            resetForm("addEventModal",startdate,enddate);
+            updateTotalInfo();
+            updatePrice();
+            // Afficher le popup
+            openModal("addEventModal");
+          }
+        
+        
       });
     },
   });
@@ -330,23 +326,27 @@ const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'ut
 // Mettre à jour l'événement depuis la !!! vue détaillé !!! dans la base de données
 function updateEventFromDetails() {
   let formData = {};
-  let E_Form = Array.from(document.querySelectorAll('[id]')).filter(element => typeof element.id === 'string' && element.id.startsWith('Modalevent'));
+  let E_Form = Array.from(document.querySelectorAll('[id]')).filter(element => typeof element.id === 'string' && element.id.startsWith('Modalevent') && !element.id.includes('bgtoggle'));
   E_Form.forEach(element => {
     const key = element.id.replace("Modalevent", ""); // Supprime "Modalevent" du début de l'id pour obtenir la clé
-    if (element.type === "checkbox") {
+    if (element.type === "checkbox" && !element.id.includes('Type_doc')) {
         formData[key] = element.checked ? 1 : 0; // Pour les cases à cocher
     } else if (key ==="Start" || key === 'End' ){
       formData[key.toLowerCase()] = format_date_toSql(element.value); // Pour les champs de texte et les listes déroulantes
+     } else if(key ==="Datepicker"){
+       var dates_spliting = element.value.split(" - ");
+       // Extraire les dates de début et de fin en tant que chaînes
+       formData['start'] = format_date_toSql(dates_spliting[0]);
+       formData['end'] = format_date_toSql(dates_spliting[1]);
 
+       
     }else {formData[key] = element.value;}
   });
   //UPDATE FORM BOOKING
-  $.ajax({
-    url: baseurl + "booking/updateBooking", // URL de mise à jour
-    method: "POST",
-    data: formData,
-    success: function (response) {
-      if (response.status == "success") {
+  console.log('formadata',formData);
+  // Étape 1 : Mise à jour de la réservation
+  ajaxCall("booking/updateBooking", "POST", { data : formData }, function(response) {
+      if (response.success === true) {
         let updatedData = {};
         updatedData[response.id] = response.data;        
        
@@ -374,78 +374,21 @@ function updateEventFromDetails() {
             }
           }
         });
-        let payments_filtred = payments.filter(item => item !== undefined);
-        $.ajax({
-          url: baseurl + "paids/upsert",
-          method: "POST",
-          data: { 'payments' : payments_filtred},
-          success: function (response) {
-            let allSuccess = true;
-            let allErrors = [];
-
-            for (let key in response) {
-                if (response.hasOwnProperty(key)) {
-                    let res = response[key];
-                    if (!res.success) {
-                        allSuccess = false;
-                    }
-                    if (res.errors && res.errors.length > 0) {
-                        allErrors.push(...res.errors);
-                    }
-                }
-            }
-
-            if (allSuccess) {
-              var encaissement = 0;
-              // Parcourez l'objet reponse
-              for (var key in response) {
-                if (response.hasOwnProperty(key)) {
-                  // Accédez à la valeur "value" de chaque objet
-                  var value = response[key].data.value;
-                  
-                  // Checker si c'est bien un chiffre
-                  if (!isNaN(parseFloat(value))) {
-                    encaissement += parseFloat(value);
-                  }
-                }
-              }  
-              // Récupére l'ID de la résa
-              let updatedData_encaissement = Object.keys(updatedData);
-              //Ajouter au tableau d'update l'encaissement total
-              updatedData[updatedData_encaissement[0]].encaissement = encaissement;
-
-              updateModal(updatedData);
-
-              closeModalById('addEventModal');
-              if (calendar) {
-                calendar.refetchEvents();
-              }
-              showBanner("Evènment mise à jour avec succès !", true);
-            } else {
-                showBanner("Echec de la mise à jour des paiements !", false);
-                console.log('Erreurs: ', allErrors);
-            }
-          },
-          error: function (jqXHR, textStatus, errorThrown) {
-            
-            // En cas d'échec de la requête AJAX
-            showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
-            console.error("AJAX Error:", errorThrown); // Log the error for debugging
-          },
-        });
+        let payments_filtered  = payments.filter(item => item !== undefined);
+        if (payments_filtered.length > 0) {
+          // Étape 2 : Mise à jour des paiements
+          updatePayments(payments_filtered, updatedData);
       } else {
-        showBanner("Echec de la mise à jour ! <br>" + response.message.Customer_id, false);
-        console.log('Customer ID: ',response.message.Customer_id);
+          // Aucun paiement à traiter, terminer ici
+          finalizeUpdate(updatedData);
       }
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      
-      // En cas d'échec de la requête AJAX
-      showBanner("Échec de la mise à jour ! Erreur : " + errorThrown, false);
-      console.error("AJAX Error:", errorThrown); // Log the error for debugging
-    },
+    } else {
+        // Gestion de l'échec de la mise à jour de la réservation
+        showBanner("Echec de la mise à jour ! <br>" + response.error, false);
+        loader.style.display = 'none';
+    }
   });
-  
+
 }
 
 // Fonction pour ajouter un événement
@@ -462,15 +405,17 @@ function addEvent() {
     { id: "ModaleventType_doc", key: "Type_doc" },
     { id: "ModaleventComment", key: "Comment" },
     { id: "ModaleventFee", key: "Fee" },
-    { id: "ModaleventStart", key: "start", isDate: true },
-    { id: "ModaleventEnd", key: "end", isDate: true }
+    { id: "ModaleventDatepicker", key: "start", isDate: true },
   ].forEach(({ id, key, isCheckbox, isDate }) => {
     let element = document.getElementById(id);
     if (isCheckbox) {
         eventData[key] = element.checked ? 1 : 0;
         eventElementDOM = element;
       } else if (isDate) {
-        eventData[key] = format_date_toSql(element.value);
+        var dates_spliting = element.value.split(" - ");
+        // Extraire les dates de début et de fin en tant que chaînes
+        eventData['start'] = format_date_toSql(dates_spliting[0]);
+        eventData['end'] = format_date_toSql(dates_spliting[1]);
       } else {
         eventData[key] = element.value;
       }
@@ -480,17 +425,13 @@ function addEvent() {
 
   if (eventData["start"] && eventData["end"]) {
     // Envoi de la requête AJAX
-    $.ajax({
-      url: baseurl + `booking/addBooking`, // URL du contrôleur
-      type: "POST", // Méthode HTTP
-      data: eventData, // Données à envoyer
-      success: function (response) {
-        try {
+
+    ajaxCall("booking/addBooking", "POST", eventData, function(response) {
           if (response.success === true) {
 
             let booking_id = response.id;
-            let ModaleventStart = document.getElementById("ModaleventStart").value;
-            let ModaleventEnd = document.getElementById("ModaleventEnd").value;
+            let ModaleventStart = response.data.start;
+            let ModaleventEnd =  response.data.end;
 
 
             // ADD PAYMENTS
@@ -632,30 +573,7 @@ function addEvent() {
           showBanner(errorMessages, false);
         }
         
-        } catch (e) {
-          console.error("Erreur dans l'ajout de la réservation:", e.message);
-          showBanner("Erreur dans l'ajout de la réservation:"+  e.message, false);
-        }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Gestion de l'erreur
-        let errorMessage = "Erreur lors de la requête. ";
-        if (jqXHR.status) {
-          errorMessage += "Statut : " + jqXHR.status + ". ";
-        }
-        if (textStatus) {
-          errorMessage += "Statut du texte : " + textStatus + ". ";
-        }
-        if (errorThrown) {
-          errorMessage += "Erreur jetée : " + errorThrown + ". ";
-        }
-        if (jqXHR.responseText) {
-          errorMessage += "Réponse du texte : " + jqXHR.responseText;
-        }
-        showBanner(errorMessage, false);
-        console.error("Error: ", jqXHR, textStatus, errorThrown);
-      },
-    });
+      });
   } else {
     showBanner("Le formulaire est incomplet", false);
   }

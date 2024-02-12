@@ -48,18 +48,18 @@ class CustomersController extends BaseController
     
         if ($customer_id) {
             $customer_info = $this->CustomerModel->get_customer_info($customer_id);
-    
+            $data = [   'Customer_id' => $customer_info['Customer_id'],
+                        'Name' => $customer_info['Name'],
+                        'Phone' => $customer_info['Phone'],
+                        'Email' => $customer_info['Email'],
+                        'Comment' => $customer_info['Comment']];
+
             return $this->response->setJSON([
-                'status' => 'success',
-                'id' => $customer_id,
-                'Customer_id' => $customer_info['Customer_id'],
-                'Name' => $customer_info['Name'],
-                'Phone' => $customer_info['Phone'],
-                'Email' => $customer_info['Email'],
-                'Comment' => $customer_info['Comment']
+                'success' => true,
+                'data' => $data
             ]);
         } else {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'Paramètre manquant']);
+            return $this->response->setJSON(['succes' => false, 'message' => 'Paramètre du client manquant']);
         }
     }
     

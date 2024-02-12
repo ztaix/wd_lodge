@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tailwindcss -i public/Assets/css/wd_style.css -o public/css/wd_composed_style.css --watch",
-    "build": "tailwindcss -i public/Assets/css/wd_style.css -o public/css/wd_composed_style.css",
+    "build": "tailwindcss -i public/Assets/css/wd_style.css -o public/css/wd_composed_style.css ; glup;",
     "build-js": "gulp"
   },
   "keywords": [],
@@ -18,6 +18,8 @@
   "dependencies": {
     "@easepick/core": "^1.2.1",
     "@easepick/range-plugin": "^1.2.1",
+    "@preline/input-number": "^2.0.2",
+    "@preline/select": "^2.0.2",
     "fullcalendar": "^6.1.9",
     "tw-elements": "^1.0.0"
   },

@@ -1,6 +1,7 @@
 
     <div id="footer" class="sticky bottom-0 left-0 w-full z-30 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-        <div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+        <div class="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
+
             <a href="<?= esc(base_url('/')) ?>" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
                 <svg class="w-10 h-10 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z" />
@@ -26,14 +27,54 @@
                 </svg>
                 <span class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Réglage</span>
             </a>
-
+            <!-- Nouvelle icône menu -->
+            <div class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group cursor-pointer" id="menuToggle">
+                <svg class="w-10 h-10 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </div>
         </div>
+        <!-- Sous-menu -->
+        <div id="mobileMenu" class="fixed top-0 right-0 h-full w-64 text-xl bg-white shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out dark:bg-gray-800">
+            <div class="p-5">
+                <a href="#" onclick="logout()" class="group inline-flex items-center p-2 text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg> 
+                   <span class="ml-2"> Déconnexion </span>
+                </a>
+            </div>
+        </div>
+
     </div>
 
-
 </div>
+
 <script>
 
+    // Mobile Menu Slider:
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        // Fonction pour fermer le menu mobile
+        function closeMobileMenu() {
+            mobileMenu.classList.add('translate-x-full'); // Changez cette classe selon la logique d'ouverture/fermeture de votre menu
+        }
+
+        // Écouteur d'événements pour le toggle du menu
+        menuToggle.addEventListener('click', function() {
+            // Cette logique bascule l'état du menu mobile. Ajustez selon votre implémentation.
+            mobileMenu.classList.toggle('translate-x-full');
+        });
+
+        // Écouteur d'événements pour les clics sur le document
+        document.addEventListener('click', function(e) {
+            // Vérifie si le clic n'était ni sur le toggle ni sur le menu lui-même
+            if (!menuToggle.contains(e.target) && !mobileMenu.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+    });
 
     // Footer active page:
     document.addEventListener("DOMContentLoaded", function() {
@@ -56,18 +97,59 @@
     // Liste des services
     let services_list = <?= json_encode($services_list); ?>;
 </script>
-<!--
+
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
+<script src="Assets/js/preline_select.js"></script>
+<script src="Assets/js/preline_inputnumber.js"></script>
 <script src="Assets/js/select2.min.js"></script>
 <script src="Assets/js/wd_function_toolbox.js"></script>
 <script src="Assets/js/wd_modal_system.js"></script>
 <script src="Assets/js/wd_html.js"></script>
 <script src="Assets/js/wd_fullcalendar.js"></script>
-<script src="Assets/js/wd_fullcalendar.min.js"></script>
-<script src="Assets/js/wd_sidetools.js"></script>-->
-<script src="Assets/js/all/all.min.js"></script>
+<script src="Assets/js/wd_sidetools.js"></script>
+<!--<script src="Assets/js/all/all.min.js"></script>-->
+<?php 
+/* CATCH ALL MODAL from folder Views/modal
+$modalDirectory = __DIR__ . '\modals'; // Chemin vers le dossier des modales
+$modalFiles = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($modalDirectory));
+$modalIds = [];
+
+foreach ($modalFiles as $modalFile) {
+    // Vérifie si le fichier est un fichier .php
+    if ($modalFile->isFile() && $modalFile->getExtension() === 'php') {
+        $modalIds[] = $modalFile->getBasename('.php'); // Ajoute le nom du fichier sans extension
+    }
+}
+
+$modalsListJSON = json_encode($modalIds); */?>
+
 <script>
+/* CATCH ALL MODAL from folder Views/modal
+const modalIds = <?php // $modalsListJSON?>;
+console.log('modalid',modalIds);
+document.addEventListener('DOMContentLoaded', function() {
+
+        // Fonction pour ajouter l'écouteur d'événements sur chaque modal
+        function setupModalCloseListener(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return; // Sortie anticipée si l'élément modal n'existe pas
+
+            // Écouteur d'événements pour détecter les clics à l'extérieur de la modal
+            document.addEventListener('click', function(event) {
+                // Vérifie si le clic était à l'extérieur de la modal et si la modal est visible
+                if (!modal.contains(event.target) && !modal.classList.contains('hidden')) {
+                    CloseModal();
+                }
+            });
+        }
+
+        // Applique l'écouteur d'événements sur toutes les modales
+        // Remplacez 'yourModalIdHere' par l'ID de vos modales
+        modalIds.forEach(setupModalCloseListener);
+    });
+*/
+
 // LOADER
 document.addEventListener('DOMContentLoaded', function() {
     var loader = document.querySelector('.loader');
@@ -99,6 +181,9 @@ if(!window.location.href.includes('Config')){
             // Créez l'option et ajoutez-la au select
             var newOption = new Option(response.Name, response.id, true, true);
             $('#ModaleventCustomer_id').append(newOption).trigger('change');
+            // Ensuite, pour s'assurer que la nouvelle option est sélectionnée
+            $("#ModaleventCustomer_id").val(response.id).trigger('change');
+            
         });
     }
 
