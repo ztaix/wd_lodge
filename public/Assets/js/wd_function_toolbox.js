@@ -27,52 +27,52 @@
 
   function ajaxCall(url, method, data, successCallback, errorCallback) {
     return new Promise((resolve, reject) => {
-      var token = localStorage.getItem('token');
-      if (!window.location.pathname.endsWith('auth') && !token) {
-        alert("Vous devez être connecté pour accéder à cette ressource.");
-        // Redirigez vers la page de connexion après un court délai
-        console.error("Token JWT non trouvé dans le localStorage.");
-        if (typeof errorCallback === 'function') errorCallback("Token JWT non trouvé dans le localStorage.");
-        reject("Token JWT non trouvé dans le localStorage.");
-        return;
-      }
-      
-      var processData = true, contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
-      
-      $.ajax({
-          url: baseurl + url,
-          type: method,
-          data: data,
-          processData: processData,
-          contentType: contentType,
-          headers: {
-              'Authorization': 'Bearer ' + token
-          },
-          success: function(response) {
-              if (typeof successCallback === 'function') successCallback(response);
-              resolve(response);
-          },
-          error: function(xhr, status, error) {
-            console.log('error Ajax');
-            if (xhr.status === 401) { // Unauthorized
-                var currentPage = window.location.pathname;
-                var loginPage = baseurl + '/auth'; // Assurez-vous que cette URL est correcte
+        var token = localStorage.getItem('token');
+        
+        var processData = true, contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
+        
+        $.ajax({
+            url: baseurl + url,
+            type: method,
+            data: data,
+            processData: processData,
+            contentType: contentType,
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function(response) {
+                if (typeof successCallback === 'function') successCallback(response);
+                resolve(response);
                 
-                // Vérifiez si l'utilisateur n'est pas déjà sur la page de connexion
-                if (!currentPage.endsWith(loginPage)) {
-                    alert("Vous devez être connecté pour accéder à cette ressource.");
-                    // Redirigez vers la page de connexion après un court délai
-                     window.location.href = loginPage;
+            },
+            error: function(xhr, status, error) {
+                if (xhr.status === 401) { // NON AUTHORISé
+                  if(xhr.responseJSON.reason == 'form-error'){
                     
+                    return showBanner(xhr.responseJSON.message, false);
+                    
+                  }else{
+                    var currentPage = window.location.pathname;
+                    var loginPath = 'auth';
+                    showBanner('Session expirée ou invalide, veuillez vous reconnecter',false);
+                    if (currentPage !== loginPath) {
+                      setTimeout(() => { window.location.href = baseurl + loginPath; }, 2000);
+                    }
+                  }
+                  } else {
+   
+                    if (typeof errorCallback === 'function') errorCallback(xhr, status, error);
+                    else {
+                        // Si aucun errorCallback n'est fourni, affichez le message d'erreur par défaut
+                        var errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "Erreur lors de la requête AJAX : " + error;
+                        showBanner(errorMessage,false); // Utilisez cette fonction pour afficher les erreurs
+                    }
+                    reject({xhr: xhr, status: status, error: error});
                 }
-            } else {
-                console.error("Erreur lors de la requête AJAX :", status, error);
             }
-            if (typeof errorCallback === 'function') errorCallback(xhr, status, error);
-          }
-      });
+        });
     });
-  }
+}
   
 
   //OBJET manipulation

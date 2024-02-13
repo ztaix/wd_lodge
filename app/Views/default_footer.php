@@ -41,6 +41,9 @@
                     </svg> 
                    <span class="ml-2"> Déconnexion </span>
                 </a>
+                <a id="footer_ttl" href="#" class="group inline-flex items-center p-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-500"> >
+                    Token non valide
+                </a>
             </div>
         </div>
 
@@ -53,6 +56,7 @@
     // Mobile Menu Slider:
 
     document.addEventListener('DOMContentLoaded', function () {
+
         const menuToggle = document.getElementById('menuToggle');
         const mobileMenu = document.getElementById('mobileMenu');
 
@@ -74,6 +78,38 @@
                 closeMobileMenu();
             }
         });
+
+        function startTokenCountdown() {
+            let a_ttl = document.getElementById('footer_ttl');
+            if(localStorage.getItem('token')){
+                let ttl = parseInt(localStorage.getItem('tokenTimeLeft'), 10); // Assurez-vous de convertir en nombre
+
+
+                // Fonction pour mettre à jour le TTL chaque seconde
+                const updateCountdown = () => {
+                    if(ttl <= 0) {
+                        clearInterval(interval); // Arrête le compte à rebours lorsque TTL atteint 0
+                        a_ttl.textContent = 'Session expirée';
+                        // Vous pourriez également vouloir rediriger l'utilisateur vers la page de connexion ici
+                        return;
+                    }
+
+                    // Met à jour l'affichage et décrémente TTL
+                    a_ttl.textContent = `Temps restant : ${ttl} secondes`;
+                    ttl--;
+                };
+
+                // Exécute `updateCountdown` une fois immédiatement puis toutes les secondes
+                updateCountdown();
+                const interval = setInterval(updateCountdown, 1000);
+            }else{
+                a_ttl.textContent = '';
+            }
+        }
+
+      // Démarrer le compte à rebours lors du chargement de la page ou après la mise à jour du token
+      startTokenCountdown();
+
     });
 
     // Footer active page:
@@ -109,46 +145,9 @@
 <script src="Assets/js/wd_fullcalendar.js"></script>
 <script src="Assets/js/wd_sidetools.js"></script>
 <!--<script src="Assets/js/all/all.min.js"></script>-->
-<?php 
-/* CATCH ALL MODAL from folder Views/modal
-$modalDirectory = __DIR__ . '\modals'; // Chemin vers le dossier des modales
-$modalFiles = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($modalDirectory));
-$modalIds = [];
-
-foreach ($modalFiles as $modalFile) {
-    // Vérifie si le fichier est un fichier .php
-    if ($modalFile->isFile() && $modalFile->getExtension() === 'php') {
-        $modalIds[] = $modalFile->getBasename('.php'); // Ajoute le nom du fichier sans extension
-    }
-}
-
-$modalsListJSON = json_encode($modalIds); */?>
 
 <script>
-/* CATCH ALL MODAL from folder Views/modal
-const modalIds = <?php // $modalsListJSON?>;
-console.log('modalid',modalIds);
-document.addEventListener('DOMContentLoaded', function() {
 
-        // Fonction pour ajouter l'écouteur d'événements sur chaque modal
-        function setupModalCloseListener(modalId) {
-            const modal = document.getElementById(modalId);
-            if (!modal) return; // Sortie anticipée si l'élément modal n'existe pas
-
-            // Écouteur d'événements pour détecter les clics à l'extérieur de la modal
-            document.addEventListener('click', function(event) {
-                // Vérifie si le clic était à l'extérieur de la modal et si la modal est visible
-                if (!modal.contains(event.target) && !modal.classList.contains('hidden')) {
-                    CloseModal();
-                }
-            });
-        }
-
-        // Applique l'écouteur d'événements sur toutes les modales
-        // Remplacez 'yourModalIdHere' par l'ID de vos modales
-        modalIds.forEach(setupModalCloseListener);
-    });
-*/
 
 // LOADER
 document.addEventListener('DOMContentLoaded', function() {
@@ -209,17 +208,6 @@ if(!window.location.href.includes('Config')){
 
     if (isBottomReached) {
         let distanceScrolledAfterBottom = startY - moveY;
-        /*if (distanceScrolledAfterBottom > threshold-300) {
-        // L'utilisateur a continué à défiler de plus de 200px après avoir atteint le bas.
-        let stack = modalStack[modalStack.length-1].id;
-        let modal_body = document.getElementById('body_'+stack);
-        modal_body.classList.remove('flex', 'justify-center');
-        let height = document.getElementById('body_'+stack).style.height = 100-distanceScrolledAfterBottom +'%';
-        //height = 100 +'px;';
-        console.log('modal_body.style.height',distanceScrolledAfterBottom);
-        document.addEventListener('touchend', handleRelease);
-        document.addEventListener('mouseup', handleRelease);
-    }*/
 
         if (distanceScrolledAfterBottom > threshold) {
         // L'utilisateur a continué à défiler de plus de 200px après avoir atteint le bas.

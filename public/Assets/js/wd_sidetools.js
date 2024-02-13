@@ -18,17 +18,15 @@ document.addEventListener("keydown", function (event) {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
+  
   // Vérifie si l'utilisateur est sur la page de connexion
   var onLoginPage = window.location.pathname.endsWith('/auth') || window.location.href.includes('/auth');
   var token = localStorage.getItem('token');
 
-    // Si l'utilisateur est sur la page de connexion et qu'un token est trouvé
-    if (onLoginPage && token) {
-      // Rediriger vers la page d'accueil
-      window.location.href = baseurl;
-      return; // Stopper l'exécution supplémentaire du script
-  }
-
+  // Stocker l'URL courante comme la dernière page visitée avant de quitter la page
+  window.addEventListener('beforeunload', () => {
+    localStorage.setItem('lastPage', window.location.href);
+  });
     // Si l'utilisateur n'est pas sur la page de connexion et qu'aucun token n'est trouvé
     if (!onLoginPage && !token) {
       // Rediriger vers la page de connexion
@@ -39,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Code spécifique pour la page de connexion
   if (onLoginPage) {
       var loginForm = document.getElementById('loginForm');
+      
       if (loginForm) {
           loginForm.addEventListener('submit', function(e) {
               e.preventDefault(); // Empêche la soumission classique du formulaire
@@ -51,20 +50,22 @@ document.addEventListener("DOMContentLoaded", function() {
               });
 
               // Appel de la fonction ajaxCall pour se connecter
-              console.log('formDataObj',formDataObj);
               ajaxCall('auth/verif', 'POST', formDataObj, function(response) {
                   // Parsez la réponse JSON reçue
                   if (response.jwt) {
                       // Stockez le JWT dans le localStorage ou les cookies
                       localStorage.setItem('token', response.jwt);
-
                       // Redirigez l'utilisateur vers la page d'accueil ou le tableau de bord
-                      window.location.href = baseurl;
+                      showBanner('Connexion réussi',true);
+                      setTimeout(() => { window.location.href = baseurl; }, 1500);
+
                   } else {
                       // Gérez les erreurs, par exemple en affichant un message à l'utilisateur
                       alert(response.error ? response.error : 'Échec de la connexion');
                   }
+                  
               }, function(xhr, status, error) {
+               
                 if (typeof errorCallback === 'function') {
                   errorCallback(xhr, status, error ? error : "Erreur inconnue");
                 } else {
@@ -76,16 +77,42 @@ document.addEventListener("DOMContentLoaded", function() {
           });
       }
   }
+  else{
+      // Utilisez ajaxCall ou une autre fonction AJAX pour faire la requête
+      ajaxCall('auth/verifyToken', 'GET', null, function(response) {
+        console.log('response',response);
+        if(response.success){
+          localStorage.setItem('tokenTimeLeft',response.timeLeft);
+          //TTL Token
+        
+        }
+        else{
+          showBanner(response.message,false);
+        }
+          // Traiter la réponse positive (le token est valide)
+        }, function(xhr, status, error) {;
+
+          console.error('Token invalide ou erreur lors de la vérification:', error);
+          // Traiter la réponse négative (le token est invalide ou autre erreur)
+      });
+  
+  }
 });
 
   
 function logout() {
   // Supprimer le token du localStorage
   localStorage.removeItem('token');
-
-  // Rediriger l'utilisateur vers la page de connexion
-  // Adaptez '/login' à l'URL de votre page de connexion si nécessaire
-  window.location.href = baseurl + 'auth';
+  document.getElementById('footer_ttl').remove();
+    // Faites un appel AJAX pour informer le serveur de supprimer le cookie
+    ajaxCall('auth/logout', 'GET', null, function(response) {
+      console.log(response.message);
+      // Redirigez l'utilisateur vers la page de login ou la page d'accueil après la déconnexion
+      window.location.href = baseurl + '/auth';
+  }, function(xhr, status, error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      // Traitez l'erreur éventuelle ici
+  });
 }
 
 
@@ -320,8 +347,7 @@ function ShowCreateCustomer(customerName ="" , callback) {
   document.getElementById("customer_phone").value = "";
   document.getElementById("customer_email").value = "";
   document.getElementById("customer_comment").value = "";
-  
-  
+
   openModal("updateCustomerModal");
   // Modifie l'action du bouton de soumission pour appeler CreateCustomer avec un callback
   document.getElementById("customer_name").focus(); // Préremplit le nom du client

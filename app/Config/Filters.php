@@ -35,10 +35,10 @@ class Filters extends BaseConfig
      * @phpstan-var array<string, list<string>>|array<string, array<string, array<string, string>>>
      */
     public array $globals = [
-        'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
+        'jwtAuth' => [
+            'before' => [
+                'except' => ['auth*', '/'], // Exclut la route 'auth' et la page d'accueil
+            ]
         ],
         'after' => [
             'toolbar',
