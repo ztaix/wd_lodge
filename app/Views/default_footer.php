@@ -79,37 +79,6 @@
             }
         });
 
-        function startTokenCountdown() {
-            let a_ttl = document.getElementById('footer_ttl');
-            if(localStorage.getItem('token')){
-                let ttl = parseInt(localStorage.getItem('tokenTimeLeft'), 10); // Assurez-vous de convertir en nombre
-
-
-                // Fonction pour mettre à jour le TTL chaque seconde
-                const updateCountdown = () => {
-                    if(ttl <= 0) {
-                        clearInterval(interval); // Arrête le compte à rebours lorsque TTL atteint 0
-                        a_ttl.textContent = 'Session expirée';
-                        // Vous pourriez également vouloir rediriger l'utilisateur vers la page de connexion ici
-                        return;
-                    }
-
-                    // Met à jour l'affichage et décrémente TTL
-                    a_ttl.textContent = `Temps restant : ${ttl} secondes`;
-                    ttl--;
-                };
-
-                // Exécute `updateCountdown` une fois immédiatement puis toutes les secondes
-                updateCountdown();
-                const interval = setInterval(updateCountdown, 1000);
-            }else{
-                a_ttl.textContent = '';
-            }
-        }
-
-      // Démarrer le compte à rebours lors du chargement de la page ou après la mise à jour du token
-      startTokenCountdown();
-
     });
 
     // Footer active page:
@@ -187,8 +156,11 @@ if(!window.location.href.includes('Config')){
     }
 
 });
-
+}
+/*
     //SCROLL MAX BOTTOM
+    // N'est pas assez performant pour améliorer l'U.EX
+
     let startY;
     let isBottomReached = false;
     let threshold = 300; // Distance en pixels pour déclencher l'action après avoir atteint le bas
@@ -233,8 +205,7 @@ if(!window.location.href.includes('Config')){
         if (isBottomReached) {
             // Effectuez des actions spécifiques après le relâchement si le bas a été atteint
         }
-    }
-} 
+    } */
 </script>
 </body>
 

@@ -37,7 +37,7 @@ class Filters extends BaseConfig
     public array $globals = [
         'jwtAuth' => [
             'before' => [
-                'except' => ['auth*', '/'], // Exclut la route 'auth' et la page d'accueil
+                'except' => ['auth*', '/','upload*'], // Exclut la route 'auth' et la page d'accueil
             ]
         ],
         'after' => [

@@ -15,7 +15,7 @@ $modal_id = "updateCustomerModal";
                 <div class="px-4">
 
                     <form id="customerForm" class="space-y-6" method="post">
-                        <input type="hidden" id="customer_id" name="customer_id">
+                        <input type="hidden" id="customer_id" name="Customer_id">
                         
                         
                         <div class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700" data-hs-input-number>

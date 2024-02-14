@@ -11,6 +11,8 @@ let send_ico = `<svg class="w-4 h-4 mr-2 text-slate-400 dark:text-white" aria-hi
 let download_ico = `<svg class="w-4 h-4 mr-2 text-slate-400 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 19">
 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15h.01M4 12H2a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-3M9.5 1v10.93m4-3.93-4 4-4-4"/>
 </svg>`;
+
+//Ferme dernière modal sur l'appui du ESC
 document.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
     closeModal(); // ferme la dernière fenêtre modale ouverte
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       if (loginForm) {
           loginForm.addEventListener('submit', function(e) {
-              e.preventDefault(); // Empêche la soumission classique du formulaire
+              e.preventDefault();
 
               // Création d'un objet JavaScript à partir des données du formulaire
               var formDataObj = {};
@@ -78,24 +80,30 @@ document.addEventListener("DOMContentLoaded", function() {
       }
   }
   else{
-      // Utilisez ajaxCall ou une autre fonction AJAX pour faire la requête
-      ajaxCall('auth/verifyToken', 'GET', null, function(response) {
-        console.log('response',response);
-        if(response.success){
-          localStorage.setItem('tokenTimeLeft',response.timeLeft);
-          //TTL Token
-        
-        }
-        else{
-          showBanner(response.message,false);
-        }
-          // Traiter la réponse positive (le token est valide)
-        }, function(xhr, status, error) {;
+    let extend ='';
+    document.getElementById('footer_ttl').addEventListener('click', function(e) {
+      e.preventDefault();
+      extend = "?extend=true";
+  });
+    ajaxCall('auth/verifyToken'+extend, 'GET', null, function(response) {
+      console.log('response',response);
+      if(response.success){
+        localStorage.setItem('timeLeft',response.timeLeft);
+        //TTL Token
 
-          console.error('Token invalide ou erreur lors de la vérification:', error);
-          // Traiter la réponse négative (le token est invalide ou autre erreur)
-      });
-  
+        // Démarrer le compte à rebours lors du chargement de la page ou après la mise à jour du token
+        startTokenCountdown();
+      }
+      else{
+        showBanner(response.message,false);
+      }
+        // Traiter la réponse positive (le token est valide)
+      }, function(xhr, status, error) {
+
+        console.error('Token invalide ou erreur lors de la vérification:', error);
+        // Traiter la réponse négative (le token est invalide ou autre erreur)
+    });
+
   }
 });
 
@@ -103,7 +111,6 @@ document.addEventListener("DOMContentLoaded", function() {
 function logout() {
   // Supprimer le token du localStorage
   localStorage.removeItem('token');
-  document.getElementById('footer_ttl').remove();
     // Faites un appel AJAX pour informer le serveur de supprimer le cookie
     ajaxCall('auth/logout', 'GET', null, function(response) {
       console.log(response.message);

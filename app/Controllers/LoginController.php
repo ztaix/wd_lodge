@@ -20,8 +20,9 @@ class LoginController extends BaseController
         $this->ServiceModel = new \App\Models\ServiceModel();
     }
 
-    public function verifyToken($extend = false)
+    public function verifyToken()
     {
+        $extend = $this->request->getGet('extend');
         $token = null;
 
         // Tentez d'obtenir le token du header 'Authorization' (typiquement pour le localStorage)
@@ -44,22 +45,22 @@ class LoginController extends BaseController
         try {
             // Vérifiez le token
             $decoded = JWT::decode($token, new Key($this->key, 'HS256'));
-            if ($extend) {
+            if (isset($extend) && !empty($extend)) {
                 $decoded_array = (array) $decoded;
-                $newExpTime = time() + (60 * 60); // Ajoute 1 heure au champ 'exp'
+                $newExpTime = time() + (12 * 60 * 60); // Ajoute 12 heure au champ 'exp'
                 $decoded_array['exp'] = $newExpTime; // Mise à jour du champ 'exp'
                 $renewedToken = JWT::encode($decoded_array, $this->key, 'HS256');
             
                 // Pour un cookie HTTP-only expirant dans 1 heure
-                setcookie('token', $renewedToken, $newExpTime, "/", "", false, true);
+                setcookie('token', $renewedToken, $newExpTime);
             
                 // Calcul de la durée restante avant l'expiration du nouveau token
                 $timeLeft = $newExpTime - time(); // Durée restante en secondes pour le nouveau token
-            
+                
                 // Renvoyer le nouveau token dans la réponse, avec le temps restant
                 return $this->response
                     ->setStatusCode(ResponseInterface::HTTP_OK)
-                    ->setJSON(['success' => true, 'token' => $renewedToken, 'timeLeft' => $timeLeft]);
+                    ->setJSON(['success' => true, 'token' => $renewedToken,'message'=>'Session étendu avec succés + 12h00', 'timeLeft' => $timeLeft]);
             } else {
                 // Si le token n'est pas étendu, calculez simplement la durée restante du token actuel
                 $now = time(); // Timestamp actuel
@@ -94,6 +95,7 @@ class LoginController extends BaseController
 
         $userModel = new \App\Models\UserModel();
         $user = $userModel->where('email', $email)->first();
+        $expTime = (60*60* 12); //12h
 
         if ($user && hash('sha256', $password) === $user['password']) {
             // Les identifiants sont corrects, générons le JWT
@@ -103,7 +105,7 @@ class LoginController extends BaseController
                 "iss" => "https://wayz.digital", // L'émetteur du token
                 "aud" => "USER_wayz.digital",    // L'audience du token
                 "iat" => time(),                     // Timestamp de l'émission
-                "exp" => time() + 50,              // Expiration du token (1 heure ici)
+                "exp" => time() + $expTime,              // Expiration du token (xx heure)
                 "sub" => $user['id'],                // Sujet du token (id de l'utilisateur)
             ];
 
@@ -111,7 +113,7 @@ class LoginController extends BaseController
 
             // Maintenant, $jwt contient votre token JWT généré
             $response = service('response');
-            $response->setCookie('token', $jwt, 50); // Définit un cookie valide pour 1 heure
+            $response->setCookie('token', $jwt, $expTime); // Définit un cookie valide pour xx heure
             $logData = ['jwt' => $jwt];
             return $this->response->setJSON($logData);
             

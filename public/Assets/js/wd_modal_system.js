@@ -289,7 +289,8 @@ function handleAddEventClick(date =false, service_id = false) {
     document.getElementById("customer_email").value = customer.email;
     document.getElementById("customer_comment").value = customer.comment;
     let button_update = document.getElementById("update_customer_submit_form");
-    button_update.onclick = function () { updateCustomerinfo(customer) };
+
+    button_update.onclick = function () { updateCustomerinfo() };
   }
 
   function getCustomerFormData() {

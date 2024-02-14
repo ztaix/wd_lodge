@@ -429,19 +429,24 @@ function setupButtonAction(callback) {
     let isUpdate = document.getElementById("customer_id").value !== "";
     
     if (isUpdate) {
-      updateCustomerInfo(); // Supposons que cette fonction fait maintenant le travail de mise à jour
+      updateCustomerInfo(callback); 
     } else {
-
-
         CreateCustomer(callback);
-
-      
       // Appeler 'CreateCustomer' avec le 'callback' défini.
     }
   };
 }
-function updateCustomerinfo (data){
-    ajaxCall("customer/update", "POST", { customer_info: data }, function(response) {
+function updateCustomerinfo (data = null){
+  var formElement = document.getElementById('customerForm'); // Sélectionne le formulaire par son ID
+  var formData = new FormData(formElement);
+  var object = {};
+  formData.forEach(function(value, key) {
+      object[key] = value;
+  });
+
+
+  data = object;
+  ajaxCall("customer/update", "POST", data, function(response) {
         if (response.success === true) {
             // Traiter la réponse en cas de succès
           var newCustomerId = response.id;
@@ -471,3 +476,38 @@ function updateCustomerinfo (data){
     });
 }
 // Appeler setupButtonAction après avoir configuré votre page ou modale pour s'assurer que le bouton a le bon gestionnaire d'événements.
+
+//Start FOOTER_TTL, compte à rebourd pour le temps restant de session.
+let countdownInterval; // Déclarez une variable globale pour stocker l'intervalle
+
+function startTokenCountdown() {
+  let a_ttl = document.getElementById('footer_ttl');
+  if(localStorage.getItem('token')){
+      let ttl = parseInt(localStorage.getItem('timeLeft'), 10); // Assurez-vous de convertir en nombre
+
+      // Arrêtez l'intervalle existant s'il y en a un
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+
+      // Fonction pour mettre à jour le TTL chaque seconde
+      const updateCountdown = () => {
+          if(ttl <= 0) {
+              clearInterval(countdownInterval); // Arrête le compte à rebours lorsque TTL atteint 0
+              a_ttl.textContent = 'Session expirée';
+              // Vous pourriez également vouloir rediriger l'utilisateur vers la page de connexion ici
+              return;
+          }
+
+          // Met à jour l'affichage et décrémente TTL
+          a_ttl.textContent = `Temps restant : ${ttl} secondes`;
+          ttl--;
+      };
+
+      // Exécute `updateCountdown` une fois immédiatement puis toutes les secondes
+      updateCountdown();
+      countdownInterval = setInterval(updateCountdown, 1000); // Stockez l'intervalle dans la variable globale
+  } else {
+      a_ttl.textContent = '';
+  }
+}

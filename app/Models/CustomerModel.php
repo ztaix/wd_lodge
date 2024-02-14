@@ -123,7 +123,7 @@ class CustomerModel extends Model
 
     public function update_customer($id, $modify = null, $delete = null)
     {
-        if ($modify && is_array($modify) && isset($modify['Customer_id']) and $delete == false) {
+        if ($modify && is_array($modify) and $delete == false) {
             $this->update($id, $modify);
             return true;
         } elseif ($modify) {

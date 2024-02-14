@@ -96,27 +96,26 @@ class CustomersController extends BaseController
 
     public function update_customerFromID()
     {
-        $customer_info = $this->request->getPost('customer_info'); 
-    
-        if ($customer_info && isset($customer_info['Customer_id'])) {
-            $id = $customer_info['Customer_id'];
-    
+        $customer_info = $this->request->getPost();
+
+        if (isset($customer_info['Customer_id']) && !empty($customer_info['Customer_id'])) {
+            $id = $customer_info['Customer_id']; 
+
             try {
                 // Si delete est true, on passe NULL comme deuxième argument pour indiquer la suppression
                 $delete = (isset($customer_info['delete']) && $customer_info['delete'] == 'true') ? true : false;
-                
+
                 // Tentative de mise à jour ou de suppression
                 $updated = $this->CustomerModel->update_customer($id, $delete ? null : $customer_info, $delete);
                 
                 if ($updated === false) {
                     // Utilisez la méthode errors() pour obtenir les messages d'erreur
-                    $errors = $this->errors();
                     $message = 'Erreur dans la mise à jour de l\'utilisateur avec l\'ID: '. $id ;
-                    log_message('error', 'Erreur de mise à jour: ' . json_encode($errors));
-                    return $this->response->setJSON(['success' => false, 'error' => $message,  'errors' => $errors]);
+                    log_message('error', 'Erreur de mise à jour:'.$id);
+                    return $this->response->setJSON(['success' => false, 'error' => $message, 'customer_info' => $customer_info ]);
                 }
                 $message = $delete ? 'Suppression du client avec l\'ID: '.$id : 'Mise à jours du client avec l\'ID: '. $id;
-                return $this->response->setJSON(['success' => true, 'error' => $message, 'id' => $customer_info['Customer_id']]);
+                return $this->response->setJSON(['success' => true, 'message' => $message]);
                 
             } catch (\Exception $e) {
                 log_message('error', "Exception lors de la mise à jour: Message: " . $e->getMessage() .
@@ -130,7 +129,8 @@ class CustomersController extends BaseController
             }
         } else {
             $message = 'Aucune informations reçu par le serveur, paramètre du client manquant ou incorrect.';
-            return $this->response->setJSON(['success' => false, 'error' => $message]);
+
+            return $this->response->setJSON(['success' => false, 'error' => $message , 'customer_info' => $customer_info]);
         }
     }
     

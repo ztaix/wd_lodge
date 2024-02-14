@@ -52,6 +52,7 @@
                     return showBanner(xhr.responseJSON.message, false);
                     
                   }else{
+                    console.log('xhr.responseJSON',xhr.responseJSON);
                     var currentPage = window.location.pathname;
                     var loginPath = 'auth';
                     showBanner('Session expirée ou invalide, veuillez vous reconnecter',false);
