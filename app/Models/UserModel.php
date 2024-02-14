@@ -4,7 +4,7 @@ use CodeIgniter\Model;
 
 class UserModel extends Model
 {
-    protected $table = 'wp_users'; // Nom de votre table
+    protected $table = 'wd_users'; // Nom de votre table
     protected $primaryKey = 'id'; // Clé primaire
 
     protected $useAutoIncrement = true; // Utiliser l'auto-incrémentation pour l'ID
