@@ -21,6 +21,8 @@ $routes->get('Customers', 'MainController::Customers');
 
 $routes->get('generatePDF/(:any)/(:num)', 'BookingController::generatePDF/$1/$2');
 $routes->get('sendmail/(:num)', 'BookingController::Sendmail/$1');
+$routes->get('uploads/(:any)', 'FilesController::passthrough/$1');
+
 // Appliquer le filtre jwtAuth à toutes les autres routes nécessitant une authentification
 $routes->group('', ['filter' => 'jwtAuth'], function($routes) {
 
@@ -74,7 +76,6 @@ $routes->group('', ['filter' => 'jwtAuth'], function($routes) {
     });
 
     $routes->get('file/(:any)', 'FilesController::getFilePath/$1');
-    $routes->get('uploads/(:any)', 'FilesController::passthrough/$1');
     
     $routes->post('Config/save', 'ConfigurationController::saveConfigurations');
 });
