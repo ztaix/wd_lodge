@@ -849,7 +849,7 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
             LockPlugin: {
               minDate: new Date(), // Les réservations ne peuvent pas être faites dans le passé.
               minDays: 1, // Nombre minimum de jours pouvant être sélectionnés.
-              inseparable: true, // Les jours sélectionnés doivent former une plage continue.
+              inseparable: false, // Les jours sélectionnés doivent former une plage continue.
               filter(date, picked) {
                 //TRAVAIL de selection à faire car pour éviter la surréservation
                 return bookedDatesFormatted.includes(date.format("DD-MM-YYYY"));

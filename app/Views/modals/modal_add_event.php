@@ -52,8 +52,8 @@ $modal_id = "addEventModal";
 
                 </div>
                 <script>
-                function updateToggleLabel() {
-                const isChecked = document.getElementById('ModaleventType_doc').checked;
+                function updateToggleLabel(value=null) {
+                const isChecked =  document.getElementById('ModaleventType_doc').checked;
                 document.getElementById('ModaleventType_doc').value = isChecked ? 'Facture' : 'Devis';
                 document.getElementById('ModaleventType_doc_bgtoggleDot').classList.add(!isChecked ? 'bg-white' : 'bg-blue-400');
                 document.getElementById('ModaleventType_doc_bgtoggleDot').classList.remove(isChecked ? 'bg-white' : 'bg-blue-400');

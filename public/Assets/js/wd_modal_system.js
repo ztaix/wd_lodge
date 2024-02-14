@@ -65,6 +65,8 @@ async function resetForm(modalId, start = false , end = false, service_id = fals
     form_addEventModal.forEach(input => {
       if(input == "ModaleventType_doc"){
         document.getElementById(input).value = 'Devis';
+        document.getElementById(input).checked = false;
+        
       }
       else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" ){
         document.getElementById(input).value = 1;

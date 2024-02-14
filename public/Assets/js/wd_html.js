@@ -338,9 +338,6 @@ console.log('update_add_formEvent : data',data);
 }
 
   if (data) {
-    console.log('update_add_formEvent : data.Service_id',data.Service_id);
-    console.log('update_add_formEvent : data.start',data.start);
-    console.log('update_add_formEvent : data.end',data.end);
 
     await loadAndInitDatepicker(data.Service_id, data.start, data.end);
 
@@ -355,6 +352,7 @@ console.log('update_add_formEvent : data',data);
     document.getElementById("ModaleventQt").value = data.Qt;
     document.getElementById("ModaleventPrice").value = data.Price;
     document.getElementById("ModaleventType_doc").value = data.Type_doc;
+    document.getElementById("ModaleventType_doc").checked = data.Type_doc == 'Facture' ? true: false;
     document.getElementById("ModaleventComment").value = data.Comment;
 
     // APPEL des functions de mise à jours du prix total ET des informations
