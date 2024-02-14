@@ -116,7 +116,7 @@ function logout() {
     ajaxCall('auth/logout', 'GET', null, function(response) {
       console.log(response.message);
       // Redirigez l'utilisateur vers la page de login ou la page d'accueil après la déconnexion
-      window.location.href = baseurl + '/auth';
+      window.location.href = baseurl + 'auth';
   }, function(xhr, status, error) {
       console.error('Erreur lors de la déconnexion:', error);
       // Traitez l'erreur éventuelle ici

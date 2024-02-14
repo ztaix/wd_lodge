@@ -40,7 +40,7 @@ class JWTAuthFilter implements FilterInterface
         } catch (Exception $e) {
             return Services::response()
                 ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED)
-                ->setJSON(['message' => 'Token invalide ou absent', 'redirect' => '/auth']);
+                ->setJSON(['message' => 'Token invalide ou absent', 'redirect' => 'auth']);
         }
     }
 
