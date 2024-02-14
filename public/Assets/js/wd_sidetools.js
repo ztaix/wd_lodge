@@ -46,7 +46,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
               // Création d'un objet JavaScript à partir des données du formulaire
               var formDataObj = {};
-              var formData = new FormData(this);
+              var loginForm = document.getElementById('loginForm');
+              var formData = new FormData(loginForm);
               formData.forEach(function(value, key) {
                   formDataObj[key] = value;
               });
