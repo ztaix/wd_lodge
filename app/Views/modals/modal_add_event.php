@@ -4,7 +4,7 @@ $modal_id = "addEventModal";
 <div id="<?= $modal_id ?>-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('<?= $modal_id ?>')"></div>
 
 <!-- ADD EVENTS - Modal Container -->
-<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-scroll-y bg-white border border-gray-200 dark:bg-slate-800 dark:border-gray-800" >
+<div id="<?= $modal_id ?>" tabindex="-1" aria-hidden="true" class="fixed min-w-fit max-w-md lg:max-w-lg flex flex-grow hidden top-0 overflow-scroll-y bg-white border border-gray-200 dark:bg-slate-800 dark:border-gray-800" >
     <div class="relative  mx-auto">
 
         <!-- Modal Header -->
