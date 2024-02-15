@@ -888,7 +888,7 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
               // Ajouter le type de document à l'élément du jour
               fromServicepicker.on("view", (evt) => {
                 let { view, date, target } = evt.detail;
-                let formattedDate = date ? date.format("DD-MM-YYYY") : null;
+                let formattedDate = date ? date.format("YYYY-MM-DD") : null;
                 
                 if (view === "CalendarDay" && daytoShow[formattedDate]) {
                   let span1;
@@ -939,6 +939,7 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
                       alert('existingSpan FirstDay && LastDay');
                     }
                   }
+                  
                 }
               });
 
