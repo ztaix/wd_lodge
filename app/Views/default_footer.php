@@ -102,7 +102,7 @@
     // Liste des services
     let services_list = <?= json_encode($services_list); ?>;
 </script>
-<?php if(env('CI_ENVIRONMENT') == 'development' ){?>
+<?php if(env('CI_ENVIRONMENT') == 'development'  || ENVIRONMENT == 'development' ){?>
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
 <script src="Assets/js/preline_select.js"></script>
