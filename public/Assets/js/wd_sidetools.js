@@ -195,7 +195,7 @@ response.sort((a, b) => {
     let bookingElement = `
         <div id="booking_list_row_${booking.id}" class="group flex flex-col px-4 rounded-t-lg text-slate-700 dark:text-white hover:bg-white-50 dark:hover:bg-black-50 border-b-2 hover:rounded-none border-slate-300 dark:border-slate-700" >
           <!-- Colonne 1 -->
-          ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark:text-red-700  top-2 px-2 mx-auto capitalize">Privatisé</span>':''}
+          ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark:text-red-700 px-2 mx-auto capitalize">Privatisé</span>':''}
 
           <div class="w-full flex-col group ${booking.fullblocked == 1 ? 'p-1 border-t-2 border-red-400 dark:border-red-700 rounded-lg':''}">
             
@@ -825,7 +825,7 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
           // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
           fromServicepicker = new easepick.create({
             element: document.getElementById("ModaleventDatepicker"),
-            css: ["css/wd_datepicker.css"],
+            //css: ["Assets/css/wd_datepicker.css"],
             firstDay: 1, // 0 - Sunday, 1 - Monday, 2 - Tuesday
             grid: 1, // Number of calendar columns
             calendars: 1, // Number of visible months.

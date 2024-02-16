@@ -633,3 +633,46 @@ header {
   input:checked ~ .dot #label-facture {
     opacity: 100;
   }
+
+
+  .triangle {
+    width: 0;
+    height: 0;
+    position: relative;
+  }
+  
+  .calendar_booked.available {
+    background-color: green;
+  } 
+  
+  .calendar_booked.not-available {
+    background-color: red;
+  } 
+
+  .triangle.start.available {
+    border-bottom : 50px solid green;
+    border-right : 50px solid transparent;
+  }
+  .triangle.end.available {
+    border-bottom : 50px solid green;
+    border-left : 50px solid transparent;
+  }
+  .triangle.start.not-available {
+    border-bottom : 50px solid red;
+    border-right : 50px solid transparent;
+  }
+  .triangle.end.not-available {
+    border-bottom : 50px solid red;
+    border-left : 50px solid transparent;
+  }
+
+.count {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: end;
+    z-index: 30;
+  }

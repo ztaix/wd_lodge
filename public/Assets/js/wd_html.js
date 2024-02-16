@@ -9,6 +9,8 @@ function applyScrollAnimation() {
   });
 }
 
+
+// START SEARCH MODULE
 function generateSearchRows(booking, bgclass) {
   // MAX WIDTH 576px
   let startDate = format_date(booking.start.slice(0,10));
@@ -79,6 +81,52 @@ function generateSearchRows(booking, bgclass) {
   `;
         return html;
   }
+
+  function handleSearchInput() {
+    const searchInput = document.getElementById("default-search").value;
+    const resultList = document.getElementById("searchResults");
+    if (!searchInput) {
+      clearSearchResults(resultList);
+      return; // Arrêter l'exécution de la fonction ici
+    }
+    performSearch(searchInput, resultList); // Fonction à définir pour exécuter la recherche
+    
+  }
+  function clearSearchResults(resultList) {
+    resultList.innerHTML = "";
+    resultList.classList.add("close-animate");
+    resultList.classList.remove("animate","bg-white","dark:bg-slate-950","shadow-lg");
+  }
+  function performSearch(searchInput, resultList) {
+    ajaxCall("booking/search", "GET", { text: searchInput }, function(response) {
+      if (response.status === "success" && response.data.length > 0) {
+        // Traiter la réponse en cas de succès
+        
+        // Ouvrir la popup si elle n'est pas déjà ouverte
+        resultList.classList.add("bg-white","dark:bg-slate-950","shadow-lg","animate");
+        resultList.classList.remove("bg-close-animate", "close-animate");
+        // Mettre à jour le contenu de la popup avec les résultats de la recherche
+        resultList.innerHTML = ""; // Vider les anciens résultats
+  
+        let htmlContent = '';
+         response.data.forEach((booking, index) => {
+           const bgColorClass = index % 2 === 0 ? 'bg-slate-100 hover:bg-yellow-100 dark:bg-slate-900 dark:hover:bg-yellow-400' : 'bg-white hover:bg-yellow-100 dark:bg-slate-950 dark:hover:bg-yellow-400';
+           const bookingElement = generateSearchRows(booking, bgColorClass);
+           htmlContent += bookingElement;
+           // Appliquez l'animation de défilement après l'insertion
+          });
+          resultList.innerHTML = htmlContent;
+          applyScrollAnimation();
+        } else {
+          console.log("Échec de la Requête de recherche !");
+          resultList.innerHTML = ""; // Vider les anciens résultats
+          resultList.classList.add("p-4", "bg-white", "dark:bg-slate-700", "shadow-lg", "animate"); // Appliquer les styles nécessaires
+          resultList.classList.remove("close-animate");
+          resultList.innerHTML = "Aucun résultat trouvé avec: <b>" + searchInput + "</b>"; // Ajouter le message
+        }
+    });//END AJAX
+  }
+  // END SEARCH MODULE
   
   function generateStatusPaid(PAIDS,PRICE){
     let html = "";

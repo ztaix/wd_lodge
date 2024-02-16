@@ -334,13 +334,13 @@
   background-color: var(--color-bg-unavailable);
   color: var(--color-fg-locked);
   font-style: italic;
-  pointer-events: none;
+  pointer-events: pointer;
 }
 .container.lock-plugin .calendar > .days-grid > .day.locked {
   background-color: transparent;
   border: 1px solid var(--color-border-locked);
   color: #390000;
-  pointer-events: none;
+  pointer-events: pointer;
 }
 
 .container.lock-plugin .calendar > .days-grid > .day.unit.locked:hover{

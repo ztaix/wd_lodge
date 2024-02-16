@@ -102,7 +102,7 @@
     // Liste des services
     let services_list = <?= json_encode($services_list); ?>;
 </script>
-
+<?php if(env('CI_ENVIRONMENT') == 'development' ){?>
 <script src="Assets/js/jquery.3.7.1.min.js"></script>
 <script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
 <script src="Assets/js/preline_select.js"></script>
@@ -113,8 +113,9 @@
 <script src="Assets/js/wd_html.js"></script>
 <script src="Assets/js/wd_fullcalendar.js"></script>
 <script src="Assets/js/wd_sidetools.js"></script>
-<!--<script src="Assets/js/all/all.min.js"></script>-->
-
+<?php } else { ?>
+<script src="Assets/js/all/all.min.js"></script>
+<?php } ?>
 <script>
 
 

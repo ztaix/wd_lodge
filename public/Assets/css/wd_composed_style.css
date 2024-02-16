@@ -7003,6 +7003,11 @@ input:checked ~ .dot #label-facture {
   background-color: rgb(26 102 166 / var(--tw-bg-opacity));
 }
 
+:is(.dark .dark\:bg-purple-800) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(107 33 168 / var(--tw-bg-opacity));
+}
+
 :is(.dark .dark\:bg-red-600) {
   --tw-bg-opacity: 1;
   background-color: rgb(220 38 38 / var(--tw-bg-opacity));

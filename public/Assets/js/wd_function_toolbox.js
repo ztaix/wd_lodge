@@ -407,3 +407,7 @@ function updatePayments(payments_filtered, updatedData) {
     }
     showBanner("Evènement mis à jour avec succès !", true);
   }
+
+
+
+  

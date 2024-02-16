@@ -3,8 +3,13 @@
 
 <head>
   <title>Kaipekalodge - Gestion Réservation</title>
-  <link href="css/wd_composed_style.css" rel="stylesheet">
-  <link href="css/select2.min.css" rel="stylesheet">
+  <?php if(env('CI_ENVIRONMENT') == 'development' ){?>
+    <link href="Assets/css/wd_composed_style.css" rel="stylesheet">
+    <link href="Assets/css/select2.min.css" rel="stylesheet">
+    <link href="Assets/css/wd_datepicker.css" rel="stylesheet">
+    <?php } else { ?>
+      <link href="Assets/css/all/all.min.css" rel="stylesheet">
+  <?php } ?>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />

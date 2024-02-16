@@ -1,7 +1,19 @@
 var calendar; // Déclaration dans la portée globale
 var clickedDate = null; // Défini dans la portée globale
 
+
 document.addEventListener("DOMContentLoaded", function () {
+  const addButtonHTML = '<svg viewBox="0 0 16 16" class="w-6 h-6 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3H4.5a.5.5 0 0 1 0-1H7V4.5a.5.5 0 0 1 .5-.5z"/></svg>';
+  const searchButtonHTML = '<svg viewBox="0 0 24 24" class="w-6 h-6 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>';
+  var inputField = document.getElementById("default-search");
+
+  if (inputField) {
+    inputField.addEventListener("input", function() {
+      handleSearchInput(); // Assurez-vous que cette fonction est définie quelque part dans votre code
+    });
+  }
+
+
   const calendarEl = document.getElementById("calendar");
   calendar = new FullCalendar.Calendar(calendarEl, {
     locale: "fr",
@@ -26,41 +38,58 @@ document.addEventListener("DOMContentLoaded", function () {
           );
         }
       ],
-    viewDidMount: function (view, element) {
-      var cellWidth = $(".fc-daygrid-day").width();
-      $(".fc-daygrid-day").css("height", cellWidth + "px");
-      let buttonAddEvent = document.querySelector(".fc-AddEventButton-button");
-      let buttonSearchInput = document.querySelector(".fc-SearchIpunt-button");
-      buttonAddEvent.innerHTML =
-        '<svg viewBox="0 0 16 16" class="w-6 h-6 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3H4.5a.5.5 0 0 1 0-1H7V4.5a.5.5 0 0 1 .5-.5z"/></svg>';
-      buttonSearchInput.innerHTML =
-        '<svg viewBox="0 0 24 24" class="w-6 h-6 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>';
+
+    viewDidMount : function(view, element) {
+      // Utiliser les APIs DOM natives pour améliorer les performances
+      const cellWidth = document.querySelector(".fc-daygrid-day").offsetWidth;
+      document.querySelectorAll(".fc-daygrid-day").forEach(cell => {
+        cell.style.height = `${cellWidth}px`;
+      });
+  
+      // Appliquer le HTML pré-défini pour les boutons
+      const buttonAddEvent = document.querySelector(".fc-AddEventButton-button");
+      const buttonSearchInput = document.querySelector(".fc-SearchIpunt-button");
+      if (buttonAddEvent) buttonAddEvent.innerHTML = addButtonHTML;
+      if (buttonSearchInput) buttonSearchInput.innerHTML = searchButtonHTML;
     },
-    windowResize: function (view, element) {
-      var cellWidth = $(".fc-daygrid-day").width();
-      $(".fc-daygrid-day").css("height", cellWidth + "px");
+
+    windowResize: function(view, element) {
+      // Utilisez les API DOM natives pour obtenir la largeur
+      const cellWidth = document.querySelector(".fc-daygrid-day") ? document.querySelector(".fc-daygrid-day").offsetWidth : 0;
+      // Appliquez la hauteur à toutes les cellules, si une cellule existe
+      if (cellWidth > 0) {
+        document.querySelectorAll(".fc-daygrid-day").forEach(cell => {
+          cell.style.height = `${cellWidth}px`;
+        });
+      }
     },
     datesSet: function(dateInfo) {
-      // Trouvez tous les éléments fc-multimonth-title après le rendu/mise à jour du calendrier
       document.querySelectorAll('.fc-multimonth-title').forEach(function(title) {
-          // Vérifiez si le div personnalisé n'a pas déjà été ajouté
-          if (!title.querySelector('.calendarLegend')) {
-              // Créez le div personnalisé
-              var customDiv = document.createElement('div');
-              title.classList.add('flex','justify-between','text-md','capitalize');
-              customDiv.classList.add('inline-flex','items-center');
-              customDiv.innerHTML = `
-              <div class="flex space-x-2 mr-2 items-center text-sm font-light text-slate-600 dark:text-slate-200">
-              <div class="flex items-center">Vide: <span class="w-4 h-4 inline-block bg-white border border-slate-200"></span></div>
-              <div class="flex items-center">Disponibilité: <span class="w-4 h-4 inline-block bg-green-500 border border-slate-200"></span></div>
-              <div class="flex items-center">Complet: <span class="w-4 h-4 inline-block bg-red-500 border border-slate-200"></span></div>
-              </div>
-              `;
-
-              title.appendChild(customDiv);
-          }
+        // Vérifiez si le div personnalisé n'a pas déjà été ajouté
+        if (!title.querySelector('.calendarLegend')) {
+          // Créez le div personnalisé
+          const customDiv = document.createElement('div');
+          title.classList.add('flex', 'justify-between', 'text-md', 'capitalize');
+          customDiv.classList.add('inline-flex', 'items-center', 'calendarLegend'); // Assurez-vous d'ajouter 'calendarLegend' pour éviter de dupliquer
+    
+          const legends = [
+            {text: 'Vide', color: 'bg-white'},
+            {text: 'Disponibilité', color: 'bg-green-500'},
+            {text: 'Complet', color: 'bg-red-500'}
+          ];
+    
+          let legendsHTML = legends.map(legend => `
+            <div class="flex items-center">
+              ${legend.text}: <span class="w-4 h-4 inline-block ${legend.color} border border-slate-200"></span>
+            </div>
+          `).join(' ');
+    
+          customDiv.innerHTML = `<div class="flex space-x-2 mr-2 items-center text-sm font-light text-slate-600 dark:text-slate-200">${legendsHTML}</div>`;
+    
+          title.appendChild(customDiv);
+        }
       });
-  },
+    },
     headerToolbar: {
       left: "prev,next", // Ajoutez ici les boutons personnalisés
       center: "title",
@@ -70,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
     customButtons: {
       AddEventButton: {
         text: " ",
-        click: function () {
+        click: function() {
           resetForm("addEventModal");
           updateTotalInfo();
           updatePrice();
@@ -79,56 +108,12 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       SearchIpunt: {
         text: " ",
-        click: function () {
+        click: function() {
           openModal("SearchListEventModal");
-
-          // Trouver le champ inputSearch et le FOCUS keyboard
-          const inputField = document.getElementById("default-search");
+          // Focus immédiat sur le champ de recherche
           inputField.focus();
-
-          $("#default-search").on("input", function () {
-            const searchInput = $(this).val();
-            const resultList = $("#searchResults");
-            if (!searchInput) {
-              resultList.empty();
-              resultList.addClass("close-animate"); 
-              resultList.removeClass("animate"); 
-              resultList.removeClass("bg-white dark:bg-slate-950 shadow-lg"); 
-              return; // Arrêter l'exécution de la fonction ici
-            }
-
-            ajaxCall("booking/search", "GET", { text: searchInput }, function(response) {
-                 if (response.status === "success" && response.data.length > 0) {
-                     // Traiter la réponse en cas de succès
-                     
-                     // Ouvrir la popup si elle n'est pas déjà ouverte
-                     resultList.addClass("bg-white dark:bg-slate-950 shadow-lg"); 
-                     resultList.removeClass("close-animate"); 
-                     resultList.addClass("animate"); 
-                     // Mettre à jour le contenu de la popup avec les résultats de la recherche
-                     resultList.empty(); // Vider les anciens résultats
-        
-                    response.data.forEach((booking, index) => {
-                      const bgColorClass = index % 2 === 0 ? 'bg-slate-100 hover:bg-yellow-100 dark:bg-slate-900 dark:hover:bg-yellow-400' : 'bg-white hover:bg-yellow-100 dark:bg-slate-950 dark:hover:bg-yellow-400';
-                      const bookingElement = generateSearchRows(booking, bgColorClass);
-
-                      resultList.append(bookingElement);
-                       // Appliquez l'animation de défilement après l'insertion
-                      applyScrollAnimation();
-                     });
-                   } else {
-                     // Gérer l'échec de la requête ici
-                     console.log("Échec de la Requête de recherche !");
-                     resultList.empty(); // Vider les anciens résultats
-                     resultList.addClass("p-4 bg-white dark:bg-slate-700 shadow-lg"); // Retirer le fond noir transparent
-                     resultList.removeClass("close-animate"); // Retirer le fond noir transparent
-                     resultList.addClass("animate"); // Retirer le fond noir transparent
-                     resultList.html("Aucun résultat trouvé avec: <b>" + searchInput + "</b>"); // Ajouter le message
-                 }
-             });//END AJAX
-          });//END $("#default-search").on("input",...
-        },//END click: function () 
-      },//END SearchIpunt
+        },
+      },
     },
     buttonText: {
       today: "Aujourd'hui",
@@ -137,96 +122,94 @@ document.addEventListener("DOMContentLoaded", function () {
       day: "Jour",
       list: "Liste",
     },
+
+    ///START
     eventContent: function (args) {
       let bookings = args.event.extendedProps.bookings; 
-      let firstdayHtml = "";
-      let firstdayHtmlNumber = "";
-      let currentdayHtml = "";
-      let lastdayHtml = "";
-      let lastdayHtmlNumber = "";
-      
-      let nEventDay = Object.keys(bookings).length; // Vérifier le nom de service loués
-      let fullblockedFound = false; // Vérifie si il existe dans chaque jour une privatisation
 
+      //Service list extrat from php service insert (footer page)
       const serviceTitlesObj = services_list
       .filter(service => service.fullblocked !== "1")
       .reduce((obj, service) => {
         obj[service.Service_id] = service.Title;
         return obj;
       }, {});
-      
-      const availableServicesCount = Object.keys(serviceTitlesObj).length;
-      
-      let availableServices = {...serviceTitlesObj};
 
-      if(bookings){
 
-        for (let id in bookings) {
-                      
-          if (bookings[id].fullblockeds === "1") {
-          fullblockedFound = true;
-          break; // Arrête la boucle si une réservation avec fullblockeds = 1 est trouvée
-        } 
-      } 
-    
-    }
-    
+    const availableServicesCount = Object.keys(serviceTitlesObj).length;
+    // Création d'un objet temporaire pour manipulation
+    let availableServices = {...serviceTitlesObj};
+
+    let fullblockedFound = Object.values(bookings).some(booking => booking.fullblockeds === "1");
+
+    //Define basic variable
+    let firstdayHtml = "";
+    let firstdayHtmlNumber = "";
+    let currentdayHtml = "";
+    let lastdayHtml = "";
+    let lastdayHtmlNumber = "";
     let html_construct = '';
     let COUNTisBookingStartDay = 0;
     let COUNTisBookingEndDay = 0;
     let service_booked = 0;
     let roomsAvailable = availableServicesCount; // initialiser avec le nombre total de chambres
 
-    for (let bookingId in bookings) {
-        if (bookings.hasOwnProperty(bookingId)) {
-          let booking = bookings[bookingId];
-          let serviceBooked = bookings[bookingId].services_titles;
-          Object.entries(availableServices).forEach(([key, value]) => {
-            if (value === serviceBooked) {
-              foundKey = value;
-              delete availableServices[key];
-            }
-          });
-          let NotBookedServicesCount = Object.keys(availableServices).length;
+
+    Object.entries(bookings).forEach(([bookingId, booking]) => {
+      let serviceBooked = booking.services_titles;
+      Object.entries(availableServices).forEach(([key, value]) => {
+        if (value === serviceBooked) {
+          // Supposant que vous vouliez faire quelque chose avec `foundKey` ici.
+          // Néanmoins, soyez prudent : Si `foundKey` est utilisé en dehors de cette boucle,
+          // sa valeur sera celle de la dernière correspondance trouvée dans cette boucle.
+          let foundKey = value; 
+          delete availableServices[key];
+        }
+      });
+ 
           let isBookingStartDay = booking.Date == booking.FirstDay.substring(0, 10);
           let isCurrentDay = booking.Date;
           let isBookingEndDay = booking.Date == booking.LastDay.substring(0, 10);
           let message = "";
-          let color = "";
           
           // Start End Animation
           // Fonction pour créer le HTML de la marque du jour
-          function createDayMarker({ position, count, text, additionalClasses = "" }) {
-            const baseHtml = `
-                <div class="absolute flex justify-${position} w-full z-20 ">
-                    <div class="flex flex-col h-full ${additionalClasses} ${position.includes("end")  ? "rounded-l-lg " : position.includes("start") ?"rounded-r-lg ":""} 
-                    shadow-inner ${position.includes("end") ? " shadow-gray-800" : position.includes("start") ? "shadow-gray-800": "shadow-inner shadow-gray-800"}" style="background-color: rgba(0, 0, 0, 0.2);">
-                        <div class="relative hidden md:flex items-center justify-center mx-auto">
-                            ${text}
-                        </div>
-                        <div class="flex items-center justify-center my-0.5 font-bold mx-auto">
-                            ${count > 0 ? count : "&nbsp;"}
-                        </div>
+          function createDayMarker({ position, count, customerWay, additionalClasses = "" , isavailable}) {
+            let baseHtml = '';
+            if(customerWay === 'IN' ||customerWay === 'OUT'){
+              baseHtml = `
+              <div class="absolute flex justify-${position} w-full z-20">
+              
+              <div class="triangle ${position} ${isavailable} ${additionalClasses} ">
+              </div>
+              <div class="count justify-${position} my-0.5 mx-1 font-bold">
+                  ${count > 0 ? count : "&nbsp;"}
+              </div>
+          </div>
+          `;
+            }
+            else{
+            baseHtml = `
+                <div class="absolute flex justify-${position} h-full w-full z-20 ">
+                    <div class=" calendar_booked ${isavailable}  flex flex-col w-full">
+                             &nbsp;
                     </div>
                 </div>
-            `;
+            `;}
             return baseHtml;
           }
           if (isBookingEndDay) {
             COUNTisBookingEndDay++;
             roomsAvailable++; // Une chambre se libère
-            lastdayHtml = createDayMarker({ position: "start z-20", count: COUNTisBookingEndDay, text: "OUT", additionalClasses: "w-2/5" });
           }
 
           if (isBookingStartDay) {
             COUNTisBookingStartDay++;
             fullblockedFound ? service_booked = availableServicesCount : service_booked++;
             roomsAvailable--; // Une chambre est réservée
-            firstdayHtml = createDayMarker({ position: "end z-20", count: COUNTisBookingStartDay, text: "IN" , additionalClasses: "w-2/5" });
           }
 
           if (isCurrentDay && !isBookingStartDay && !isBookingEndDay) {
-            currentdayHtml = createDayMarker({ position: "center z-10", count: 0, text: "&nbsp;", additionalClasses: "w-full" });
           }
 
           if(isCurrentDay && !isBookingEndDay & !isBookingStartDay & !fullblockedFound){
@@ -239,29 +222,40 @@ document.addEventListener("DOMContentLoaded", function () {
           // Déterminer la couleur du BG
           let classNameBg = "";
           let classNameDarkBg = "";
-          
-          if (service_booked < availableServicesCount) {
-            classNameBg = "bg-green-300";
+          let isavailable ="";
+          if (service_booked < availableServicesCount && !(isBookingEndDay && service_booked == 0) && !(isBookingStartDay && service_booked == 1)) {
+            classNameBg = "bg-green-500";
             classNameDarkBg = "dark:bg-green-800";
+            isavailable = "available";
+            
           } else if (service_booked == availableServicesCount) {
-            classNameBg = fullblockedFound ? "bg-red-300" : "bg-purple-300";
-            classNameDarkBg = fullblockedFound ? "dark:bg-red-800" : "dark:bg-purple-800";
-          } else {
-            classNameBg = "bg-gray-300";
-            classNameDarkBg = "dark:bg-gray-800";
+            classNameBg = "bg-red-500";
+            classNameDarkBg = "dark:bg-red-800";
+            isavailable = "not-available";
+          }else {
+            classNameBg = "";
+            classNameDarkBg = "";
+            isavailable = "available";
+
           }
-          
-          message = service_booked + "/" + availableServicesCount;
+          if (isBookingEndDay) {
+            lastdayHtml = createDayMarker({ position: "start", count: COUNTisBookingEndDay, customerWay: "OUT", additionalClasses: "w-2/5  z-20", isavailable : isavailable });
+          }
+
+          if (isBookingStartDay) {
+            firstdayHtml = createDayMarker({ position: "end", count: COUNTisBookingStartDay, customerWay: "IN" , additionalClasses: "w-2/5  z-20", isavailable : isavailable });
+          }
+
           
           html_construct = `
           <div class="absolute w-full h-full">
             <div class="relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg} ${classNameDarkBg}">
-              ${message}
+          
             </div>
           </div>`;
         
-        }
-      }
+    });
+  
 
    let dotsHtml =  html_construct + lastdayHtml + lastdayHtmlNumber + currentdayHtml + firstdayHtml + firstdayHtmlNumber;
     // Créer un élément HTML pour représenter l'événement
@@ -273,6 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
         domNodes: [eventElement],
       };
     },
+    /// END /////
     eventClick: function (info) {
 
       const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'utilisateur a cliqué
