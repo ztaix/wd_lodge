@@ -203,21 +203,15 @@ header {
   padding: 0.5px;
   margin: 0;
 }
-.fc-direction-ltr .fc-daygrid-event.fc-event-end:hover{
-  padding: 2px 0.5px 0.5px 2px;
-}
 
 .fc .fc-daygrid-day.fc-day-today{
   background-color: rgb(255, 221, 0);
 }
-.fc-daygrid-day:hover {
+.fc-daygrid-day:hover, .dark .fc-daygrid-day:hover {
   cursor:pointer;
-  background-color: rgb(255, 241, 114);
+  background: none;
 }
-.dark .fc-daygrid-day:hover {
-  cursor:pointer;
-  background-color: rgb(144, 134, 47);
-}
+
 /** OVERIDE SELECT 2 **/
 .select2-container--default .select2-selection--single{
   border: 0 ;

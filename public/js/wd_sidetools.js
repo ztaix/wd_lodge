@@ -334,7 +334,7 @@ response.sort((a, b) => {
 
     h1.innerHTML  = "<b>Ajouter une réservation</b>";
     parentH1.classList.add('cursor-pointer');
-    parentH1.onclick = () => handleAddEventClick(format_date(newDateStr),availableServices[0].Service_id);
+    parentH1.onclick = () => handleAddEventClick(newDateStr,availableServices[0].Service_id);
 
     // Si aucun services disponible
   }else{
@@ -788,13 +788,14 @@ function createPaymentHtml(paid, index, lenght) {
 `;
 }
 
+
 // Fonction pour charger et initialiser le datepicker avec des dates réservées
 function loadAndInitDatepicker(service_id, start_date = false, end_date = false) {
   return new Promise((resolve, reject) => {
     var loader = document.querySelector('.loader');
     loader.style.display = 'block';
     loader.style.zIndex = 99;
-
+    console.log('fromServicepicker',fromServicepicker);
     // Si un datepicker existe déjà, retirez-le avant de créer un nouveau
     if (fromServicepicker) {
       fromServicepicker.destroy();
@@ -825,7 +826,7 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
           // Après avoir reçu les données, initialisez le picker d'Easepick avec ces données
           fromServicepicker = new easepick.create({
             element: document.getElementById("ModaleventDatepicker"),
-            //css: ["Assets/css/wd_datepicker.css"],
+            css: ["css/wd_datepicker.css"],
             firstDay: 1, // 0 - Sunday, 1 - Monday, 2 - Tuesday
             grid: 1, // Number of calendar columns
             calendars: 1, // Number of visible months.

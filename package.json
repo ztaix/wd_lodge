@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tailwindcss -i public/Assets/css/wd_style.css -o public/css/wd_composed_style.css --watch",
-    "build": "tailwindcss -i public/Assets/css/wd_style.css -o public/css/wd_composed_style.css ; gulp;",
+    "dev": "tailwindcss -i app/Assets/css/wd_style.css -o public/css/wd_composed_style.css --watch",
+    "build": "tailwindcss -i app/Assets/css/wd_style.css -o public/css/wd_composed_style.css && gulp",
     "build-js": "gulp"
   },
   "keywords": [],

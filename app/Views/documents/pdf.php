@@ -248,8 +248,8 @@ $due_date = $date->format('d/m/Y');
 								</td>
 
 								<td>
-									<p><?=$s_type?> #: <?=$s_id?></p>
-                                  <p>Date: <?=$created_date?></p>
+									<h1><?=$s_type?> #: <?=$s_id?></h1>
+                                  	<p>Date: <?=$created_date?></p>
 									<p>Valide jusqu'au: <?= $due_date?></p>
 								</td>
 							</tr>
@@ -262,17 +262,17 @@ $due_date = $date->format('d/m/Y');
 						<table>
 							<tr>
 								<td>
-									<p><b><?= $denomination?></b></p>
-									<p><b><?= $info_administrative?></b></p>
-									<p><?= $adresse?></p>
-                                  <p><?= $telephone?></p>
-                                  <p><?= $mail?></p>
+									<?= !empty($denomination)? "<p><b>".$denomination."</b></p>": "" ?>
+									<?= !empty($info_administrative)? "<p>".$info_administrative."</p>": "" ?>
+									<?= !empty($adresse)? "<p>".$adresse."</p>": "" ?>
+									<?= !empty($telephone)? "<p>".$telephone."</p>": "" ?>
+									<?= !empty($mail)? "<p>".$mail."</p>": "" ?>
 								</td>
-
+								
 								<td>
-									<p><b><?= $s_client_nom?></b></p>
-									<p><?= $s_client_telephone?></p>
-                                  <p><?= $s_client_mail?></p>
+									<?= !empty($s_client_nom)? "<p><b>".$s_client_nom."</b></p>": "" ?>
+									<?= !empty($s_client_telephone)? "<p>".$s_client_telephone."</p>": "" ?>
+									<?= !empty($s_client_mail)? "<p>".$s_client_mail."</p>": "" ?>
 								</td>
 							</tr>
 						</table>
@@ -282,10 +282,10 @@ $due_date = $date->format('d/m/Y');
 
 				<tr class="heading">
 					<td>Intitulé</td>
-					<td style="white-space: nowrap;">Prix unitaire</td>
+					<td style="white-space: nowrap;">Unitaire HT</td>
 					<td>Taxe</td>
 					<td>Nuits</td>
-					<td>Tarif</td>
+					<td>TTC</td>
 				</tr>
 <?php 	
 			$total_tax = ($tax_bool)? ($s_QtTraveller * $s_tax * $s_ndays): 0;
@@ -303,7 +303,7 @@ $due_date = $date->format('d/m/Y');
 					<td style="white-space: nowrap;"><?=$u_price.$currency?></td>
 					<td style="white-space: nowrap;"><?=($s_QtTraveller * $s_tax * $s_ndays) ?></td>
 					<td><?=$s_qt?></td>
-					<td style="white-space: nowrap;"><?=($s_price + ($s_QtTraveller * $s_tax * $s_ndays) + $s_fee).$currency?></td>
+					<td style="white-space: nowrap;"><?=($s_price + ($s_QtTraveller * $s_tax * $s_ndays)).$currency?></td>
 				</tr>    
 				<tr class='item'>
 					<td><i>Frais de ménage</i></td>
@@ -336,13 +336,13 @@ $due_date = $date->format('d/m/Y');
                             <tr class="heading">
                                 <td colspan="2">Encaissé</td>
                             </tr>
-                            <tr><td colspan="2" style="text-align: left;">
+                            <tr><td colspan="2" style="text-align: left; font-size: 12px;">
 							<?php
 								foreach($payments as $pay_row){
 								foreach($pay_row as $key => $value){
 									
 									if(strlen($value) !== 0){
-										echo $key.':'.$value.$currency.'<br>';
+										echo '<b>'. $key.'</b> : '.$value.$currency.'<br>';
 									}
 							}
 							}
@@ -353,17 +353,15 @@ $due_date = $date->format('d/m/Y');
 
                         </table>
 					</td>
-					<?php if($tax_bool == true){
-						echo "<td colspan='2'><p>Payé</p></td>	";
+					<?php // Faire évoluer si tax réelle 
+					if($tax_bool == true){
+						echo "<td colspan='2' ><p>Payé</p></td>	";
 					}
 					else{
-						echo "<td colspan='2'>";
-						echo "<p>Payé</p>";
-						echo "</td";
-					
+						echo "<td colspan='2'><p>Payé</p></td>	";
 					} ?>
 					<td>
-					<p><?=$s_paid.$currency?></p>
+						<p><?=$s_paid.$currency?></p>
 					</td>
 				</tr>
 

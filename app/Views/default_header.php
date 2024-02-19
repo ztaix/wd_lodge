@@ -4,11 +4,10 @@
 <head>
   <title>Kaipekalodge - Gestion Réservation</title>
   <?php if(env('CI_ENVIRONMENT') == 'development' || ENVIRONMENT == 'development' ){?>
-    <link href="Assets/css/wd_composed_style.css" rel="stylesheet">
-    <link href="Assets/css/select2.min.css" rel="stylesheet">
-    <link href="Assets/css/wd_datepicker.css" rel="stylesheet">
+    <link href="css/wd_composed_style.css" rel="stylesheet">
+    <link href="css/select2.min.css" rel="stylesheet">
     <?php } else { ?>
-      <link href="Assets/css/all/all.min.css" rel="stylesheet">
+      <link href="allAssets/all.min.css" rel="stylesheet">
   <?php } ?>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
@@ -82,7 +81,7 @@
 </script>
 
   
-  <script src="Assets/js/easepick.js"></script>
+  <script src="js/easepick.js"></script>
     <!-- LOADER PAGE FOR LOADING PAGE -->
   <div class="loader"></div>
   <div class="flex flex-col h-screen w-full justify-center items-center text-gray-900 dark:text-white bg-slate-50 dark:bg-slate-900">

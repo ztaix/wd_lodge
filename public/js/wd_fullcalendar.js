@@ -269,49 +269,12 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     /// END /////
     eventClick: function (info) {
-
-      const clickedDate = info.event.startStr; // Récupère la date sur laquelle l'utilisateur a cliqué
-      // Faire une requête AJAX pour obtenir les événements de cette date
-      ajaxCall("booking/getBookingsFromDate", "GET", { date: clickedDate }, function(response) {
-        const startdate = format_date(clickedDate);
-        const enddate = format_date(clickedDate, 1);
-        if (response.success && response.data.events.length > 0) {
-          // Attribution d'office à la modal d'ajout la date cliqué.
-
-            // Si la réponse contient des événements, exécutez votre code ici
-            showBookingList(response.data.events, clickedDate);
-          } else {
-            resetForm("addEventModal",startdate,enddate);
-            updateTotalInfo();
-            updatePrice();
-            // Afficher le popup
-            openModal("addEventModal");
-          }
-      });
-
+      const clickedDate = info.event.startStr;
+      showDateCalendarFromClic(clickedDate);
     },
     dateClick: function (info) {
-      //const clickedDate = info.date;  // Récupère la date cliquée
-      const clickedDate = info.dateStr; // Récupère la date sur laquelle l'utilisateur a cliqué
-      // Faire une requête AJAX pour obtenir les événements de cette date
-      ajaxCall("booking/getBookingsFromDate", "GET", { date: clickedDate }, function(response) {
-        const startdate = format_date(clickedDate);
-        const enddate = format_date(clickedDate, 1);
-        if (response.success && response.data.events.length > 0) {
-          // Attribution d'office à la modal d'ajout la date cliqué.
-
-            // Si la réponse contient des événements, exécutez votre code ici
-            showBookingList(response.data.events, clickedDate);
-          } else {
-            resetForm("addEventModal",startdate,enddate);
-            updateTotalInfo();
-            updatePrice();
-            // Afficher le popup
-            openModal("addEventModal");
-          }
-        
-        
-      });
+      const clickedDate = info.dateStr; 
+      showDateCalendarFromClic(clickedDate);
     },
   });
 

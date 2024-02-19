@@ -52,7 +52,12 @@
 </div>
 
 <script>
-
+//
+///
+//// Environnement ?
+console.log('<?= env('CI_ENVIRONMENT') == 'development'  || ENVIRONMENT == 'development' ? 'Environnement: DEV' : 'Environnement: PROD'; ?>' );
+///
+//
     // Mobile Menu Slider:
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -103,18 +108,18 @@
     let services_list = <?= json_encode($services_list); ?>;
 </script>
 <?php if(env('CI_ENVIRONMENT') == 'development'  || ENVIRONMENT == 'development' ){?>
-<script src="Assets/js/jquery.3.7.1.min.js"></script>
-<script src="Assets/js/fullcalendar.6.1.9.min.js"></script>
-<script src="Assets/js/preline_select.js"></script>
-<script src="Assets/js/preline_inputnumber.js"></script>
-<script src="Assets/js/select2.min.js"></script>
-<script src="Assets/js/wd_function_toolbox.js"></script>
-<script src="Assets/js/wd_modal_system.js"></script>
-<script src="Assets/js/wd_html.js"></script>
-<script src="Assets/js/wd_fullcalendar.js"></script>
-<script src="Assets/js/wd_sidetools.js"></script>
+<script src="js/jquery.3.7.1.min.js"></script>
+<script src="js/fullcalendar.6.1.9.min.js"></script>
+<script src="js/preline_select.js"></script>
+<script src="js/preline_inputnumber.js"></script>
+<script src="js/select2.min.js"></script>
+<script src="js/wd_function_toolbox.js"></script>
+<script src="js/wd_modal_system.js"></script>
+<script src="js/wd_html.js"></script>
+<script src="js/wd_fullcalendar.js"></script>
+<script src="js/wd_sidetools.js"></script>
 <?php } else { ?>
-<script src="Assets/js/all/all.min.js"></script>
+<script src="allAssets/all.min.js"></script>
 <?php } ?>
 <script>
 

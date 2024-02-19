@@ -408,6 +408,22 @@ function updatePayments(payments_filtered, updatedData) {
     showBanner("Evènement mis à jour avec succès !", true);
   }
 
+function showDateCalendarFromClic(dateClicked){
+  ajaxCall("booking/getBookingsFromDate", "GET", { date: dateClicked }, function(response) {
+    const startdate = format_date(dateClicked);
+    const enddate = format_date(dateClicked, 1);
+    if (response.success && response.data.events.length > 0) {
+      // Attribution d'office à la modal d'ajout la date cliqué.
 
-
+        // Si la réponse contient des événements, exécutez votre code ici
+        showBookingList(response.data.events, dateClicked);
+      } else {
+        resetForm("addEventModal",startdate,enddate);
+        updateTotalInfo();
+        updatePrice();
+        // Afficher le popup
+        openModal("addEventModal");
+      }
+  });
+}
   

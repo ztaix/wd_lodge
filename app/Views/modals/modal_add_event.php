@@ -224,8 +224,6 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     var container_global = document.getElementById("addEventModal");
     var checkbox = document.getElementById('Modaleventfullblocked');
     var Datepicker = document.getElementById('ModaleventDatepicker');
-    var DateStart = document.getElementById('ModaleventStart');
-    var DateEnd = document.getElementById('ModaleventEnd');
 
     var discountScope = '<?= $DiscountsScope ?>';
     var GlobaldiscountValues = <?= $DiscountsValues !== false ? $DiscountsValues : "'false'" ?>;
@@ -266,14 +264,14 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     <div class="flex payment-row mt-1" id='${uniqueID}'>
         <div class=" inline-flex items-center w-fit bg-red-50 border border-red-300 hover:bg-red-400 dark:bg-red-700 dark:hover:bg-red-900 rounded-lg mx-1 my-0.5 p-2 cursor-pointer" onclick="Deletepaid('${uniqueID}')"> X </div>
             <input type="hidden" id="rowPaidid${uniqueID}" name="rowPaidid${uniqueID}">
-            <select id="rowPaidType${uniqueID}" name="rowPaidType${uniqueID}" class="inline-flex rounded-l-lg items-center py-2.5 px-4 text-sm font-bold text-center text-gray-500 bg-gray-100 border border-gray-300 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-slate-800 dark:hover:bg-gray-600 dark:focus:ring-slate-800 dark:text-white dark:border-gray-600">
+            <select id="rowPaidType${uniqueID}" name="rowPaidType${uniqueID}" class="inline-flex rounded-l-lg items-center py-2.5 px-4 text-sm font-bold text-center text-gray-500 bg-gray-100 border border-gray-300 hover:bg-gray-200  dark:bg-slate-800 dark:hover:bg-gray-600 dark:text-white dark:border-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:focus:ring-slate-800">
                 <option value="ESPECE">ESPECE</option>
                 <option value="VIREMENT">VIREMENT</option>
                 <option value="VISA">VISA</option>
                 <option value="AMEX">AMEX</option>
                 <option value="CHEQUE">CHEQUE</option>
             </select>
-            <input type="number" pattern="[0-9]*" value=${FillPaidInput} inputmode="numeric" id="rowPaid${uniqueID}" name="rowPaid${uniqueID}" class=" block w-full rounded-r-lg text-md text-gray-900 bg-transparent border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+            <input type="number" pattern="[0-9]*" value=${FillPaidInput} inputmode="numeric" id="rowPaid${uniqueID}" name="rowPaid${uniqueID}" class=" block w-full rounded-r-lg py-2 px-3 bg-white border border-gray-200 dark:bg-slate-900 dark:border-gray-700 text-gray-800 dark:text-white focus:ring-4 focus:outline-none focus:ring-gray-100 dark:focus:ring-slate-800">
         </div>
     `;
 

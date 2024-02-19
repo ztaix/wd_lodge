@@ -3,10 +3,8 @@ module.exports = {
   mode : 'jit',
   content: [
     './app/Views/**/*.php', // cherche les classes dans tous les fichiers PHP du dossier Views
-    './public/css/*.css', 
-    './public/js/*.js', 
-    './public/Assets/js/*.js', 
-    './public/Assets/css/*.css', 
+    './public/*/*.css', 
+    './public/*/*.js', 
   ],
   darkMode: 'class',
   theme: {

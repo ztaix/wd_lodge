@@ -46,87 +46,86 @@ function showSearch() {
   }
 
   
-async function resetForm(modalId, start = false , end = false, service_id = false){
-  if(modalId == "addEventModal"){
-    const form_addEventModal = [
-      "Modaleventid",
-      "ModaleventType_doc",
-      "ModaleventCustomer_id",
-      "ModaleventQtTraveller",
-      "ModaleventService_id",
-      "Modaleventfullblocked",
-      "ModaleventQt",
-      "ModaleventPrice",
-      "ModaleventComment",
-      "payments-subcontainer",
-    ];
-
-    
-    form_addEventModal.forEach(input => {
-      if(input == "ModaleventType_doc"){
-        document.getElementById(input).value = 'Devis';
-        document.getElementById(input).checked = false;
-        
-      }
-      else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" ){
-        document.getElementById(input).value = 1;
-      }
-      else if(input =="payments-subcontainer" ){
-        document.getElementById(input).innerText = "";
-      }
-      else if(input =="Modaleventfullblocked" || document.getElementById(input).value == 1 ){
-        document.getElementById(modalId).classList.remove('border', 'border-dashed', 'border-4', 'border-red-400');
-        document.getElementById('container_eventfullblocked').classList.remove('dark:border-red-900', 'bg-red-500');
-        document.getElementById(input).checked = false;
-      }
-      else if( input == "ModaleventService_id" ){
-        if(service_id){
-          document.getElementById(input).value = service_id;
+  async function resetForm(modalId, start = false , end = false, service_id = false){
+    if(modalId == "addEventModal"){
+      const form_addEventModal = [
+        "Modaleventid",
+        "ModaleventType_doc",
+        "ModaleventCustomer_id",
+        "ModaleventQtTraveller",
+        "ModaleventService_id",
+        "Modaleventfullblocked",
+        "ModaleventQt",
+        "ModaleventPrice",
+        "ModaleventComment",
+        "payments-subcontainer",
+      ];
+  
+      
+      form_addEventModal.forEach(input => {
+        if(input == "ModaleventType_doc"){
+          document.getElementById(input).value = 'Devis';
+          document.getElementById(input).checked = false;
+          
         }
-        else{
-          service_id = discountservice[0].Service_id;
-          document.getElementById(input).value = discountservice[0].Service_id;
+        else if(input =="ModaleventQtTraveller" || input =="ModaleventQt" ){
+          document.getElementById(input).value = 1;
         }
-      }
-      else if( input == "ModaleventCustomer_id"){
-        let ModaleventCustomer_id = $('#ModaleventCustomer_id'); // Utilisez jQuery pour sélectionner l'élément
-        ModaleventCustomer_id.val(1); // Changez la valeur
-        ModaleventCustomer_id.trigger('change'); // Mettez à jour l'affichage de Select2
-        ModaleventCustomer_id.focus();
-        document.getElementById('Modalevent_Container_Customer_id').classList.add('blinking');        
-      }
-      else {
-        document.getElementById(input).value = '';
-      }
-    });
-    discountIndicator.innerText = '';
-    document.getElementById("addEventModal_title").innerText = 'Ajouter';
-
-
-    let date_start = '';
-    let date_end = '';
-    if(!start){
-      date_start = format_date(getToday());
-      date_end = format_date(date_start,1);
-    }else {
-      date_start = start;
-      date_end = end;
-    }
-    
-    //RESET PAYMENT ROW
-    let temp_payments_row = document.querySelectorAll('div[id^="temp_"]');
-    if(temp_payments_row.length > 0){
-      // Parcourir et supprimer chaque div
-      temp_payments_row.forEach(div => {
-        div.parentNode.removeChild(div);
+        else if(input =="payments-subcontainer" ){
+          document.getElementById(input).innerText = "";
+        }
+        else if(input =="Modaleventfullblocked" || document.getElementById(input).value == 1 ){
+          document.getElementById(modalId).classList.remove('border', 'border-dashed', 'border-4', 'border-red-400');
+          document.getElementById('container_eventfullblocked').classList.remove('dark:border-red-900', 'bg-red-500');
+          document.getElementById(input).checked = false;
+        }
+        else if( input == "ModaleventService_id" ){
+          if(service_id){
+            document.getElementById(input).value = service_id;
+          }
+          else{
+            service_id = discountservice[0].Service_id;
+            document.getElementById(input).value = discountservice[0].Service_id;
+          }
+        }
+        else if( input == "ModaleventCustomer_id"){
+          let ModaleventCustomer_id = $('#ModaleventCustomer_id'); // Utilisez jQuery pour sélectionner l'élément
+          ModaleventCustomer_id.val(1); // Changez la valeur
+          ModaleventCustomer_id.trigger('change'); // Mettez à jour l'affichage de Select2
+          ModaleventCustomer_id.focus();
+          document.getElementById('Modalevent_Container_Customer_id').classList.add('blinking');        
+        }
+        else {
+          document.getElementById(input).value = '';
+        }
       });
-    } 
-    
-    await loadAndInitDatepicker(service_id,date_start,date_end);
-    console.log('end reform post loadandinitidatepicker');
-
+      discountIndicator.innerText = '';
+      document.getElementById("addEventModal_title").innerText = 'Ajouter';
+  
+  
+      let date_start = '';
+      let date_end = '';
+      if(!start){
+        date_start = format_date(getToday());
+        date_end = format_date(date_start,1);
+      }else {
+        date_start = start;
+        date_end = end;
+      }
+      
+      //RESET PAYMENT ROW
+      let temp_payments_row = document.querySelectorAll('div[id^="temp_"]');
+      if(temp_payments_row.length > 0){
+        // Parcourir et supprimer chaque div
+        temp_payments_row.forEach(div => {
+          div.parentNode.removeChild(div);
+        });
+      } 
+      
+      await loadAndInitDatepicker(service_id,date_start,date_end);
+  
+    }
   }
-}
 
 function openModal(modalId) {
   if (isAnimating) return; // Sort si une animation est déjà en cours
@@ -274,7 +273,7 @@ function shadowUndermodal(modal_id){
   return `<div id="${modal_id}-shadow_modal" class="fixed inset-0 bg-black opacity-50 hidden" onclick="closeModalById('${modal_id}')"></div>`;
 }
 
-function handleAddEventClick(date =false, service_id = false) {
+function handleAddEventClick(date = false, service_id = false) {
   resetForm('addEventModal',date,false,service_id);
 
   openModal('addEventModal');
