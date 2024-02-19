@@ -150,16 +150,17 @@ function openModal(modalId) {
       let previousModal = modalStack[modalStack.length - 1];
       previousModal.classList.add('blur-lg');
     }
-
+    
     currentZIndex +=1;
     //Ajoute à la pile
     modalStack.push(modalElement); 
     ShadowmodalStack.push(shadow_modal); 
   }  
   
-
+  
   var current_page_DIV = document.getElementById(urlLocation());
-    current_page_DIV.classList.add('blur-lg');
+  current_page_DIV.classList.add('blur-lg');
+  document.getElementById('footer').classList.add('blur-lg');
 
   setTimeout(function() {
     isAnimating = false; // Désactive l'indicateur d'animation une fois la modale fermée
@@ -189,8 +190,9 @@ function closeModal() {
     currentModal.classList.add("hidden");
     lastShadowModal.classList.add("hidden");
   }, 300);  
+  
+}
 
-  }
   else if(modalStack.length === 1 ){  
     var currentModal = modalStack.pop(); // Retire la dernière fenêtre modale de la pile
     var lastShadowModal = ShadowmodalStack.pop(); // Retire la dernière fenêtre modale de la pile
@@ -206,10 +208,11 @@ function closeModal() {
     }, 300);  
   }
   if(modalStack.length === 0  ){
-       var current_page_DIV = document.getElementById(urlLocation())
-       current_page_DIV.classList.remove('blur-lg');
+    var current_page_DIV = document.getElementById(urlLocation())
+    current_page_DIV.classList.remove('blur-lg');
+    document.getElementById('footer').classList.remove('blur-lg');
   }
-
+  
   setTimeout(function() {
     isAnimating = false; // Désactive l'indicateur d'animation une fois la modale fermée
   }, 350); // Assurez-vous que cette durée correspond à la durée de votre animation
@@ -241,11 +244,13 @@ function closeModalById(modalId) {
       previousModal.classList.remove("blur-lg");
     }
     else {
+      console.log('cool');
       var current_page_DIV = document.getElementById(urlLocation())
       current_page_DIV.classList.remove('blur-lg');
+      document.getElementById('footer').classList.remove('blur-lg');
     }
-}
-  
+  }
+
   // Retire la fenêtre modale spécifiée de la pile
   modalStack = modalStack.filter((modal) => modal.id !== modalId);
   

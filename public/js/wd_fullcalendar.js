@@ -159,10 +159,6 @@ document.addEventListener("DOMContentLoaded", function () {
       let serviceBooked = booking.services_titles;
       Object.entries(availableServices).forEach(([key, value]) => {
         if (value === serviceBooked) {
-          // Supposant que vous vouliez faire quelque chose avec `foundKey` ici.
-          // Néanmoins, soyez prudent : Si `foundKey` est utilisé en dehors de cette boucle,
-          // sa valeur sera celle de la dernière correspondance trouvée dans cette boucle.
-          let foundKey = value; 
           delete availableServices[key];
         }
       });
@@ -170,7 +166,6 @@ document.addEventListener("DOMContentLoaded", function () {
           let isBookingStartDay = booking.Date == booking.FirstDay.substring(0, 10);
           let isCurrentDay = booking.Date;
           let isBookingEndDay = booking.Date == booking.LastDay.substring(0, 10);
-          let message = "";
           
           // Start End Animation
           // Fonction pour créer le HTML de la marque du jour
@@ -223,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
           let classNameBg = "";
           let classNameDarkBg = "";
           let isavailable ="";
-          if (service_booked < availableServicesCount && !(isBookingEndDay && service_booked == 0) && !(isBookingStartDay && service_booked == 1)) {
+          if (service_booked <= availableServicesCount && (fullblockedFound ? fullblockedFound && isBookingEndDay : true ) && !(isBookingEndDay && service_booked == 0) && !(isBookingStartDay && service_booked >= 1) ) {
             classNameBg = "bg-green-500";
             classNameDarkBg = "dark:bg-green-800";
             isavailable = "available";
@@ -250,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
           html_construct = `
           <div class="absolute w-full h-full">
             <div class="relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg} ${classNameDarkBg}">
-          
+          ${service_booked}
             </div>
           </div>`;
         
