@@ -795,7 +795,6 @@ function loadAndInitDatepicker(service_id, start_date = false, end_date = false)
     var loader = document.querySelector('.loader');
     loader.style.display = 'block';
     loader.style.zIndex = 99;
-    console.log('fromServicepicker',fromServicepicker);
     // Si un datepicker existe déjà, retirez-le avant de créer un nouveau
     if (fromServicepicker) {
       fromServicepicker.destroy();

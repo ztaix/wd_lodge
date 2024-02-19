@@ -421,17 +421,15 @@ function addEvent() {
                 }
               });
               let payments_filtred = payments.filter(item => item !== undefined);
-              $.ajax({
-                url: baseurl + "paids/upsert",
-                method: "POST",
-                data: { 'payments' : payments_filtred},
-                success: function (response_paid) {
+              ajaxCall("paids/upsert", "POST", { 'payments' : payments_filtred}, function(response) {
+                if (response.success === true) {
+                  console.log('response',response);
                   let allSuccess = true;
                   let allErrors = [];
   
-                  for (let key in response_paid) {
-                      if (response_paid.hasOwnProperty(key)) {
-                          let res = response_paid[key];
+                  for (let key in response.data) {
+                      if (response.data.hasOwnProperty(key)) {
+                          let res = response.data[key];
                           if (!res.success) {
                               allSuccess = false;
                           }
@@ -444,10 +442,10 @@ function addEvent() {
                   if (allSuccess) {
                     var encaissement = 0;
                     // Parcourez l'objet reponse
-                    for (var key in response_paid) {
-                      if (response_paid.hasOwnProperty(key)) {
+                    for (var key in response.data) {
+                      if (response.data.hasOwnProperty(key)) {
                         // Accédez à la valeur "value" de chaque objet
-                        var value = response_paid[key].data.value;
+                        var value = response.data[key].data.value;
                         
                         // Checker si c'est bien un chiffre
                         if (!isNaN(parseFloat(value))) {
@@ -488,22 +486,15 @@ function addEvent() {
                     showBanner("Echec de la mise à jour des paiements !", false);
                     console.log('Erreurs: ', allErrors);
                   }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                  
-                  // En cas d'échec de la requête AJAX
-                  showBanner("Échec de la mise à jour des paiements ! Erreur : " + errorThrown, false);
-                  console.error("AJAX Error:", errorThrown); // Log the error for debugging
-                },
+                }
               });
 
             }
-            
           // Traitez la réponse ici
           showBanner(
             `<div class="flex flex-col">Evènement ajouté avec succès !</div>
               <div class="text-center">
-                Du <b>${ModaleventStart}</b> au <b>${ ModaleventEnd }</b>
+                Du <b>${format_date(ModaleventStart)}</b> au <b>${format_date(ModaleventEnd) }</b>
             </div>
             `,
             true

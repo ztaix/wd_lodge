@@ -364,7 +364,6 @@ async function showBookingDetailsFromID(id) {
 
 async function update_add_formEvent(data) {
   openModal("addEventModal");
-console.log('update_add_formEvent : data',data);
   // Changer le texte du bouton et son action pour l'ajout
   let submitButton = document.getElementById("add_submit_form");
   submitButton.onclick = function () {

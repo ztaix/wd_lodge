@@ -105,10 +105,13 @@ function showSearch() {
   
       let date_start = '';
       let date_end = '';
-      if(!start){
+      if(!start && !end){
         date_start = format_date(getToday());
         date_end = format_date(date_start,1);
-      }else {
+      }else if(start && !end) {
+        date_start = start;
+        date_end = format_date(date_start,1);
+      } else if(start && end){
         date_start = start;
         date_end = end;
       }
