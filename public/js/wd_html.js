@@ -556,3 +556,31 @@ function startTokenCountdown() {
       a_ttl.textContent = '';
   }
 }
+
+
+// Fullcalendar HTML UTILITIES
+// Fonction pour créer le HTML de la marque du jour
+function createDayMarker({ position, count, customerWay, additionalClasses = "" , isavailable}) {
+  let baseHtml = '';
+  if(customerWay === 'IN' ||customerWay === 'OUT'){
+    baseHtml = `
+    <div class="absolute flex justify-${position} w-full z-20">
+    
+    <div class="triangle ${position} ${isavailable} ${additionalClasses} ">
+    </div>
+    <div class="count justify-${position} my-0.5 mx-1 font-bold">
+        ${count > 0 ? count : "&nbsp;"}
+    </div>
+</div>
+`;
+  }
+  else{
+  baseHtml = `
+      <div class="absolute flex justify-${position} h-full w-full z-20 ">
+          <div class=" calendar_booked ${isavailable}  flex flex-col w-full">
+                    &nbsp;
+          </div>
+      </div>
+  `;}
+  return baseHtml;
+}

@@ -244,7 +244,6 @@ function closeModalById(modalId) {
       previousModal.classList.remove("blur-lg");
     }
     else {
-      console.log('cool');
       var current_page_DIV = document.getElementById(urlLocation())
       current_page_DIV.classList.remove('blur-lg');
       document.getElementById('footer').classList.remove('blur-lg');

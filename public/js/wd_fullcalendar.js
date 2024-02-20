@@ -126,141 +126,103 @@ document.addEventListener("DOMContentLoaded", function () {
     ///START
     eventContent: function (args) {
       let bookings = args.event.extendedProps.bookings; 
-
       //Service list extrat from php service insert (footer page)
-      const serviceTitlesObj = services_list
-      .filter(service => service.fullblocked !== "1")
-      .reduce((obj, service) => {
-        obj[service.Service_id] = service.Title;
+      const serviceTitlesObj = services_list.reduce((obj, service) => {
+        // Ici, nous utilisons `service.Service_id` comme clé.
+        // Et comme valeur, nous créons un nouvel objet contenant à la fois `Title` et `fullblocked`.
+        obj[service.Service_id] = {
+            Title: service.Title,
+            fullblocked: service.fullblocked
+        };
         return obj;
-      }, {});
+    }, {});
+      
+      const availableServicesCount = Object.keys(serviceTitlesObj).length;
 
+      //Define basic variable
+      let firstdayHtml = "";
+      let firstdayHtmlNumber = "";
+      let currentdayHtml = "";
+      let lastdayHtml = "";
+      let lastdayHtmlNumber = "";
+      let html_construct = '';
+      let COUNTisBookingStartDay = 0;
+      let COUNTisBookingEndDay = 0;
+      let roomsAvailable = availableServicesCount;
+      let classNameBg = "";
+      let classNameDarkBg = "";
+      let isavailable ="";
 
-    const availableServicesCount = Object.keys(serviceTitlesObj).length;
-    // Création d'un objet temporaire pour manipulation
-    let availableServices = {...serviceTitlesObj};
+      // Création d'un objet temporaire pour manipulation
+      // Début de la boucle ----->
+      let availableServices = {...serviceTitlesObj};
+      Object.entries(bookings).forEach(([bookingId, booking]) => {
+      
+        let isBookingStartDay = booking.Date == booking.FirstDay.substring(0, 10);
+        let isCurrentDay = booking.Date;
+        let isBookingEndDay = booking.Date == booking.LastDay.substring(0, 10);        
+        let services_titles = booking.services_titles;
 
-    let fullblockedFound = Object.values(bookings).some(booking => booking.fullblockeds === "1");
-
-    //Define basic variable
-    let firstdayHtml = "";
-    let firstdayHtmlNumber = "";
-    let currentdayHtml = "";
-    let lastdayHtml = "";
-    let lastdayHtmlNumber = "";
-    let html_construct = '';
-    let COUNTisBookingStartDay = 0;
-    let COUNTisBookingEndDay = 0;
-    let service_booked = 0;
-    let roomsAvailable = availableServicesCount; // initialiser avec le nombre total de chambres
-
-
-    Object.entries(bookings).forEach(([bookingId, booking]) => {
-      let serviceBooked = booking.services_titles;
-      Object.entries(availableServices).forEach(([key, value]) => {
-        if (value === serviceBooked) {
-          delete availableServices[key];
-        }
+        Object.entries(availableServices).forEach(([key, service]) => {
+          if (service.Title === services_titles) {
+              // Si le titre du service correspond et que 'fullblocked' est '1',
+              // alors on vide tous les services disponibles.
+              if (service.fullblocked === "1" && !isBookingEndDay) {
+                  // Vide complètement availableServices
+                  Object.keys(availableServices).forEach(serviceKey => {
+                      delete availableServices[serviceKey];
+                  });
+              } else {
+                  // Sinon, supprime juste ce service spécifique
+                  delete availableServices[key];
+              }
+          }
       });
- 
-          let isBookingStartDay = booking.Date == booking.FirstDay.substring(0, 10);
-          let isCurrentDay = booking.Date;
-          let isBookingEndDay = booking.Date == booking.LastDay.substring(0, 10);
-          
-          // Start End Animation
-          // Fonction pour créer le HTML de la marque du jour
-          function createDayMarker({ position, count, customerWay, additionalClasses = "" , isavailable}) {
-            let baseHtml = '';
-            if(customerWay === 'IN' ||customerWay === 'OUT'){
-              baseHtml = `
-              <div class="absolute flex justify-${position} w-full z-20">
-              
-              <div class="triangle ${position} ${isavailable} ${additionalClasses} ">
-              </div>
-              <div class="count justify-${position} my-0.5 mx-1 font-bold">
-                  ${count > 0 ? count : "&nbsp;"}
-              </div>
-          </div>
-          `;
-            }
-            else{
-            baseHtml = `
-                <div class="absolute flex justify-${position} h-full w-full z-20 ">
-                    <div class=" calendar_booked ${isavailable}  flex flex-col w-full">
-                             &nbsp;
-                    </div>
-                </div>
-            `;}
-            return baseHtml;
-          }
-          if (isBookingEndDay) {
-            COUNTisBookingEndDay++;
-            roomsAvailable++; // Une chambre se libère
-          }
 
-          if (isBookingStartDay) {
-            COUNTisBookingStartDay++;
-            fullblockedFound ? service_booked = availableServicesCount : service_booked++;
-            roomsAvailable--; // Une chambre est réservée
-          }
 
-          if (isCurrentDay && !isBookingStartDay && !isBookingEndDay) {
-          }
+        let roomsAvailableByService = Object.keys(availableServices).length;
 
-          if(isCurrentDay && !isBookingEndDay & !isBookingStartDay & !fullblockedFound){
-            service_booked++;
-          }  
-          if(fullblockedFound && !isBookingEndDay){
-            service_booked = availableServicesCount;
-          }
-
-          // Déterminer la couleur du BG
-          let classNameBg = "";
-          let classNameDarkBg = "";
-          let isavailable ="";
-          if (service_booked <= availableServicesCount && (fullblockedFound ? fullblockedFound && isBookingEndDay : true ) && !(isBookingEndDay && service_booked == 0) && !(isBookingStartDay && service_booked >= 1) ) {
-            classNameBg = "bg-green-500";
-            classNameDarkBg = "dark:bg-green-800";
-            isavailable = "available";
-            
-          } else if (service_booked == availableServicesCount) {
-            classNameBg = "bg-red-500";
-            classNameDarkBg = "dark:bg-red-800";
-            isavailable = "not-available";
-          }else {
-            classNameBg = "";
-            classNameDarkBg = "";
-            isavailable = "available";
-
-          }
-          if (isBookingEndDay) {
-            lastdayHtml = createDayMarker({ position: "start", count: COUNTisBookingEndDay, customerWay: "OUT", additionalClasses: "w-2/5  z-20", isavailable : isavailable });
-          }
-
-          if (isBookingStartDay) {
-            firstdayHtml = createDayMarker({ position: "end", count: COUNTisBookingStartDay, customerWay: "IN" , additionalClasses: "w-2/5  z-20", isavailable : isavailable });
-          }
-
-          
-          html_construct = `
-          <div class="absolute w-full h-full">
-            <div class="relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg} ${classNameDarkBg}">
-          
-            </div>
-          </div>`;
+        // Déterminer la couleur du BG
         
-    });
-  
+        if (roomsAvailableByService > 0) {
+          classNameBg = "bg-green-500";
+          classNameDarkBg = "dark:bg-green-800";
+          isavailable = "available";
+          
+        } else if (roomsAvailableByService <= 0) {
+          classNameBg = "bg-red-500";
+          classNameDarkBg = "dark:bg-red-800";
+          isavailable = "not-available";
+        }else {
+          classNameBg = "bg-purple-500 ";
+          classNameDarkBg = "dark;bg-purple-800";
+          isavailable = "not-available";
 
-   let dotsHtml =  html_construct + lastdayHtml + lastdayHtmlNumber + currentdayHtml + firstdayHtml + firstdayHtmlNumber;
-    // Créer un élément HTML pour représenter l'événement
-    let eventElement = document.createElement("div");
-    eventElement.className = `group relative flex justify-center items-end h-full text-black dark:text-white overflow-hidden
-    ${args.isPast?'opacity-30':''}  `;
-    eventElement.innerHTML = dotsHtml;
-      return {
-        domNodes: [eventElement],
-      };
+        }
+        if (isBookingEndDay) {
+          lastdayHtml = createDayMarker({ position: "start", count: COUNTisBookingEndDay, customerWay: "OUT", additionalClasses: "w-2/5  z-20", isavailable : isavailable });
+        }
+
+        if (isBookingStartDay) {
+          firstdayHtml = createDayMarker({ position: "end", count: COUNTisBookingStartDay, customerWay: "IN" , additionalClasses: "w-2/5  z-20", isavailable : isavailable });
+        }
+        
+        html_construct = `
+        <div class="absolute w-full h-full">
+          <div class="relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg} ${classNameDarkBg}">
+          ${roomsAvailableByService}
+          </div>
+        </div>`;
+      });
+      let dotsHtml =  html_construct + lastdayHtml + lastdayHtmlNumber + currentdayHtml + firstdayHtml + firstdayHtmlNumber;
+      // Créer un élément HTML pour représenter l'événement
+      let eventElement = document.createElement("div");
+      eventElement.className = `group relative flex justify-center items-end h-full text-black dark:text-white overflow-hidden
+      ${args.isPast?'opacity-30':''}  `;
+      eventElement.innerHTML = dotsHtml;
+        return {
+          domNodes: [eventElement],
+        };
     },
     /// END /////
     eventClick: function (info) {
@@ -358,6 +320,7 @@ function addEvent() {
     { id: "ModaleventType_doc", key: "Type_doc" },
     { id: "ModaleventComment", key: "Comment" },
     { id: "ModaleventFee", key: "Fee" },
+    { id: "ModaleventTax", key: "Tax" },
     { id: "ModaleventDatepicker", key: "start", isDate: true },
   ].forEach(({ id, key, isCheckbox, isDate }) => {
     let element = document.getElementById(id);
@@ -418,7 +381,7 @@ function addEvent() {
               let payments_filtred = payments.filter(item => item !== undefined);
               ajaxCall("paids/upsert", "POST", { 'payments' : payments_filtred}, function(response) {
                 if (response.success === true) {
-                  console.log('response',response);
+                  //console.log('response',response);
                   let allSuccess = true;
                   let allErrors = [];
   
@@ -497,6 +460,7 @@ function addEvent() {
           closeModal();
           setTimeout(() => {
             if (calendar) {
+              console.log('Calendrier rechargé');
               calendar.refetchEvents();
             }
           }, 200);
@@ -518,6 +482,7 @@ function addEvent() {
         }
         
       });
+
   } else {
     showBanner("Le formulaire est incomplet", false);
   }

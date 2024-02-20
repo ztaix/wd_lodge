@@ -204,12 +204,17 @@
   return dateObj;
   }
 
-  function format_date(input_date, daysToAdd = 0, shorter = false) {
+  function format_date(input_date, daysToAdd = 0, shorter = false, returnAsDateObject = false) {
     let dateObj = check_date(input_date);
     
     // Ajouter des jours si nécessaire
     dateObj.setDate(dateObj.getDate() + daysToAdd);
     
+    // Si l'utilisateur demande un objet Date, le retourner immédiatement
+    if (returnAsDateObject) {
+      return dateObj;
+  }
+
     // Récupérer le jour, le mois et l'année
     let day = String(dateObj.getDate()).padStart(2, "0");
     let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Les mois sont de 0 à 11
@@ -223,6 +228,9 @@
     }
     else if(shorter == 'DD/MM') {
       result = `${day}/${month}`;
+    }
+    else if(shorter == 'DD/MM/YYYY') {
+      result = `${day}/${month}/${year}`;
     }
     else if(shorter == 'DD') {
       result = `${day}`;
@@ -314,23 +322,26 @@
    * @return {array} liste des services disponible
    */
 function availableListServices(clickedDate,listService,booked){
+  console.log(booked);
   let availableServices = [];
 
-  const isFullBlocked = booked.some(reservation => 
-    reservation.fullblocked === "1" && format_date(reservation.end) >= clickedDate
+  const isFullBlocked = booked.some(b => 
+    b.fullblocked === "1" && 
+    format_date(clickedDate,0,false,true) >= format_date(b.start,0,false,true) && 
+    format_date(clickedDate,0,false,true) < format_date(b.end,0,false,true) 
+    
   );
   // Vérifier si un service est déjà réservé
-  const isAnyServiceBooked = booked.some(reservation => 
-    format_date(reservation.end) >= clickedDate
-  );
+  const isAnyServiceBooked = booked.some(b => 
+    format_date(b.end,0,false,true) >= format_date(clickedDate,0,false,true)
+    );
 
   if (!isFullBlocked) {
 
       // Convertir la liste des réservations en un ensemble des services non disponibles
-      const unavailableServiceIds = booked.reduce((set, reservation) => {
-        //te Si la date de fin est strictement supérieure à todayDa, le service est considéré comme indisponible
-        if (format_date(reservation.end) > format_date(clickedDate)) {
-          set.add(reservation.Service_id);
+      const unavailableServiceIds = booked.reduce((set, b) => {
+        if (format_date(b.end,0,false,true) > format_date(clickedDate,0,false,true)) {
+          set.add(b.Service_id);
         }
         return set;
       }, new Set());
@@ -342,12 +353,15 @@ function availableListServices(clickedDate,listService,booked){
         }
         // Sinon, filtrer normalement en se basant sur unavailableServiceIds
         return !unavailableServiceIds.has(service.Service_id) ||
-            booked.some(reservation => 
-                reservation.Service_id === service.Service_id && format_date(reservation.end) === clickedDate
+            booked.some(b => 
+                b.Service_id === service.Service_id && format_date(b.end,0,false,true) === format_date(clickedDate,0,false,true)
             );
     });
+  } else {
+    // Si isFullBlocked est vrai, tous les services sont considérés comme indisponibles,
+    // donc on ne retourne aucun service disponible.
+    availableServices = []; // Aucun service disponible
   }
-
   return availableServices;
 
 }
