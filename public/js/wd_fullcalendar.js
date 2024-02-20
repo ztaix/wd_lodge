@@ -178,7 +178,12 @@ document.addEventListener("DOMContentLoaded", function () {
               }
           }
       });
-
+      if(isBookingEndDay){
+        COUNTisBookingEndDay++;
+      }
+      if(isBookingStartDay){
+        COUNTisBookingStartDay++;
+      }
 
         let roomsAvailableByService = Object.keys(availableServices).length;
 
@@ -210,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
         html_construct = `
         <div class="absolute w-full h-full">
           <div class="relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg} ${classNameDarkBg}">
-          ${roomsAvailableByService}
+          
           </div>
         </div>`;
       });
