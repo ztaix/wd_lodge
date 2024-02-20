@@ -367,7 +367,7 @@ class BookingController extends BaseController
 
     public function getBookingsFromCustomer()
     {
-        $customer_id = $this->request->getGet('customer_id');
+        $customer_id = $this->request->getGet('Customer_id');
         $Type_doc = $this->request->getGet('Type_doc');
         $customer_info = $this->CustomerModel->get_customer_info($customer_id);
         if ($customer_id) {

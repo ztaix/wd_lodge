@@ -322,7 +322,6 @@
    * @return {array} liste des services disponible
    */
 function availableListServices(clickedDate,listService,booked){
-  console.log(booked);
   let availableServices = [];
 
   const isFullBlocked = booked.some(b => 

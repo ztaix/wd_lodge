@@ -138,39 +138,39 @@ function showBookingList(response, clickedDate) {
   container.innerHTML = ""; 
   modalTitle.innerHTML = getDayOfWeek(format_date(newDateStr)) + ' ' + newDateStr;
   
-// Supposons que newDateStr contienne la date du jour au format "YYYY-MM-DD"
-const newDateStr2 = new Date().toISOString().split('T')[0];
+  // Supposons que newDateStr contienne la date du jour au format "YYYY-MM-DD"
+  const newDateStr2 = new Date().toISOString().split('T')[0];
 
-response.sort((a, b) => {
-  // Extraire les dates de début et de fin, et les convertir au format "YYYY-MM-DD"
-  let startA = a.start.split(' ')[0];
-  let startB = b.start.split(' ')[0];
-  let endA = a.end.split(' ')[0];
-  let endB = b.end.split(' ')[0];
-  
-  // Comparer les dates de début avec la date du jour
-  let isStartTodayA = startA === newDateStr2;
-  let isStartTodayB = startB === newDateStr2;
-  
-  if (isStartTodayA && !isStartTodayB) return -1; // a commence aujourd'hui, b non
-  if (!isStartTodayA && isStartTodayB) return 1;  // b commence aujourd'hui, a non
-  
-  // Si les deux commencent ou ne commencent pas aujourd'hui, comparer les dates de fin
-  let isEndTodayA = endA === newDateStr2;
-    let isEndTodayB = endB === newDateStr2;
+  response.sort((a, b) => {
+    // Extraire les dates de début et de fin, et les convertir au format "YYYY-MM-DD"
+    let startA = a.start.split(' ')[0];
+    let startB = b.start.split(' ')[0];
+    let endA = a.end.split(' ')[0];
+    let endB = b.end.split(' ')[0];
+    
+    // Comparer les dates de début avec la date du jour
+    let isStartTodayA = startA === newDateStr2;
+    let isStartTodayB = startB === newDateStr2;
+    
+    if (isStartTodayA && !isStartTodayB) return -1; // a commence aujourd'hui, b non
+    if (!isStartTodayA && isStartTodayB) return 1;  // b commence aujourd'hui, a non
+    
+    // Si les deux commencent ou ne commencent pas aujourd'hui, comparer les dates de fin
+    let isEndTodayA = endA === newDateStr2;
+      let isEndTodayB = endB === newDateStr2;
 
-    if (isEndTodayA && !isEndTodayB) return -1; // a se termine aujourd'hui, b non
-    if (!isEndTodayA && isEndTodayB) return 1;  // b se termine aujourd'hui, a non
-    
-    // Si les deux se terminent ou ne se terminent pas aujourd'hui, comparer les titres de service
-    let serviceTitleA = a.service_title.toLowerCase();
-    let serviceTitleB = b.service_title.toLowerCase();
-    
-    if (serviceTitleA < serviceTitleB) return -1; // a vient avant b dans l'ordre alphabétique
-    if (serviceTitleA > serviceTitleB) return 1;  // a vient après b dans l'ordre alphabétique
-    
-    return 0; // a et b sont équivalents
-  });
+      if (isEndTodayA && !isEndTodayB) return -1; // a se termine aujourd'hui, b non
+      if (!isEndTodayA && isEndTodayB) return 1;  // b se termine aujourd'hui, a non
+      
+      // Si les deux se terminent ou ne se terminent pas aujourd'hui, comparer les titres de service
+      let serviceTitleA = a.service_title.toLowerCase();
+      let serviceTitleB = b.service_title.toLowerCase();
+      
+      if (serviceTitleA < serviceTitleB) return -1; // a vient avant b dans l'ordre alphabétique
+      if (serviceTitleA > serviceTitleB) return 1;  // a vient après b dans l'ordre alphabétique
+      
+      return 0; // a et b sont équivalents
+    });
   
     
   let count_row_found = 0;
@@ -183,14 +183,14 @@ response.sort((a, b) => {
     ? booking.paids_values.split(",").map(Number)
     : [0];
 
-  let paids_sum = array_paids_values.reduce(
+    let paids_sum = array_paids_values.reduce(
     (total, currentValue) => total + currentValue,
     0
-  );
-  let TOTALprice = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);  
+    );
+    let TOTALprice = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.nDays);  
 
 
-  let status_paidObj = generateStatusPaid(paids_sum,TOTALprice);
+    let status_paidObj = generateStatusPaid(paids_sum,TOTALprice);
 
     let bookingElement = `
         <div id="booking_list_row_${booking.id}" class="group flex flex-col px-4 rounded-t-lg text-slate-700 dark:text-white hover:bg-white-50 dark:hover:bg-black-50 border-b-2 hover:rounded-none border-slate-300 dark:border-slate-700" >
