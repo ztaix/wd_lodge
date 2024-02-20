@@ -263,7 +263,6 @@ function updateEventFromDetails() {
     }else {formData[key] = element.value;}
   });
   //UPDATE FORM BOOKING
-  console.log('formadata',formData);
   // Étape 1 : Mise à jour de la réservation
   ajaxCall("booking/updateBooking", "POST", { data : formData }, function(response) {
       if (response.success === true) {
