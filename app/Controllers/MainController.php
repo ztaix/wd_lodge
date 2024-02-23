@@ -11,7 +11,6 @@ class MainController extends Controller
     public function __construct()
     {
         $this->ConfigurationModel = new \App\Models\ConfigurationModel();
-        
     }
 
     public function index()
@@ -19,14 +18,12 @@ class MainController extends Controller
         // Logique pour la page d'accueil (calendrier)
         $calendarController = new \App\Controllers\BookingController();
         return $calendarController->ReturnView();
-
     }
     public function Calender()
     {
         // Logique pour la page d'accueil (calendrier)
         $calendarController = new \App\Controllers\BookingController();
         return $calendarController->ReturnView();
-
     }
     public function Customers()
     {

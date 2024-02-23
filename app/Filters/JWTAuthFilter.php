@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Filters;
 
 
@@ -17,8 +18,8 @@ class JWTAuthFilter implements FilterInterface
         try {
             $key = "votre_cle_secrete"; // La même clé secrète utilisée pour générer le token
             $authHeader = $request->getHeaderLine('Authorization');
-  
-            
+
+
             if (!$authHeader) {
                 throw new Exception('Token non fourni');
             }
@@ -27,15 +28,15 @@ class JWTAuthFilter implements FilterInterface
             if (!$token) {
                 throw new Exception('Token mal formé');
             }
-            
+
             $arr = explode(' ', $authHeader);
-            
+
             if ($arr[0] === 'Bearer' && isset($arr[1])) {
                 $token = $arr[1];
                 JWT::decode($token, new Key($key, 'HS256'));
                 // Le token est valide
-                
-                return ;
+
+                return;
             }
         } catch (Exception $e) {
             return Services::response()

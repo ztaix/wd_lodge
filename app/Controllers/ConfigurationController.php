@@ -58,66 +58,60 @@ class ConfigurationController extends BaseController
 
     public function saveConfigurations()
     {
-        $data_config_to_save = []; 
-        $data_service_to_save = []; 
-        $serviceId = null; // Initialiser le service_id
+        // Initialiser les tableaux pour sauvegarder les configurations et les services.
+        $data_config_to_save = [];
+        $data_service_to_save = [];
 
-        $postData = $this->request->getPost();
+        // Récupérer les données envoyées en JSON.
+        $postData = $this->request->getJSON(true); // Assurez-vous que les données sont envoyées en JSON depuis le client.
+
+        // Parcourir les données postées.
         foreach ($postData as $config_id_key => $data_value) {
-            if(is_numeric($config_id_key)){  
-  
+            if (is_numeric($config_id_key)) {
+                // Ajouter les configurations simples.
                 $data_config_to_save[] = [
                     'config_id' => $config_id_key,
                     'Data' => $data_value
                 ];
+            } else {
+                // Traiter les données de service.
+                if (preg_match('/Service_id_(\d+)/', $config_id_key, $matches)) {
+                    $serviceId = $matches[1];
+                } elseif (preg_match('/(\w+)_(\d+)/', $config_id_key, $matches)) {
+                    $serviceId = $matches[2];
+                    $attribute = strtolower($matches[1]);
+                    $data_service_to_save[$serviceId][$attribute] = $data_value;
+                }
             }
-            else{
-              
-                    // Extrait le numéro ID à la fin de la chaîne 'Service_id_n'
-                    if (preg_match('/Service_id_(\d+)/', $config_id_key, $matches)) {
-                        $serviceId = $matches[1];
-                        // Pas besoin d'ajouter 'service_id' au tableau
-                    } elseif (preg_match('/(\w+)_(\d+)/', $config_id_key, $matches)) {
-                        $serviceId = $matches[2];
-                        $attribute = strtolower($matches[1]);
-                        // Ajoute les autres attributs au tableau de services sous le bon service ID
-                        $data_service_to_save[$serviceId][$attribute] = $data_value;
-                    }
-                }   
-            }
+        }
 
-        // Vérification et traitement de l'image téléchargée
-        $uploadedImage = $this->request->getFile(2);
-        $imagePath = '';
+        // Gérer le téléchargement de l'image.
+        $uploadedImage = $this->request->getFile('logo'); // Remplacer 'logo' par le nom réel du champ de fichier.
+        if ($uploadedImage && $uploadedImage->isValid() && !$uploadedImage->hasMoved()) {
+            $newName = $uploadedImage->getRandomName(); // Générer un nouveau nom de fichier aléatoire.
+            $uploadedImage->move(WRITEPATH . 'uploads', $newName); // Déplacer l'image téléchargée.
+            $imagePath = base_url('/uploads/' . $newName); // Construire le chemin d'accès de l'image.
 
-        
-        if ($uploadedImage->isValid() && !$uploadedImage->hasMoved()) {
-            $newName = $uploadedImage->getRandomName();  // Génère un nouveau nom aléatoire
-            $uploadedImage->move(WRITEPATH . 'uploads', $newName);  // Déplace le fichier vers le dossier "uploads"
-
-            $imagePath = base_url() . 'uploads/' . $newName;
+            // Ajouter le chemin de l'image au tableau des configurations à sauvegarder.
             $data_config_to_save[] = [
-                'config_id' => 2, // Remplacez 'id_pour_image' par l'ID que vous utilisez pour le champ d'image dans la base de données
+                'config_id' => 2, // Assurez-vous que cela correspond à l'ID de votre configuration pour l'image.
                 'Data' => $imagePath
             ];
         }
 
-       if (!$this->ConfigurationModel->saveConfigurations($data_config_to_save)) {
-            // Enregistrement a échoué
-            
-             return redirect()->to('Config')->with('message', 'Erreur lors de l\'enregistrement de la configuration');
-        }
-        
-        if (!$this->ServiceModel->upsert($data_service_to_save)) {
-            // Enregistrement a échoué
-            
-             return redirect()->to('Config')->with('message', 'Erreur lors de l\'enregistrement de la configuration');
-        }
-        else{
-            var_dump('reussi');
+        // Enregistrer les configurations.
+        if (!$this->ConfigurationModel->saveConfigurations($data_config_to_save)) {
+            // Gérer l'échec de l'enregistrement des configurations.
+            return $this->response->setJSON(['success' => false, 'message' => 'Erreur lors de l\'enregistrement des configurations.']);
         }
 
-       return redirect()->to('Config')->with('message', 'Configuration enregistrée avec succès');
+        // Enregistrer les services.
+        if (!empty($data_service_to_save) && !$this->ServiceModel->upsert($data_service_to_save)) {
+            // Gérer l'échec de l'enregistrement des services.
+            return $this->response->setJSON(['success' => false, 'message' => 'Erreur lors de l\'enregistrement des services.']);
+        }
+
+        // Tout s'est bien passé.
+        return $this->response->setJSON(['success' => true, 'message' => 'Configuration enregistrée avec succès.']);
     }
-    
 }

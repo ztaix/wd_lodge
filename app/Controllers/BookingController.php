@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+
 use CodeIgniter\HTTP\ResponseInterface;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -54,7 +55,7 @@ class BookingController extends BaseController
     public function getBookings($service_id = false, $fullblocked = false)
     {
 
-        $bookings = $this->BookingModel->getAllBookings($service_id,$fullblocked);
+        $bookings = $this->BookingModel->getAllBookings($service_id, $fullblocked);
         // Regroupez les réservations par jour
         $grouped = [];
         foreach ($bookings as $booking) {
@@ -75,11 +76,11 @@ class BookingController extends BaseController
                         'fullblocked' => [],
                         'colors' => [],
                         'bookings' => []
-                        ];
+                    ];
                 }
 
                 if (!isset($grouped[$date]['bookings'][$booking['id']])) {
-                    
+
                     $booking_paids = [];
                     $booking_paids_ids = [];
 
@@ -89,11 +90,11 @@ class BookingController extends BaseController
                     $types_paids = is_null($booking['types_paids']) ? [] : explode(',', $booking['types_paids']);
                     $paids_values = is_null($booking['paids_values']) ? [] : explode(',', $booking['paids_values']);
                     $paids_sum = array_sum($paids_values);
-                    
+
                     foreach ($booking_paids_ids as $index => $id) {
                         $booking_paids[$id] = [
                             // Utiliser l'opérateur null coalescent pour éviter les erreurs d'index
-                            'type_paid' => $types_paids[$index] ?? null, 
+                            'type_paid' => $types_paids[$index] ?? null,
                             'value' => $paids_values[$index] ?? null
                         ];
                     }
@@ -126,13 +127,13 @@ class BookingController extends BaseController
 
 
                 // Ajoutez les couleurs uniques à la liste globale des couleurs pour la date
-            if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
-                $grouped[$date]['colors'][] = $booking['service_color'];
-            }
+                if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
+                    $grouped[$date]['colors'][] = $booking['service_color'];
+                }
                 // Ajoutez les couleurs uniques à la liste globale des couleurs pour la date
-            if (!in_array($booking['fullblocked'], $grouped[$date]['fullblocked'])) {
-                $grouped[$date]['fullblocked'][] = $booking['fullblocked'];
-            }
+                if (!in_array($booking['fullblocked'], $grouped[$date]['fullblocked'])) {
+                    $grouped[$date]['fullblocked'][] = $booking['fullblocked'];
+                }
                 $startDate->modify('+1 day'); // Passer au jour suivant
             }
         }
@@ -156,7 +157,7 @@ class BookingController extends BaseController
     public function getBookingsfromDatepicker($service_id = false, $fullblocked = false)
     {
 
-        $bookings = $this->BookingModel->getAllBookingsFromDatepicker($service_id,$fullblocked);
+        $bookings = $this->BookingModel->getAllBookingsFromDatepicker($service_id, $fullblocked);
         // Regroupez les réservations par jour
         $grouped = [];
         foreach ($bookings as $booking) {
@@ -180,11 +181,11 @@ class BookingController extends BaseController
                         'fullblocked' => [],
                         'colors' => [],
                         'details_bookings' => [],
-                        ];
+                    ];
                 }
 
                 if (!isset($grouped[$date]['details_bookings'][$booking['id']])) {
-                    
+
                     $booking_paids = [];
                     $booking_paids_ids = [];
                     if (!empty($booking['paids_ids']) && strlen($booking['paids_ids']) > 1) {
@@ -195,7 +196,7 @@ class BookingController extends BaseController
                     if (!empty($booking['paids_values'])) {
                         $paids_values = explode(',', $booking['paids_values']);
                     }
-            
+
                     $paids_sum = array_sum($paids_values);
                     foreach ($booking_paids_ids as $index => $id) {
                         $booking_paids[$id] = [
@@ -227,13 +228,13 @@ class BookingController extends BaseController
 
 
                 // Ajoutez les couleurs uniques à la liste globale des couleurs pour la date
-            if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
-                $grouped[$date]['colors'][] = $booking['service_color'];
-            }
+                if (!in_array($booking['service_color'], $grouped[$date]['colors'])) {
+                    $grouped[$date]['colors'][] = $booking['service_color'];
+                }
                 // Ajoutez les couleurs uniques à la liste globale des couleurs pour la date
-            if (!in_array($booking['fullblocked'], $grouped[$date]['fullblocked'])) {
-                $grouped[$date]['fullblocked'][] = $booking['fullblocked'];
-            }
+                if (!in_array($booking['fullblocked'], $grouped[$date]['fullblocked'])) {
+                    $grouped[$date]['fullblocked'][] = $booking['fullblocked'];
+                }
                 $startDate->modify('+1 day'); // Passer au jour suivant
             }
         }
@@ -297,7 +298,7 @@ class BookingController extends BaseController
                     $grouped[$date]['paids'][] = $paid; // Ajoutez 'Paid' s'il n'est pas déjà dans le tableau
                 }
                 if (!in_array($QtTraveller, $grouped[$date]['QtTraveller'])) {
-                    $grouped[$date]['QtTraveller'][] = $QtTraveller; 
+                    $grouped[$date]['QtTraveller'][] = $QtTraveller;
                 }
                 if (!in_array($fullblocked, $grouped[$date]['fullblocked'])) {
                     $grouped[$date]['fullblocked'][] = $fullblocked; // Ajoutez 'fullblocked' s'il n'est pas déjà dans le tableau
@@ -338,20 +339,18 @@ class BookingController extends BaseController
 
     public function getBookingsFromDate()
     {
-        
+
         $date = $this->request->getGet('date');
         $BookingModel = $this->BookingModel->getBookingsFromDate($date);
-        if($BookingModel){
+        if ($BookingModel) {
             $response = [
                 'events' => $BookingModel,
                 'clickedDate' => $date
             ];
             return $this->response->setJSON(['success' => true, 'data' => $response]);
-        }
-        else{
+        } else {
             return $this->response->setJSON(['success' => false, 'data' => null]);
         }
-
     }
 
     public function getBookingFromID($booking_id = false)
@@ -371,17 +370,16 @@ class BookingController extends BaseController
         $Type_doc = $this->request->getGet('Type_doc');
         $customer_info = $this->CustomerModel->get_customer_info($customer_id);
         if ($customer_id) {
-            $bookings = $this->BookingModel->getBookingsFromCustomer($customer_id,$Type_doc);
+            $bookings = $this->BookingModel->getBookingsFromCustomer($customer_id, $Type_doc);
             if (!empty($bookings)) {
-                return $this->response->setJSON(['success' => true, 'error'=> null, 'bookings' => $bookings, 'customers' => $customer_info]);
-            }
-            else{
+                return $this->response->setJSON(['success' => true, 'error' => null, 'bookings' => $bookings, 'customers' => $customer_info]);
+            } else {
                 $error = "Aucune réservation trouvé.";
-                return $this->response->setJSON(['success' => true, 'error'=> $error, 'bookings' => $bookings, 'customers' => $customer_info]);
+                return $this->response->setJSON(['success' => true, 'error' => $error, 'bookings' => $bookings, 'customers' => $customer_info]);
             }
         } else {
             $error = "ERROR, Aucun client n'a été trouvé avec l'ID : " . $customer_id;
-            return $this->response->setJSON(['success' => false, 'error'=> $error, 'bookings' => null, 'customers' => $customer_id]);
+            return $this->response->setJSON(['success' => false, 'error' => $error, 'bookings' => null, 'customers' => $customer_id]);
         }
     }
 
@@ -395,16 +393,17 @@ class BookingController extends BaseController
 
     public function updateBooking()
     {
-        $data = $this->request->getPost('data');
+
+        $data = $this->request->getJSON(true);
         $id = $data['id'] ?? null; // Utilisation de l'opérateur null coalescent
-    
+
         // Assurez-vous que $id et $data contiennent des valeurs valides
         if ($id === null || empty($data)) {
             return $this->response->setJSON(['success' => false, 'error' => 'ID ou données manquantes.', 'data' => $data]);
         }
-    
+
         unset($data['id']); // Retirez 'id' de $data avant la mise à jour
-    
+
 
         if ($this->BookingModel->validate($data)) {  // Utilisez les règles de validation définies dans le modèle
             if ($this->BookingModel->update($id, $data)) {
@@ -420,13 +419,9 @@ class BookingController extends BaseController
 
     public function addBooking()
     {
-        header("application/x-www-form-urlencoded; charset=UTF-8");
-        // Vérifiez si la requête est une requête POST
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->response->setJSON(['status' => 'fail', 'error' => 'Only POST requests are allowed']);
-        }
+        $booking_data = $this->request->getJSON(true); // Récupère le corps de la requête JSON comme tableau associatif
 
-        $booking_data = $this->request->getPost();
+        // $booking_data = $this->request->getPost();
 
         // Chargement du modèle
 
@@ -443,24 +438,23 @@ class BookingController extends BaseController
 
     public function deleteBooking()
     {
-        $booking_id = $this->request->getPost('id'); // Récupérez l'ID de la réservation à supprimer depuis la requête POST
+        $booking_data = $this->request->getJSON(true); // Récupère le corps de la requête JSON comme tableau associatif
 
         // Utilisez la fonction deleteBooking pour supprimer la réservation
-        $bookingDelete = $this->BookingModel->deleteBooking($booking_id);
+        $bookingDelete = $this->BookingModel->deleteBooking($booking_data['id']);
 
         if ($bookingDelete) {
-            $paidBookingDelete = $this->PaidModel->deletePaidsFromBooking($booking_id);
-            if($paidBookingDelete){
+            $paidBookingDelete = $this->PaidModel->deletePaidsFromBooking($booking_data['id']);
+            if ($paidBookingDelete) {
                 // La suppression a réussi
                 return $this->response->setJSON(['success' => true]);
-            }
-            else{
+            } else {
                 // La suppression a réussi
                 return $this->response->setJSON(['success' => true]);
             }
         } else {
             // La suppression a échoué
-            $message = "La suppression à échoué"; 
+            $message = "La suppression à échoué";
             return $this->response->setJSON(['success' => false, 'error' => $message]);
         }
     }
@@ -561,7 +555,7 @@ class BookingController extends BaseController
                 // Envoyer les en-têtes HTTP appropriés
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: inline; filename="' . "$origine-$id.pdf" . '"');
-        
+
                 // Envoyer le PDF au navigateur
                 $dompdf->stream("$origine-$id.pdf", array("Attachment" => false, 'mime' => 'application/pdf'));
                 $pdfOutput = $dompdf->output();
@@ -573,7 +567,7 @@ class BookingController extends BaseController
                 $output = $dompdf->output();
                 $tempDir = WRITEPATH . 'uploads/temp/';
                 //$fileName = uniqid("pdf_") . ".pdf"; // Générer un nom de fichier unique
-                $fileName = $entreprise ."_".$bookingData['Type_doc']."#".$id . ".pdf"; // Générer un nom de fichier unique
+                $fileName = $entreprise . "_" . $bookingData['Type_doc'] . "#" . $id . ".pdf"; // Générer un nom de fichier unique
                 $filePath = $tempDir . $fileName;
 
                 // Assurez-vous que le répertoire temporaire existe
@@ -584,7 +578,6 @@ class BookingController extends BaseController
                 file_put_contents($filePath, $output); // Sauvegarde le PDF
                 return $filePath; // Retourne le chemin du fichier
             }
-
         } catch (\Firebase\JWT\ExpiredException $e) {
             // Gérer un token expiré
             return $this->response->setStatusCode(401)->setJSON(['success' => false, 'message' => 'Token expiré']);
@@ -648,10 +641,10 @@ class BookingController extends BaseController
 
         $email->initialize($config);
 
-        $email->setFrom($SMTPCredential['mail'], $seller[0][0]['Data']); 
+        $email->setFrom($SMTPCredential['mail'], $seller[0][0]['Data']);
         $email->setReplyTo($seller[0][3]['Data'], $seller[0][0]['Data']);
         $email->setTo($customerData['Email']); // Définissez le destinataire
-        $email->setSubject($seller[0][0]['Data']. ' - ' . $bookingData['Type_doc']. ' : Information de réservation'); // Définissez le sujet
+        $email->setSubject($seller[0][0]['Data'] . ' - ' . $bookingData['Type_doc'] . ' : Information de réservation'); // Définissez le sujet
         $email->setMessage($html); // Ajoutez le corps de l'email
         // Chemin vers le fichier que vous souhaitez joindre
         // Attachez le PDF à l'e-mail
@@ -659,18 +652,18 @@ class BookingController extends BaseController
         if ($email->send()) {
             unlink($pdfFilePath);
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                  ->setJSON([
-                                      'success' => true
-                                  ]);
+                ->setJSON([
+                    'success' => true
+                ]);
         } else {
             unlink($pdfFilePath);
             $error = $email->printDebugger(['headers']);
             log_message('error', 'Email sending failed: ' . $error);
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
-                                  ->setJSON([
-                                      'success' => false,
-                                      'message' => 'Échec de l’envoi de l’email. ' . $error . print_r($SMTPCredential['mail'])
-                                  ]);
+                ->setJSON([
+                    'success' => false,
+                    'message' => 'Échec de l’envoi de l’email. ' . $error . print_r($SMTPCredential['mail'])
+                ]);
         }
     }
 }

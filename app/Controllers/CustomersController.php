@@ -1,10 +1,10 @@
-<?php 
+<?php
 
 namespace App\Controllers;
 
 class CustomersController extends BaseController
 {
-/**
+    /**
      * @var \App\Models\CustomerModel
      */
     private $CustomerModel;
@@ -18,7 +18,6 @@ class CustomersController extends BaseController
         $this->ServiceModel = new \App\Models\ServiceModel();
         $this->BookingModel = new \App\Models\BookingModel();
         $this->ConfigModel = new \App\Models\ConfigurationModel();
-
     }
 
     public function ReturnView()
@@ -33,8 +32,8 @@ class CustomersController extends BaseController
             'discountRules' => $this->ConfigModel->DiscountRules(),
 
         ];
-        
-        
+
+
         $view1 = view('Customer_view', $data);
 
         $datas['contents_views'] = $view1;
@@ -44,15 +43,17 @@ class CustomersController extends BaseController
 
     public function get_customer_info()
     {
-        $customer_id = $this->request->getGet('customer_id'); 
-    
+        $customer_id = $this->request->getGet('customer_id');
+
         if ($customer_id) {
             $customer_info = $this->CustomerModel->get_customer_info($customer_id);
-            $data = [   'Customer_id' => $customer_info['Customer_id'],
-                        'Name' => $customer_info['Name'],
-                        'Phone' => $customer_info['Phone'],
-                        'Email' => $customer_info['Email'],
-                        'Comment' => $customer_info['Comment']];
+            $data = [
+                'Customer_id' => $customer_info['Customer_id'],
+                'Name' => $customer_info['Name'],
+                'Phone' => $customer_info['Phone'],
+                'Email' => $customer_info['Email'],
+                'Comment' => $customer_info['Comment']
+            ];
 
             return $this->response->setJSON([
                 'success' => true,
@@ -62,44 +63,46 @@ class CustomersController extends BaseController
             return $this->response->setJSON(['succes' => false, 'message' => 'Paramètre du client manquant']);
         }
     }
-    
-    public function create_customer() {
-        $data = $this->request->getPost();
-   
-        if ($row = $data['data']) {
 
-            $result = $this->CustomerModel->save($row);
+    public function create_customer()
+    {
+        $customerData = $this->request->getJSON(true); // Récupère le corps de la requête JSON comme tableau associatif
+        //$customerData = $this->request->getPost();
+
+        if ($customerData) {
+
+            $result = $this->CustomerModel->save($customerData);
             // Vérifiez si l'insertion a réussi
             if ($result == true) {
-                $data = ['id' => $this->CustomerModel->insertID(),
-                        'Name' => $row['Name'],
-                        'Phone' => $row['Phone'],
-                        'Email' => $row['Email'],
-                        'Comment' => $row['Comment'],
+                $data = [
+                    'id' => $this->CustomerModel->insertID(),
+                    'Name' => $customerData['Name'],
+                    'Phone' => $customerData['Phone'],
+                    'Email' => $customerData['Email'],
+                    'Comment' => $customerData['Comment'],
                 ];
-            return $this->response->setJSON([ 'success' => true, 'error'=> null, 'data'=> $data]); 
-            }
-            else{
+                return $this->response->setJSON(['success' => true, 'error' => null, 'data' => $data]);
+            } else {
                 $errors = $this->CustomerModel->errors();
                 $error = 'Erreur lors de l\'insertion des données.';
                 foreach ($errors as $key => $value) {
-                    $error .= '<br>Le champs: '. $key.'<br> CODE: '.$value;
+                    $error .= '<br>Le champs: ' . $key . '<br> CODE: ' . $value;
                 }
-                return $this->response->setJSON(['success' => false, 'error'=> $error, 'errors' => $row]);
+                return $this->response->setJSON(['success' => false, 'error' => $error, 'errors' => $customerData]);
             }
         } else {
-            $error = 'Requète ne retourne aucune données:'. $row ;
+            $error = 'Requète ne retourne aucune données:' . $customerData;
             return $this->response->setJSON(['success' => false, 'error' =>  $error]);
         }
     }
-    
+
 
     public function update_customerFromID()
     {
-        $customer_info = $this->request->getPost();
+        $customer_info = $this->request->getJSON(true); // Récupère le corps de la requête JSON comme tableau associatif
 
         if (isset($customer_info['Customer_id']) && !empty($customer_info['Customer_id'])) {
-            $id = $customer_info['Customer_id']; 
+            $id = $customer_info['Customer_id'];
 
             try {
                 // Si delete est true, on passe NULL comme deuxième argument pour indiquer la suppression
@@ -107,22 +110,23 @@ class CustomersController extends BaseController
 
                 // Tentative de mise à jour ou de suppression
                 $updated = $this->CustomerModel->update_customer($id, $delete ? null : $customer_info, $delete);
-                
+
                 if ($updated === false) {
                     // Utilisez la méthode errors() pour obtenir les messages d'erreur
-                    $message = 'Erreur dans la mise à jour de l\'utilisateur avec l\'ID: '. $id ;
-                    log_message('error', 'Erreur de mise à jour:'.$id);
-                    return $this->response->setJSON(['success' => false, 'error' => $message, 'customer_info' => $customer_info ]);
+                    $message = 'Erreur dans la mise à jour de l\'utilisateur avec l\'ID: ' . $id;
+                    log_message('error', 'Erreur de mise à jour:' . $id);
+                    return $this->response->setJSON(['success' => false, 'error' => $message, 'customer_info' => $customer_info]);
                 }
-                $message = $delete ? 'Suppression du client avec l\'ID: '.$id : 'Mise à jours du client avec l\'ID: '. $id;
+                $message = $delete ? 'Suppression du client avec l\'ID: ' . $id : 'Mise à jours du client avec l\'ID: ' . $id;
                 return $this->response->setJSON(['success' => true, 'message' => $message]);
-                
             } catch (\Exception $e) {
-                log_message('error', "Exception lors de la mise à jour: Message: " . $e->getMessage() .
-                                    ", Code: " . $e->getCode() .
-                                    ", File: " . $e->getFile() .
-                                    ", Line: " . $e->getLine() .
-                                    ", Trace: " . $e->getTraceAsString()
+                log_message(
+                    'error',
+                    "Exception lors de la mise à jour: Message: " . $e->getMessage() .
+                        ", Code: " . $e->getCode() .
+                        ", File: " . $e->getFile() .
+                        ", Line: " . $e->getLine() .
+                        ", Trace: " . $e->getTraceAsString()
                 );
                 $message = 'Une erreur est survenue lors de la mise à jour.';
                 return $this->response->setJSON(['success' => false, 'error' => $message]);
@@ -130,9 +134,7 @@ class CustomersController extends BaseController
         } else {
             $message = 'Aucune informations reçu par le serveur, paramètre du client manquant ou incorrect.';
 
-            return $this->response->setJSON(['success' => false, 'error' => $message , 'customer_info' => $customer_info]);
+            return $this->response->setJSON(['success' => false, 'error' => $message, 'customer_info' => $customer_info]);
         }
     }
-    
-
 }

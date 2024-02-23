@@ -5,7 +5,7 @@ $html_form = '';
 
 foreach ($All_config as $row) {
     switch ($row['data_type']) {
-        /*case "radio":
+            /*case "radio":
             if(FreetextToVartext($row['Title']) == "portee_de_reduction"){
                 $both = $global = $unit = '';
                 if(strtolower($row['Data']) == strtolower('Both')){
@@ -86,7 +86,7 @@ foreach ($All_config as $row) {
                             <p break-word class="w-auto text-xs text-center text-gray-500 dark:text-gray-400" style="word-break: break-word;">' . $row['Data'] . '</p>
                         </div>
                     </div>
-                    <input name="' . $row['config_id'] . '" id="' . FreetextToVartext($row['Title']) . '-dropzone-file" type="file" class="hidden" />
+                    <input name="logo" id="' . FreetextToVartext($row['Title']) . '-dropzone-file" type="file" class="hidden" />
                 </div>
                 ';
             } else {
@@ -167,17 +167,18 @@ foreach ($All_config as $row) {
             }
             break;
         case "checkbox": //toogle
-        default:'';
+        default:
+            '';
     }
 }
 ?>
 <div id="history" class="max-w-screen-md bg-gray-50 dark:bg-gray-900">
-    
+
     <header class="mb-2">Configuration</header>
-    
+
     <div class="mx-auto px-4">
-            <!-- Start Container -->
-        <form method="post" action="<?= base_url('/Config/save') ?>" enctype="multipart/form-data">
+        <!-- Start Container -->
+        <form id="configForm" method="post" enctype="multipart/form-data">
 
             <div class="mb-10">
 
@@ -185,7 +186,35 @@ foreach ($All_config as $row) {
                 <?= $html_form; ?>
 
             </div>
-            <button type="submit" class="sticky bottom-4 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl">Enregistrer</button>
+            <button type="button" id="saveConfig" class="sticky bottom-4 float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl">Enregistrer</button>
         </form>
     </div>
 </div>
+
+<script>
+    document.getElementById('saveConfig').addEventListener('click', function() {
+        const formElement = document.getElementById('configForm');
+        const formData = new FormData(formElement);
+        const objectData = {};
+        formData.forEach((value, key) => {
+            objectData[key] = value;
+        });
+
+        // Utilisation de ajaxCall pour soumettre le formulaire
+        ajaxCall(
+            'Config/save',
+            'POST',
+            objectData,
+            function(response) { // Callback de succès
+                showBanner('Enregistrement réussi', true);
+                console.log('Réponse succès:', response);
+                // Vous pouvez ici gérer la réponse de succès, par exemple en affichant un message de succès ou en redirigeant l'utilisateur
+            },
+            function(error) { // Callback d'erreur
+                showBanner('Erreur dans l\'enregistrement', false);
+                console.error('Réponse erreur:', error);
+                // Vous pouvez ici gérer les erreurs, par exemple en affichant un message d'erreur
+            }
+        );
+    });
+</script>

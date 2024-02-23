@@ -1,5 +1,5 @@
 function applyScrollAnimation() {
-  document.querySelectorAll('.scroll-container').forEach(container => {
+  document.querySelectorAll('.scroll-container').forEach((container) => {
     const textElement = container.querySelector('.scroll-text_smooth');
     if (textElement && textElement.offsetWidth > container.offsetWidth) {
       textElement.classList.add('animate-text');
@@ -9,18 +9,28 @@ function applyScrollAnimation() {
   });
 }
 
-
 // START SEARCH MODULE
-function generateSearchRows(booking, bgclass) {
+function generateSearchRows(booking, index) {
   // MAX WIDTH 576px
-  let startDate = format_date(booking.start.slice(0,10));
-  let endDate = format_date(booking.end.slice(0,10));
+  let startDate = format_date(booking.start.slice(0, 10));
+  let endDate = format_date(booking.end.slice(0, 10));
 
-  let Total_price = totalBookingPriceCal(booking.Price,booking.QtTraveller,booking.Tax,booking.Fee,booking.Qt);
-  let status_paidObj = generateStatusPaid(booking.total_paid,Total_price);
+  let Total_price = totalBookingPriceCal(
+    booking.Price,
+    booking.QtTraveller,
+    booking.Tax,
+    booking.Fee,
+    booking.Qt
+  );
+  let status_paidObj = generateStatusPaid(booking.total_paid, Total_price);
 
-  let html =`
-  <div class="relative ${bgclass} rounded-t-lg border-b dark:border-b-slate-900 p-2 cursor-pointer" onclick="showBookingDetailsFromID('${booking.id}');">
+  const bgColorClass =
+    index % 2 === 0
+      ? 'bg-slate-100 hover:bg-yellow-100 dark:bg-slate-900 dark:hover:bg-yellow-400'
+      : 'text-white hover:text-black bg-white hover:bg-yellow-100 dark:bg-slate-950 dark:hover:bg-yellow-400';
+
+  let html = `
+  <div class="relative ${bgColorClass} rounded-t-lg border-b dark:border-b-slate-900 p-2 cursor-pointer" onclick="showBookingDetailsFromID('${booking.id}');">
 
     <div class="relative flex justify-between">
 
@@ -60,7 +70,7 @@ function generateSearchRows(booking, bgclass) {
         </div>
       </div>
 
-      <div class="p-1 m-1 inline-flex justify-center items-center ${booking.fullblocked == '0'? 'text-red-600 dark:text-red-200 bg-red-200 dark:bg-red-800':'bg-slate-200 dark:bg-slate-800'} rounded-lg whitespace-nowrap">
+      <div class="p-1 m-1 inline-flex justify-center items-center ${booking.fullblocked == '0' ? 'text-red-600 dark:text-red-200 bg-red-200 dark:bg-red-800' : 'bg-slate-200 dark:bg-slate-800'} rounded-lg whitespace-nowrap">
         <svg class="w-4 h-4 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
         </svg>
@@ -79,77 +89,79 @@ function generateSearchRows(booking, bgclass) {
   </div>
   
   `;
-        return html;
-  }
+  return html;
+}
 
-  function handleSearchInput() {
-    const searchInput = document.getElementById("default-search").value;
-    const resultList = document.getElementById("searchResults");
-    if (!searchInput) {
-      clearSearchResults(resultList);
-      return; // Arrêter l'exécution de la fonction ici
-    }
-    performSearch(searchInput, resultList); // Fonction à définir pour exécuter la recherche
-    
+function handleSearchInput() {
+  const searchInput = document.getElementById('default-search').value.trim(); // Assurez-vous que la valeur n'est pas juste des espaces
+  const resultList = document.getElementById('searchResults');
+  if (!searchInput) {
+    clearSearchResults(resultList);
+    return; // Arrêter l'exécution de la fonction ici
   }
-  function clearSearchResults(resultList) {
-    resultList.innerHTML = "";
-    resultList.classList.add("close-animate");
-    resultList.classList.remove("animate","bg-white","dark:bg-slate-950","shadow-lg");
-  }
-  function performSearch(searchInput, resultList) {
-    ajaxCall("booking/search", "GET", { text: searchInput }, function(response) {
-      if (response.status === "success" && response.data.length > 0) {
-        // Traiter la réponse en cas de succès
-        
-        // Ouvrir la popup si elle n'est pas déjà ouverte
-        resultList.classList.add("bg-white","dark:bg-slate-950","shadow-lg","animate");
-        resultList.classList.remove("bg-close-animate", "close-animate");
-        // Mettre à jour le contenu de la popup avec les résultats de la recherche
-        resultList.innerHTML = ""; // Vider les anciens résultats
-  
-        let htmlContent = '';
-         response.data.forEach((booking, index) => {
-           const bgColorClass = index % 2 === 0 ? 'bg-slate-100 hover:bg-yellow-100 dark:bg-slate-900 dark:hover:bg-yellow-400' : 'bg-white hover:bg-yellow-100 dark:bg-slate-950 dark:hover:bg-yellow-400';
-           const bookingElement = generateSearchRows(booking, bgColorClass);
-           htmlContent += bookingElement;
-           // Appliquez l'animation de défilement après l'insertion
-          });
-          resultList.innerHTML = htmlContent;
-          applyScrollAnimation();
-        } else {
-          console.log("Échec de la Requête de recherche !");
-          resultList.innerHTML = ""; // Vider les anciens résultats
-          resultList.classList.add("p-4", "bg-white", "dark:bg-slate-700", "shadow-lg", "animate"); // Appliquer les styles nécessaires
-          resultList.classList.remove("close-animate");
-          resultList.innerHTML = "Aucun résultat trouvé avec: <b>" + searchInput + "</b>"; // Ajouter le message
-        }
-    });//END AJAX
-  }
-  // END SEARCH MODULE
-  
-  function generateStatusPaid(PAIDS,PRICE){
-    let html = "";
-    let color = "";
-    let price = parseInt(PRICE); 
-    let paids = parseInt(PAIDS); 
-    if(paids >= price){
-      html = "<b class='text-green-600 dark:text-green-200'>PAYÉ</b>"; 
-      color = "green";
-    }
-    else if(paids > 0){
-      html = "<b class='text-orange-600 dark:text-orange-200'>PARTIEL</b>"
-      color = "orange";
-    }
-    else {
-      html = "<b class='text-red-600 dark:text-red-200'>IMPAYÉ</b>";
-      color = "red";
-    }
-    return {html,color};
-  }
+  performSearch(searchInput, resultList); // Fonction à définir pour exécuter la recherche
+}
 
-  function header_modal(title,modal_id){
-    return html = `
+function clearSearchResults(resultList) {
+  resultList.innerHTML = '';
+  updateClassList(
+    resultList,
+    ['animate', 'bg-white', 'dark:bg-slate-700', 'shadow-lg'],
+    ['close-animate']
+  );
+}
+
+function updateClassList(target, addClasses, removeClasses) {
+  target.classList.remove(...removeClasses);
+  target.classList.add(...addClasses);
+}
+
+function performSearch(searchInput, resultList) {
+  ajaxCall('booking/search', 'GET', { text: searchInput }, (response) => {
+    resultList.innerHTML = ''; // Vider les résultats avant de les traiter pour éviter le reflow
+    if (response.status === 'success' && response.data.length > 0) {
+      resultList.innerHTML = response.data
+        .map((booking, index) => generateSearchRows(booking, index))
+        .join('');
+      updateClassList(
+        resultList,
+        ['animate', 'bg-white', 'dark:bg-slate-950', 'shadow-lg'],
+        ['close-animate']
+      );
+      applyScrollAnimation(); // Supposer que c'est une fonction définie ailleurs
+    } else {
+      resultList.innerHTML = `<div class='p-4 bg-white dark:bg-slate-700 shadow-lg animate'>Aucun résultat trouvé pour: <b>${searchInput}</b></div>`;
+      updateClassList(
+        resultList,
+        ['animate', 'bg-white', 'dark:bg-slate-700', 'shadow-lg'],
+        ['close-animate']
+      );
+    }
+  });
+}
+
+// END SEARCH MODULE
+
+function generateStatusPaid(PAIDS, PRICE) {
+  let html = '';
+  let color = '';
+  let price = parseInt(PRICE);
+  let paids = parseInt(PAIDS);
+  if (paids >= price) {
+    html = "<b class='text-green-600 dark:text-green-200'>PAYÉ</b>";
+    color = 'green';
+  } else if (paids > 0) {
+    html = "<b class='text-orange-600 dark:text-orange-200'>PARTIEL</b>";
+    color = 'orange';
+  } else {
+    html = "<b class='text-red-600 dark:text-red-200'>IMPAYÉ</b>";
+    color = 'red';
+  }
+  return { html, color };
+}
+
+function header_modal(title, modal_id) {
+  return (html = `
     <div class="px-2 py-2 lg:px-8 flex justify-between items-center text-slate-500 bg-white border border-gray-200  dark:bg-gray-800 dark:border-gray-700 rounded-b-lg shadow-md " onclick="event.stopPropagation()">
       <div class="flex-grow text-center">
           <h3  class="text-center text-2xl font-bold text-gray-800 dark:text-white">${title}</h3>
@@ -162,20 +174,26 @@ function generateSearchRows(booking, bgclass) {
               <span class=" sr-only">Fermer</span>
           </button>
       </div>
-    </div>`;
-  }  
+    </div>`);
+}
 
-  /// A TRAVAILLER POUR AMELIORATION :
+/// A TRAVAILLER POUR AMELIORATION :
 
 async function showBookingDetailsFromID(id) {
-  openModal("DetailsEventModal", false);
-  document.getElementById('header_DetailsEventModal').innerHTML = header_modal('Détails réservation','DetailsEventModal');
+  openModal('DetailsEventModal', false);
+  document.getElementById('header_DetailsEventModal').innerHTML = header_modal(
+    'Détails réservation',
+    'DetailsEventModal'
+  );
   let Booking;
   try {
-    let response = await ajaxCall('booking/getBookingFromID?id=' + id, 'GET', null); 
+    let response = await ajaxCall(
+      'booking/getBookingFromID?id=' + id,
+      'GET',
+      null
+    );
     if (response && response.id == id) {
-
-      let nDays = DaysDifferenceStartEnd(response.start,response.end);
+      let nDays = DaysDifferenceStartEnd(response.start, response.end);
 
       Booking = {
         id: response.id,
@@ -215,16 +233,16 @@ async function showBookingDetailsFromID(id) {
       );
     }
   } catch (error) {
-    console.error("Échec getBookingsFromID: ", error);
+    console.error('Échec getBookingsFromID: ', error);
   }
   let array_paids_values = Booking.Paids_values
-    ? Booking.Paids_values.split(",").map(Number)
+    ? Booking.Paids_values.split(',').map(Number)
     : [0];
   let paids_sum = array_paids_values.reduce(
     (total, currentValue) => total + currentValue,
     0
   );
-  let booking_details_h5 = document.getElementById("booking_details_id_h5");
+  let booking_details_h5 = document.getElementById('booking_details_id_h5');
   booking_details_h5.innerHTML = `<span class="text-md font-bold tracking-tight p-2" >${Booking.Type_doc} # ${Booking.id}</span> `;
   // Ajouter des classes qui ne dépendent pas de la condition
   booking_details_h5.classList.add('rounded-md');
@@ -232,355 +250,450 @@ async function showBookingDetailsFromID(id) {
   // Ajouter des classes basées sur la condition
 
   if (Booking.Type_doc === 'Devis') {
-    booking_details_h5.classList.add('bg-slate-400','text-slate-800', 'dark:text-slate-500', 'dark:bg-slate-950');
+    booking_details_h5.classList.add(
+      'bg-slate-400',
+      'text-slate-800',
+      'dark:text-slate-500',
+      'dark:bg-slate-950'
+    );
   } else {
-    booking_details_h5.classList.add('bg-sky-200', 'dark:bg-sky-800', 'text-sky-800', 'dark:text-sky-400');
+    booking_details_h5.classList.add(
+      'bg-sky-200',
+      'dark:bg-sky-800',
+      'text-sky-800',
+      'dark:text-sky-400'
+    );
   }
-  existFile(baseurl + 'uploads/' + Booking.booking_img).then(fileExists => {
+  existFile(baseurl + 'uploads/' + Booking.booking_img).then((fileExists) => {
     if (fileExists) {
-      document.getElementById("booking_details_img").src =  baseurl + 'uploads/' + Booking.booking_img;
+      document.getElementById('booking_details_img').src =
+        baseurl + 'uploads/' + Booking.booking_img;
     } else {
-      document.getElementById("booking_details_div_img").classList.add("bg-gray-200");
-      document.getElementById("booking_details_div_img").classList.add("rounded-t-lg");
-      document.getElementById("booking_details_div_img").style.height =  "150px";
-      document.getElementById("booking_details_div_img").innerHTML =  "<svg class='max-w-full max-h-full h-auto w-auto text-gray-300 dark:text-gray-600' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'><path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m4 12 8-8 8 8M6 10.5V19c0 .6.4 1 1 1h3v-3c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v3h3c.6 0 1-.4 1-1v-8.5'/></svg>";
-      }
-});
+      document
+        .getElementById('booking_details_div_img')
+        .classList.add('bg-gray-200');
+      document
+        .getElementById('booking_details_div_img')
+        .classList.add('rounded-t-lg');
+      document.getElementById('booking_details_div_img').style.height = '150px';
+      document.getElementById('booking_details_div_img').innerHTML =
+        "<svg class='max-w-full max-h-full h-auto w-auto text-gray-300 dark:text-gray-600' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'><path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m4 12 8-8 8 8M6 10.5V19c0 .6.4 1 1 1h3v-3c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v3h3c.6 0 1-.4 1-1v-8.5'/></svg>";
+    }
+  });
 
-  document.getElementById("booking_details_service_h5").innerText = Booking.service_title;
-    let div_fullblocked = document.getElementById("booking_details_fullblocked_div");
-    let h5_fullblocked = document.getElementById("booking_details_fullblocked_h5");
+  document.getElementById('booking_details_service_h5').innerText =
+    Booking.service_title;
+  let div_fullblocked = document.getElementById(
+    'booking_details_fullblocked_div'
+  );
+  let h5_fullblocked = document.getElementById(
+    'booking_details_fullblocked_h5'
+  );
   if (Booking.fullblocked == 1) {
-    div_fullblocked.classList.add('border-red-300','dark:border-red-500'),
-    h5_fullblocked.style.display= "block";
-    h5_fullblocked.innerText = "Privatisé";
+    div_fullblocked.classList.add('border-red-300', 'dark:border-red-500'),
+      (h5_fullblocked.style.display = 'block');
+    h5_fullblocked.innerText = 'Privatisé';
   } else {
-    div_fullblocked.classList.remove('border-red-300','dark:border-red-500');
-    h5_fullblocked.style.display = "none";
+    div_fullblocked.classList.remove('border-red-300', 'dark:border-red-500');
+    h5_fullblocked.style.display = 'none';
   }
-  document.getElementById("booking_details_qt_span").innerText = Booking.Qt;
-  document.getElementById("booking_details_traveller_span").innerText =
+  document.getElementById('booking_details_qt_span').innerText = Booking.Qt;
+  document.getElementById('booking_details_traveller_span').innerText =
     Booking.QtTraveller;
-  document.getElementById("booking_details_start_span").innerText = Booking.start;
-  document.getElementById("booking_details_end_span").innerText = Booking.end;
-  document.getElementById("booking_details_price_span").innerHTML = totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays) + " Fr";
-  
-  let details_paid_rest_div = document.getElementById('booking_details_progress_rest_div');
-  if(parseInt(paids_sum) < totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays)){
-    details_paid_rest_div.innerText = totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays)-parseInt(paids_sum) + " Fr";
-  }
-  else{
+  document.getElementById('booking_details_start_span').innerText =
+    Booking.start;
+  document.getElementById('booking_details_end_span').innerText = Booking.end;
+  document.getElementById('booking_details_price_span').innerHTML =
+    totalBookingPriceCal(
+      Booking.Price,
+      Booking.QtTraveller,
+      Booking.Tax,
+      Booking.Fee,
+      Booking.nDays
+    ) + ' Fr';
+
+  let details_paid_rest_div = document.getElementById(
+    'booking_details_progress_rest_div'
+  );
+  if (
+    parseInt(paids_sum) <
+    totalBookingPriceCal(
+      Booking.Price,
+      Booking.QtTraveller,
+      Booking.Tax,
+      Booking.Fee,
+      Booking.nDays
+    )
+  ) {
+    details_paid_rest_div.innerText =
+      totalBookingPriceCal(
+        Booking.Price,
+        Booking.QtTraveller,
+        Booking.Tax,
+        Booking.Fee,
+        Booking.nDays
+      ) -
+      parseInt(paids_sum) +
+      ' Fr';
+  } else {
     details_paid_rest_div.classList.add('hidden');
   }
- 
-  let details_paid_div = document.getElementById('booking_details_progress_div');
-  details_paid_div.innerText = paids_sum > 0 ? paids_sum + " Fr" : "0";
-  if(paids_sum > 0){
-      let convert_pourc = Math.min(Math.round((parseInt(paids_sum) / totalBookingPriceCal(Booking.Price,Booking.QtTraveller,Booking.Tax,Booking.Fee,Booking.nDays)) * 10000) / 100, 100);
-      details_paid_div.style.width = convert_pourc > 24 ? convert_pourc+"%" : "24px";
-  } else {details_paid_div.style.width = "24px"; }
 
-  document.getElementById("booking_details_customer_name_span").innerText =
+  let details_paid_div = document.getElementById(
+    'booking_details_progress_div'
+  );
+  details_paid_div.innerText = paids_sum > 0 ? paids_sum + ' Fr' : '0';
+  if (paids_sum > 0) {
+    let convert_pourc = Math.min(
+      Math.round(
+        (parseInt(paids_sum) /
+          totalBookingPriceCal(
+            Booking.Price,
+            Booking.QtTraveller,
+            Booking.Tax,
+            Booking.Fee,
+            Booking.nDays
+          )) *
+          10000
+      ) / 100,
+      100
+    );
+    details_paid_div.style.width =
+      convert_pourc > 24 ? convert_pourc + '%' : '24px';
+  } else {
+    details_paid_div.style.width = '24px';
+  }
+
+  document.getElementById('booking_details_customer_name_span').innerText =
     Booking.customer_name;
-  document.getElementById("booking_details_customer_block_toedit").onclick =
+  document.getElementById('booking_details_customer_block_toedit').onclick =
     (function (customerId) {
       return function () {
         showUpdateCustomer(customerId);
-        if(!Booking.customer_comment){
-        document.getElementById('customer_comment').focus()
+        if (!Booking.customer_comment) {
+          document.getElementById('customer_comment').focus();
         }
       };
     })(Booking.Customer_id);
 
-  document.getElementById("booking_details_customer_phone_span").innerText =
+  document.getElementById('booking_details_customer_phone_span').innerText =
     Booking.customer_phone;
-  document.getElementById("booking_details_customer_email_span").innerText =
+  document.getElementById('booking_details_customer_email_span').innerText =
     Booking.customer_mail;
-    if(Booking.customer_comment){
-      document.getElementById("booking_details_customer_comment_span").innerHTML = Booking.customer_comment;
-    }
-    else{
-      document.getElementById("booking_details_customer_comment_span").innerHTML = "<i>Vous pouvez ajouter un commentaire au client.</i>";
-    }
-  
-  document.getElementById("booking_details_customer_created_span").innerText =
-    "Client depuis " +
-    new Date(Booking.customer_created)
-      .toLocaleDateString("fr-FR", { year: "numeric", month: "long" })
-      .replace(/^\w/, (c) => c.toUpperCase());
-  document.getElementById("booking_details_created_span").innerHTML =
-    "Créé le: " + format_date(Booking.created);
-  document.getElementById("booking_details_updated_span").innerHTML =
-    "Modifié le: " + format_date(Booking.updated);
-    
-    let child_Span_Comment = document.getElementById("booking_details_comment_span");
-    let parent_Span_Comment = child_Span_Comment.parentElement;
-    child_Span_Comment.innerText = Booking.Comment;
-    if(Booking.Comment.length > 0 ){
-      parent_Span_Comment.classList.remove('hidden'); 
-    }else { 
-      parent_Span_Comment.classList.add('hidden'); 
-    }
-  document.getElementById("booking_details_pdf").href =
-    baseurl + "generatePDF/booking/" + Booking.id;
-  document.getElementById("booking_details_pdf").innerHTML =
-    download_ico + " Télécharger PDF";
-  document.getElementById("booking_details_sendmail").innerHTML =
-    send_ico + "Envoyer EMAIL";
+  if (Booking.customer_comment) {
+    document.getElementById('booking_details_customer_comment_span').innerHTML =
+      Booking.customer_comment;
+  } else {
+    document.getElementById('booking_details_customer_comment_span').innerHTML =
+      '<i>Vous pouvez ajouter un commentaire au client.</i>';
+  }
 
- document.getElementById("booking_details_sendmail").addEventListener("click",function(event) {
+  document.getElementById('booking_details_customer_created_span').innerText =
+    'Client depuis ' +
+    new Date(Booking.customer_created)
+      .toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })
+      .replace(/^\w/, (c) => c.toUpperCase());
+  document.getElementById('booking_details_created_span').innerHTML =
+    'Créé le: ' + format_date(Booking.created);
+  document.getElementById('booking_details_updated_span').innerHTML =
+    'Modifié le: ' + format_date(Booking.updated);
+
+  let child_Span_Comment = document.getElementById(
+    'booking_details_comment_span'
+  );
+  let parent_Span_Comment = child_Span_Comment.parentElement;
+  child_Span_Comment.innerText = Booking.Comment;
+  if (Booking.Comment.length > 0) {
+    parent_Span_Comment.classList.remove('hidden');
+  } else {
+    parent_Span_Comment.classList.add('hidden');
+  }
+  document.getElementById('booking_details_pdf').href =
+    baseurl + 'generatePDF/booking/' + Booking.id;
+  document.getElementById('booking_details_pdf').innerHTML =
+    download_ico + ' Télécharger PDF';
+  document.getElementById('booking_details_sendmail').innerHTML =
+    send_ico + 'Envoyer EMAIL';
+
+  document
+    .getElementById('booking_details_sendmail')
+    .addEventListener('click', function (event) {
       event.preventDefault(); // Empêche le comportement par défaut du lien
       var loader = document.querySelector('.loader');
       loader.style.display = 'block';
       loader.style.zIndex = 999;
       // Requête AJAX pour envoyer l'e-mail
-      ajaxCall("sendmail/" + Booking.id, "GET", null, function(response) {
+      ajaxCall('sendmail/' + Booking.id, 'GET', null, function (response) {
         console.log(response); // Log la réponse pour débogage
 
-          if (response.success === true) {
-            showBanner('Ok envoyé', true);
-          } 
-          else{
-            showBanner('Erreur lors de l\'envoi', false);
-          }
+        if (response.success === true) {
+          showBanner('Ok envoyé', true);
+        } else {
+          showBanner("Erreur lors de l'envoi", false);
+        }
 
-          loader.style.display = 'none';
-        
-        });
-      
-  });
-  
+        loader.style.display = 'none';
+      });
+    });
 
-  let button_update = document.getElementById("booking_details_update_button");
+  let button_update = document.getElementById('booking_details_update_button');
   button_update.onclick = function () {
     update_add_formEvent(Booking);
   };
-  let button_delete = document.getElementById("booking_details_delete_button");
+  let button_delete = document.getElementById('booking_details_delete_button');
   button_delete.onclick = function (event) {
-    deleteEvent(event, Booking.id, "DetailsEventModal");
+    deleteEvent(event, Booking.id, 'DetailsEventModal');
   };
 }
 
-
 async function update_add_formEvent(data) {
-  openModal("addEventModal");
+  openModal('addEventModal');
   // Changer le texte du bouton et son action pour l'ajout
-  let submitButton = document.getElementById("add_submit_form");
+  let submitButton = document.getElementById('add_submit_form');
   submitButton.onclick = function () {
     updateEventFromDetails();
   }; // Ajouter un nouvel événement
   try {
     let paids = await getPaidFromBookingId(data.id);
     let paymentsHtml = '';
-    if(paids.length > 0){
+    if (paids.length > 0) {
       paids.forEach((paid, index) => {
-          paymentsHtml += createPaymentHtml(paid, index, paids.length);
+        paymentsHtml += createPaymentHtml(paid, index, paids.length);
       });
     }
-    document.getElementById('payments-subcontainer').innerHTML = paymentsHtml; 
-
-} catch (error) {
-    console.error("Erreur lors de la récupération des paids: ", error);
+    document.getElementById('payments-subcontainer').innerHTML = paymentsHtml;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des paids: ', error);
     // Gérez l'erreur comme vous le souhaitez
-}
+  }
 
   if (data) {
-
     await loadAndInitDatepicker(data.Service_id, data.start, data.end);
 
-    document.getElementById("addEventModal_title").innerText = `Modifier #${data.id}`;
-    document.getElementById("Modaleventid").value = data.id;
-    document.getElementById("ModaleventCustomer_id").value = data.Customer_id;
+    document.getElementById('addEventModal_title').innerText =
+      `Modifier #${data.id}`;
+    document.getElementById('Modaleventid').value = data.id;
+    document.getElementById('ModaleventCustomer_id').value = data.Customer_id;
     $('#ModaleventCustomer_id').trigger('change'); // afin que le module SELECT2 reflète formulaire
 
-    document.getElementById("ModaleventService_id").value = data.Service_id;
-    document.getElementById("Modaleventfullblocked").checked = parseInt(data.fullblocked) === 1;
-    document.getElementById("ModaleventQtTraveller").value = parseInt(data.QtTraveller);
-    document.getElementById("ModaleventQt").value = data.Qt;
-    document.getElementById("ModaleventPrice").value = data.Price;
-    document.getElementById("ModaleventType_doc").value = data.Type_doc;
-    document.getElementById("ModaleventType_doc").checked = data.Type_doc == 'Facture' ? true: false;
-    document.getElementById("ModaleventComment").value = data.Comment;
+    document.getElementById('ModaleventService_id').value = data.Service_id;
+    document.getElementById('Modaleventfullblocked').checked =
+      parseInt(data.fullblocked) === 1;
+    document.getElementById('ModaleventQtTraveller').value = parseInt(
+      data.QtTraveller
+    );
+    document.getElementById('ModaleventQt').value = data.Qt;
+    document.getElementById('ModaleventPrice').value = data.Price;
+    document.getElementById('ModaleventType_doc').value = data.Type_doc;
+    document.getElementById('ModaleventType_doc').checked =
+      data.Type_doc == 'Facture' ? true : false;
+    document.getElementById('ModaleventComment').value = data.Comment;
 
     // APPEL des functions de mise à jours du prix total ET des informations
     updateTotalInfo();
     updatePrice();
-
   }
 }
-
 
 // TODO, deleted les paids_id associé aux event_id
 function deleteEvent(event, booking_id, modal_id = false) {
   event.stopPropagation(); // Empêche la propagation de l'événement au parent
-  openModal("ConfirmDeleteModal");
-  let modal = document.getElementById("ConfirmDeleteModal");
-  modal.style.zIndex = "999";
+  openModal('ConfirmDeleteModal');
+  let modal = document.getElementById('ConfirmDeleteModal');
+  modal.style.zIndex = '999';
   let yesconfirmButton = document.getElementById(
-    "ConfirmDeleteModal_yes_button"
-    );
-    
-    yesconfirmButton.onclick = function () {
+    'ConfirmDeleteModal_yes_button'
+  );
 
-      ajaxCall("booking/deleteBooking", "POST", { id: booking_id }, function(response) {
-          if (response.success === true) {
-            calendar.refetchEvents();
-            
-            // GESTIONNAIRE DE RETOUR D'AFFICHAGE
-            if (ModalInStack("ListEventModal")) {
-              document.getElementById('booking_'+booking_id).classList.add("line-through");
-              document.getElementById('badge_id_'+booking_id).style.cssText = 'background-color: gray;';
-              document.getElementById('booking_a_'+booking_id).style.cssText = 'cursor : default;';
-                
-                let svgs = document.querySelectorAll('#booking_a_' + booking_id + ' svg');
+  yesconfirmButton.onclick = function () {
+    ajaxCall(
+      'booking/deleteBooking',
+      'POST',
+      { id: booking_id },
+      function (response) {
+        if (response.success === true) {
+          calendar.refetchEvents();
 
-                svgs.forEach(function(svg) {svg.style.color = 'gray';});
+          // GESTIONNAIRE DE RETOUR D'AFFICHAGE
+          if (ModalInStack('ListEventModal')) {
+            document
+              .getElementById('booking_' + booking_id)
+              .classList.add('line-through');
+            document.getElementById('badge_id_' + booking_id).style.cssText =
+              'background-color: gray;';
+            document.getElementById('booking_a_' + booking_id).style.cssText =
+              'cursor : default;';
+
+            let svgs = document.querySelectorAll(
+              '#booking_a_' + booking_id + ' svg'
+            );
+
+            svgs.forEach(function (svg) {
+              svg.style.color = 'gray';
+            });
+          }
+          if (urlLocation() == 'history') {
+            let tr = document.querySelector('.row_booking_' + booking_id);
+            if (tr) {
+              setTimeout(() => {
+                tr.classList.add('fade_out');
+              }, 200);
+              setTimeout(() => {
+                tr.classList.add('hidden');
+              }, 700);
             }
-            if(urlLocation() == 'history'){
-              let tr =  document.querySelector('.row_booking_' + booking_id);
-              if(tr){
-                  setTimeout(() => {
-                    tr.classList.add("fade_out");
-                  }, 200);
-                  setTimeout(() => {
-                    tr.classList.add('hidden');
-                  }, 700);
-                }
-            } 
-            
-            showBanner("Suppression réalisée avec succès", true);
-            closeModalById("ConfirmDeleteModal");
+          }
 
+          showBanner('Suppression réalisée avec succès', true);
+          closeModalById('ConfirmDeleteModal');
 
-            if (modal_id) {
-              closeModalById(modal_id);
-            }
-            
+          if (modal_id) {
+            closeModalById(modal_id);
+          }
         }
-      });
-    };
+      }
+    );
+  };
 
-    let noconfirmButton = document.getElementById("ConfirmDeleteModal_no_button");
-    noconfirmButton.onclick = function () {
-      closeModalById("ConfirmDeleteModal");
-    };
+  let noconfirmButton = document.getElementById('ConfirmDeleteModal_no_button');
+  noconfirmButton.onclick = function () {
+    closeModalById('ConfirmDeleteModal');
+  };
 }
+
+function updateCustomerinfo(data = null) {
+  var formElement = document.getElementById('customerForm'); // Sélectionne le formulaire par son ID
+  var formData = new FormData(formElement);
+  var object = {};
+  formData.forEach(function (value, key) {
+    object[key] = value;
+  });
+
+  data = object;
+  ajaxCall('customer/update', 'POST', data, function (response) {
+    if (response.success === true) {
+      // Traiter la réponse en cas de succès
+      var newCustomerId = response.id;
+
+      if (ModalInStack('CustomerInfoModal')) {
+        document.getElementById('history_customer_name_span').innerText =
+          data.Name;
+        document.getElementById('history_customer_phone_span').innerText =
+          data.Phone;
+        document.getElementById('history_customer_email_span').innerText =
+          data.Email;
+        document.getElementById('history_customer_comment_span').innerText =
+          data.Comment;
+      }
+      if (ModalInStack('DetailsEventModal')) {
+        document.getElementById(
+          'booking_details_customer_name_span'
+        ).innerText = data.Name;
+        document.getElementById(
+          'booking_details_customer_phone_span'
+        ).innerText = data.Phone;
+        document.getElementById(
+          'booking_details_customer_email_span'
+        ).innerText = data.Email;
+        document.getElementById(
+          'booking_details_customer_comment_span'
+        ).innerText = data.Comment;
+      }
+
+      if (ModalInStack('updateCustomerModal')) {
+        closeModalById('updateCustomerModal');
+      }
+
+      showBanner('Modification réalisée avec succès', true);
+    } else {
+      showBanner('Échec de la modification', false);
+    }
+  });
+}
+// Appeler setupButtonAction après avoir configuré votre page ou modale pour s'assurer que le bouton a le bon gestionnaire d'événements.
 
 // CUSTOMER, mets à jours le bouton envoyé
 function setupButtonAction(callback) {
-  let button = document.getElementById("update_customer_submit_form");
-  button.onclick = function() {
+  let button = document.getElementById('update_customer_submit_form');
+  button.onclick = function () {
     // Déterminez ici si vous devez créer ou mettre à jour, peut-être basé sur une valeur de formulaire
-    let isUpdate = document.getElementById("customer_id").value !== "";
-    
+    let isUpdate = document.getElementById('customer_id').value !== '';
+
     if (isUpdate) {
-      updateCustomerInfo(callback); 
+      updateCustomerInfo(callback);
     } else {
-        CreateCustomer(callback);
+      CreateCustomer(callback);
       // Appeler 'CreateCustomer' avec le 'callback' défini.
     }
   };
 }
-function updateCustomerinfo (data = null){
-  var formElement = document.getElementById('customerForm'); // Sélectionne le formulaire par son ID
-  var formData = new FormData(formElement);
-  var object = {};
-  formData.forEach(function(value, key) {
-      object[key] = value;
-  });
-
-
-  data = object;
-  ajaxCall("customer/update", "POST", data, function(response) {
-        if (response.success === true) {
-            // Traiter la réponse en cas de succès
-          var newCustomerId = response.id;
-          
-          if(ModalInStack('CustomerInfoModal')){
-            document.getElementById('history_customer_name_span').innerText = data.Name;
-            document.getElementById('history_customer_phone_span').innerText = data.Phone;
-            document.getElementById('history_customer_email_span').innerText = data.Email;
-            document.getElementById('history_customer_comment_span').innerText = data.Comment;
-          }
-          if(ModalInStack('DetailsEventModal')){
-            document.getElementById('booking_details_customer_name_span').innerText = data.Name;
-            document.getElementById('booking_details_customer_phone_span').innerText = data.Phone;
-            document.getElementById('booking_details_customer_email_span').innerText = data.Email;
-            document.getElementById('booking_details_customer_comment_span').innerText = data.Comment;
-          }
-
-          if(ModalInStack('updateCustomerModal')){
-            closeModalById("updateCustomerModal");
-          }
-      
-          showBanner("Modification réalisée avec succès", true);
-        } else {
-          showBanner("Échec de la modification", false);
-        }
-      
-    });
-}
-// Appeler setupButtonAction après avoir configuré votre page ou modale pour s'assurer que le bouton a le bon gestionnaire d'événements.
 
 //Start FOOTER_TTL, compte à rebourd pour le temps restant de session.
 let countdownInterval; // Déclarez une variable globale pour stocker l'intervalle
 
 function startTokenCountdown() {
   let a_ttl = document.getElementById('footer_ttl');
-  if(localStorage.getItem('token')){
-      let ttl = parseInt(localStorage.getItem('timeLeft'), 10); // Assurez-vous de convertir en nombre
+  if (localStorage.getItem('token')) {
+    let ttl = parseInt(localStorage.getItem('timeLeft'), 10); // Assurez-vous de convertir en nombre
 
-      // Arrêtez l'intervalle existant s'il y en a un
-      if (countdownInterval) {
-        clearInterval(countdownInterval);
+    // Arrêtez l'intervalle existant s'il y en a un
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+    }
+
+    // Fonction pour mettre à jour le TTL chaque seconde
+    const updateCountdown = () => {
+      if (ttl <= 0) {
+        clearInterval(countdownInterval); // Arrête le compte à rebours lorsque TTL atteint 0
+        a_ttl.textContent = 'Session expirée';
+        // Vous pourriez également vouloir rediriger l'utilisateur vers la page de connexion ici
+        return;
       }
 
-      // Fonction pour mettre à jour le TTL chaque seconde
-      const updateCountdown = () => {
-          if(ttl <= 0) {
-              clearInterval(countdownInterval); // Arrête le compte à rebours lorsque TTL atteint 0
-              a_ttl.textContent = 'Session expirée';
-              // Vous pourriez également vouloir rediriger l'utilisateur vers la page de connexion ici
-              return;
-          }
+      // Met à jour l'affichage et décrémente TTL
+      a_ttl.textContent = `Temps restant : ${ttl} secondes`;
+      ttl--;
+    };
 
-          // Met à jour l'affichage et décrémente TTL
-          a_ttl.textContent = `Temps restant : ${ttl} secondes`;
-          ttl--;
-      };
-
-      // Exécute `updateCountdown` une fois immédiatement puis toutes les secondes
-      updateCountdown();
-      countdownInterval = setInterval(updateCountdown, 1000); // Stockez l'intervalle dans la variable globale
+    // Exécute `updateCountdown` une fois immédiatement puis toutes les secondes
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000); // Stockez l'intervalle dans la variable globale
   } else {
-      a_ttl.textContent = '';
+    a_ttl.textContent = '';
   }
 }
 
-
 // Fullcalendar HTML UTILITIES
+
 // Fonction pour créer le HTML de la marque du jour
-function createDayMarker({ position, count, customerWay, additionalClasses = "" , isavailable}) {
+function createDayMarker({
+  position,
+  count,
+  customerWay,
+  additionalClasses = '',
+  isavailable,
+}) {
   let baseHtml = '';
-  if(customerWay === 'IN' ||customerWay === 'OUT'){
+  if (customerWay === 'IN' || customerWay === 'OUT') {
     baseHtml = `
     <div class="absolute flex justify-${position} w-full z-20">
     
-    <div class="triangle ${position} ${isavailable} ${additionalClasses} ">
+    <div class="triangle ${position} ${isavailable} ${additionalClasses}">
     </div>
-    <div class="count justify-${position} my-0.5 mx-1 font-bold">
-        ${count > 0 ? count : "&nbsp;"}
+
+    <div class="count justify-${position} my-0.5 mx-1 font-bold z-10">
+        ${count > 0 ? count : '&nbsp;'}
     </div>
 </div>
 `;
-  }
-  else{
-  baseHtml = `
+  } else {
+    baseHtml = `
       <div class="absolute flex justify-${position} h-full w-full z-20 ">
           <div class=" calendar_booked ${isavailable}  flex flex-col w-full">
                     &nbsp;
           </div>
       </div>
-  `;}
+  `;
+  }
   return baseHtml;
 }

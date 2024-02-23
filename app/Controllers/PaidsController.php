@@ -71,25 +71,26 @@ class PaidsController extends BaseController
     }
 
 
-    public function upsert() {
-        $payments = $this->request->getPost('payments');
+    public function upsert()
+    {
+        $payments = $this->request->getJSON(true); // Récupère le corps de la requête JSON comme tableau associatif
         $results = []; // Initialiser le tableau des résultats
         $allSuccess = true; // Pour suivre si toutes les opérations sont réussies
         $globalErrors = []; // Pour collecter les erreurs de toutes les opérations
-    
+
         // Vérifier si les données de paiement sont présentes et valides
         if (empty($payments)) {
             return $this->response->setJSON([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Données manquantes ou invalides', // Description de l'erreur
                 'data' => null // Aucune donnée à retourner
             ]);
         }
-    
-        foreach ($payments as $pay) {
+
+        foreach ($payments['payments'] as $pay) {
             $existId = array_key_exists('id', $pay); // Vérifier si l'ID existe
             $result = $this->PaidModel->upsert($pay, $existId ? $pay['id'] : false); // Effectuer l'opération de mise à jour ou d'insertion
-    
+
             if (!$result) {
                 $allSuccess = false; // Marquer le succès global comme faux si une opération échoue
                 $errors = $this->PaidModel->errors(); // Récupérer les erreurs
@@ -108,30 +109,31 @@ class PaidsController extends BaseController
                     'errors' => [] // Pas d'erreur
                 ];
             }
-    
+
             $results[] = $payResult; // Ajouter le résultat de chaque paiement au tableau des résultats
         }
-    
+
         // Construction de la réponse globale
         $response = [
             'success' => $allSuccess,
             'message' => $allSuccess ? 'Toutes les opérations ont réussi' : 'Certaines opérations ont échoué',
             'data' => $results // Résultats individuels de chaque paiement
         ];
-    
+
         if (!$allSuccess) {
             $response['globalErrors'] = $globalErrors; // Ajouter les erreurs globales si il y en a
         }
-    
+
         // Retourner une réponse globale après avoir traité tous les paiements
         return $this->response->setJSON($response);
     }
-    
+
 
 
     public function deletePaid()
     {
-        $postData = $this->request->getPost();
+        $postData = $this->request->getJSON(true); // Récupère le corps de la requête JSON comme tableau associatif
+
         $ids = $postData['ids'] ?? null;
 
 
