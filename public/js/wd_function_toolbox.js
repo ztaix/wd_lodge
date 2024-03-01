@@ -268,9 +268,13 @@ function format_date(
   let day = String(dateObj.getDate()).padStart(2, '0');
   let month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Les mois sont de 0 à 11
   let year = dateObj.getFullYear();
+  let hours = String(dateObj.getHours()).padStart(2, '0');
+  let minutes = String(dateObj.getMinutes()).padStart(2, '0');
   // Formater la date
   if (shorter === true) {
     result = shortenYearInDate(`${day}-${month}-${year}`);
+  } else if (shorter == 'HH:MM DD/MM/YY') {
+    result = `${hours}h${minutes} ${day}/${month}/${year}`;
   } else if (shorter == 'DD-MM') {
     result = `${day}-${month}`;
   } else if (shorter == 'DD/MM') {
@@ -417,8 +421,6 @@ function availableListServices(clickedDate, listService, booked) {
 
 // AJAX service
 function updatePayments(payments_filtered, updatedData) {
-  console.log('payments_filtered', payments_filtered);
-  console.log('payments_filtered', updatedData);
   ajaxCall(
     'paids/upsert',
     'POST',

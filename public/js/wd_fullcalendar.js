@@ -300,6 +300,7 @@ function updateEventFromDetails() {
           }
         }
       });
+
       let payments_filtered = payments.filter((item) => item !== undefined);
       if (payments_filtered.length > 0) {
         // Étape 2 : Mise à jour des paiements
@@ -352,9 +353,7 @@ function addEvent() {
 
     ajaxCall('booking/addBooking', 'POST', eventData, function (response) {
       if (response.success === true) {
-        let booking_id = response.id;
-        let ModaleventStart = response.data.start;
-        let ModaleventEnd = response.data.end;
+        let Booking_id = response.id;
 
         // ADD PAYMENTS
         let payments = []; // Initialise payments comme un tableau vide
@@ -365,7 +364,7 @@ function addEvent() {
             if (row.id.startsWith('temp_') === true) {
               // Pour un nouvel enregistrement (id non défini ou vide)
               payments.push({
-                booking_id: booking_id,
+                booking_id: Booking_id,
                 type_paid: document.getElementById(`rowPaidType${row.id}`)
                   .value,
                 value: document.getElementById(`rowPaid${row.id}`).value,
@@ -376,7 +375,7 @@ function addEvent() {
                 // Pour un enregistrement existant (avec un id défini)
                 payments.push({
                   id: id, // Stocker l'id dans l'objet
-                  booking_id: booking_id,
+                  Booking_id,
                   type_paid: document.getElementById(`rowPaidType${index}`)
                     .value,
                   value: document.getElementById(`rowPaid${index}`).value,
@@ -385,101 +384,8 @@ function addEvent() {
             }
           });
           let payments_filtred = payments.filter((item) => item !== undefined);
-          updatePayments(payments_filtred, response.data);
-          /*ajaxCall(
-            'paids/upsert',
-            'POST',
-            { payments: payments_filtred },
-            function (response) {
-              if (response.success === true) {
-                //console.log('response',response);
-                let allSuccess = true;
-                let allErrors = [];
-
-                for (let key in response.data) {
-                  if (response.data.hasOwnProperty(key)) {
-                    let res = response.data[key];
-                    if (!res.success) {
-                      allSuccess = false;
-                    }
-                    if (res.errors && res.errors.length > 0) {
-                      allErrors.push(...res.errors);
-                    }
-                  }
-                }
-
-                if (allSuccess) {
-                  var encaissement = 0;
-                  // Parcourez l'objet reponse
-                  for (var key in response.data) {
-                    if (response.data.hasOwnProperty(key)) {
-                      // Accédez à la valeur "value" de chaque objet
-                      var value = response.data[key].data.value;
-
-                      // Checker si c'est bien un chiffre
-                      if (!isNaN(parseFloat(value))) {
-                        encaissement += parseFloat(value);
-                      }
-                    }
-                  }
-                  if (booking_id) {
-                    if (ModalInStack('ListEventModal')) {
-                      // SI UPDATE PAIEMENT RESPONSE VALIDE
-                      let encaissement_div = document.getElementById(
-                        'booking_paid_' + booking_id
-                      );
-                      if (encaissement_div !== null) {
-                        document.getElementById(
-                          'booking_paid_' + booking_id
-                        ).innerText = encaissement;
-                        document.getElementById(
-                          'booking_paid_status_' + booking_id
-                        ).innerText =
-                          encaissement >= row_price
-                            ? "<b class='text-green-500 dark:text-green-100'>PAYE</b>"
-                            : encaissement < row_price && encaissement > 0
-                              ? "<b class='text-orange-500 dark:text-orange-100'>PARTIEL</b>"
-                              : "<b class='text-red-500 dark:text-red-100'>IMPAYE</b>";
-                      }
-                    }
-
-                    if (ModalInStack('DetailsEventModal')) {
-                      // SI UPDATE PAIEMENT RESPONSE VALIDE
-                      let details_paid_rest_div = document.getElementById(
-                        'booking_details_progress_rest_div'
-                      );
-                      if (encaissement < row_price) {
-                        details_paid_rest_div.innerText =
-                          row_price - encaissement + ' Fr';
-                      } else {
-                        booking_details_progress_rest_div.classList.add(
-                          'hidden'
-                        );
-                      }
-                      let details_paid_div = document.getElementById(
-                        'booking_details_progress_div'
-                      );
-                      details_paid_div.innerText =
-                        encaissement > 0 ? encaissement + ' Fr' : '0';
-                      if (encaissement > 0) {
-                        let convert_pourc = Math.min(
-                          Math.round((encaissement / row_price) * 10000) / 100,
-                          100
-                        );
-                        details_paid_div.style.width =
-                          convert_pourc > 24 ? convert_pourc + '%' : '24px';
-                      } else {
-                        details_paid_div.style.width = '24px';
-                      }
-                    }
-                  }
-                } else {
-                  showBanner('Echec de la mise à jour des paiements !', false);
-                  console.log('Erreurs: ', allErrors);
-                }
-              }
-            }
-          );*/
+          let responseJSON = { booking_data: response.data };
+          updatePayments(payments_filtred, responseJSON);
         }
         // Traitez la réponse ici
         showBanner(

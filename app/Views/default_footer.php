@@ -123,12 +123,6 @@
     <script src="allAssets/all.min.js"></script>
 <?php } ?>
 <script>
-    // LOADER
-    document.addEventListener('DOMContentLoaded', function() {
-        var loader = document.querySelector('.loader');
-        loader.style.display = 'none';
-    });
-
     if (!window.location.href.includes('Config')) {
         // SELECT2 Initialisation du select recherche pour customer_id
         $('#ModaleventCustomer_id').select2({

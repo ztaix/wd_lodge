@@ -311,7 +311,6 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         const nDays = parseInt(modaleventQt ? modaleventQt.value : 0);
         const serviceTax = parseInt(service ? service.Tax : 0);
         const serviceFee = parseInt(service ? service.Fee : 0);
-        console.log("price", price);
         let total = 0;
         if (!isNaN(price) && !isNaN(qtTraveller) && !isNaN(serviceTax) && !isNaN(serviceFee) && !isNaN(nDays)) {
             // Calcul du prix total

@@ -86,17 +86,21 @@ document.addEventListener('DOMContentLoaded', function () {
             }
           },
           function (xhr, status, error) {
-            if (typeof errorCallback === 'function') {
-              errorCallback(xhr, status, error ? error : 'Erreur inconnue');
+            if (!xhr.success) {
+              showBanner(xhr.message, false);
             } else {
-              console.error(
-                'Erreur lors de la requête AJAX :',
-                status,
-                error ? error : 'Erreur inconnue'
-              );
-              reject(xhr);
+              showBanner('Échec de la requete de connexion : ' + error, false);
+              if (typeof errorCallback === 'function') {
+                errorCallback(xhr, status, error ? error : 'Erreur inconnue');
+              } else {
+                console.error(
+                  'Erreur lors de la requête AJAX :',
+                  status,
+                  error ? error : 'Erreur inconnue'
+                );
+                reject(xhr);
+              }
             }
-            alert('Échec de la requete de connexion : ' + error);
           }
         );
       });
@@ -232,14 +236,14 @@ function showBookingList(response, clickedDate) {
     let status_paidObj = generateStatusPaid(paids_sum, TOTALprice);
 
     let bookingElement = `
-        <div id="booking_list_row_${booking.id}" class="group flex flex-col px-4 rounded-t-lg text-slate-700 dark:text-white hover:bg-white-50 dark:hover:bg-black-50 border-b-2 hover:rounded-none border-slate-300 dark:border-slate-700" >
+        <div id="booking_list_row_${booking.id}" onclick="showBookingDetailsFromID('${booking.id}');" class="group cursor-pointer flex flex-col px-4 rounded-t-lg text-slate-700 dark:text-white hover:bg-white-50 dark:hover:bg-black-50 border-b-2 hover:rounded-none border-slate-300 dark:border-slate-700" >
           <!-- Colonne 1 -->
           ${booking.fullblocked == 1 ? '<span class="relative text-red-400 dark:text-red-700 px-2 mx-auto capitalize">Privatisé</span>' : ''}
 
           <div class="w-full flex-col group ${booking.fullblocked == 1 ? 'p-1 border-t-2 border-red-400 dark:border-red-700 rounded-lg' : ''}">
             
             <div class="flex justify-between">
-              <div id='booking_${booking.id}' onclick="showBookingDetailsFromID('${booking.id}');" class="flex flex-wrap cursor-pointer font-bold">
+              <div id='booking_${booking.id}' class="flex flex-wrap font-bold">
               
                 <div id="booking_title_${booking.id}" class="flex flex-initial transition-margin hover:mx-2 text-slate-800 dark:text-white">
                 ${booking.service_title}
@@ -255,7 +259,7 @@ function showBookingList(response, clickedDate) {
               </div>
             </div>
             <div class="w-full inline-flex">
-              <div class="w-full flex flex-wrap items-center justify-between cursor-pointer" onclick="showBookingDetailsFromID('${booking.id}');">
+              <div class="w-full flex flex-wrap items-center justify-between">
                 <div class="flex-col">
                   <div class="text-base "><span class="font-semibold text-slate-500 ">Client:</span> <span id="booking_customer_${booking.id}">${booking.customer_name}</span></div>
                   <div class="text-base"><span class="font-semibold text-slate-500 ">Nb personne:</span> <span id="booking_QtTraveller_${booking.id}">${booking.QtTraveller}</span></div>

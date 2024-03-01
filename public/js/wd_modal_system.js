@@ -135,7 +135,6 @@ async function resetForm(
         div.parentNode.removeChild(div);
       });
     }
-    console.log('start:', date_start);
     await loadAndInitDatepicker(service_id, date_start, date_end);
   }
 }
@@ -337,7 +336,7 @@ function updateModal(data) {
     fullblocked: "0"
     start: "2024-01-26 00:00:00"*/
 
-  if (ModalInStack('ListEventModal')) {
+  if (ModalInStack('ListEventModal') && isNaN(parseFloat(row_id))) {
     // UPDATE BOOKING
     document.getElementById('booking_total_' + row_id).innerText = row_price;
     document.getElementById('booking_Comment_' + row_id).innerText = d.Comment;
@@ -381,6 +380,10 @@ function updateModal(data) {
     let details_paid_rest_div = document.getElementById(
       'booking_details_progress_rest_div'
     );
+    let details_paid_customer_name = document.getElementById(
+      'booking_details_customer_name_span'
+    );
+
     //PAIEMENT PARTIEL = RESTE à payer sinon VIDE
     d.encaissement < row_price
       ? (details_paid_rest_div.innerText = row_price - d.encaissement + ' Fr')

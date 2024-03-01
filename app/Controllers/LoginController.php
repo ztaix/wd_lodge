@@ -91,14 +91,22 @@ class LoginController extends BaseController
 
     public function loginAttempt()
     {
-        $email = $this->request->getVar('email');
-        $password = $this->request->getVar('password');
+        $loginData = $this->request->getJSON(true); // Récupère le corps de la requête JSON comme tableau associatif
+
+        $email = $loginData['email'];
+        $password = $loginData['password'];
 
         $userModel = new \App\Models\UserModel();
         $user = $userModel->where('email', $email)->first();
         $expTime = (60 * 60 * 12); //12h
 
-        if ($user && hash('sha256', $password) === $user['password']) {
+        if ($loginData == null) {
+            return $this->response->setJSON([
+                'success' => false, 'reason' => 'not-exist',
+                'message' => 'Les identifiants de connexion ne sont pas bons !',
+                'loginData' => $loginData
+            ])->setStatusCode(401);
+        } else if ($user && hash('sha256', $password) === $user['password']) {
             // Les identifiants sont corrects, générons le JWT
 
 
@@ -118,10 +126,11 @@ class LoginController extends BaseController
             $logData = ['jwt' => $jwt];
             return $this->response->setJSON($logData);
         } else {
-            // Gestion des erreurs si les identifiants sont incorrects
+
             return $this->response->setJSON([
                 'success' => false, 'reason' => 'form-error',
-                'message' => 'Email ou mot de passe incorrect.'
+                'message' => 'Email ou mot de passe incorrect.',
+                'loginData' => $loginData
             ])->setStatusCode(401);
         }
     }

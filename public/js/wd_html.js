@@ -394,9 +394,9 @@ async function showBookingDetailsFromID(id) {
       .toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })
       .replace(/^\w/, (c) => c.toUpperCase());
   document.getElementById('booking_details_created_span').innerHTML =
-    'Créé le: ' + format_date(Booking.created);
+    'Créé le  ' + format_date(Booking.created, 0, 'DD/MM/YYYY');
   document.getElementById('booking_details_updated_span').innerHTML =
-    'Modifié le: ' + format_date(Booking.updated);
+    'Modifié à ' + format_date(Booking.updated, 0, 'HH:MM DD/MM/YY');
 
   let child_Span_Comment = document.getElementById(
     'booking_details_comment_span'
