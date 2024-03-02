@@ -850,6 +850,10 @@ body.dark .triangle.start.not-available {
   body.dark .triangle.start.not-available {
     border-bottom-color: #560909;
   }
+  .fc .fc-daygrid-day-frame {
+    /* Augmentez la hauteur ou ajustez d'autres propriétés pour les petits écrans */
+    min-height: 55px; /* Exemple de valeur, ajustez selon les besoins */
+  }
 }
 
 .count {

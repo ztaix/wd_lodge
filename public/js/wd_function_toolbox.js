@@ -362,41 +362,40 @@ function getDayOfWeek(dateString) {
  * Renvoi une liste de service disponible pour la date sélectionné
  * @param {date} clickedDate - Date du jour
  * @param {array} listService - Liste fixe des services disponible (Array)
- * @param {array} booked - Liste des résa donnée à une date donnée (Array)
+ * @param {array} booked - Liste des résa donnée à une date donnée (Object in Array)
  * @return {array} liste des services disponible
  */
 function availableListServices(clickedDate, listService, booked) {
   let availableServices = [];
 
+  const clickedDateFormat = format_date(clickedDate, 0, false, true);
+
+  // Vérifier si un service est complètement bloqué pour la date sélectionnée
   const isFullBlocked = booked.some(
     (b) =>
       b.fullblocked === '1' &&
-      format_date(clickedDate, 0, false, true) >=
-        format_date(b.start, 0, false, true) &&
-      format_date(clickedDate, 0, false, true) <
-        format_date(b.end, 0, false, true)
+      clickedDateFormat >= format_date(b.start, 0, false, true) &&
+      clickedDateFormat < format_date(b.end, 0, false, true)
   );
-  // Vérifier si un service est déjà réservé
+
+  // Vérifier si n'importe quel service est déjà réservé pour cette date
   const isAnyServiceBooked = booked.some(
     (b) =>
-      format_date(b.end, 0, false, true) >=
-      format_date(clickedDate, 0, false, true)
+      clickedDateFormat >= format_date(b.start, 0, false, true) &&
+      clickedDateFormat < format_date(b.end, 0, false, true)
   );
 
   if (!isFullBlocked) {
     // Convertir la liste des réservations en un ensemble des services non disponibles
     const unavailableServiceIds = booked.reduce((set, b) => {
-      if (
-        format_date(b.end, 0, false, true) >
-        format_date(clickedDate, 0, false, true)
-      ) {
+      if (format_date(b.end, 0, false, true) > clickedDateFormat) {
         set.add(b.Service_id);
       }
       return set;
     }, new Set());
 
     availableServices = listService.filter((service) => {
-      // Si un service est déjà réservé, exclure tous les services avec `fullblocked`
+      // Si un service est déjà réservé et le service en cours a `fullblocked` à '1', alors ce service n'est pas disponible
       if (isAnyServiceBooked && service.fullblocked === '1') {
         return false;
       }
@@ -406,14 +405,12 @@ function availableListServices(clickedDate, listService, booked) {
         booked.some(
           (b) =>
             b.Service_id === service.Service_id &&
-            format_date(b.end, 0, false, true) ===
-              format_date(clickedDate, 0, false, true)
+            format_date(b.end, 0, false, true) === clickedDateFormat
         )
       );
     });
   } else {
     // Si isFullBlocked est vrai, tous les services sont considérés comme indisponibles,
-    // donc on ne retourne aucun service disponible.
     availableServices = []; // Aucun service disponible
   }
   return availableServices;

@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
     initialView: 'multiMonthYear',
     multiMonthMaxColumns: 1, // force a single column
     editable: false,
-    eventResizableFromStart: false, // Permet le redimensionnement à partir du début
+    dayMaxEventRows: false,
+    dayMaxEvents: false,
     timeZone: 'Pacific/Tahiti', // Spécifiez le fuseau horaire de Tahiti
     eventSources: [
       function (fetchInfo, successCallback, failureCallback) {
@@ -73,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
               .map(
                 (legend) => `
             <div class="flex items-center">
-              ${legend.text}: <span class="w-4 h-4 inline-block ${legend.color} border border-slate-200"></span>
+              ${legend.text} : <span class="w-4 h-4 inline-block ${legend.color} border border-slate-200 ml-1"></span>
             </div>
           `
               )
@@ -132,8 +133,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return obj;
       }, {});
 
-      const availableServicesCount = Object.keys(serviceTitlesObj).length;
-
       //Define basic variable
       let firstdayHtml = '';
       let lastdayHtml = '';
@@ -141,12 +140,12 @@ document.addEventListener('DOMContentLoaded', function () {
       let COUNTisBookingStartDay = 0;
       let COUNTisBookingEndDay = 0;
       let classNameBg = '';
-      let classNameDarkBg = '';
       let isavailable = '';
 
       // Création d'un objet temporaire pour manipulation
-      // Début de la boucle ----->
       let availableServices = { ...serviceTitlesObj };
+
+      // Début de la boucle ----->
       Object.entries(bookings).forEach(([bookingId, booking]) => {
         let isBookingStartDay =
           booking.Date == booking.FirstDay.substring(0, 10);
@@ -163,8 +162,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 delete availableServices[serviceKey];
               });
             } else {
-              // Sinon, supprime juste ce service spécifique
-              delete availableServices[key];
+              if (!isBookingEndDay) {
+                // Parcourir toutes les clés de l'objet
+                for (let subkey in availableServices) {
+                  // Vérifier si 'fullblocked' vaut "1"
+                  if (availableServices[subkey].fullblocked === '1') {
+                    // Supprimer l'objet si 'fullblocked' vaut "1"
+                    delete availableServices[subkey];
+                  }
+                }
+                delete availableServices[key];
+              }
             }
           }
         });
@@ -218,14 +226,14 @@ document.addEventListener('DOMContentLoaded', function () {
         html_construct = `
         <div class="absolute w-full h-full">
           <div class="relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg}">
-          
+          ${roomsAvailableByService}
           </div>
         </div>`;
       });
       let dotsHtml = html_construct + lastdayHtml + firstdayHtml;
       // Créer un élément HTML pour représenter l'événement
       let eventElement = document.createElement('div');
-      eventElement.className = `group relative flex justify-center items-end h-full text-black dark:text-white overflow-hidden
+      eventElement.className = `group relative flex justify-center items-end w-full h-full text-black dark:text-white overflow-hidden
       ${args.isPast ? 'opacity-30' : ''}  `;
       eventElement.innerHTML = dotsHtml;
       return {
@@ -391,7 +399,7 @@ function addEvent() {
         showBanner(
           `<div class="flex flex-col">Evènement ajouté avec succès !</div>
               <div class="text-center">
-                Du <b>${format_date(ModaleventStart)}</b> au <b>${format_date(ModaleventEnd)}</b>
+                Du <b>${format_date(response.data.start)}</b> au <b>${format_date(response.data.end)}</b>
             </div>
             `,
           true
