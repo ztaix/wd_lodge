@@ -866,3 +866,28 @@ body.dark .triangle.start.not-available {
   align-items: end;
   z-index: 30;
 }
+
+/* Styles pour le chemin du toggle */
+#customerDocType_bgtoggle {
+  background-color: #aeaeae;
+  width: 50px; /* Largeur du chemin */
+  height: 25px; /* Hauteur du chemin */
+  border-radius: 9999px; /* Arrondir les bords */
+  position: relative;
+}
+
+/* Styles pour le cercle à bouger */
+#customerDocType_bgtoggleDot {
+  position: absolute;
+  top: 1px; /* Distance du haut */
+  left: 1px; /* Distance de gauche - position initiale */
+  width: 22px; /* Largeur du cercle */
+  height: 22px; /* Hauteur du cercle */
+  border-radius: 9999px; /* Arrondir les bords */
+  transition: left 0.3s; /* Transition pour l'effet de mouvement */
+}
+
+/* Styles quand le document est un devis */
+#customerDocType_bgtoggleDot.devis {
+  left: 25px; /* Distance de gauche quand c'est un devis - ajustez selon la taille de votre toggle */
+}

@@ -100,13 +100,7 @@ async function resetForm(
           document.getElementById(input).value = discountservice[0].Service_id;
         }
       } else if (input == 'ModaleventCustomer_id') {
-        let ModaleventCustomer_id = $('#ModaleventCustomer_id'); // Utilisez jQuery pour sélectionner l'élément
-        ModaleventCustomer_id.val(1); // Changez la valeur
-        ModaleventCustomer_id.trigger('change'); // Mettez à jour l'affichage de Select2
-        ModaleventCustomer_id.focus();
-        document
-          .getElementById('Modalevent_Container_Customer_id')
-          .classList.add('blinking');
+        document.getElementById(input).focus();
       } else {
         document.getElementById(input).value = '';
       }

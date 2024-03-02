@@ -501,3 +501,28 @@ function showDateCalendarFromClic(dateClicked) {
       console.error('Erreur lors de la requête AJAX: ', error);
     });
 }
+
+/**
+ * Alterne entre 'Facture' et 'Devis' pour un client et met à jour l'affichage.
+ * Change `currentDocType`, met à jour le texte du bouton et rafraîchit la liste affichée.
+ *
+ * @global currentDocType {string} - Type de document actuel ('Facture' ou 'Devis').
+ * @effects Modifie `currentDocType`, texte du bouton, et relance get_booking_list_from_customer avec le type actualisé.
+ */
+function customerDocType(data) {
+  // Changer le type de document
+  currentDocType = currentDocType === 'Facture' ? 'Devis' : 'Facture';
+
+  // Mettre à jour le style du bouton de bascule
+  var toggleDot = document.getElementById('customerDocType_bgtoggleDot');
+  if (currentDocType === 'Devis') {
+    toggleDot.classList.add('devis'); // Ajoutez la classe 'devis' pour déplacer le cercle
+  } else {
+    toggleDot.classList.remove('devis'); // Retirez la classe 'devis' pour remettre le cercle à sa position initiale
+  }
+
+  // Appeler la fonction pour rafraîchir les données affichées après un petit délai
+  setTimeout(function () {
+    get_booking_list_from_customer(data);
+  }, 350);
+}

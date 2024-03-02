@@ -593,14 +593,22 @@ function DeleteCustomer(event, id) {
 
 // SIDEBOX //////
 
-function get_booking_list_from_customer(data) {
-  openModal('CustomerInfoModal');
+function get_booking_list_from_customer(customer_id) {
+  console.log('typeDoc', currentDocType);
+
+  if (ModalInStack('CustomerInfoModal')) {
+    closeModalById('CustomerInfoModal');
+    setTimeout(function () {
+      openModal('CustomerInfoModal');
+    }, 350);
+  } else {
+    openModal('CustomerInfoModal');
+  }
   document.getElementById('header_CustomerInfoModal').innerHTML = header_modal(
     'Client',
     'CustomerInfoModal'
   );
 
-  let customer_id = data.getAttribute('data-id');
   let table_th = document.getElementById('CustomerInfoModal_th');
   let tbody = document.getElementById('CustomerInfoModal_tbody');
 
@@ -621,15 +629,17 @@ function get_booking_list_from_customer(data) {
   ajaxCall(
     'booking/getBookingsFromCustomer',
     'GET',
-    { Customer_id: customer_id, Type_doc: 'Facture' },
+    { Customer_id: customer_id, Type_doc: currentDocType },
     function (response) {
-      console.log(response);
       if (!emptyObj(response.customers) && response.success) {
         table_th.style.visibility = 'visible';
 
         // Traiter la réponse
         let bookings = response.bookings; // Les réservations
         let customerInfo = response.customers; // Les informations du client
+
+        // Calculer ces valeurs une seule fois en dehors de la boucle si elles ne changent pas
+        const hasMultipleBookings = response.bookings.length > 1;
 
         bookings.forEach(function (booking) {
           // Mise à jour des sommes totales
@@ -642,61 +652,53 @@ function get_booking_list_from_customer(data) {
           );
 
           totalPaid += paids_sum;
-          totalPrice += totalBookingPriceCal(
+          let bookingPrice = totalBookingPriceCal(
             booking.Price,
             booking.QtTraveller,
             booking.Tax,
             booking.Fee,
             booking.Qt
           );
-          let rowPaid = paids_sum;
-          let rowPrice = totalBookingPriceCal(
-            booking.Price,
-            booking.QtTraveller,
-            booking.Tax,
-            booking.Fee,
-            booking.Qt
-          );
+          totalPrice += bookingPrice;
+
           let newRow = document.createElement('tr');
           newRow.classList.add(
             'hover:bg-slate-50',
             'dark:hover:bg-slate-700',
             'booking-row',
-            'cursor-pointer' // Ajout de la classe spécifique
+            'cursor-pointer'
           );
-          // Ensuite, ajouter la classe conditionnelle
-          if (response.bookings.length > 1) {
+          if (hasMultipleBookings) {
             newRow.classList.add('border-b');
           }
-          newRow.setAttribute('data-booking-id', booking.id); // Ajout de l'ID de la réservation comme attribut
+          newRow.setAttribute('data-booking-id', booking.id);
 
-          newRow.innerHTML = `
-                <td scope="row" class="pl-3 py-3 text-center whitespace-nowrap">
-                  ${booking.Type_doc.charAt(0)} #${booking.id}
-                </td>
-                <th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  ${booking.service_title}
-                </th>
-                <td class="whitespace-nowrap overflow-hidden flex flex-col justify-center items-center" >
-                <div>${booking.Qt} Nuit(s)</div>  
-                  <div class="scroll-text inline-flex">
-                      <div clas="flex">${format_date(booking.start, 0, true)}</div>
-                      <div class="flex items-center">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
-                        </svg>
-                      </div>
-                      <div clas="flex">${format_date(booking.end, 0, true)}</div>
-                  </div>
-                  </td>
-                <td class="px-3 py-3 text-center ">${rowPaid}</td>
-                <td class="px-3 py-3 text-center">${rowPrice}</td>
-            `;
+          // Construction plus sûre et plus performante des éléments du DOM
+          let cells = [
+            `<td scope="row" class="pl-3 py-3 text-center whitespace-nowrap">${booking.Type_doc.charAt(0)} #${booking.id}</td>`,
+            `<th scope="row" class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">${booking.service_title}</th>`,
+            `<td class="whitespace-nowrap overflow-hidden flex flex-col justify-center items-center">
+                    <div>${booking.Qt} Nuit(s)</div>
+                    <div class="scroll-text inline-flex">
+                        <div class="flex">${format_date(booking.start, 0, true)}</div>
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-white" aria-hidden="true" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0l-4 4m4-4l-4-4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex">${format_date(booking.end, 0, true)}</div>
+                    </div>
+                </td>`,
+            `<td class="px-3 py-3 text-center">${paids_sum}</td>`,
+            `<td class="px-3 py-3 text-center">${bookingPrice}</td>`,
+          ];
+          newRow.innerHTML = cells.join('');
 
           // Ajouter un événement onclick
           newRow.onclick = function () {
             showBookingDetailsFromID(booking.id);
           };
+
           tbody.appendChild(newRow);
         });
 
@@ -727,9 +729,21 @@ function get_booking_list_from_customer(data) {
           'modal-title_customer_finance_total'
         );
         customer_finance_total.innerHTML = `
-        <div class="text-center py-4 lg:px-4 w-full">
-          <div class="customer-container w-full inline-flex items-center justify-center flex-wrap px-1 py-1 pr-4 text-gray-700  dark:text-white mb-2">
-            <span class="text-md font-bold text-blue-700 dark:text-white">Total Facture : ${totalPrice.toLocaleString('fr-FR')} Fr</span>
+        <div class=" py-4 lg:px-4 w-full">
+          <div class="customer-container w-full flex items-center justify-start flex-wrap px-1 py-1 pr-4 text-gray-700  dark:text-white mb-2">
+          
+            <div class="flex w-full p-2 items-center cursor-pointer overflow-hidden border-slate-300 dark:border-slate-700 border-dotted border-b-2" id="customerDocType"  onclick="customerDocType(${customer_id})">
+              <div id="customerTypeDoc_title" class="font-bold mr-2">Type document: </div>
+              <!-- Le conteneur du toggle -->
+              <div class="relative mr-2">
+                <!-- Le chemin du toggle -->
+                <div id="customerDocType_bgtoggle" class="bg-gray-600 rounded-full shadow-inner shadow-slate-800"></div>
+                <!-- Le cercle à bouger -->
+                <div id="customerDocType_bgtoggleDot" class="${currentDocType === 'Facture' ? '' : 'devis'} absolute bg-white dark:bg-slate-700 rounded-full transition transform "></div>
+              </div>
+              <div id="customerTypeDoc">${currentDocType}</div>
+            </div>
+            <div class="p-2 text-md font-bold text-blue-700 dark:text-white">Total ${currentDocType} : ${totalPrice.toLocaleString('fr-FR')} Fr</div>
           </div>
 
     

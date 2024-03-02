@@ -24,8 +24,8 @@ $modal_id = "addEventModal";
         </div>
 
         <!-- Modal Form -->
-        <div id="body_<?= $modal_id ?>" class="w-full px-6 py-6 lg:px-8 mb-20 rounded-lg">
-            <form id="eventForm" class="space-y-6">
+        <div id="body_<?= $modal_id ?>" class="w-full px-6 pb-6 lg:px-8 mb-20 rounded-lg">
+            <form id="eventForm" class="space-y-2">
                 <input type="hidden" id="Modaleventid" name="id">
                 <input type="hidden" id="ModaleventTax" name="Tax">
                 <input type="hidden" id="ModaleventFee" name="Fee">
@@ -188,7 +188,7 @@ $modal_id = "addEventModal";
 
 
                 <div class="relative z-0">
-                    <div id="totalIndicator" class="-mt-6 p-2 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t-0 text-sm text-slate-600 dark:text-slate-400"></div>
+                    <div id="totalIndicator" class="-mt-2 p-2 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t-0 text-sm text-slate-600 dark:text-slate-400"></div>
                     <div id="discountIndicator" class="-mt-2 p-2 border border-dashed border-gray-400 dark:border-yellow-600 bg-yellow-200 dark:bg-yellow-800 rounded-b-lg border-t-0 text-md text-yellow-500 dark:text-yellow-200 hidden"></div>
                     <div id="numericIndicator" class="absolute -top-4 left-0 text-sm text-red-600 hidden">Seules des valeurs numériques sont autorisées.</div>
                 </div>

@@ -1,5 +1,6 @@
-var calendar; // Déclaration dans la portée globale
-var clickedDate = null; // Défini dans la portée globale
+var calendar;
+var clickedDate = null;
+var currentDocType = 'Facture';
 
 const addButtonHTML =
   '<svg viewBox="0 0 16 16" class="w-6 h-6 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3H4.5a.5.5 0 0 1 0-1H7V4.5a.5.5 0 0 1 .5-.5z"/></svg>';
@@ -426,8 +427,7 @@ function addEvent() {
               'border-2',
               'border-dashed',
               'border-red-500',
-              'rounded-lg',
-              'blinking'
+              'rounded-lg'
             );
             document.getElementById('ModaleventCustomer_id').focus();
           }

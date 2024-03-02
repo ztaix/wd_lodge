@@ -34,10 +34,10 @@ $data['options_customers_id'] = $options_customers_id;
 <div id='calendar' class="hidden text-gray-900 dark:text-white  bg-slate-50 dark:bg-slate-800"></div>
 
 <div id="history" class="max-w-screen-lg bg-gray-50 dark:bg-gray-900">
-    
-<header>Historique</header>
 
-<div class="mx-auto px-4">
+    <header>Historique</header>
+
+    <div class="mx-auto px-4">
         <!-- Start Container -->
         <div class=" relative bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg overflow-hidden">
             <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
@@ -62,21 +62,37 @@ $data['options_customers_id'] = $options_customers_id;
                             <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-4 w-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
                             </svg>
-                            Filter
+                            Filtre
                             <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                             </svg>
                         </button>
-                        <div id="filterDropdown" class="z-10 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 hidden" style="position: absolute; margin-top: 6rem; right: 10px">
-                            <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="filterDropdownButton">
-                                <?php foreach ($services_list as $service) { ?>
+                        <div id="filterDropdown" class="z-10 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 hidden  text-sm text-gray-700 dark:text-gray-200" style="position: absolute; margin-top: 6rem; right: 10px">
+                            <div>
+                                <span class="font-bold text-gray-900 dark:text-gray-300 block px-2">Services:</span>
+                                <ul class="p-3 space-y-1" aria-labelledby="filterDropdownButton">
+                                    <?php foreach ($services_list as $service) { ?>
+                                        <li class="flex items-center">
+                                            <input id="service_<?= $service['Service_id']; ?>" checked type="checkbox" value="service_<?= $service['Service_id']; ?>" class="filter-checkbox w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                            <label for="service_<?= $service['Service_id']; ?>" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                <span style="display: inline-block;width: 8px;height: 8px; background-color: <?= $service['Color']; ?>; border-radius: 50%;"></span> <?= $service['Title']; ?></label>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                            <div>
+                                <span class="font-bold text-gray-900 dark:text-gray-300 block px-2">Type de document:</span>
+                                <ul class="p-3 space-y-1">
                                     <li class="flex items-center">
-                                        <input id="service_<?= $service['Service_id']; ?>" checked type="checkbox" value="service_<?= $service['Service_id']; ?>" class="filter-checkbox w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="service_<?= $service['Service_id']; ?>" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            <span style="display: inline-block;width: 8px;height: 8px; background-color: <?= $service['Color']; ?>; border-radius: 50%;"></span> <?= $service['Title']; ?></label>
+                                        <input id="filter_facture" type="checkbox" value="Facture" class="doc-filter-checkbox w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" checked>
+                                        <label for="filter_facture" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Facture</label>
                                     </li>
-                                <?php } ?>
-                            </ul>
+                                    <li class="flex items-center">
+                                        <input id="filter_devis" type="checkbox" value="Devis" class="doc-filter-checkbox w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" checked>
+                                        <label for="filter_devis" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Devis
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -98,9 +114,9 @@ $data['options_customers_id'] = $options_customers_id;
                     </thead>
                     <div id="items-container">
                         <tbody>
-                            
+
                             <?php $reversed_array = array_reverse($bookings_list);
-                             foreach ($reversed_array as $booking) {
+                            foreach ($reversed_array as $booking) {
                             ?>
                                 <tr class="ROW row_booking_<?= $booking['id']; ?> service_<?= $booking['Service_id']; ?> hover:bg-gray-50 hover:dark:bg-gray-900 border-b dark:border-slate-700 cursor-pointer whitespace-nowrap" onclick="showBookingDetailsFromID(<?= $booking['id']; ?>)">
                                     <td class="px-4 py-3"><?= $booking['Type_doc']; ?></td>
@@ -108,19 +124,19 @@ $data['options_customers_id'] = $options_customers_id;
                                     <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"><?= $booking['customer_name']; ?></th>
                                     <th scope="row" class="px-4 py-3"><?= $booking['QtTraveller']; ?></th>
                                     <td class="px-4 py-3"> <?= $booking['service_title']; ?></td>
-                                    <td class="px-4 py-3 text-center"> <?= countNights(sql_date_to_dmY($booking['start']),sql_date_to_dmY($booking['end'])) ?></td>
+                                    <td class="px-4 py-3 text-center"> <?= countNights(sql_date_to_dmY($booking['start']), sql_date_to_dmY($booking['end'])) ?></td>
                                     <td class="px-4 py-3 inline-flex">
                                         <?= sql_date_to_dmY($booking['start']); ?>
                                         <svg class="w-3 h-3 mx-1 my-1 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
                                         </svg>
                                         <?= sql_date_to_dmY($booking['end']); ?>
                                     </td>
                                     <td class="px-3 py-3" onclick="deleteEvent(event, '<?= $booking['id']; ?>')">
-                                    <svg class="w-4 h-4 text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                    </svg>
-                                </td>
+                                        <svg class="w-4 h-4 text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                        </svg>
+                                    </td>
                                 </tr>
                             <?php } ?>
 
@@ -154,8 +170,8 @@ $data['options_customers_id'] = $options_customers_id;
         checkboxes.forEach(function(checkbox) {
             checkbox.addEventListener('change', function() {
                 const serviceId = this.value;
-                const rows = document.querySelectorAll('.' + serviceId); // Remarque: "." ajouté devant serviceId pour la recherche de classe
-
+                const rows = document.querySelectorAll('.' + serviceId);
+                console.log('rows', rows);
                 if (this.checked) {
                     // Afficher les lignes
                     rows.forEach(function(row) {
@@ -288,5 +304,4 @@ $data['options_customers_id'] = $options_customers_id;
 
 
     var totalServices = <?= $totalServices; ?>;
-
 </script>
