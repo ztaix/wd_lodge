@@ -9,9 +9,11 @@
   <?php } else { ?>
     <link href="allAssets/all.min.css" rel="stylesheet">
   <?php } ?>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <!--<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
+  <meta http-equiv="Expires" content="0" />-->
+  <meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
+
   <!-- Responsive design : system css viewport et utilisation des unités vh et vw) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -89,6 +91,6 @@
   </script>
 
 
-  <script src="js/easepick.js"></script>
+  <script src="js/easepick.js" defer></script>
   <!-- LOADER PAGE FOR LOADING PAGE -->
   <div class="loader"></div>
