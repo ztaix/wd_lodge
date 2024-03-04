@@ -448,20 +448,25 @@ async function showBookingDetailsFromID(id) {
 
 async function update_add_formEvent(data) {
   openModal('addEventModal');
+
   // Changer le texte du bouton et son action pour l'ajout
   let submitButton = document.getElementById('add_submit_form');
   submitButton.onclick = function () {
     updateEventFromDetails();
   }; // Ajouter un nouvel événement
+
   try {
     let paids = await getPaidFromBookingId(data.id);
-    let paymentsHtml = '';
+    let paymentsContainer = document.getElementById('payments-subcontainer');
+    // Effacer les paiements existants avant d'ajouter de nouveaux
+    paymentsContainer.innerHTML = '';
+
     if (paids.length > 0) {
       paids.forEach((paid, index) => {
-        paymentsHtml += createPaymentHtml(paid, index, paids.length);
+        let paymentElement = createPaymentElement(paid, index, paids.length); // Assurez-vous que cette fonction retourne un élément DOM
+        paymentsContainer.appendChild(paymentElement);
       });
     }
-    document.getElementById('payments-subcontainer').innerHTML = paymentsHtml;
   } catch (error) {
     console.error('Erreur lors de la récupération des paids: ', error);
     // Gérez l'erreur comme vous le souhaitez
@@ -474,7 +479,9 @@ async function update_add_formEvent(data) {
       `Modifier #${data.id}`;
     document.getElementById('Modaleventid').value = data.id;
     document.getElementById('ModaleventCustomer_id').value = data.Customer_id;
-    $('#ModaleventCustomer_id').trigger('change'); // afin que le module SELECT2 reflète formulaire
+
+    // Trigger change pour Select2, si vous utilisez toujours jQuery ici
+    $('#ModaleventCustomer_id').trigger('change');
 
     document.getElementById('ModaleventService_id').value = data.Service_id;
     document.getElementById('Modaleventfullblocked').checked =
@@ -486,10 +493,11 @@ async function update_add_formEvent(data) {
     document.getElementById('ModaleventPrice').value = data.Price;
     document.getElementById('ModaleventType_doc').value = data.Type_doc;
     document.getElementById('ModaleventType_doc').checked =
-      data.Type_doc == 'Facture' ? true : false;
+      data.Type_doc === 'Facture';
+
     document.getElementById('ModaleventComment').value = data.Comment;
 
-    // APPEL des functions de mise à jours du prix total ET des informations
+    // APPEL des fonctions de mise à jour du prix total ET des informations
     updateTotalInfo();
     updatePrice();
   }
@@ -573,32 +581,9 @@ function updateCustomerinfo(data = null) {
   ajaxCall('customer/update', 'POST', data, function (response) {
     if (response.success === true) {
       // Traiter la réponse en cas de succès
-      var newCustomerId = response.id;
+      // var newCustomerId = response.id;
 
-      if (ModalInStack('CustomerInfoModal')) {
-        document.getElementById('history_customer_name_span').innerText =
-          data.Name;
-        document.getElementById('history_customer_phone_span').innerText =
-          data.Phone;
-        document.getElementById('history_customer_email_span').innerText =
-          data.Email;
-        document.getElementById('history_customer_comment_span').innerText =
-          data.Comment;
-      }
-      if (ModalInStack('DetailsEventModal')) {
-        document.getElementById(
-          'booking_details_customer_name_span'
-        ).innerText = data.Name;
-        document.getElementById(
-          'booking_details_customer_phone_span'
-        ).innerText = data.Phone;
-        document.getElementById(
-          'booking_details_customer_email_span'
-        ).innerText = data.Email;
-        document.getElementById(
-          'booking_details_customer_comment_span'
-        ).innerText = data.Comment;
-      }
+      updateCustomerFields(data); // Utilisez la fonction de mise à jour refactorisée
 
       if (ModalInStack('updateCustomerModal')) {
         closeModalById('updateCustomerModal');
@@ -611,6 +596,30 @@ function updateCustomerinfo(data = null) {
   });
 }
 // Appeler setupButtonAction après avoir configuré votre page ou modale pour s'assurer que le bouton a le bon gestionnaire d'événements.
+
+function updateCustomerFields(data) {
+  // Refactorisation pour mettre à jour les informations du client
+  const updateFieldById = (id, value) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.innerText = value || ''; // Utiliser une chaîne vide si la valeur est false
+    }
+  };
+
+  const fieldsToUpdate = [
+    { modal: 'CustomerInfoModal', prefix: 'history_customer' },
+    { modal: 'DetailsEventModal', prefix: 'booking_details_customer' },
+  ];
+
+  fieldsToUpdate.forEach(({ modal, prefix }) => {
+    if (ModalInStack(modal)) {
+      updateFieldById(`${prefix}_name_span`, data.Name);
+      updateFieldById(`${prefix}_phone_span`, data.Phone);
+      updateFieldById(`${prefix}_email_span`, data.Email);
+      updateFieldById(`${prefix}_comment_span`, data.Comment);
+    }
+  });
+}
 
 // CUSTOMER, mets à jours le bouton envoyé
 function setupButtonAction(callback) {
@@ -673,27 +682,25 @@ function createDayMarker({
   additionalClasses = '',
   isavailable,
 }) {
-  let baseHtml = '';
-  if (customerWay === 'IN' || customerWay === 'OUT') {
-    baseHtml = `
-    <div class="absolute flex justify-${position} w-full z-20">
-    
-    <div class="triangle ${position} ${isavailable} ${additionalClasses}">
-    </div>
+  let markerContainer = document.createElement('div');
+  markerContainer.className = `absolute flex justify-${position} w-full z-20`;
 
-    <div class="count justify-${position} my-0.5 mx-1 font-bold z-10">
-        ${count > 0 ? count : '&nbsp;'}
-    </div>
-</div>
-`;
+  if (customerWay === 'IN' || customerWay === 'OUT') {
+    let triangle = document.createElement('div');
+    triangle.className = `triangle ${position} ${isavailable} ${additionalClasses}`;
+    markerContainer.appendChild(triangle);
+
+    let countDiv = document.createElement('div');
+    countDiv.className = `count justify-${position} my-0.5 mx-1 font-bold z-10`;
+    countDiv.textContent = count > 0 ? count.toString() : ' '; // Utiliser un espace insécable
+    markerContainer.appendChild(countDiv);
   } else {
-    baseHtml = `
-      <div class="absolute flex justify-${position} h-full w-full z-20 ">
-          <div class=" calendar_booked ${isavailable}  flex flex-col w-full">
-                    &nbsp;
-          </div>
-      </div>
-  `;
+    markerContainer.className = `absolute flex justify-${position} h-full w-full z-20`;
+    let bookedDiv = document.createElement('div');
+    bookedDiv.className = `calendar_booked ${isavailable} flex flex-col w-full`;
+    bookedDiv.textContent = ' '; // Utiliser un espace insécable
+    markerContainer.appendChild(bookedDiv);
   }
-  return baseHtml;
+
+  return markerContainer; // Retourner l'élément DOM au lieu de la chaîne HTML
 }

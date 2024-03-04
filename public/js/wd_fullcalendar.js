@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
               'inline-flex',
               'items-center',
               'calendarLegend'
-            ); // Assurez-vous d'ajouter 'calendarLegend' pour éviter de dupliquer
+            );
 
             const legends = [
               { text: 'Vide', color: 'bg-white' },
@@ -71,18 +71,30 @@ document.addEventListener('DOMContentLoaded', function () {
               { text: 'Complet', color: 'bg-red-500' },
             ];
 
-            let legendsHTML = legends
-              .map(
-                (legend) => `
-            <div class="flex items-center">
-              ${legend.text} : <span class="w-4 h-4 inline-block ${legend.color} border border-slate-200 ml-1"></span>
-            </div>
-          `
-              )
-              .join(' ');
+            // Créer le conteneur pour les légendes
+            const legendsContainer = document.createElement('div');
+            legendsContainer.className =
+              'flex space-x-2 mr-2 items-center text-sm font-light text-slate-600 dark:text-slate-200';
 
-            customDiv.innerHTML = `<div class="flex space-x-2 mr-2 items-center text-sm font-light text-slate-600 dark:text-slate-200">${legendsHTML}</div>`;
+            // Ajouter chaque légende au conteneur
+            legends.forEach((legend) => {
+              const legendDiv = document.createElement('div');
+              legendDiv.className = 'flex items-center';
 
+              const textNode = document.createTextNode(`${legend.text} : `);
+              legendDiv.appendChild(textNode);
+
+              const colorSpan = document.createElement('span');
+              colorSpan.className = `w-4 h-4 inline-block ${legend.color} border border-slate-200 ml-1`;
+              legendDiv.appendChild(colorSpan);
+
+              legendsContainer.appendChild(legendDiv);
+            });
+
+            // Ajouter le conteneur de légendes au div personnalisé
+            customDiv.appendChild(legendsContainer);
+
+            // Ajouter le div personnalisé au titre
             title.appendChild(customDiv);
           }
         });
@@ -135,9 +147,9 @@ document.addEventListener('DOMContentLoaded', function () {
       }, {});
 
       //Define basic variable
-      let firstdayHtml = '';
-      let lastdayHtml = '';
-      let html_construct = '';
+      let firstdayHtml = null;
+      let lastdayHtml = null;
+      let html_construct = document.createElement('div');
       let COUNTisBookingStartDay = 0;
       let COUNTisBookingEndDay = 0;
       let classNameBg = '';
@@ -187,18 +199,14 @@ document.addEventListener('DOMContentLoaded', function () {
         let roomsAvailableByService = Object.keys(availableServices).length;
 
         // Déterminer la couleur du BG
-
         if (roomsAvailableByService > 0) {
           classNameBg = 'bg-green-500 dark:bg-green-800';
           isavailable = 'available';
-          classBorderColor = '#56DD4F'; //Toxic Green
         } else if (roomsAvailableByService <= 0) {
           classNameBg = 'bg-red-500 dark:bg-red-800';
           isavailable = 'not-available';
-          classBorderColor = '#F93333'; //Red Orange
         } else {
           classNameBg = 'bg-purple-500 dark:bg-purple-800';
-          classBorderColor = '#DE4EC9'; //Purple Pink
           isavailable = 'not-available';
         }
 
@@ -209,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function () {
             customerWay: 'OUT',
             additionalClasses: 'w-2/5  z-20',
             isavailable: isavailable,
-            classBorderColor,
           });
         }
 
@@ -220,22 +227,32 @@ document.addEventListener('DOMContentLoaded', function () {
             customerWay: 'IN',
             additionalClasses: 'w-2/5  z-20',
             isavailable: isavailable,
-            classBorderColor,
           });
         }
-
-        html_construct = `
-        <div class="absolute w-full h-full">
-          <div class="relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg}">
-          </div>
-        </div>`;
       });
-      let dotsHtml = html_construct + lastdayHtml + firstdayHtml;
+
+      html_construct.className = 'absolute w-full h-full';
+
+      let innerDiv = document.createElement('div');
+      innerDiv.className = `relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg}`;
+
+      // Assembler les éléments
+      html_construct.appendChild(innerDiv);
       // Créer un élément HTML pour représenter l'événement
       let eventElement = document.createElement('div');
-      eventElement.className = `group relative flex justify-center items-end w-full h-full text-black dark:text-white overflow-hidden
-      ${args.isPast ? 'opacity-30' : ''}  `;
-      eventElement.innerHTML = dotsHtml;
+      eventElement.className = `group relative flex justify-center items-end w-full h-full text-black dark:text-white overflow-hidden ${args.isPast ? 'opacity-30' : ''}`;
+
+      // Ajoutez le contenu central (html_construct) au eventElement
+      eventElement.appendChild(html_construct);
+
+      // Ajouter les marqueurs de début et de fin s'ils existent
+      if (lastdayHtml) {
+        eventElement.appendChild(lastdayHtml);
+      }
+      if (firstdayHtml) {
+        eventElement.appendChild(firstdayHtml);
+      }
+
       return {
         domNodes: [eventElement],
       };
