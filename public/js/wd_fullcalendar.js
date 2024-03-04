@@ -14,263 +14,265 @@ if (inputField) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  const calendarEl = document.getElementById('calendar');
-  calendar = new FullCalendar.Calendar(calendarEl, {
-    locale: 'fr',
-    firstDay: 1,
-    initialView: 'multiMonthYear',
-    multiMonthMaxColumns: 1, // force a single column
-    editable: false,
-    dayMaxEventRows: false,
-    dayMaxEvents: false,
-    timeZone: 'Pacific/Tahiti', // Spécifiez le fuseau horaire de Tahiti
-    eventSources: [
-      function (fetchInfo, successCallback, failureCallback) {
-        // Utiliser ajaxCall pour charger les événements
-        ajaxCall(
-          'booking',
-          'GET',
-          {},
-          function (response) {
-            // Callback de succès
-            // Supposer que 'response' est un tableau d'événements
-            successCallback(response);
-          },
-          function (xhr, status, error) {
-            // Callback d'erreur
-            console.error('Erreur lors du chargement des événements:', error);
-            failureCallback(error); // Signaler l'échec à FullCalendar
-          }
-        );
-      },
-    ],
-    datesSet: function () {
-      document
-        .querySelectorAll('.fc-multimonth-title')
-        .forEach(function (title) {
-          // Vérifiez si le div personnalisé n'a pas déjà été ajouté
-          if (!title.querySelector('.calendarLegend')) {
-            // Créez le div personnalisé
-            const customDiv = document.createElement('div');
-            title.classList.add(
-              'flex',
-              'justify-between',
-              'text-md',
-              'capitalize'
-            );
-            customDiv.classList.add(
-              'inline-flex',
-              'items-center',
-              'calendarLegend'
-            );
-
-            const legends = [
-              { text: 'Vide', color: 'bg-white' },
-              { text: 'Disponibilité', color: 'bg-green-500' },
-              { text: 'Complet', color: 'bg-red-500' },
-            ];
-
-            // Créer le conteneur pour les légendes
-            const legendsContainer = document.createElement('div');
-            legendsContainer.className =
-              'flex space-x-2 mr-2 items-center text-sm font-light text-slate-600 dark:text-slate-200';
-
-            // Ajouter chaque légende au conteneur
-            legends.forEach((legend) => {
-              const legendDiv = document.createElement('div');
-              legendDiv.className = 'flex items-center';
-
-              const textNode = document.createTextNode(`${legend.text} : `);
-              legendDiv.appendChild(textNode);
-
-              const colorSpan = document.createElement('span');
-              colorSpan.className = `w-4 h-4 inline-block ${legend.color} border border-slate-200 ml-1`;
-              legendDiv.appendChild(colorSpan);
-
-              legendsContainer.appendChild(legendDiv);
-            });
-
-            // Ajouter le conteneur de légendes au div personnalisé
-            customDiv.appendChild(legendsContainer);
-
-            // Ajouter le div personnalisé au titre
-            title.appendChild(customDiv);
-          }
-        });
-    },
-    headerToolbar: {
-      left: 'prev,next', // Ajoutez ici les boutons personnalisés
-      center: 'title',
-      right: 'AddEventButton,SearchIpunt',
-    },
-
-    customButtons: {
-      AddEventButton: {
-        text: 'Ajouter',
-        click: function () {
-          resetForm('addEventModal');
-          updateTotalInfo();
-          updatePrice();
-          openModal('addEventModal');
+if (window.location.href == baseurl) {
+  document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+      locale: 'fr',
+      firstDay: 1,
+      initialView: 'multiMonthYear',
+      multiMonthMaxColumns: 1, // force a single column
+      editable: false,
+      dayMaxEventRows: false,
+      dayMaxEvents: false,
+      timeZone: 'Pacific/Tahiti', // Spécifiez le fuseau horaire de Tahiti
+      eventSources: [
+        function (fetchInfo, successCallback, failureCallback) {
+          // Utiliser ajaxCall pour charger les événements
+          ajaxCall(
+            'booking',
+            'GET',
+            {},
+            function (response) {
+              // Callback de succès
+              // Supposer que 'response' est un tableau d'événements
+              successCallback(response);
+            },
+            function (xhr, status, error) {
+              // Callback d'erreur
+              console.error('Erreur lors du chargement des événements:', error);
+              failureCallback(error); // Signaler l'échec à FullCalendar
+            }
+          );
         },
-      },
-      SearchIpunt: {
-        text: 'Rechercher',
-        click: function () {
-          openModal('SearchListEventModal');
-          // Focus immédiat sur le champ de recherche
-          inputField.focus();
-        },
-      },
-    },
-    buttonText: {
-      today: "Aujourd'hui",
-      month: 'Mois',
-      week: 'Semaine',
-      day: 'Jour',
-      list: 'Liste',
-    },
+      ],
+      datesSet: function () {
+        document
+          .querySelectorAll('.fc-multimonth-title')
+          .forEach(function (title) {
+            // Vérifiez si le div personnalisé n'a pas déjà été ajouté
+            if (!title.querySelector('.calendarLegend')) {
+              // Créez le div personnalisé
+              const customDiv = document.createElement('div');
+              title.classList.add(
+                'flex',
+                'justify-between',
+                'text-md',
+                'capitalize'
+              );
+              customDiv.classList.add(
+                'inline-flex',
+                'items-center',
+                'calendarLegend'
+              );
 
-    ///START
-    eventContent: function (args) {
-      let bookings = args.event.extendedProps.bookings;
-      //Service list extrat from php service insert (footer page)
-      const serviceTitlesObj = services_list.reduce((obj, service) => {
-        // Ici, nous utilisons `service.Service_id` comme clé.
-        // Et comme valeur, nous créons un nouvel objet contenant à la fois `Title` et `fullblocked`.
-        obj[service.Service_id] = {
-          Title: service.Title,
-          fullblocked: service.fullblocked,
-        };
-        return obj;
-      }, {});
+              const legends = [
+                { text: 'Vide', color: 'bg-white' },
+                { text: 'Disponibilité', color: 'bg-green-500' },
+                { text: 'Complet', color: 'bg-red-500' },
+              ];
 
-      //Define basic variable
-      let firstdayHtml = null;
-      let lastdayHtml = null;
-      let html_construct = document.createElement('div');
-      let COUNTisBookingStartDay = 0;
-      let COUNTisBookingEndDay = 0;
-      let classNameBg = '';
-      let isavailable = '';
+              // Créer le conteneur pour les légendes
+              const legendsContainer = document.createElement('div');
+              legendsContainer.className =
+                'flex space-x-2 mr-2 items-center text-sm font-light text-slate-600 dark:text-slate-200';
 
-      // Création d'un objet temporaire pour manipulation
-      let availableServices = { ...serviceTitlesObj };
+              // Ajouter chaque légende au conteneur
+              legends.forEach((legend) => {
+                const legendDiv = document.createElement('div');
+                legendDiv.className = 'flex items-center';
 
-      // Début de la boucle ----->
-      Object.entries(bookings).forEach(([bookingId, booking]) => {
-        let isBookingStartDay =
-          booking.Date == booking.FirstDay.substring(0, 10);
-        let isBookingEndDay = booking.Date == booking.LastDay.substring(0, 10);
-        let services_titles = booking.services_titles;
+                const textNode = document.createTextNode(`${legend.text} : `);
+                legendDiv.appendChild(textNode);
 
-        Object.entries(availableServices).forEach(([key, service]) => {
-          if (service.Title === services_titles) {
-            // Si le titre du service correspond et que 'fullblocked' est '1',
-            // alors on vide tous les services disponibles.
-            if (service.fullblocked === '1' && !isBookingEndDay) {
-              // Vide complètement availableServices
-              Object.keys(availableServices).forEach((serviceKey) => {
-                delete availableServices[serviceKey];
+                const colorSpan = document.createElement('span');
+                colorSpan.className = `w-4 h-4 inline-block ${legend.color} border border-slate-200 ml-1`;
+                legendDiv.appendChild(colorSpan);
+
+                legendsContainer.appendChild(legendDiv);
               });
-            } else {
-              if (!isBookingEndDay) {
-                // Parcourir toutes les clés de l'objet
-                for (let subkey in availableServices) {
-                  // Vérifier si 'fullblocked' vaut "1"
-                  if (availableServices[subkey].fullblocked === '1') {
-                    // Supprimer l'objet si 'fullblocked' vaut "1"
-                    delete availableServices[subkey];
+
+              // Ajouter le conteneur de légendes au div personnalisé
+              customDiv.appendChild(legendsContainer);
+
+              // Ajouter le div personnalisé au titre
+              title.appendChild(customDiv);
+            }
+          });
+      },
+      headerToolbar: {
+        left: 'prev,next', // Ajoutez ici les boutons personnalisés
+        center: 'title',
+        right: 'AddEventButton,SearchIpunt',
+      },
+
+      customButtons: {
+        AddEventButton: {
+          text: 'Ajouter',
+          click: function () {
+            resetForm('addEventModal');
+            updateTotalInfo();
+            updatePrice();
+            openModal('addEventModal');
+          },
+        },
+        SearchIpunt: {
+          text: 'Rechercher',
+          click: function () {
+            openModal('SearchListEventModal');
+            // Focus immédiat sur le champ de recherche
+            inputField.focus();
+          },
+        },
+      },
+      buttonText: {
+        today: "Aujourd'hui",
+        month: 'Mois',
+        week: 'Semaine',
+        day: 'Jour',
+        list: 'Liste',
+      },
+
+      ///START
+      eventContent: function (args) {
+        let bookings = args.event.extendedProps.bookings;
+        //Service list extrat from php service insert (footer page)
+        const serviceTitlesObj = services_list.reduce((obj, service) => {
+          // Ici, nous utilisons `service.Service_id` comme clé.
+          // Et comme valeur, nous créons un nouvel objet contenant à la fois `Title` et `fullblocked`.
+          obj[service.Service_id] = {
+            Title: service.Title,
+            fullblocked: service.fullblocked,
+          };
+          return obj;
+        }, {});
+
+        //Define basic variable
+        let firstdayHtml = null;
+        let lastdayHtml = null;
+        let html_construct = document.createElement('div');
+        let COUNTisBookingStartDay = 0;
+        let COUNTisBookingEndDay = 0;
+        let classNameBg = '';
+        let isavailable = '';
+
+        // Création d'un objet temporaire pour manipulation
+        let availableServices = { ...serviceTitlesObj };
+
+        // Début de la boucle ----->
+        Object.entries(bookings).forEach(([bookingId, booking]) => {
+          let isBookingStartDay =
+            booking.Date == booking.FirstDay.substring(0, 10);
+          let isBookingEndDay =
+            booking.Date == booking.LastDay.substring(0, 10);
+          let services_titles = booking.services_titles;
+
+          Object.entries(availableServices).forEach(([key, service]) => {
+            if (service.Title === services_titles) {
+              // Si le titre du service correspond et que 'fullblocked' est '1',
+              // alors on vide tous les services disponibles.
+              if (service.fullblocked === '1' && !isBookingEndDay) {
+                // Vide complètement availableServices
+                Object.keys(availableServices).forEach((serviceKey) => {
+                  delete availableServices[serviceKey];
+                });
+              } else {
+                if (!isBookingEndDay) {
+                  // Parcourir toutes les clés de l'objet
+                  for (let subkey in availableServices) {
+                    // Vérifier si 'fullblocked' vaut "1"
+                    if (availableServices[subkey].fullblocked === '1') {
+                      // Supprimer l'objet si 'fullblocked' vaut "1"
+                      delete availableServices[subkey];
+                    }
                   }
+                  delete availableServices[key];
                 }
-                delete availableServices[key];
               }
             }
+          });
+          if (isBookingEndDay) {
+            COUNTisBookingEndDay++;
+          }
+          if (isBookingStartDay) {
+            COUNTisBookingStartDay++;
+          }
+
+          let roomsAvailableByService = Object.keys(availableServices).length;
+
+          // Déterminer la couleur du BG
+          if (roomsAvailableByService > 0) {
+            classNameBg = 'bg-green-500 dark:bg-green-800';
+            isavailable = 'available';
+          } else if (roomsAvailableByService <= 0) {
+            classNameBg = 'bg-red-500 dark:bg-red-800';
+            isavailable = 'not-available';
+          } else {
+            classNameBg = 'bg-purple-500 dark:bg-purple-800';
+            isavailable = 'not-available';
+          }
+
+          if (isBookingEndDay) {
+            lastdayHtml = createDayMarker({
+              position: 'start',
+              count: COUNTisBookingEndDay,
+              customerWay: 'OUT',
+              additionalClasses: 'w-2/5  z-20',
+              isavailable: isavailable,
+            });
+          }
+
+          if (isBookingStartDay) {
+            firstdayHtml = createDayMarker({
+              position: 'end',
+              count: COUNTisBookingStartDay,
+              customerWay: 'IN',
+              additionalClasses: 'w-2/5  z-20',
+              isavailable: isavailable,
+            });
           }
         });
-        if (isBookingEndDay) {
-          COUNTisBookingEndDay++;
-        }
-        if (isBookingStartDay) {
-          COUNTisBookingStartDay++;
-        }
 
-        let roomsAvailableByService = Object.keys(availableServices).length;
+        html_construct.className = 'absolute w-full h-full';
 
-        // Déterminer la couleur du BG
-        if (roomsAvailableByService > 0) {
-          classNameBg = 'bg-green-500 dark:bg-green-800';
-          isavailable = 'available';
-        } else if (roomsAvailableByService <= 0) {
-          classNameBg = 'bg-red-500 dark:bg-red-800';
-          isavailable = 'not-available';
-        } else {
-          classNameBg = 'bg-purple-500 dark:bg-purple-800';
-          isavailable = 'not-available';
+        let innerDiv = document.createElement('div');
+        innerDiv.className = `relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg}`;
+
+        // Assembler les éléments
+        html_construct.appendChild(innerDiv);
+        // Créer un élément HTML pour représenter l'événement
+        let eventElement = document.createElement('div');
+        eventElement.className = `group relative flex justify-center items-end w-full h-full text-black dark:text-white overflow-hidden ${args.isPast ? 'opacity-30' : ''}`;
+
+        // Ajoutez le contenu central (html_construct) au eventElement
+        eventElement.appendChild(html_construct);
+
+        // Ajouter les marqueurs de début et de fin s'ils existent
+        if (lastdayHtml) {
+          eventElement.appendChild(lastdayHtml);
         }
-
-        if (isBookingEndDay) {
-          lastdayHtml = createDayMarker({
-            position: 'start',
-            count: COUNTisBookingEndDay,
-            customerWay: 'OUT',
-            additionalClasses: 'w-2/5  z-20',
-            isavailable: isavailable,
-          });
+        if (firstdayHtml) {
+          eventElement.appendChild(firstdayHtml);
         }
 
-        if (isBookingStartDay) {
-          firstdayHtml = createDayMarker({
-            position: 'end',
-            count: COUNTisBookingStartDay,
-            customerWay: 'IN',
-            additionalClasses: 'w-2/5  z-20',
-            isavailable: isavailable,
-          });
-        }
-      });
+        return {
+          domNodes: [eventElement],
+        };
+      },
+      /// END /////
+      eventClick: function (info) {
+        const clickedDate = info.event.startStr;
+        showDateCalendarFromClic(clickedDate);
+      },
+      dateClick: function (info) {
+        const clickedDate = info.dateStr;
+        showDateCalendarFromClic(clickedDate);
+      },
+    });
 
-      html_construct.className = 'absolute w-full h-full';
-
-      let innerDiv = document.createElement('div');
-      innerDiv.className = `relative h-full pt-2 pl-1 flex justify-start items-start ${classNameBg}`;
-
-      // Assembler les éléments
-      html_construct.appendChild(innerDiv);
-      // Créer un élément HTML pour représenter l'événement
-      let eventElement = document.createElement('div');
-      eventElement.className = `group relative flex justify-center items-end w-full h-full text-black dark:text-white overflow-hidden ${args.isPast ? 'opacity-30' : ''}`;
-
-      // Ajoutez le contenu central (html_construct) au eventElement
-      eventElement.appendChild(html_construct);
-
-      // Ajouter les marqueurs de début et de fin s'ils existent
-      if (lastdayHtml) {
-        eventElement.appendChild(lastdayHtml);
-      }
-      if (firstdayHtml) {
-        eventElement.appendChild(firstdayHtml);
-      }
-
-      return {
-        domNodes: [eventElement],
-      };
-    },
-    /// END /////
-    eventClick: function (info) {
-      const clickedDate = info.event.startStr;
-      showDateCalendarFromClic(clickedDate);
-    },
-    dateClick: function (info) {
-      const clickedDate = info.dateStr;
-      showDateCalendarFromClic(clickedDate);
-    },
+    calendar.render();
   });
-
-  calendar.render();
-});
-
+}
 // Mettre à jour l'événement depuis la !!! vue détaillé !!! dans la base de données
 function updateEventFromDetails() {
   let formData = {};

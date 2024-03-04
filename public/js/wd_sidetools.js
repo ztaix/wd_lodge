@@ -594,8 +594,6 @@ function DeleteCustomer(event, id) {
 // SIDEBOX //////
 
 function get_booking_list_from_customer(customer_id) {
-  console.log('typeDoc', currentDocType);
-
   if (ModalInStack('CustomerInfoModal')) {
     closeModalById('CustomerInfoModal');
     setTimeout(function () {
