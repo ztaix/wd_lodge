@@ -5893,12 +5893,6 @@ body.dark header {
   background-color: rgb(255, 221, 0);
 }
 
-.fc-daygrid-day:hover,
-.dark .fc-daygrid-day:hover {
-  cursor: pointer;
-  background: none;
-}
-
 /** OVERIDE SELECT 2 **/
 
 .select2-dropdown {
@@ -6012,11 +6006,6 @@ body.dark
 }
 
 .dark .fc-day-disabled {
-  background-color: #263755;
-}
-
-.dark .fc-day-disabled:hover {
-  cursor: default;
   background-color: #263755;
 }
 

@@ -221,11 +221,6 @@ body.dark header {
 .fc .fc-daygrid-day.fc-day-today {
   background-color: rgb(255, 221, 0);
 }
-.fc-daygrid-day:hover,
-.dark .fc-daygrid-day:hover {
-  cursor: pointer;
-  background: none;
-}
 
 /** OVERIDE SELECT 2 **/
 
@@ -328,10 +323,7 @@ body.dark
 .dark .fc-day-disabled {
   background-color: #263755;
 }
-.dark .fc-day-disabled:hover {
-  cursor: default;
-  background-color: #263755;
-}
+
 .dark .fc .fc-view-harness-active > .fc-view {
   border-color: #22324d;
 }
