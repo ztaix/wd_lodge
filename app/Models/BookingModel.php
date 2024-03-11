@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php
+
+namespace App\Models;
 
 use CodeIgniter\Model;
 use DateTime;
@@ -16,8 +18,8 @@ class BookingModel extends Model
     protected $useAutoIncrement = true;
 
     protected $allowedFields = [
-        'Customer_id', 'start', 'end', 'Service_id', 'Qt', 'QtTraveller', 'Price', 
-        'Paid', 'Type_doc', 'Pdf_url', 'Comment','Tax','Fee', 'fullblocked', 'Created_at', 'Deleted_at'
+        'Customer_id', 'start', 'end', 'Service_id', 'Qt', 'QtTraveller', 'Price',
+        'Paid', 'Type_doc', 'Pdf_url', 'Comment', 'Tax', 'Fee', 'fullblocked', 'Created_at', 'Deleted_at'
     ]; // les champs autorisés pour l'insertion ou la mise à jour
 
     // Pas de champ pour la date de modification, donc on ne définit pas `$updatedField`
@@ -47,10 +49,11 @@ class BookingModel extends Model
     protected $useSoftDeletes = true;
 
 
-/////////////////////////////////////
+    /////////////////////////////////////
 
 
-    public function getAllBookings($service_id=false,$fullblocked=false){
+    public function getAllBookings($service_id = false, $fullblocked = false)
+    {
         $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
         wd_services.Color as service_color,
         GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
@@ -60,10 +63,10 @@ class BookingModel extends Model
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
         $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
         $this->groupBy('wd_bookings.id');
-        if($service_id !== false){
+        if ($service_id !== false) {
             $this->where('wd_bookings.Service_id', $service_id);
         }
-        if($fullblocked == "true"){
+        if ($fullblocked == "true") {
             $this->orWhere('wd_bookings.fullblocked', 1);
         }
         $result = $this->findAll();
@@ -71,7 +74,8 @@ class BookingModel extends Model
         return $result;
     }
 
-    public function getAllBookingsFromDatepicker($service_id=false,$fullblocked=false){
+    public function getAllBookingsFromDatepicker($service_id = false, $fullblocked = false)
+    {
         $this->select('wd_bookings.id,wd_bookings.Price,wd_bookings.start,wd_bookings.end,wd_bookings.fullblocked, wd_bookings.service_id, wd_bookings.Tax , wd_bookings.Fee,  wd_bookings.Paid , 
         wd_services.Title as service_title,wd_services.Color as service_color,
         GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
@@ -96,7 +100,8 @@ class BookingModel extends Model
 
         return $result;
     }
-    public function getAllBookingsFromService($service){
+    public function getAllBookingsFromService($service)
+    {
         $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
         wd_services.Color as service_color,
         GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
@@ -115,7 +120,8 @@ class BookingModel extends Model
         return $result;
     }
 
-    public function getBookingsFromDate($date){
+    public function getBookingsFromDate($date)
+    {
         // Vérifier si la date est nulle ou vide
         if (empty($date)) {
             // Gérer l'erreur ou retourner une valeur par défaut / message d'erreur
@@ -129,7 +135,7 @@ class BookingModel extends Model
             // La date est mal formée, gérer l'erreur
             return null; // ou une réponse appropriée
         }
-   
+
         $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
         wd_services.Color as service_color,
         GROUP_CONCAT(wd_paid.paid_id) as paids_ids,
@@ -169,11 +175,12 @@ class BookingModel extends Model
         $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
         $this->groupBy('wd_bookings.id');
         $this->where("wd_bookings.id", $id);
-        $result = $this->first(); 
+        $result = $this->first();
         return $result;
     }
 
-    public function getBookingsFromCustomer($customer_id, $Type_doc = false){
+    public function getBookingsFromCustomer($customer_id, $Type_doc = false)
+    {
 
         $this->select('wd_bookings.*, wd_customers.Name as customer_name, wd_services.Title as service_title, 
         wd_services.Color as service_color,
@@ -183,8 +190,8 @@ class BookingModel extends Model
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
         $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id AND wd_paid.deleted_at IS NULL', 'left');
-        $this->groupBy('wd_bookings.id');  
-        if($Type_doc){
+        $this->groupBy('wd_bookings.id');
+        if ($Type_doc) {
             $this->where("wd_bookings.Type_doc", $Type_doc);
         }
         $this->where("wd_bookings.Customer_id", $customer_id);
@@ -193,9 +200,10 @@ class BookingModel extends Model
     }
 
 
-    public function getBookingCountByDate() {
+    public function getBookingCountByDate()
+    {
         $bookings = $this->findAll();
-        
+
         $counts = [];
         foreach ($bookings as $booking) {
             $startDate = new DateTime($booking['start']);
@@ -210,15 +218,15 @@ class BookingModel extends Model
                 $startDate->modify('+1 day');
             }
         }
-    
+
         $result = [];
         foreach ($counts as $date => $count) {
             $result[] = ['start' => $date, 'count' => $count];
         }
-    
+
         return $result;
     }
-    
+
 
     public function addBooking($data)
     {
@@ -240,12 +248,11 @@ class BookingModel extends Model
             return ['success' => false, 'validationErrors' => $validationErrors];
         }
         return ['success' => isset($id), 'id' => $id];
-
     }
 
     public function deleteBooking($booking_id)
     {
-            // Utilisez la fonction delete pour supprimer la réservation avec l'ID donné
+        // Utilisez la fonction delete pour supprimer la réservation avec l'ID donné
         $this->delete($booking_id);
 
         // Vérifiez si la suppression a réussi en vérifiant le nombre de lignes affectées
@@ -258,21 +265,21 @@ class BookingModel extends Model
         $this->select('wd_customers.Name as customer_name');
         $this->select('wd_services.Title as service_title, wd_services.Color as service_color');
         $this->select('SUM(wd_paid.value) as total_paid'); // Calcule la somme des paiements pour chaque réservation
-    
+
         $this->join('wd_paid', 'wd_paid.booking_id = wd_bookings.id', 'left');
         $this->join('wd_customers', 'wd_customers.Customer_id = wd_bookings.Customer_id', 'left');
         $this->join('wd_services', 'wd_services.Service_id = wd_bookings.Service_id', 'left');
-    
+
         $this->groupBy('wd_bookings.id'); // Assurez-vous de grouper par l'ID de réservation
-    
+
         if ($searchInput) {
             $this->groupStart(); // Commencer un groupe de conditions
             $searchInputLower = strtolower($searchInput);
-    
+
             // Tenter de convertir le searchInput en une date au format YYYY-MM-DD
             $possibleDateFormats = ['d/m/Y', 'd/m/y', 'd-m-Y', 'd-m-y'];
             $searchDate = null;
-    
+
             foreach ($possibleDateFormats as $format) {
                 $dateObj = DateTime::createFromFormat($format, $searchInput);
                 if ($dateObj !== false && $dateObj->format($format) === $searchInput) {
@@ -280,28 +287,24 @@ class BookingModel extends Model
                     break;
                 }
             }
-    
+
             $this->like("LOWER(wd_customers.Name)", $searchInputLower);
             $this->orLike("LOWER(wd_bookings.id)", $searchInputLower);
-    
+
             if ($searchDate) {
                 $this->orGroupStart();
-                    $this->where("wd_bookings.start <=", $searchDate);
-                    $this->where("wd_bookings.end >=", $searchDate);
+                $this->where("wd_bookings.start <=", $searchDate);
+                $this->where("wd_bookings.end >=", $searchDate);
                 $this->groupEnd();
             }
-    
+
             $this->orLike("LOWER(wd_services.Title)", $searchInputLower);
             $this->orLike("LOWER(wd_bookings.Comment)", $searchInputLower);
             $this->groupEnd(); // Finir le groupe de conditions
         }
-    
+
         $result = $this->findAll(); // Utiliser findAll pour récupérer tous les résultats
-        
+
         return $result;
     }
-    
-    
-    
-    
 }

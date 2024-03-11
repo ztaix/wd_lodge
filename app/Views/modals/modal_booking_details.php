@@ -22,7 +22,7 @@ $modal_id = "DetailsEventModal";
 
                         <div class="text-gray-700 dark:text-gray-400  bg-white border border-gray-200 rounded-lg dark:bg-slate-800 dark:border-gray-800">
 
-                            <h5 id="booking_details_id_h5" class="absolute p-2 m-2">ID</h5>
+                            <h5 id="booking_details_Type_doc" class="absolute p-2 m-2">ID</h5>
                             <div id="booking_details_div_img" class="flex justify-center items-center rounded-t dark:bg-slate-900 h-32 max-w-lg overflow-hidden">
                                 <img id="booking_details_img" class="rounded-t-lg object-cover w-full h-full" src="./img/lodge.webp" alt="" />
                             </div>
@@ -44,15 +44,15 @@ $modal_id = "DetailsEventModal";
                                                     <path stroke="currentColor" stroke-linecap="square" stroke-linejoin="round" stroke-width="2" d="M7 19H5a1 1 0 0 1-1-1v-1a3 3 0 0 1 3-3h1m4-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm7.4 1.6a2 2 0 0 1 0 2.7l-6 6-3.4.7.7-3.4 6-6a2 2 0 0 1 2.7 0Z" />
                                                 </svg>
                                             </div>
-                                            <div id="booking_details_customer_name_span" class="flex-grow font-bold text-gray-700 dark:text-white -ml-2 transition-all duration-300 group-hover:m-0 group-hover:translate-x-2">Customer Name</div>
-                                            <span id="booking_details_customer_phone_span" class="flex-none whitespace-nowrap">customer_phone</span>
+                                            <div id="booking_details_customer_name" class="flex-grow font-bold text-gray-700 dark:text-white -ml-2 transition-all duration-300 group-hover:m-0 group-hover:translate-x-2">Customer Name</div>
+                                            <span id="booking_details_customer_phone" class="flex-none whitespace-nowrap">customer_phone</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <div id="booking_details_customer_created_span" class="text-xs">Created at Month YEAR</div>
-                                            <span id="booking_details_customer_email_span" class="text-sm">customer_mail</span>
+                                            <div id="booking_details_customer_created" class="text-xs">Created at Month YEAR</div>
+                                            <span id="booking_details_customer_email" class="text-sm">customer_mail</span>
                                         </div>
                                         <div class="flex w-full text-sm p-2 mt-2 bg-slate-50 border-l-2 border-slte-300 dark:border-gray-900 dark:bg-slate-800 shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-lg">
-                                            <span id="booking_details_customer_comment_span" class="text-md inline-flex ">Commentaire client</span>
+                                            <span id="booking_details_customer_comment" class="text-md inline-flex ">Commentaire client</span>
                                         </div>
                                     </div>
 

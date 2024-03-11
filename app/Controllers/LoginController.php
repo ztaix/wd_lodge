@@ -34,7 +34,15 @@ class LoginController extends BaseController
 
         // Sinon, vérifiez si le token est présent dans les cookies (pour les cookies)
         if (empty($token)) {
-            $token = $this->request->getCookie('token');
+            $token = $this->request->getServer('HTTP_LOCAL_STORAGE_TOKEN');
+
+            // Si le token n'est pas trouvé dans les cookies, essayez de le récupérer depuis le localStorage
+            if (empty($token)) {
+                $token = $this->request->getCookie('token');
+                if (!empty($localStorageToken)) {
+                    $token = $localStorageToken;
+                }
+            }
         }
 
         if (!$token) {
@@ -46,13 +54,12 @@ class LoginController extends BaseController
         try {
             // Vérifiez le token
             $decoded = JWT::decode($token, new Key($this->key, 'HS256'));
-            if (isset($extend) && !empty($extend)) {
+            if ($extend == true) {
                 $decoded_array = (array) $decoded;
-                $newExpTime = time() + (12 * 60 * 60); // Ajoute 12 heure au champ 'exp'
+                $newExpTime = time() + (12 * 60 * 60);
                 $decoded_array['exp'] = $newExpTime; // Mise à jour du champ 'exp'
                 $renewedToken = JWT::encode($decoded_array, $this->key, 'HS256');
 
-                // Pour un cookie HTTP-only expirant dans 1 heure
                 setcookie('token', $renewedToken, $newExpTime);
 
                 // Calcul de la durée restante avant l'expiration du nouveau token
@@ -61,12 +68,11 @@ class LoginController extends BaseController
                 // Renvoyer le nouveau token dans la réponse, avec le temps restant
                 return $this->response
                     ->setStatusCode(ResponseInterface::HTTP_OK)
-                    ->setJSON(['success' => true, 'token' => $renewedToken, 'message' => 'Session étendu avec succés + 12h00', 'timeLeft' => $timeLeft]);
+                    ->setJSON(['success' => true, 'token' => $renewedToken, 'message' => 'Session étendu avec succés + 12h00', 'timeLeft' => $timeLeft, 'extend' => $extend]);
             } else {
                 // Si le token n'est pas étendu, calculez simplement la durée restante du token actuel
-                $now = time(); // Timestamp actuel
                 $exp = $decoded->exp; // Timestamp d'expiration du token
-                $timeLeft = $exp - $now; // Durée restante en secondes
+                $timeLeft = $exp - time(); // Durée restante en secondes
 
                 // Renvoyer l'état du token actuel dans la réponse, sans le renouveler
                 return $this->response
@@ -126,7 +132,6 @@ class LoginController extends BaseController
             $logData = ['jwt' => $jwt];
             return $this->response->setJSON($logData);
         } else {
-
             return $this->response->setJSON([
                 'success' => false, 'reason' => 'form-error',
                 'message' => 'Email ou mot de passe incorrect.',

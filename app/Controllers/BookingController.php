@@ -355,13 +355,24 @@ class BookingController extends BaseController
 
     public function getBookingFromID($booking_id = false)
     {
-        if ($booking_id !== false) {
+        $message = '';
+
+        if ($booking_id) {
             $id = $booking_id;
-        } else {
+        } else if ($this->request->getGet('id')) {
             $id = $this->request->getGet('id');
+        } else {
+            $message = 'Aucun ID n\'a été reçu par le serveur, erreur dans l\envoi !';
+            return $this->response->setJSON(['success' => false, 'message' => $message]);
         }
         $response = $this->BookingModel->getBookingFromID($id);
-        return $this->response->setJSON($response);
+        if ($response) {
+            $message = 'Données reçu par le serveur';
+            return $this->response->setJSON(['success' => true, 'data' => $response]);
+        } else {
+            $message = 'La requète getBookingFromID(' . $id . ') à échoué.';
+            return $this->response->setJSON(['success' => false, 'message' => $message]);
+        }
     }
 
     public function getBookingsFromCustomer()

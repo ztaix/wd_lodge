@@ -25,6 +25,10 @@ let download_ico = `<svg class="w-4 h-4 mr-2 text-slate-400 dark:text-white" ari
 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15h.01M4 12H2a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-3M9.5 1v10.93m4-3.93-4 4-4-4"/>
 </svg>`;
 
+// Stocker l'URL courante comme la dernière page visitée avant de quitter la page
+window.addEventListener('beforeunload', () => {
+  localStorage.setItem('lastPage', window.location.href);
+});
 //Ferme dernière modal sur l'appui du ESC
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape') {
@@ -37,14 +41,20 @@ document.addEventListener('DOMContentLoaded', function () {
   var onLoginPage =
     window.location.pathname.endsWith('/auth') ||
     window.location.href.includes('/auth');
-  var token = localStorage.getItem('token');
 
-  // Stocker l'URL courante comme la dernière page visitée avant de quitter la page
-  window.addEventListener('beforeunload', () => {
-    localStorage.setItem('lastPage', window.location.href);
-  });
-  // Si l'utilisateur n'est pas sur la page de connexion et qu'aucun token n'est trouvé
-  if (!onLoginPage && !token) {
+  var token = localStorage.getItem('token');
+  if (token) {
+    document
+      .getElementById('footer_ttl')
+      .addEventListener('click', function (e) {
+        e.preventDefault();
+        //Extend True:
+        verifyToken(true);
+        return showBanner('Token étendu de 12h00', true);
+      });
+
+    verifyToken();
+  } else if (!onLoginPage) {
     // Rediriger vers la page de connexion
     window.location.href = baseurl + 'auth';
     return; // Stopper l'exécution supplémentaire du script
@@ -105,39 +115,6 @@ document.addEventListener('DOMContentLoaded', function () {
         );
       });
     }
-  } else {
-    let extend = '';
-    document
-      .getElementById('footer_ttl')
-      .addEventListener('click', function (e) {
-        e.preventDefault();
-        extend = '?extend=true';
-      });
-    ajaxCall(
-      'auth/verifyToken' + extend,
-      'GET',
-      null,
-      function (response) {
-        console.log('response', response);
-        if (response.success) {
-          localStorage.setItem('timeLeft', response.timeLeft);
-          //TTL Token
-
-          // Démarrer le compte à rebours lors du chargement de la page ou après la mise à jour du token
-          startTokenCountdown();
-        } else {
-          showBanner(response.message, false);
-        }
-        // Traiter la réponse positive (le token est valide)
-      },
-      function (xhr, status, error) {
-        console.error(
-          'Token invalide ou erreur lors de la vérification:',
-          error
-        );
-        // Traiter la réponse négative (le token est invalide ou autre erreur)
-      }
-    );
   }
 });
 
@@ -994,7 +971,7 @@ function loadAndInitDatepicker(
                   event.detail.start,
                   event.detail.end
                 );
-                // Mettre à qsdqsjour le champ 'eventQt'
+                // Mettre à jour le champ 'eventQt'
                 document.getElementById('ModaleventQt').value = dayDifference;
                 document.getElementById('ModaleventNights').innerText =
                   dayDifference + ' Nuit(s)';
@@ -1009,8 +986,12 @@ function loadAndInitDatepicker(
           });
 
           if (start_date && end_date) {
-            window.fromServicepicker.setStartDate(start_date);
-            window.fromServicepicker.setEndDate(end_date);
+            window.fromServicepicker.setStartDate(
+              format_date(start_date, 0, false, true)
+            );
+            window.fromServicepicker.setEndDate(
+              format_date(end_date, 0, false, true)
+            );
           }
 
           updateTotalInfo();

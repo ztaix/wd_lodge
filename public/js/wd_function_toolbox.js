@@ -25,7 +25,7 @@
  * });
  */
 
-function ajaxCall(url, method, data, successCallback, errorCallback) {
+async function ajaxCall(url, method, data, successCallback, errorCallback) {
   // Récupération du token stocké
   var token = localStorage.getItem('token');
   // Définition de l'entête d'autorisation
@@ -182,7 +182,7 @@ async function existFile(url) {
   }
 }
 
-//DATES
+//DATES / TIME
 function check_date(input_date) {
   // Vérifier si input_date est déjà un objet Date valide
   if (input_date instanceof Date && !isNaN(input_date)) {
@@ -357,6 +357,42 @@ function getDayOfWeek(dateString) {
   return days[dayOfWeek];
 }
 
+//
+function updateCountdown(ttl) {
+  let a_ttl = document.getElementById('footer_ttl');
+  countdownInterval = setInterval(function () {
+    // Décrémente TTL
+    ttl--;
+
+    // Conversion de TTL en jours, heures, minutes et secondes
+    const jours = Math.floor(ttl / (3600 * 24));
+    const heures = Math.floor((ttl % (3600 * 24)) / 3600);
+    const minutes = Math.floor((ttl % 3600) / 60);
+    const secondes = Math.floor(ttl % 60);
+
+    // Construction de la chaîne de temps restant
+    let tempsRestant;
+    if (jours > 0) {
+      tempsRestant = `${jours} jours${heures > 0 ? ' et ' + heures + 'h' : ''}`;
+    } else if (heures > 0) {
+      tempsRestant = `${heures}h${minutes > 0 ? ' et ' + minutes + 'min' : ''}`;
+    } else if (minutes > 0) {
+      tempsRestant = `${minutes}min${secondes > 0 ? ' et ' + secondes + 's' : ''}`;
+    } else {
+      tempsRestant = `${secondes}s`;
+    }
+
+    // Met à jour l'affichage
+    a_ttl.textContent = `Temps restant : ${tempsRestant}`;
+
+    // Vérifie si le TTL a atteint 0 pour arrêter l'intervalle
+    if (ttl <= 0) {
+      clearInterval(countdownInterval);
+      a_ttl.textContent = 'Temps écoulé!';
+    }
+  }, 1000);
+}
+
 // SERVICE Liste
 /**
  * Renvoi une liste de service disponible pour la date sélectionné
@@ -525,4 +561,26 @@ function customerDocType(data) {
   setTimeout(function () {
     get_booking_list_from_customer(data);
   }, 350);
+}
+function verifyToken(extend = false) {
+  extending = extend ? '?extend=true' : '';
+  ajaxCall(
+    'auth/verifyToken' + extending,
+    'GET',
+    null,
+    function (response) {
+      if (response.success) {
+        localStorage.setItem('timeLeft', response.timeLeft);
+        // Démarrer le compte à rebours lors du chargement de la page ou après la mise à jour du token
+        startTokenCountdown();
+      } else {
+        showBanner(response.message, false);
+      }
+      // Traiter la réponse positive (le token est valide)
+    },
+    function (xhr, status, error) {
+      console.error('Token invalide ou erreur lors de la vérification:', error);
+      // Traiter la réponse négative (le token est invalide ou autre erreur)
+    }
+  );
 }

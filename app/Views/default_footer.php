@@ -40,9 +40,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                <span class="ml-2"> Déconnexion </span>
+                <span id="footer_login_logout" class="ml-2"> Déconnexion </span>
             </a>
-            <a id="footer_ttl" href="#" class="group inline-flex items-center p-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-500"> >
+            <a id="footer_ttl" href="#" class="group inline-flex items-center p-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-500">
                 Token non valide
             </a>
         </div>
@@ -62,7 +62,7 @@
     // Mobile Menu Slider:
 
     document.addEventListener('DOMContentLoaded', function() {
-
+        //startTokenCountdown();
         const menuToggle = document.getElementById('menuToggle');
         const mobileMenu = document.getElementById('mobileMenu');
 
@@ -156,55 +156,6 @@
 
         });
     }
-    /*
-        //SCROLL MAX BOTTOM
-        // N'est pas assez performant pour améliorer l'U.EX
-
-        let startY;
-        let isBottomReached = false;
-        let threshold = 300; // Distance en pixels pour déclencher l'action après avoir atteint le bas
-
-        window.addEventListener('touchstart', (e) => {
-        startY = e.touches[0].clientY;
-        });
-
-        window.addEventListener('touchmove', (e) => {
-        let moveY = e.touches[0].clientY;
-        let isScrollingDown = moveY < startY;
-
-        if (isScrollingDown && (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
-            // L'utilisateur atteint le bas de la page.
-            isBottomReached = true;
-        }
-
-        if (isBottomReached) {
-            let distanceScrolledAfterBottom = startY - moveY;
-
-            if (distanceScrolledAfterBottom > threshold) {
-            // L'utilisateur a continué à défiler de plus de 200px après avoir atteint le bas.
-            closeModal();
-            console.log('close modal',distanceScrolledAfterBottom);
-            isBottomReached = false; // Réinitialiser le flag pour le prochain cycle de défilement
-            }
-        }
-        });
-
-        window.addEventListener('touchend', () => {
-        isBottomReached = false; // Réinitialiser quand l'utilisateur lève le doigt
-        });
-
-        function handleRelease() {
-            let stack = modalStack[modalStack.length-1].id;
-            let modal_body = document.getElementById('body_'+stack);
-            modal_body.classList.add('flex', 'justify-center');
-            document.getElementById('body_'+stack).style.height = '';
-
-            console.log('Le doigt ou le bouton de la souris a été relâché');
-            // Votre logique ici, par exemple :
-            if (isBottomReached) {
-                // Effectuez des actions spécifiques après le relâchement si le bas a été atteint
-            }
-        } */
 </script>
 </body>
 

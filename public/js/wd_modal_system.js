@@ -140,11 +140,18 @@ function openModal(modalId) {
   let shadow_modal = document.getElementById(modalId + '-shadow_modal');
 
   if (modalElement) {
-    shadow_modal.style.zIndex = currentZIndex + 1;
+    let lastZIndex = currentZIndex;
+    if (
+      modalStack[modalStack.length - 1] &&
+      modalStack[modalStack.length - 1].style
+    ) {
+      lastZIndex = modalStack[modalStack.length - 1].style.zIndex;
+    }
+    shadow_modal.style.zIndex = parseInt(lastZIndex) + 1;
     shadow_modal.classList.add('animate_shadow_modal');
     shadow_modal.classList.remove('close-animate_shadow_modal');
     shadow_modal.classList.remove('hidden');
-    modalElement.style.zIndex = currentZIndex + 2;
+    modalElement.style.zIndex = parseInt(lastZIndex) + 2;
     modalElement.classList.add('animate');
     modalElement.classList.remove('close-animate');
     modalElement.classList.remove('hidden');

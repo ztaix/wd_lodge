@@ -169,7 +169,6 @@ $data['options_customers_id'] = $options_customers_id;
             checkbox.addEventListener('change', function() {
                 const serviceId = this.value;
                 const rows = document.querySelectorAll('.' + serviceId);
-                console.log('rows', rows);
                 if (this.checked) {
                     // Afficher les lignes
                     rows.forEach(function(row) {

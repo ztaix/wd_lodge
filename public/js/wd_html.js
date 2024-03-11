@@ -185,71 +185,39 @@ async function showBookingDetailsFromID(id) {
     'Détails réservation',
     'DetailsEventModal'
   );
-  let Booking;
+  let b;
   try {
     let response = await ajaxCall(
       'booking/getBookingFromID?id=' + id,
       'GET',
       null
     );
-    if (response && response.id == id) {
-      let nDays = DaysDifferenceStartEnd(response.start, response.end);
-
-      Booking = {
-        id: response.id,
-        Customer_id: response.Customer_id,
-        Pdf_url: response.Pdf_url,
-        Qt: response.Qt,
-        QtTraveller: response.QtTraveller,
-        Paid: response.Paid,
-        Paids_ids: response.paids_ids,
-        Types_paids: response.types_paids,
-        Paids_values: response.paids_values,
-        Price: response.Price,
-        Tax: response.Tax,
-        Fee: response.Fee,
-        nDays: nDays,
-        Service_id: response.Service_id,
-        booking_img: response.img,
-        fullblocked: response.fullblocked,
-        Type_doc: response.Type_doc,
-        customer_name: response.customer_name,
-        customer_phone: response.customer_phone,
-        customer_mail: response.customer_mail,
-        customer_created: response.customer_created,
-        customer_comment: response.customer_comment,
-        Comment: response.Comment,
-        service_color: response.service_color,
-        service_title: response.service_title,
-        start: format_date(response.start),
-        end: format_date(response.end),
-        Deleted_at: response.Deleted_at,
-        created: response.Created_at,
-        updated: response.updated_at,
-      };
+    if (response.success) {
+      b = response.data;
     } else {
-      console.error(
-        "Échec getBookingsFromID: aucun enregistrement trouvé pour l'id :" + id
-      );
+      showBanner(response.message, false);
+      console.error(response.message);
     }
   } catch (error) {
+    showBanner(error.message, false);
     console.error('Échec getBookingsFromID: ', error);
   }
-  let array_paids_values = Booking.Paids_values
-    ? Booking.Paids_values.split(',').map(Number)
+
+  let array_paids_values = b.paids_values
+    ? b.paids_values.split(',').map(Number)
     : [0];
   let paids_sum = array_paids_values.reduce(
     (total, currentValue) => total + currentValue,
     0
   );
-  let booking_details_h5 = document.getElementById('booking_details_id_h5');
-  booking_details_h5.innerHTML = `<span class="text-md font-bold tracking-tight p-2" >${Booking.Type_doc} # ${Booking.id}</span> `;
+  let booking_details_h5 = document.getElementById('booking_details_Type_doc');
+  booking_details_h5.innerHTML = `<span class="text-md font-bold tracking-tight p-2" >${b.Type_doc} # ${b.id}</span> `;
   // Ajouter des classes qui ne dépendent pas de la condition
   booking_details_h5.classList.add('rounded-md');
 
   // Ajouter des classes basées sur la condition
 
-  if (Booking.Type_doc === 'Devis') {
+  if (b.Type_doc === 'Devis') {
     booking_details_h5.classList.add(
       'bg-slate-400',
       'text-slate-800',
@@ -264,10 +232,10 @@ async function showBookingDetailsFromID(id) {
       'dark:text-sky-400'
     );
   }
-  existFile(baseurl + 'uploads/' + Booking.booking_img).then((fileExists) => {
+  existFile(baseurl + 'uploads/' + b.img).then((fileExists) => {
     if (fileExists) {
       document.getElementById('booking_details_img').src =
-        baseurl + 'uploads/' + Booking.booking_img;
+        baseurl + 'uploads/' + b.img;
     } else {
       document
         .getElementById('booking_details_div_img')
@@ -282,14 +250,14 @@ async function showBookingDetailsFromID(id) {
   });
 
   document.getElementById('booking_details_service_h5').innerText =
-    Booking.service_title;
+    b.service_title;
   let div_fullblocked = document.getElementById(
     'booking_details_fullblocked_div'
   );
   let h5_fullblocked = document.getElementById(
     'booking_details_fullblocked_h5'
   );
-  if (Booking.fullblocked == 1) {
+  if (b.fullblocked == 1) {
     div_fullblocked.classList.add('border-red-300', 'dark:border-red-500'),
       (h5_fullblocked.style.display = 'block');
     h5_fullblocked.innerText = 'Privatisé';
@@ -297,42 +265,27 @@ async function showBookingDetailsFromID(id) {
     div_fullblocked.classList.remove('border-red-300', 'dark:border-red-500');
     h5_fullblocked.style.display = 'none';
   }
-  document.getElementById('booking_details_qt_span').innerText = Booking.Qt;
+  document.getElementById('booking_details_qt_span').innerText = b.Qt;
   document.getElementById('booking_details_traveller_span').innerText =
-    Booking.QtTraveller;
-  document.getElementById('booking_details_start_span').innerText =
-    Booking.start;
-  document.getElementById('booking_details_end_span').innerText = Booking.end;
+    b.QtTraveller;
+  document.getElementById('booking_details_start_span').innerText = format_date(
+    b.start
+  );
+  document.getElementById('booking_details_end_span').innerText = format_date(
+    b.end
+  );
   document.getElementById('booking_details_price_span').innerHTML =
-    totalBookingPriceCal(
-      Booking.Price,
-      Booking.QtTraveller,
-      Booking.Tax,
-      Booking.Fee,
-      Booking.nDays
-    ) + ' Fr';
+    totalBookingPriceCal(b.Price, b.QtTraveller, b.Tax, b.Fee, b.nDays) + ' Fr';
 
   let details_paid_rest_div = document.getElementById(
     'booking_details_progress_rest_div'
   );
   if (
     parseInt(paids_sum) <
-    totalBookingPriceCal(
-      Booking.Price,
-      Booking.QtTraveller,
-      Booking.Tax,
-      Booking.Fee,
-      Booking.nDays
-    )
+    totalBookingPriceCal(b.Price, b.QtTraveller, b.Tax, b.Fee, b.nDays)
   ) {
     details_paid_rest_div.innerText =
-      totalBookingPriceCal(
-        Booking.Price,
-        Booking.QtTraveller,
-        Booking.Tax,
-        Booking.Fee,
-        Booking.nDays
-      ) -
+      totalBookingPriceCal(b.Price, b.QtTraveller, b.Tax, b.Fee, b.nDays) -
       parseInt(paids_sum) +
       ' Fr';
   } else {
@@ -347,13 +300,7 @@ async function showBookingDetailsFromID(id) {
     let convert_pourc = Math.min(
       Math.round(
         (parseInt(paids_sum) /
-          totalBookingPriceCal(
-            Booking.Price,
-            Booking.QtTraveller,
-            Booking.Tax,
-            Booking.Fee,
-            Booking.nDays
-          )) *
+          totalBookingPriceCal(b.Price, b.QtTraveller, b.Tax, b.Fee, b.nDays)) *
           10000
       ) / 100,
       100
@@ -364,52 +311,52 @@ async function showBookingDetailsFromID(id) {
     details_paid_div.style.width = '24px';
   }
 
-  document.getElementById('booking_details_customer_name_span').innerText =
-    Booking.customer_name;
+  document.getElementById('booking_details_customer_name').innerText =
+    b.customer_name;
   document.getElementById('booking_details_customer_block_toedit').onclick =
     (function (customerId) {
       return function () {
         showUpdateCustomer(customerId);
-        if (!Booking.customer_comment) {
+        if (!b.customer_comment) {
           document.getElementById('customer_comment').focus();
         }
       };
-    })(Booking.Customer_id);
+    })(b.Customer_id);
 
-  document.getElementById('booking_details_customer_phone_span').innerText =
-    Booking.customer_phone;
-  document.getElementById('booking_details_customer_email_span').innerText =
-    Booking.customer_mail;
-  if (Booking.customer_comment) {
-    document.getElementById('booking_details_customer_comment_span').innerHTML =
-      Booking.customer_comment;
+  document.getElementById('booking_details_customer_phone').innerText =
+    b.customer_phone;
+  document.getElementById('booking_details_customer_email').innerText =
+    b.customer_mail;
+  if (b.customer_comment) {
+    document.getElementById('booking_details_customer_comment').innerHTML =
+      b.customer_comment;
   } else {
-    document.getElementById('booking_details_customer_comment_span').innerHTML =
+    document.getElementById('booking_details_customer_comment').innerHTML =
       '<i>Vous pouvez ajouter un commentaire au client.</i>';
   }
 
-  document.getElementById('booking_details_customer_created_span').innerText =
+  document.getElementById('booking_details_customer_created').innerText =
     'Client depuis ' +
-    new Date(Booking.customer_created)
+    new Date(b.customer_created)
       .toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })
       .replace(/^\w/, (c) => c.toUpperCase());
   document.getElementById('booking_details_created_span').innerHTML =
-    'Créé le  ' + format_date(Booking.created, 0, 'DD/MM/YYYY');
+    'Créé le  ' + format_date(b.Created_at, 0, 'DD/MM/YYYY');
   document.getElementById('booking_details_updated_span').innerHTML =
-    'Modifié à ' + format_date(Booking.updated, 0, 'HH:MM DD/MM/YY');
+    'Modifié à ' + format_date(b.Updated_at, 0, 'HH:MM DD/MM/YY');
 
   let child_Span_Comment = document.getElementById(
     'booking_details_comment_span'
   );
   let parent_Span_Comment = child_Span_Comment.parentElement;
-  child_Span_Comment.innerText = Booking.Comment;
-  if (Booking.Comment.length > 0) {
+  child_Span_Comment.innerText = b.Comment;
+  if (b.Comment.length > 0) {
     parent_Span_Comment.classList.remove('hidden');
   } else {
     parent_Span_Comment.classList.add('hidden');
   }
   document.getElementById('booking_details_pdf').href =
-    baseurl + 'generatePDF/booking/' + Booking.id;
+    baseurl + 'generatePDF/booking/' + b.id;
   document.getElementById('booking_details_pdf').innerHTML =
     download_ico + ' Télécharger PDF';
   document.getElementById('booking_details_sendmail').innerHTML =
@@ -423,7 +370,7 @@ async function showBookingDetailsFromID(id) {
       loader.style.display = 'block';
       loader.style.zIndex = 999;
       // Requête AJAX pour envoyer l'e-mail
-      ajaxCall('sendmail/' + Booking.id, 'GET', null, function (response) {
+      ajaxCall('sendmail/' + b.id, 'GET', null, function (response) {
         console.log(response); // Log la réponse pour débogage
 
         if (response.success === true) {
@@ -438,11 +385,11 @@ async function showBookingDetailsFromID(id) {
 
   let button_update = document.getElementById('booking_details_update_button');
   button_update.onclick = function () {
-    update_add_formEvent(Booking);
+    update_add_formEvent(b);
   };
   let button_delete = document.getElementById('booking_details_delete_button');
   button_delete.onclick = function (event) {
-    deleteEvent(event, Booking.id, 'DetailsEventModal');
+    deleteEvent(event, b.id, 'DetailsEventModal');
   };
 }
 
@@ -461,10 +408,32 @@ async function update_add_formEvent(data) {
     // Effacer les paiements existants avant d'ajouter de nouveaux
     paymentsContainer.innerHTML = '';
 
+    function createPaymentElement(index, data) {
+      const fillPaidInput = data ? data.value : '';
+      const UniqueId = data.paid_id;
+      const newPaymentRow = `
+        <div class="flex payment-row mt-1" id="${UniqueId}">
+        <div class="inline-flex items-center w-fit bg-red-50 border border-red-300 hover:bg-red-400 dark:bg-red-700 dark:hover:bg-red-900 rounded-lg mx-1 my-0.5 p-2 cursor-pointer" onclick="Deletepaid('${UniqueId}')"> X </div>
+        <input type="hidden" id="rowPaidid${index}" name="rowPaidid${index}" value="${UniqueId}">
+        <select id="rowPaidType${index}" name="rowPaidType${index}" class="inline-flex rounded-l-lg items-center py-2.5 px-4 text-sm font-bold text-center text-gray-500 bg-gray-100 border border-gray-300 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-gray-600 dark:text-white dark:border-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:focus:ring-slate-800">
+          <option value="ESPECE">ESPECE</option>
+          <option value="VIREMENT">VIREMENT</option>
+          <option value="VISA">VISA</option>
+          <option value="AMEX">AMEX</option>
+          <option value="CHEQUE">CHEQUE</option>
+        </select>
+        <input type="number" pattern="[0-9]*" value="${fillPaidInput}" inputmode="numeric" id="rowPaid${index}" name="rowPaid${index}" class="block w-full rounded-r-lg py-2 px-3 bg-white border border-gray-200 dark:bg-slate-900 dark:border-gray-700 text-gray-800 dark:text-white focus:ring-4 focus:outline-none focus:ring-gray-100 dark:focus:ring-slate-800">
+        </div>
+      `;
+      const tempContainer = document.createElement('div');
+      tempContainer.innerHTML = newPaymentRow;
+      return tempContainer.firstElementChild;
+    }
+
     if (paids.length > 0) {
       paids.forEach((paid, index) => {
-        let paymentElement = createPaymentElement(paid, index, paids.length); // Assurez-vous que cette fonction retourne un élément DOM
-        paymentsContainer.appendChild(paymentElement);
+        const newPaymentElement = createPaymentElement(index, paid);
+        paymentsContainer.appendChild(newPaymentElement);
       });
     }
   } catch (error) {
@@ -480,23 +449,30 @@ async function update_add_formEvent(data) {
     document.getElementById('Modaleventid').value = data.id;
     document.getElementById('ModaleventCustomer_id').value = data.Customer_id;
 
-    // Trigger change pour Select2, si vous utilisez toujours jQuery ici
+    // APPEL de la fonction de mise à jour des informations du client
     $('#ModaleventCustomer_id').trigger('change');
 
     document.getElementById('ModaleventService_id').value = data.Service_id;
+    loadServiceDetails(data.Service_id);
     document.getElementById('Modaleventfullblocked').checked =
       parseInt(data.fullblocked) === 1;
+
+    // APPEL de la fonction de mise à jour du fullblock
+    updateFullblocked_RedSwitch(parseInt(data.fullblocked));
+
     document.getElementById('ModaleventQtTraveller').value = parseInt(
       data.QtTraveller
     );
     document.getElementById('ModaleventQt').value = data.Qt;
+    document.getElementById('ModaleventNights').innerText =
+      data.Qt + ' Nuit(s)';
+    TypeDoc = document.getElementById('ModaleventType_doc');
+    TypeDoc.value = data.Type_doc;
+    TypeDoc.checked = data.Type_doc === 'Facture';
+    updateToggleLabel(TypeDoc.checked);
+
     document.getElementById('ModaleventPrice').value = data.Price;
-    document.getElementById('ModaleventType_doc').value = data.Type_doc;
-    document.getElementById('ModaleventType_doc').checked =
-      data.Type_doc === 'Facture';
-
     document.getElementById('ModaleventComment').value = data.Comment;
-
     // APPEL des fonctions de mise à jour du prix total ET des informations
     updateTotalInfo();
     updatePrice();
@@ -638,37 +614,21 @@ function setupButtonAction(callback) {
 }
 
 //Start FOOTER_TTL, compte à rebourd pour le temps restant de session.
-let countdownInterval; // Déclarez une variable globale pour stocker l'intervalle
+let countdownInterval; // Déclaration à l'extérieur pour une portée globale
 
 function startTokenCountdown() {
-  let a_ttl = document.getElementById('footer_ttl');
   if (localStorage.getItem('token')) {
     let ttl = parseInt(localStorage.getItem('timeLeft'), 10); // Assurez-vous de convertir en nombre
 
     // Arrêtez l'intervalle existant s'il y en a un
+    // countdownInterval; // Déclarez dans wd_function_toolbox.js
+
     if (countdownInterval) {
       clearInterval(countdownInterval);
     }
 
-    // Fonction pour mettre à jour le TTL chaque seconde
-    const updateCountdown = () => {
-      if (ttl <= 0) {
-        clearInterval(countdownInterval); // Arrête le compte à rebours lorsque TTL atteint 0
-        a_ttl.textContent = 'Session expirée';
-        // Vous pourriez également vouloir rediriger l'utilisateur vers la page de connexion ici
-        return;
-      }
-
-      // Met à jour l'affichage et décrémente TTL
-      a_ttl.textContent = `Temps restant : ${ttl} secondes`;
-      ttl--;
-    };
-
     // Exécute `updateCountdown` une fois immédiatement puis toutes les secondes
-    updateCountdown();
-    countdownInterval = setInterval(updateCountdown, 1000); // Stockez l'intervalle dans la variable globale
-  } else {
-    a_ttl.textContent = '';
+    updateCountdown(ttl);
   }
 }
 

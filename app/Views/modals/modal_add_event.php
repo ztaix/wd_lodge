@@ -42,8 +42,8 @@ $modal_id = "addEventModal";
                                 <div id="ModaleventType_doc_bgtoggleDot" class="dot absolute left-1 top-1 bg-white dark:bg-slate-700 w-8 h-8 rounded-full transition transform ">
                                     <div class="flex items-center justify-center h-full">
                                         <!-- Les étiquettes Devis et Facture -->
-                                        <span class="relative ml-2 left-16 " id="label-devis">Devis</span>
-                                        <span class="relative mr-2 right-16 opacity-0" id="label-facture">Facture</span>
+                                        <span class="relative ml-2 left-20 " id="label-devis">Devis</span>
+                                        <span class="relative mr-2 right-20 opacity-0" id="label-facture">Facture</span>
                                     </div>
                                 </div>
                             </div>
@@ -52,11 +52,20 @@ $modal_id = "addEventModal";
 
                 </div>
                 <script>
+                    let toggleTypeDoc = document.getElementById('ModaleventType_doc');
+
                     function updateToggleLabel(value = null) {
-                        const isChecked = document.getElementById('ModaleventType_doc').checked;
-                        document.getElementById('ModaleventType_doc').value = isChecked ? 'Facture' : 'Devis';
-                        document.getElementById('ModaleventType_doc_bgtoggleDot').classList.add(!isChecked ? 'bg-white' : 'bg-blue-400');
-                        document.getElementById('ModaleventType_doc_bgtoggleDot').classList.remove(isChecked ? 'bg-white' : 'bg-blue-400');
+                        toggleTypeDoc.checked = value ? value : toggleTypeDoc.checked;
+                        const isChecked = toggleTypeDoc.checked;
+                        toggleTypeDoc.value = isChecked ? 'Facture' : 'Devis';
+                        const toggleDot = document.getElementById('ModaleventType_doc_bgtoggleDot');
+                        if (!isChecked) {
+                            toggleDot.classList.add('bg-white', 'dark:bg-slate-300');
+                            toggleDot.classList.remove('bg-blue-400', 'dark:bg-blue-800');
+                        } else {
+                            toggleDot.classList.add('bg-blue-400', 'dark:bg-blue-800');
+                            toggleDot.classList.remove('bg-white', 'dark:bg-slate-300');
+                        }
                         document.getElementById('label-devis').style.opacity = isChecked ? '0' : '100';
                         document.getElementById('label-facture').style.opacity = isChecked ? '100' : '0';
                     }
@@ -112,7 +121,7 @@ $modal_id = "addEventModal";
 
 
                 <!-- Liste déroulante de services -->
-                <div class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700">
+                <div id="ModaleventServiceBlock" class="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-slate-900 dark:border-gray-700">
                     <div class="w-full flex justify-between items-center gap-x-5">
                         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14" />
@@ -125,8 +134,8 @@ $modal_id = "addEventModal";
                             </select>
                         </div>
                         <!-- Case à cocher -->
-                        <div id="container_eventfullblocked" class="flex items-center w-fit p-2 bg-transparent   rounded-lg" onclick="toggleTooltip(this)">
-                            <input disabled id="Modaleventfullblocked" name="Modaleventfullblocked" type="checkbox" class="w-4 h-4 text-red-600 bg-gray-100  rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-slate-800">
+                        <div id="container_eventfullblocked" class="flex items-center w-fit p-2 bg-transparent rounded-lg" onclick="toggleTooltip(this)">
+                            <input hidden id="Modaleventfullblocked" name="Modaleventfullblocked" type="checkbox" class="w-4 h-4 text-red-600 bg-gray-100  rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-slate-800">
                             <label for="Modaleventfullblocked" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Privatiser</label>
                             <span class="tooltiptext tooltip-hidden absolute bg-black text-white text-xs rounded py-1 px-2 z-10 left-1/2 transform  -translate-y-6">Sélectionner "Maison" pour privatiser</span>
                         </div>
@@ -199,7 +208,7 @@ $modal_id = "addEventModal";
                     <div id="payments-subcontainer"></div>
                 </div>
                 <div class="flex justify-end">
-                    <div onclick="addPaymentRow()" class="flex w-fit p-2 cursor-pointer rounded-lg text-gray-600 dark:text-white bg-slate-400 hover:bg-slate-300 focus:ring-4 focus:ring-slate-300 font-medium text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-500 focus:outline-none dark:focus:ring-slate-800 shadow-sm dark:shadow-black" style="margin-top: 0.5rem;">Ajouter un encaissement</div>
+                    <div onclick="addPaymentRow()" class="flex w-fit p-2 cursor-pointer rounded-lg float-right mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-full text-md px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 border border-blue-500 shadow" style="margin-top: 0.5rem;">Ajouter un encaissement</div>
                 </div>
                 <div position="relative">
                     <label for="ModaleventComment" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Commentaire :</label>
@@ -225,6 +234,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     document.getElementById('ModaleventNights').innerText = document.getElementById('ModaleventQt').value + ' Nuit(s)';
     // CATCHING elementID:
     var eventFull_Blocked = document.getElementById("Modaleventfullblocked");
+    var container_serviceBlock = document.getElementById("ModaleventServiceBlock");
     var container_full_blocked = document.getElementById("container_eventfullblocked");
     var container_global = document.getElementById("addEventModal");
     var checkbox = document.getElementById('Modaleventfullblocked');
@@ -235,6 +245,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     var Discount_type = '<?= $DiscountsType ?>';
     var qtInput = document.getElementById("ModaleventQt");
     var serviceSelect = document.getElementById("ModaleventService_id");
+    var modalQtTraveller = document.getElementById("ModaleventQtTraveller");
     var priceInput = document.getElementById("ModaleventPrice");
     var discountIndicator = document.getElementById("discountIndicator");
     var totalIndicator = document.getElementById("totalIndicator");
@@ -253,15 +264,18 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         const uniqueID = `temp_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
 
         // Optimiser l'accès au DOM en minimisant le nombre de requêtes
-        const modaleventQt = document.getElementById("ModaleventQt");
-        const modaleventQtTraveller = document.getElementById("ModaleventQtTraveller");
-        const priceInput = document.getElementById("ModaleventPrice"); // Assurez-vous que cet ID est correct
 
-        const qt = parseInt(modaleventQt ? modaleventQt.value : 0, 10);
-        const qtTraveller = parseInt(modaleventQtTraveller ? modaleventQtTraveller.value : 0, 10);
+        const qt = parseInt(qtInput ? qtInput.value : 0, 10);
+        const QtTraveller = parseInt(modalQtTraveller ? modalQtTraveller.value : 0, 10);
         const price = parseInt(priceInput ? priceInput.value : 0, 10);
         const serviceTax = parseInt(service.Tax, 10); // Assurez-vous que 'service' est défini
         const serviceFee = parseInt(service.Fee, 10); // et accessible
+
+        // Changer le Type_doc pour facture
+        if (toggleTypeDoc.value !== "Facture") {
+            updateToggleLabel(true);
+            showBanner('Le type de document a été changé en Facture', true);
+        }
 
         // Calcul du total déjà payé
         let sum = Array.from(document.querySelectorAll('input[id^="rowPaid"]'))
@@ -269,8 +283,8 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             .reduce((acc, input) => acc + Number(input.value), 0);
 
         // Calcul du montant à remplir
-        let fillPaidInput = !isNaN(price) && !isNaN(qtTraveller) ?
-            (price + (qtTraveller * serviceTax * qt) + serviceFee) - sum : 0;
+        let fillPaidInput = !isNaN(price) && !isNaN(QtTraveller) ?
+            (price + (QtTraveller * serviceTax * qt) + serviceFee) - sum : 0;
 
         if (fillPaidInput === 0) {
             return;
@@ -295,26 +309,24 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     }
 
 
-    // Déclaration globale des variables pour une meilleure visibilité
     // Fonction pour mettre à jour les informations totales
     function updateTotalInfo() {
         // Accès au DOM optimisé
-        const modaleventQtTraveller = document.getElementById("ModaleventQtTraveller");
         const modaleventQt = document.getElementById("ModaleventQt");
-        const priceInput = document.getElementById("ModaleventPrice"); // Assurez-vous que cet ID est correct
-        const totalIndicator = document.getElementById("totalIndicator"); // Assurez-vous que cet ID est correct
-        const numericIndicator = document.getElementById("numericIndicator"); // Assurez-vous que cet ID est correct
+        const priceInput = document.getElementById("ModaleventPrice");
+        const totalIndicator = document.getElementById("totalIndicator");
+        const numericIndicator = document.getElementById("numericIndicator");
 
         // Validation et conversion des valeurs
-        const qtTraveller = parseInt(modaleventQtTraveller ? modaleventQtTraveller.value : 0);
+        const QtTraveller = parseInt(modalQtTraveller ? modalQtTraveller.value : 0);
         const price = parseInt(priceInput ? priceInput.value : 0);
         const nDays = parseInt(modaleventQt ? modaleventQt.value : 0);
         const serviceTax = parseInt(service ? service.Tax : 0);
         const serviceFee = parseInt(service ? service.Fee : 0);
         let total = 0;
-        if (!isNaN(price) && !isNaN(qtTraveller) && !isNaN(serviceTax) && !isNaN(serviceFee) && !isNaN(nDays)) {
+        if (!isNaN(price) && !isNaN(QtTraveller) && !isNaN(serviceTax) && !isNaN(serviceFee) && !isNaN(nDays)) {
             // Calcul du prix total
-            total = price + (qtTraveller * serviceTax * nDays) + serviceFee;
+            total = price + (QtTraveller * serviceTax * nDays) + serviceFee;
         }
 
         // Mise à jour de l'affichage total
@@ -323,7 +335,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             <div class="flex justify-between font-normal text-xs text-slate-400 dark:text-slate-100">
                 <div class="flex-grow">
                     <div><b>Tarif réservation:</b> ${price.toLocaleString('fr-FR')} Fr</div>
-                    <div><b>Taxe de séjour:</b> ${qtTraveller} Personne(s) * ${nDays} jour(s) * ${serviceTax} Fr</div>
+                    <div><b>Taxe de séjour:</b> ${QtTraveller} Personne(s) * ${nDays} jour(s) * ${serviceTax} Fr</div>
                     <div><b>Frais de ménage:</b> ${serviceFee.toLocaleString('fr-FR')} Fr</div>
                 </div>
                 <div class="flex-col ml-2">
@@ -334,7 +346,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         }
 
         if (numericIndicator) {
-            numericIndicator.style.display = (isNaN(price) || isNaN(qtTraveller)) ? "inline" : "none";
+            numericIndicator.style.display = (isNaN(price)) ? "inline" : "none";
         }
     }
 
@@ -357,18 +369,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         E_Tax.value = parseInt(service.Tax);
 
         // MàJ Privatisation
-        if (service.fullblocked == 1) {
-            checkbox.checked = true;
-            container_full_blocked.classList.add("bg-red-500");
-            container_full_blocked.classList.remove("bg-transparent");
-            container_global.classList.add('border', 'border-dashed', 'border-4', 'border-red-300');
-            container_global.classList.add('dark:border-red-800');
-        } else {
-            checkbox.checked = false;
-            container_full_blocked.classList.remove("bg-red-500");
-            container_global.classList.remove('border', 'border-dashed', 'border-4', 'border-red-300');
-            container_global.classList.remove('dark:border-red-800');
-        }
+        updateFullblocked_RedSwitch(service.fullblocked);
 
         if (!userChangedPrice) {
             priceInput.value = prices[serviceId];
@@ -382,14 +383,38 @@ $DiscountsScope = $discountRules['Scope']['Data'];
         userChangedPrice = true;
         updateTotalInfo();
     });
-    document.getElementById("ModaleventQtTraveller").addEventListener("change", updateTotalInfo);
+    modalQtTraveller.addEventListener("change", updateTotalInfo);
     serviceSelect.addEventListener("change", function() {
         loadServiceDetails(this.value);
     });
 
-    // Initialiser les valeurs par défaut
+    // Initialiser les valeurs par défaut   
     loadServiceDetails(serviceSelect.value);
 
+
+    // MàJ Privatisation
+    function updateFullblocked_RedSwitch(fullblocked) {
+        if (fullblocked == 1) {
+            checkbox.checked = true;
+            container_full_blocked.classList.remove("line-through", "bg-white", "dark:bg-slate-900");
+
+            container_serviceBlock.classList.add("bg-red-500");
+            container_serviceBlock.classList.remove("bg-white", "dark:bg-slate-900");
+
+            serviceSelect.classList.add("bg-red-500");
+            serviceSelect.classList.remove("bg-white", "dark:bg-slate-900");
+        } else {
+            checkbox.checked = false;
+            container_full_blocked.classList.add("bg-white", "line-through", "dark:bg-slate-900");
+            container_full_blocked.classList.remove("bg-red-500");
+
+            container_serviceBlock.classList.add("bg-white", "dark:bg-slate-900");
+            container_serviceBlock.classList.remove("bg-red-500");
+
+            serviceSelect.classList.add("bg-white", "dark:bg-slate-900");
+            serviceSelect.classList.remove("bg-red-500");
+        }
+    }
     // Fonction pour obtenir la réduction la plus proche en fonction de la quantité
     function getClosestDiscount(discountValues, quantity) {
         let closestQty = null;
@@ -435,13 +460,13 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             // Get : La discount la plus proche -> OBJ
             let closestDiscount = getClosestDiscount(discountValues, qt);
 
-            let prixCalculé = calculateDiscountedPrice(qt, servicePrice, closestDiscount.discountValue, Discount_type);
+            prixCalculé = calculateDiscountedPrice(qt, servicePrice, closestDiscount.discountValue, Discount_type);
             if (closestDiscount.discountValue > 0) {
                 discountIndicator.style.display = "block";
                 discountIndicator.innerHTML = `
         <div class="flex justify-between">
             <div class="absolute" style="left: 85%">
-                <svg class="w-10 h-10 text-yellow-300 mt-1 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="w-10 h-10 text-yellow-300 dark:text-yellow-700 mt-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M13.8 4.2a2 2 0 0 0-3.6 0L8.4 8.4l-4.6.3a2 2 0 0 0-1.1 3.5l3.5 3-1 4.4c-.5 1.7 1.4 3 2.9 2.1l3.9-2.3 3.9 2.3c1.5 1 3.4-.4 3-2.1l-1-4.4 3.4-3a2 2 0 0 0-1.1-3.5l-4.6-.3-1.8-4.2Z"/>
                 </svg>
             </div>
@@ -458,8 +483,9 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             } else {
                 discountIndicator.style.display = "none";
             }
-
-            priceInput.value = prixCalculé.toFixed(0).toLocaleString('fr-FR');; // Prix sans décimales
+            if (priceInput.value == prixCalculé.toFixed(0) || priceInput.value == 0) {
+                priceInput.value = prixCalculé.toFixed(0).toLocaleString('fr-FR'); // Prix sans décimales
+            }
         } else {
             priceInput.value = ""; // Effacez le champ de prix si la quantité n'est pas un nombre valide
         }
@@ -491,8 +517,6 @@ $DiscountsScope = $discountRules['Scope']['Data'];
 
 
     var fromServicepicker; // Déclare la variable à l'extérieur de la fonction pour qu'elle ait une portée globale.
-
-    var serviceSelect = document.getElementById('ModaleventService_id');
 
     // Ajoutez un écouteur d'événements pour réagir aux changements de sélection
     serviceSelect.addEventListener('change', function() {
