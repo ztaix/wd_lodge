@@ -43,7 +43,13 @@ async function ajaxCall(url, method, data, successCallback, errorCallback) {
   if (method !== 'GET') {
     body = JSON.stringify(data); // Convertit l'objet en chaîne JSON
   } else {
-    url += '?' + new URLSearchParams(data).toString(); // Ajoute les paramètres à l'URL pour une requête GET
+    if (data) {
+      let query = new URLSearchParams(data).toString();
+      if (query === 'null=') {
+        query = '';
+      }
+      url += '?' + query; // Ajoute les paramètres à l'URL pour une requête GET
+    }
   }
 
   // Exécution de la requête fetch
