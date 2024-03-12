@@ -995,8 +995,8 @@ function loadAndInitDatepicker(
           }
 
           updateTotalInfo();
-          updatePrice();
-
+          updatePrice(GlobalEDITING_book);
+          GlobalEDITING_book = false;
           loader.style.display = 'none';
           resolve(window.fromServicepicker);
         }

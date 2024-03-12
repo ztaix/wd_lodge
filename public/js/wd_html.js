@@ -1,3 +1,6 @@
+//Permet de controler le status d'édition, si en cours ou non
+let GlobalEDITING_book = false;
+
 function applyScrollAnimation() {
   document.querySelectorAll('.scroll-container').forEach((container) => {
     const textElement = container.querySelector('.scroll-text_smooth');
@@ -474,8 +477,9 @@ async function update_add_formEvent(data) {
     document.getElementById('ModaleventPrice').value = data.Price;
     document.getElementById('ModaleventComment').value = data.Comment;
     // APPEL des fonctions de mise à jour du prix total ET des informations
+    GlobalEDITING_book = true;
     updateTotalInfo();
-    updatePrice();
+    updatePrice(true);
   }
 }
 

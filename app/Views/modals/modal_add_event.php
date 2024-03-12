@@ -447,7 +447,7 @@ $DiscountsScope = $discountRules['Scope']['Data'];
     }
 
     // Fonction pour mettre à jour le prix en fonction de la quantité
-    function updatePrice() {
+    function updatePrice(surchargePrice = false) {
         const qt = parseInt(qtInput.value);
         let prixCalculé = 0;
         const selected_service = discountservice.find(service => service.Service_id === serviceSelect.value);
@@ -483,9 +483,10 @@ $DiscountsScope = $discountRules['Scope']['Data'];
             } else {
                 discountIndicator.style.display = "none";
             }
-            if (priceInput.value == prixCalculé.toFixed(0) || priceInput.value == 0) {
+            if (!surchargePrice) {
                 priceInput.value = prixCalculé.toFixed(0).toLocaleString('fr-FR'); // Prix sans décimales
             }
+
         } else {
             priceInput.value = ""; // Effacez le champ de prix si la quantité n'est pas un nombre valide
         }
