@@ -118,7 +118,6 @@ $due_date = $date->format('d/m/Y');
 
 			<!-- Image du service -->
 			<img src="<?= $s_img ?>" alt="Service Image" style="max-height:150px; margin: 10px 10px 0 0; border-radius: 15px;">
-			<?= $s_img ?>
 		</div>
 
 
