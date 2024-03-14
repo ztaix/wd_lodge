@@ -183,6 +183,7 @@ function header_modal(title, modal_id) {
 /// A TRAVAILLER POUR AMELIORATION :
 
 async function showBookingDetailsFromID(id) {
+  console.log('showBookingDetailsFromID', id);
   openModal('DetailsEventModal', false);
   document.getElementById('header_DetailsEventModal').innerHTML = header_modal(
     'Détails réservation',
@@ -191,7 +192,7 @@ async function showBookingDetailsFromID(id) {
   let b;
   try {
     let response = await ajaxCall(
-      'booking/getBookingFromID?id=' + id,
+      'booking/getBookingFromID?id=' + encodeURIComponent(id),
       'GET',
       null
     );
@@ -479,7 +480,7 @@ async function update_add_formEvent(data) {
     // APPEL des fonctions de mise à jour du prix total ET des informations
     GlobalEDITING_book = true;
     updateTotalInfo();
-    updatePrice(true);
+    updatePrice(GlobalEDITING_book);
   }
 }
 

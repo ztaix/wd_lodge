@@ -32,10 +32,9 @@ async function ajaxCall(url, method, data, successCallback, errorCallback) {
   var headers = {
     Authorization: 'Bearer ' + token,
     'Content-Type':
-      method ==
-      ('POST'
+      method === 'POST'
         ? 'application/json'
-        : 'application/x-www-form-urlencoded; charset=UTF-8'),
+        : 'application/x-www-form-urlencoded; charset=UTF-8',
   };
 
   // Préparation des données pour la requête si la méthode n'est pas GET
@@ -58,14 +57,13 @@ async function ajaxCall(url, method, data, successCallback, errorCallback) {
     headers: headers,
     body: method !== 'GET' ? body : null, // N'ajoutez le corps que pour les méthodes POST, PUT, etc.
   })
-    .then((response) => {
+    .then(async (response) => {
       if (response.ok) {
         return response.json(); // Renvoie une promesse résolue avec le résultat JSON
       } else {
         // Gestion des erreurs côté serveur
-        return response.json().then((error) => {
-          throw error; // Propage l'erreur pour être capturée plus loin
-        });
+        const error = await response.json();
+        throw error; // Propage l'erreur pour être capturée plus loin
       }
     })
     .then((response) => {
