@@ -182,8 +182,7 @@ function header_modal(title, modal_id) {
 
 /// A TRAVAILLER POUR AMELIORATION :
 
-async function showBookingDetailsFromID(id) {
-  console.log('showBookingDetailsFromID', id);
+async function showBookingDetailsFromID(bookingId) {
   openModal('DetailsEventModal', false);
   document.getElementById('header_DetailsEventModal').innerHTML = header_modal(
     'Détails réservation',
@@ -192,7 +191,7 @@ async function showBookingDetailsFromID(id) {
   let bookingResponse;
   try {
     const response = await window.ajaxCall(
-      `booking/getBookingFromID?id=${encodeURIComponent(id)}`,
+      `booking/getBookingFromID?id=${encodeURIComponent(bookingId)}`,
       'GET',
       null
     );
@@ -202,9 +201,9 @@ async function showBookingDetailsFromID(id) {
       showBanner(response.message, false);
       console.error(response.message);
     }
-  } catch (error) {
-    showBanner(error.message, false);
-    console.error('Échec getBookingsFromID: ', error);
+  } catch (responseError) {
+    showBanner(responseError.message, false);
+    console.error('Échec getBookingsFromID: ', responseError);
   }
 
   let array_paids_values = bookingResponse.paids_values
