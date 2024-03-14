@@ -182,7 +182,7 @@ function header_modal(title, modal_id) {
 
 /// A TRAVAILLER POUR AMELIORATION :
 
-async function showBookingDetailsFromID(id) {
+function showBookingDetailsFromID(id) {
   console.log('showBookingDetailsFromID', id);
   openModal('DetailsEventModal', false);
   document.getElementById('header_DetailsEventModal').innerHTML = header_modal(
@@ -191,7 +191,7 @@ async function showBookingDetailsFromID(id) {
   );
   let b;
   try {
-    let response = await ajaxCall(
+    let response = ajaxCall(
       'booking/getBookingFromID?id=' + encodeURIComponent(id),
       'GET',
       null

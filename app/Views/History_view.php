@@ -116,7 +116,7 @@ $data['options_customers_id'] = $options_customers_id;
                             <?php $reversed_array = array_reverse($bookings_list);
                             foreach ($reversed_array as $booking) {
                             ?>
-                                <tr class="ROW row_booking_<?= $booking['id']; ?> service_<?= $booking['Service_id']; ?> hover:bg-gray-50 hover:dark:bg-gray-900 border-b dark:border-slate-700 cursor-pointer whitespace-nowrap" onclick="showBookingDetailsFromID(<?= $booking['id']; ?>)">
+                                <tr class="ROW row_booking_<?= $booking['id']; ?> service_<?= $booking['Service_id']; ?> hover:bg-gray-50 hover:dark:bg-gray-900 border-b dark:border-slate-700 cursor-pointer whitespace-nowrap" onclick="showBookingDetailsFromID('<?= $booking['id']; ?>')">
                                     <td class="px-4 py-3"><?= $booking['Type_doc']; ?></td>
                                     <td class="py-3 text-xs"># <?= $booking['id']; ?></td>
                                     <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"><?= $booking['customer_name']; ?></th>
