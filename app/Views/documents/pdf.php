@@ -389,6 +389,7 @@ $due_date = $date->format('d/m/Y');
 						} ?>
 					</p>
 					<p><b>Banque:</b><?= $banque ?></p>
+					<p><b>Titulaire:</b><?= $info_administrative ?></p>
 					<p><b>RIB:</b><?= $rib ?></p>
 					<p><b>IBAN:</b><?= $iban ?></p>
 				</td>
