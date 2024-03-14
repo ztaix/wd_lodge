@@ -189,7 +189,7 @@ async function showBookingDetailsFromID(id) {
     'Détails réservation',
     'DetailsEventModal'
   );
-  let b;
+  let bookingResponse;
   try {
     const response = await window.ajaxCall(
       `booking/getBookingFromID?id=${encodeURIComponent(id)}`,
@@ -197,7 +197,7 @@ async function showBookingDetailsFromID(id) {
       null
     );
     if (response.success) {
-      b = response.data;
+      bookingResponse = response.data;
     } else {
       showBanner(response.message, false);
       console.error(response.message);
@@ -207,21 +207,21 @@ async function showBookingDetailsFromID(id) {
     console.error('Échec getBookingsFromID: ', error);
   }
 
-  let array_paids_values = b.paids_values
-    ? b.paids_values.split(',').map(Number)
+  let array_paids_values = bookingResponse.paids_values
+    ? bookingResponse.paids_values.split(',').map(Number)
     : [0];
   let paids_sum = array_paids_values.reduce(
     (total, currentValue) => total + currentValue,
     0
   );
   let booking_details_h5 = document.getElementById('booking_details_Type_doc');
-  booking_details_h5.innerHTML = `<span class="text-md font-bold tracking-tight p-2" >${b.Type_doc} # ${b.id}</span> `;
+  booking_details_h5.innerHTML = `<span class="text-md font-bold tracking-tight p-2" >${bookingResponse.Type_doc} # ${bookingResponse.id}</span> `;
   // Ajouter des classes qui ne dépendent pas de la condition
   booking_details_h5.classList.add('rounded-md');
 
   // Ajouter des classes basées sur la condition
 
-  if (b.Type_doc === 'Devis') {
+  if (bookingResponse.Type_doc === 'Devis') {
     booking_details_h5.classList.add(
       'bg-slate-400',
       'text-slate-800',
@@ -236,10 +236,10 @@ async function showBookingDetailsFromID(id) {
       'dark:text-sky-400'
     );
   }
-  existFile(baseurl + 'uploads/' + b.img).then((fileExists) => {
+  existFile(baseurl + 'uploads/' + bookingResponse.img).then((fileExists) => {
     if (fileExists) {
       document.getElementById('booking_details_img').src =
-        baseurl + 'uploads/' + b.img;
+        baseurl + 'uploads/' + bookingResponse.img;
     } else {
       document
         .getElementById('booking_details_div_img')
@@ -254,14 +254,14 @@ async function showBookingDetailsFromID(id) {
   });
 
   document.getElementById('booking_details_service_h5').innerText =
-    b.service_title;
+    bookingResponse.service_title;
   let div_fullblocked = document.getElementById(
     'booking_details_fullblocked_div'
   );
   let h5_fullblocked = document.getElementById(
     'booking_details_fullblocked_h5'
   );
-  if (b.fullblocked == 1) {
+  if (bookingResponse.fullblocked == 1) {
     div_fullblocked.classList.add('border-red-300', 'dark:border-red-500'),
       (h5_fullblocked.style.display = 'block');
     h5_fullblocked.innerText = 'Privatisé';
@@ -269,27 +269,46 @@ async function showBookingDetailsFromID(id) {
     div_fullblocked.classList.remove('border-red-300', 'dark:border-red-500');
     h5_fullblocked.style.display = 'none';
   }
-  document.getElementById('booking_details_qt_span').innerText = b.Qt;
+  document.getElementById('booking_details_qt_span').innerText =
+    bookingResponse.Qt;
   document.getElementById('booking_details_traveller_span').innerText =
-    b.QtTraveller;
+    bookingResponse.QtTraveller;
   document.getElementById('booking_details_start_span').innerText = format_date(
-    b.start
+    bookingResponse.start
   );
   document.getElementById('booking_details_end_span').innerText = format_date(
-    b.end
+    bookingResponse.end
   );
   document.getElementById('booking_details_price_span').innerHTML =
-    totalBookingPriceCal(b.Price, b.QtTraveller, b.Tax, b.Fee, b.nDays) + ' Fr';
+    totalBookingPriceCal(
+      bookingResponse.Price,
+      bookingResponse.QtTraveller,
+      bookingResponse.Tax,
+      bookingResponse.Fee,
+      bookingResponse.nDays
+    ) + ' Fr';
 
   let details_paid_rest_div = document.getElementById(
     'booking_details_progress_rest_div'
   );
   if (
     parseInt(paids_sum) <
-    totalBookingPriceCal(b.Price, b.QtTraveller, b.Tax, b.Fee, b.nDays)
+    totalBookingPriceCal(
+      bookingResponse.Price,
+      bookingResponse.QtTraveller,
+      bookingResponse.Tax,
+      bookingResponse.Fee,
+      bookingResponse.nDays
+    )
   ) {
     details_paid_rest_div.innerText =
-      totalBookingPriceCal(b.Price, b.QtTraveller, b.Tax, b.Fee, b.nDays) -
+      totalBookingPriceCal(
+        bookingResponse.Price,
+        bookingResponse.QtTraveller,
+        bookingResponse.Tax,
+        bookingResponse.Fee,
+        bookingResponse.nDays
+      ) -
       parseInt(paids_sum) +
       ' Fr';
   } else {
@@ -304,7 +323,13 @@ async function showBookingDetailsFromID(id) {
     let convert_pourc = Math.min(
       Math.round(
         (parseInt(paids_sum) /
-          totalBookingPriceCal(b.Price, b.QtTraveller, b.Tax, b.Fee, b.nDays)) *
+          totalBookingPriceCal(
+            bookingResponse.Price,
+            bookingResponse.QtTraveller,
+            bookingResponse.Tax,
+            bookingResponse.Fee,
+            bookingResponse.nDays
+          )) *
           10000
       ) / 100,
       100
@@ -316,24 +341,24 @@ async function showBookingDetailsFromID(id) {
   }
 
   document.getElementById('booking_details_customer_name').innerText =
-    b.customer_name;
+    bookingResponse.customer_name;
   document.getElementById('booking_details_customer_block_toedit').onclick =
     (function (customerId) {
       return function () {
         showUpdateCustomer(customerId);
-        if (!b.customer_comment) {
+        if (!bookingResponse.customer_comment) {
           document.getElementById('customer_comment').focus();
         }
       };
-    })(b.Customer_id);
+    })(bookingResponse.Customer_id);
 
   document.getElementById('booking_details_customer_phone').innerText =
-    b.customer_phone;
+    bookingResponse.customer_phone;
   document.getElementById('booking_details_customer_email').innerText =
-    b.customer_mail;
-  if (b.customer_comment) {
+    bookingResponse.customer_mail;
+  if (bookingResponse.customer_comment) {
     document.getElementById('booking_details_customer_comment').innerHTML =
-      b.customer_comment;
+      bookingResponse.customer_comment;
   } else {
     document.getElementById('booking_details_customer_comment').innerHTML =
       '<i>Vous pouvez ajouter un commentaire au client.</i>';
@@ -341,26 +366,26 @@ async function showBookingDetailsFromID(id) {
 
   document.getElementById('booking_details_customer_created').innerText =
     'Client depuis ' +
-    new Date(b.customer_created)
+    new Date(bookingResponse.customer_created)
       .toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })
       .replace(/^\w/, (c) => c.toUpperCase());
   document.getElementById('booking_details_created_span').innerHTML =
-    'Créé le  ' + format_date(b.Created_at, 0, 'DD/MM/YYYY');
+    'Créé le  ' + format_date(bookingResponse.Created_at, 0, 'DD/MM/YYYY');
   document.getElementById('booking_details_updated_span').innerHTML =
-    'Modifié à ' + format_date(b.Updated_at, 0, 'HH:MM DD/MM/YY');
+    'Modifié à ' + format_date(bookingResponse.Updated_at, 0, 'HH:MM DD/MM/YY');
 
   let child_Span_Comment = document.getElementById(
     'booking_details_comment_span'
   );
   let parent_Span_Comment = child_Span_Comment.parentElement;
-  child_Span_Comment.innerText = b.Comment;
-  if (b.Comment.length > 0) {
+  child_Span_Comment.innerText = bookingResponse.Comment;
+  if (bookingResponse.Comment.length > 0) {
     parent_Span_Comment.classList.remove('hidden');
   } else {
     parent_Span_Comment.classList.add('hidden');
   }
   document.getElementById('booking_details_pdf').href =
-    baseurl + 'generatePDF/booking/' + b.id;
+    baseurl + 'generatePDF/booking/' + bookingResponse.id;
   document.getElementById('booking_details_pdf').innerHTML =
     download_ico + ' Télécharger PDF';
   document.getElementById('booking_details_sendmail').innerHTML =
@@ -374,26 +399,31 @@ async function showBookingDetailsFromID(id) {
       loader.style.display = 'block';
       loader.style.zIndex = 999;
       // Requête AJAX pour envoyer l'e-mail
-      ajaxCall('sendmail/' + b.id, 'GET', null, function (response) {
-        console.log(response); // Log la réponse pour débogage
+      ajaxCall(
+        'sendmail/' + bookingResponse.id,
+        'GET',
+        null,
+        function (response) {
+          console.log(response); // Log la réponse pour débogage
 
-        if (response.success === true) {
-          showBanner('Ok envoyé', true);
-        } else {
-          showBanner("Erreur lors de l'envoi", false);
+          if (response.success === true) {
+            showBanner('Ok envoyé', true);
+          } else {
+            showBanner("Erreur lors de l'envoi", false);
+          }
+
+          loader.style.display = 'none';
         }
-
-        loader.style.display = 'none';
-      });
+      );
     });
 
   let button_update = document.getElementById('booking_details_update_button');
   button_update.onclick = function () {
-    update_add_formEvent(b);
+    update_add_formEvent(bookingResponse);
   };
   let button_delete = document.getElementById('booking_details_delete_button');
   button_delete.onclick = function (event) {
-    deleteEvent(event, b.id, 'DetailsEventModal');
+    deleteEvent(event, bookingResponse.id, 'DetailsEventModal');
   };
 }
 
