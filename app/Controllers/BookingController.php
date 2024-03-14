@@ -361,6 +361,7 @@ class BookingController extends BaseController
             $id = $booking_id;
         } else if ($this->request->getGet('id')) {
             $id = $this->request->getGet('id');
+            $testing = $this->request->getGet('id');
         } else {
             $message = 'Aucun ID n\'a été reçu par le serveur, erreur dans l\envoi !';
             return $this->response->setJSON(['success' => false, 'message' => $message]);
@@ -370,7 +371,7 @@ class BookingController extends BaseController
             $message = 'Données reçu par le serveur';
             return $this->response->setJSON(['success' => true, 'data' => $response]);
         } else {
-            $message = 'La requète getBookingFromID(' . $id . ') à échoué.';
+            $message = 'La requète getBookingFromID(' . $id . ', testing: ' . $testing . ') à échoué.';
             return $this->response->setJSON(['success' => false, 'message' => $message]);
         }
     }

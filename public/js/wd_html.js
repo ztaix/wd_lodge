@@ -182,7 +182,7 @@ function header_modal(title, modal_id) {
 
 /// A TRAVAILLER POUR AMELIORATION :
 
-function showBookingDetailsFromID(id) {
+async function showBookingDetailsFromID(id) {
   console.log('showBookingDetailsFromID', id);
   openModal('DetailsEventModal', false);
   document.getElementById('header_DetailsEventModal').innerHTML = header_modal(
@@ -191,15 +191,16 @@ function showBookingDetailsFromID(id) {
   );
   let b;
   try {
-    let response = ajaxCall(
+    let response = await ajaxCall(
       'booking/getBookingFromID?id=' + encodeURIComponent(id),
       'GET',
       null
     );
+    console.log('response', response);
     if (response.success) {
       b = response.data;
     } else {
-      showBanner(response.message, false);
+      showBanner('Reponse:', response.message, false);
       console.error(response.message);
     }
   } catch (error) {
