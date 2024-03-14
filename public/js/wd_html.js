@@ -191,16 +191,15 @@ async function showBookingDetailsFromID(id) {
   );
   let b;
   try {
-    let response = await ajaxCall(
-      'booking/getBookingFromID?id=' + encodeURIComponent(id),
+    const response = await window.ajaxCall(
+      `booking/getBookingFromID?id=${encodeURIComponent(id)}`,
       'GET',
       null
     );
-    console.log('response', response);
     if (response.success) {
       b = response.data;
     } else {
-      showBanner('Reponse:', response.message, false);
+      showBanner(response.message, false);
       console.error(response.message);
     }
   } catch (error) {
