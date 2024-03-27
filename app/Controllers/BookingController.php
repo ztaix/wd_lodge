@@ -501,6 +501,7 @@ class BookingController extends BaseController
 
     public function generatePDF($origine = 'booking', $id = 1, $show = true)
     {
+
         // Nom du cookie où le token JWT est stocké
         $cookieName = 'token';
         // Récupérer le token JWT du cookie
@@ -548,6 +549,7 @@ class BookingController extends BaseController
             ]);
             $options = new Options();
             $options->set('isRemoteEnabled', true);
+            $options->set('defaultFont', 'Courier'); // Assurez-vous d'utiliser une police prise en charge
             $options->set('HttpContext', $contxt);
 
             $dompdf = new Dompdf($options);
@@ -560,22 +562,19 @@ class BookingController extends BaseController
 
             // Rendu du PDF (génère le PDF en mémoire)
             $dompdf->render();
+            ob_end_clean(); // Nettoyer (et désactiver) le buffer de sortie si nécessaire
 
 
             if ($show === true) {
                 // Envoyer les en-têtes HTTP appropriés
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: inline; filename="' . "$origine-$id.pdf" . '"');
+                echo $dompdf->output();
+                exit; // Important pour arrêter le script après avoir envoyé le PDF
 
-                // Envoyer le PDF au navigateur
-                $dompdf->stream("$origine-$id.pdf", array("Attachment" => false, 'mime' => 'application/pdf'));
-                $pdfOutput = $dompdf->output();
-                return $this->response->setStatusCode(200)
-                    ->setContentType('application/pdf')
-                    ->setBody($pdfOutput);
             } else {
+                $output = $dompdf->output(); // Récupérer le PDF en tant que chaîne de caractères
                 // Sauvegarder le PDF dans un fichier temporaire
-                $output = $dompdf->output();
                 $tempDir = WRITEPATH . 'uploads/temp/';
                 //$fileName = uniqid("pdf_") . ".pdf"; // Générer un nom de fichier unique
                 $fileName = $entreprise . "_" . $bookingData['Type_doc'] . "#" . $id . ".pdf"; // Générer un nom de fichier unique
@@ -587,7 +586,11 @@ class BookingController extends BaseController
                 }
 
                 file_put_contents($filePath, $output); // Sauvegarde le PDF
-                return $filePath; // Retourne le chemin du fichier
+                if (is_string($filePath)) {
+                    return $filePath; // Retourne le chemin du fichier
+                } else {
+                    return null; // Au lieu de retourner un objet Response
+                }
             }
         } catch (\Firebase\JWT\ExpiredException $e) {
             // Gérer un token expiré
@@ -642,10 +645,10 @@ class BookingController extends BaseController
         $email = \Config\Services::email(); // Charge la bibliothèque d'emails
         $config['protocol'] = 'smtp';
         $config['SMTPHost'] = 'smtp.hostinger.com';
-        $config['SMTPPort'] = 587; // ou 465 pour SSL
+        $config['SMTPPort'] = 465; // ou 465 pour SSL
         $config['SMTPUser'] = $SMTPCredential['mail'];
         $config['SMTPPass'] = $SMTPCredential['pass'];
-        $config['SMTPCrypto'] = 'tls'; // ou 'ssl'
+        $config['SMTPCrypto'] = 'ssl'; // ou 'ssl'
         $config['mailType'] = 'html';
         $config['charset']   = 'utf-8';
         $config['newline']   = "\r\n";
@@ -661,19 +664,23 @@ class BookingController extends BaseController
         // Attachez le PDF à l'e-mail
         $email->attach($pdfFilePath);
         if ($email->send()) {
-            unlink($pdfFilePath);
+            // Si l'email a été envoyé avec succès, supprimez le fichier PDF si nécessaire et retournez une réponse JSON positive
+            if (is_string($pdfFilePath) && file_exists($pdfFilePath)) {
+                unlink($pdfFilePath);
+            }
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                ->setJSON([
-                    'success' => true
-                ]);
+                ->setJSON(['success' => true]);
         } else {
-            unlink($pdfFilePath);
+            // Si l'envoi de l'email a échoué, vérifiez d'abord si le fichier PDF existe avant de tenter de le supprimer
+            if (is_string($pdfFilePath) && file_exists($pdfFilePath)) {
+                unlink($pdfFilePath);
+            }
             $error = $email->printDebugger(['headers']);
             log_message('error', 'Email sending failed: ' . $error);
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                 ->setJSON([
                     'success' => false,
-                    'message' => 'Échec de l’envoi de l’email. ' . $error . print_r($SMTPCredential['mail'])
+                    'message' => 'Échec de l’envoi de l’email. ' . $error
                 ]);
         }
     }
