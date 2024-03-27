@@ -533,33 +533,28 @@ function DeleteCustomer(event, id) {
       delete: true,
     };
 
-    ajaxCall(
-      'customer/update',
-      'POST',
-      { customer_info: data },
-      function (response) {
-        if (response.success === true) {
-          showBanner('Suppression réalisée avec succès', true);
-          if (ModalInStack('updateCustomerModal')) {
-            closeModalById('updateCustomerModal');
-          }
-          if (ModalInStack('CustomerInfoModal')) {
-            closeModalById('CustomerInfoModal');
-          }
-
-          closeModalById('ConfirmDeleteModal');
-
-          setTimeout(() => {
-            $('.row_customer_' + data.Customer_id).addClass('fade_out');
-          }, 200);
-          setTimeout(() => {
-            $('.row_customer_' + data.Customer_id).css('display', 'none');
-          }, 700);
-        } else {
-          showBanner('Échec de la suppression', false);
+    ajaxCall('customer/update', 'POST', data, function (response) {
+      if (response.success === true) {
+        showBanner('Suppression réalisée avec succès', true);
+        if (ModalInStack('updateCustomerModal')) {
+          closeModalById('updateCustomerModal');
         }
+        if (ModalInStack('CustomerInfoModal')) {
+          closeModalById('CustomerInfoModal');
+        }
+
+        closeModalById('ConfirmDeleteModal');
+
+        setTimeout(() => {
+          $('.row_customer_' + data.Customer_id).addClass('fade_out');
+        }, 200);
+        setTimeout(() => {
+          $('.row_customer_' + data.Customer_id).css('display', 'none');
+        }, 700);
+      } else {
+        showBanner('Échec de la suppression', false);
       }
-    );
+    });
   };
 
   let noconfirmButton = document.getElementById('ConfirmDeleteModal_no_button');

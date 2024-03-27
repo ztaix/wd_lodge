@@ -43,7 +43,7 @@ gulp.task('scripts', function () {
           unused: true,
           hoist_funs: true,
           keep_fargs: true,
-          keep_fnames: true,
+          //         keep_fnames: true,
           hoist_vars: false,
           if_return: true,
           join_vars: true,

@@ -182,7 +182,8 @@ function header_modal(title, modal_id) {
 
 /// A TRAVAILLER POUR AMELIORATION :
 
-async function showBookingDetailsFromID(bookingId) {
+async function showBookingDetailsFromID(bookingId = 0) {
+  let bID = !empty(bookingId) ? bookingId : 0;
   openModal('DetailsEventModal', false);
   document.getElementById('header_DetailsEventModal').innerHTML = header_modal(
     'Détails réservation',
@@ -191,7 +192,7 @@ async function showBookingDetailsFromID(bookingId) {
   let bookingResponse;
   try {
     const response = await window.ajaxCall(
-      `booking/getBookingFromID?id=${encodeURIComponent(bookingId)}`,
+      `booking/getBookingFromID?id=${encodeURIComponent(bID)}`,
       'GET',
       null
     );
@@ -530,7 +531,9 @@ function deleteEvent(event, booking_id, modal_id = false) {
       { id: booking_id },
       function (response) {
         if (response.success === true) {
-          calendar.refetchEvents();
+          if (calendar) {
+            calendar.refetchEvents();
+          }
 
           // GESTIONNAIRE DE RETOUR D'AFFICHAGE
           if (ModalInStack('ListEventModal')) {
@@ -592,8 +595,8 @@ function updateCustomerinfo(data = null) {
     if (response.success === true) {
       // Traiter la réponse en cas de succès
       // var newCustomerId = response.id;
-
-      updateCustomerFields(data); // Utilisez la fonction de mise à jour refactorisée
+      let deleted = response.delete;
+      updateCustomerFields(data, deleted); // Utilisez la fonction de mise à jour refactorisée
 
       if (ModalInStack('updateCustomerModal')) {
         closeModalById('updateCustomerModal');
@@ -607,7 +610,7 @@ function updateCustomerinfo(data = null) {
 }
 // Appeler setupButtonAction après avoir configuré votre page ou modale pour s'assurer que le bouton a le bon gestionnaire d'événements.
 
-function updateCustomerFields(data) {
+function updateCustomerFields(data, deleted = false) {
   // Refactorisation pour mettre à jour les informations du client
   const updateFieldById = (id, value) => {
     const element = document.getElementById(id);
@@ -616,12 +619,12 @@ function updateCustomerFields(data) {
     }
   };
 
-  const fieldsToUpdate = [
+  const modalToUpdate = [
     { modal: 'CustomerInfoModal', prefix: 'history_customer' },
     { modal: 'DetailsEventModal', prefix: 'booking_details_customer' },
   ];
 
-  fieldsToUpdate.forEach(({ modal, prefix }) => {
+  modalToUpdate.forEach(({ modal, prefix }) => {
     if (ModalInStack(modal)) {
       updateFieldById(`${prefix}_name_span`, data.Name);
       updateFieldById(`${prefix}_phone_span`, data.Phone);
@@ -629,8 +632,38 @@ function updateCustomerFields(data) {
       updateFieldById(`${prefix}_comment_span`, data.Comment);
     }
   });
-}
+  if (urlLocation() == 'customer') {
+    // Mettre à jour les attributs data-*
+    let row = document.querySelector('.row_customer_' + data.Customer_id);
+    if (row) {
+      row.dataset.name = data.Name;
+      row.dataset.phone = data.Phone;
+      row.dataset.email = data.Email;
+      row.dataset.comment = data.Comment;
 
+      // Mettre à jour les textes visibles
+      let serviceCell = document.querySelector('.service_' + data.Customer_id);
+      if (serviceCell) {
+        serviceCell.innerHTML = `<b>${data.Name}</b>`;
+      }
+
+      let emailCell = row.querySelector('td:nth-child(2)'); // Assumer que l'email est toujours dans la deuxième colonne
+      if (emailCell) {
+        emailCell.textContent = data.Email;
+      }
+
+      let phoneCell = row.querySelector('td:nth-child(3)'); // Assumer que le téléphone est toujours dans la troisième colonne
+      if (phoneCell) {
+        phoneCell.textContent = data.Phone;
+      }
+
+      let commentCell = document.getElementById('comment_' + data.Customer_id);
+      if (commentCell) {
+        commentCell.textContent = data.Comment;
+      }
+    }
+  }
+}
 // CUSTOMER, mets à jours le bouton envoyé
 function setupButtonAction(callback) {
   let button = document.getElementById('update_customer_submit_form');
