@@ -315,7 +315,7 @@ $due_date = $date->format('d/m/Y');
 
 				</td>
 				<td style="white-space: nowrap;"><?= $u_price . $currency ?></td>
-				<td style="white-space: nowrap;"><?= ($s_QtTraveller * $s_tax * $s_ndays) ?></td>
+				<td style="white-space: nowrap;"><?= ($s_QtTraveller * $s_tax) ?></td>
 				<td><?= $s_qt ?></td>
 				<td style="white-space: nowrap;"><?= ($s_price + ($s_QtTraveller * $s_tax * $s_ndays)) . $currency ?></td>
 			</tr>
