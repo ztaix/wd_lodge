@@ -183,7 +183,7 @@ function header_modal(title, modal_id) {
 /// A TRAVAILLER POUR AMELIORATION :
 
 async function showBookingDetailsFromID(bookingId = 0) {
-  let bID = bookingId == 0 ? 0 : bookingId;
+  let bID = bookingId == 0 ? 0 : bookingId; // trick to fix gulpBuild minifier
   openModal('DetailsEventModal', false);
   document.getElementById('header_DetailsEventModal').innerHTML = header_modal(
     'Détails réservation',

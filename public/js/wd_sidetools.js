@@ -36,13 +36,41 @@ document.addEventListener('keydown', function (event) {
   }
 });
 
+// STOP HERE
 document.addEventListener('DOMContentLoaded', function () {
   // Vérifie si l'utilisateur est sur la page de connexion
   var onLoginPage =
     window.location.pathname.endsWith('/auth') ||
     window.location.href.includes('/auth');
 
-  var token = localStorage.getItem('token');
+  // VERIFY TOKEN
+  fetch(baseurl + 'auth/verifyToken')
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        if (onLoginPage) {
+          window.location.href = baseurl;
+          return;
+        }
+        // Le token est valide, continuer normalement
+      } else {
+        if (!onLoginPage) {
+          // Rediriger vers la page de connexion
+          window.location.href = baseurl + 'auth';
+          return; // Stopper l'exécution supplémentaire du script
+        }
+        console.error('token invalide:', error);
+
+        // Le token n'est pas valide, rediriger vers la page de connexion
+        return (window.location.href = baseurl + 'auth');
+      }
+    })
+    .catch((error) =>
+      console.error('Erreur lors de la vérification du token:', error)
+    );
+  //
+
+  /*var token = localStorage.getItem('token');
   if (token) {
     document
       .getElementById('footer_ttl')
@@ -54,11 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
     verifyToken();
-  } else if (!onLoginPage) {
-    // Rediriger vers la page de connexion
-    window.location.href = baseurl + 'auth';
-    return; // Stopper l'exécution supplémentaire du script
-  }
+  } else*/
 
   // Code spécifique pour la page de connexion
   if (onLoginPage) {

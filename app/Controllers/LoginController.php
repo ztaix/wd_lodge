@@ -32,17 +32,9 @@ class LoginController extends BaseController
             sscanf($header, 'Bearer %s', $token);
         }
 
-        // Sinon, vérifiez si le token est présent dans les cookies (pour les cookies)
+        // Sinon, vérifiez si le token est présent dans les cookies
         if (empty($token)) {
-            $token = $this->request->getServer('HTTP_LOCAL_STORAGE_TOKEN');
-
-            // Si le token n'est pas trouvé dans les cookies, essayez de le récupérer depuis le localStorage
-            if (empty($token)) {
-                $token = $this->request->getCookie('token');
-                if (!empty($localStorageToken)) {
-                    $token = $localStorageToken;
-                }
-            }
+            $token = $this->request->getCookie('token');
         }
 
         if (!$token) {
