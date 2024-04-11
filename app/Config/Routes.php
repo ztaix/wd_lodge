@@ -8,7 +8,7 @@ use CodeIgniter\Router\RouteCollection;
 
 // Routes accessibles sans authentification JWT
 $routes->get('auth', 'MainController::Login');
-$routes->post('auth/verif', 'LoginController::loginAttempt');
+$routes->post('auth/loginAttempt', 'LoginController::loginAttempt');
 
 $routes->get('auth/logout', 'LoginController::logout');
 $routes->get('auth/verifyToken', 'LoginController::verifyToken');

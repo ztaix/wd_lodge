@@ -363,7 +363,7 @@ function getDayOfWeek(dateString) {
 
 //
 function updateCountdown(ttl) {
-  let a_ttl = document.getElementById('footer_ttl');
+  let a_ttl = document.getElementById('extend_ttl');
   countdownInterval = setInterval(function () {
     // Décrémente TTL
     ttl--;
@@ -377,22 +377,27 @@ function updateCountdown(ttl) {
     // Construction de la chaîne de temps restant
     let tempsRestant;
     if (jours > 0) {
-      tempsRestant = `${jours} jours${heures > 0 ? ' et ' + heures + 'h' : ''}`;
+      tempsRestant = `${jours} jours${heures > 0 ? ' - ' + heures + 'h' : ''}`;
     } else if (heures > 0) {
-      tempsRestant = `${heures}h${minutes > 0 ? ' et ' + minutes + 'min' : ''}`;
+      tempsRestant = `${heures}:${minutes > 0 ? minutes + ':' + secondes : ''}`;
     } else if (minutes > 0) {
-      tempsRestant = `${minutes}min${secondes > 0 ? ' et ' + secondes + 's' : ''}`;
+      tempsRestant = `00:${minutes}:${secondes > 0 ? secondes : ''}`;
     } else {
-      tempsRestant = `${secondes}s`;
+      tempsRestant = `${secondes} secondes`;
     }
 
     // Met à jour l'affichage
-    a_ttl.textContent = `Temps restant : ${tempsRestant}`;
+    a_ttl.innerHTML = `<div class="relative flex flex-col">
+    <div class="justify-normal">Raffraichir la session</div>
+    <div class="justify-center font-thin">Temps restant : ${tempsRestant}</div>
+    </div>`;
 
     // Vérifie si le TTL a atteint 0 pour arrêter l'intervalle
     if (ttl <= 0) {
       clearInterval(countdownInterval);
-      a_ttl.textContent = 'Temps écoulé!';
+      a_ttl.innerHTML = `<div class="relative flex flex-col">
+      <div class="justify-normal">Session de connexion terminé, raffraichir !</div>
+      </div>`;
     }
   }, 1000);
 }
@@ -566,25 +571,32 @@ function customerDocType(data) {
     get_booking_list_from_customer(data);
   }, 350);
 }
+
 function verifyToken(extend = false) {
-  extending = extend ? '?extend=true' : '';
-  ajaxCall(
-    'auth/verifyToken' + extending,
-    'GET',
-    null,
-    function (response) {
-      if (response.success) {
-        localStorage.setItem('timeLeft', response.timeLeft);
-        // Démarrer le compte à rebours lors du chargement de la page ou après la mise à jour du token
-        startTokenCountdown();
-      } else {
-        showBanner(response.message, false);
+  return new Promise((resolve, reject) => {
+    const extending = extend ? '?extend=true' : '';
+    ajaxCall(
+      'auth/verifyToken' + extending,
+      'GET',
+      null,
+      (response) => {
+        if (response.success) {
+          localStorage.setItem('timeLeft', response.timeLeft);
+          startTokenCountdown();
+          if (extend) {
+            resolve(response.jwt);
+          } else {
+            resolve(true);
+          }
+        } else {
+          showBanner(response.message, false);
+          resolve(false);
+        }
+      },
+      (xhr, status, error) => {
+        //showBanner(xhr.message, false);
+        reject(new Error(xhr.message || 'Echec de la vérifation du token'));
       }
-      // Traiter la réponse positive (le token est valide)
-    },
-    function (xhr, status, error) {
-      console.error('Token invalide ou erreur lors de la vérification:', error);
-      // Traiter la réponse négative (le token est invalide ou autre erreur)
-    }
-  );
+    );
+  });
 }

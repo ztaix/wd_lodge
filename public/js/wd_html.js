@@ -180,8 +180,6 @@ function header_modal(title, modal_id) {
     </div>`);
 }
 
-/// A TRAVAILLER POUR AMELIORATION :
-
 async function showBookingDetailsFromID(bookingId = 0) {
   let bID = bookingId == 0 ? 0 : bookingId; // trick to fix gulpBuild minifier
   openModal('DetailsEventModal', false);
@@ -680,7 +678,7 @@ function setupButtonAction(callback) {
   };
 }
 
-//Start FOOTER_TTL, compte à rebourd pour le temps restant de session.
+//Start extend_ttl, compte à rebourd pour le temps restant de session.
 let countdownInterval; // Déclaration à l'extérieur pour une portée globale
 
 function startTokenCountdown() {
@@ -697,6 +695,26 @@ function startTokenCountdown() {
     // Exécute `updateCountdown` une fois immédiatement puis toutes les secondes
     updateCountdown(ttl);
   }
+}
+function extendButton() {
+  document.getElementById('extend_ttl').addEventListener('click', function (e) {
+    e.preventDefault();
+    verifyToken(true)
+      .then((tokenIsValid) => {
+        if (tokenIsValid) {
+          localStorage.setItem('token', tokenIsValid);
+          showBanner('Token étendu de 12h00', true);
+        } else {
+          // Gérer le cas où le token n'est pas valide ou ne peut pas être étendu
+          showBanner("Impossible d'étendre le token.", false);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'extension du token:", error);
+        // Gérer l'erreur ici, par exemple, en affichant une bannière d'erreur
+        showBanner("Erreur lors de la tentative d'extension du token.", false);
+      });
+  });
 }
 
 // Fullcalendar HTML UTILITIES

@@ -43,46 +43,73 @@ document.addEventListener('DOMContentLoaded', function () {
     window.location.pathname.endsWith('/auth') ||
     window.location.href.includes('/auth');
 
-  // VERIFY TOKEN
-  fetch(baseurl + 'auth/verifyToken')
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        if (onLoginPage) {
-          window.location.href = baseurl;
-          return;
+  var timeLeftSession = localStorage.getItem('timeLeft');
+  var tokenSession = localStorage.getItem('token');
+  var bannerSessionShow = false;
+  if (timeLeftSession !== null && tokenSession !== null) {
+    const intervalId = setInterval(() => {
+      timeLeftSession--; // Décrémente timeleft par 1 à chaque exécution
+      if (timeLeftSession <= 60 * 5 /* 5 min */) {
+        if (!bannerSessionShow) {
+          showBanner(
+            `Votre session exire dans 5 min <a id="extend_ttl" href="#" class="group inline-flex items-center p-2 font-bold text-white hover:text-red-200 dark:hover:text-red-500">Etendre la session</a>`,
+            false
+          );
+          extendButton();
         }
-        // Le token est valide, continuer normalement
-      } else {
-        if (!onLoginPage) {
-          // Rediriger vers la page de connexion
-          window.location.href = baseurl + 'auth';
-          return; // Stopper l'exécution supplémentaire du script
-        }
-        console.error('token invalide:', error);
+        bannerSessionShow = true;
+      }
 
-        // Le token n'est pas valide, rediriger vers la page de connexion
-        return (window.location.href = baseurl + 'auth');
+      if (timeLeftSession <= 0) {
+        clearInterval(intervalId); // Arrête l'intervalle lorsque timeleft atteint 0
+        if (!bannerSessionShow) {
+          showBanner('Votre session a expiré', false);
+        }
+        bannerSessionShow = true;
+      }
+    }, 1000);
+  }
+
+  // VERIFY TOKEN - parts //
+  function handleRedirection(isValidToken, onLoginPage) {
+    let params = new URLSearchParams(window.location.search);
+    let session = params.get('session');
+    if (isValidToken) {
+      if (onLoginPage) {
+        window.location.href = baseurl + '?session=valid';
+      }
+    } else {
+      if (session !== 'invalid' && !onLoginPage) {
+        window.location.href = baseurl + 'auth?session=invalid';
+      }
+    }
+  }
+
+  verifyToken()
+    .then((tokenStatus) => {
+      // Token Vérifié
+      if (tokenStatus && onLoginPage) {
+        handleRedirection(true, onLoginPage);
+        return;
+      }
+
+      if (!tokenStatus && !onLoginPage) {
+        handleRedirection(false, onLoginPage);
+        return;
+      }
+
+      if (tokenStatus) {
+        extendButton();
+      } else {
+        showBanner('Veuillez vous connecter', false);
       }
     })
-    .catch((error) =>
-      console.error('Erreur lors de la vérification du token:', error)
-    );
-  //
-
-  /*var token = localStorage.getItem('token');
-  if (token) {
-    document
-      .getElementById('footer_ttl')
-      .addEventListener('click', function (e) {
-        e.preventDefault();
-        //Extend True:
-        verifyToken(true);
-        return showBanner('Token étendu de 12h00', true);
-      });
-
-    verifyToken();
-  } else*/
+    .catch((error) => {
+      //console.error('Erreur lors de la vérification du token:', error);
+      // Afficher une bannière d'erreur générale, par exemple :
+      showBanner(error.message, false);
+      handleRedirection(false, onLoginPage);
+    });
 
   // Code spécifique pour la page de connexion
   if (onLoginPage) {
@@ -101,13 +128,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Appel de la fonction ajaxCall pour se connecter
         ajaxCall(
-          'auth/verif',
+          'auth/loginAttempt',
           'POST',
           formDataObj,
           function (response) {
             // Parsez la réponse JSON reçue
             if (response.jwt) {
-              // Stockez le JWT dans le localStorage ou les cookies
+              // Stockez le JWT dans le localStorage
               localStorage.setItem('token', response.jwt);
               // Redirigez l'utilisateur vers la page d'accueil ou le tableau de bord
               showBanner('Connexion réussi', true);
@@ -145,15 +172,14 @@ document.addEventListener('DOMContentLoaded', function () {
 function logout() {
   // Supprimer le token du localStorage
   localStorage.removeItem('token');
+  localStorage.removeItem('timeLeft');
   // Faites un appel AJAX pour informer le serveur de supprimer le cookie
   ajaxCall(
     'auth/logout',
     'GET',
     null,
     function (response) {
-      console.log(response.message);
-      // Redirigez l'utilisateur vers la page de login ou la page d'accueil après la déconnexion
-      window.location.href = baseurl + 'auth';
+      window.location.href = baseurl + 'auth?session=logout';
     },
     function (xhr, status, error) {
       console.error('Erreur lors de la déconnexion:', error);

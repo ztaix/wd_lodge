@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use CodeIgniter\CLI\Console;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -32,11 +33,6 @@ class LoginController extends BaseController
             sscanf($header, 'Bearer %s', $token);
         }
 
-        // Sinon, vérifiez si le token est présent dans les cookies
-        if (empty($token)) {
-            $token = $this->request->getCookie('token');
-        }
-
         if (!$token) {
             return $this->response
                 ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED)
@@ -46,25 +42,23 @@ class LoginController extends BaseController
         try {
             // Vérifiez le token
             $decoded = JWT::decode($token, new Key($this->key, 'HS256'));
-            if ($extend == true) {
+            if ($extend == "true") {
                 $decoded_array = (array) $decoded;
-                $newExpTime = time() + (12 * 60 * 60);
-                $decoded_array['exp'] = $newExpTime; // Mise à jour du champ 'exp'
+                $newExpTime = 12 * 60 * 60; // 12 heures en secondes
+                $decoded_array['exp'] = time() + $newExpTime; // horodatage futur de l'expiration
                 $renewedToken = JWT::encode($decoded_array, $this->key, 'HS256');
 
-                setcookie('token', $renewedToken, $newExpTime);
-
                 // Calcul de la durée restante avant l'expiration du nouveau token
-                $timeLeft = $newExpTime - time(); // Durée restante en secondes pour le nouveau token
+                $timeLeft = $decoded_array['exp'] - time(); // Durée restante en secondes pour le nouveau token
 
                 // Renvoyer le nouveau token dans la réponse, avec le temps restant
                 return $this->response
                     ->setStatusCode(ResponseInterface::HTTP_OK)
-                    ->setJSON(['success' => true, 'token' => $renewedToken, 'message' => 'Session étendu avec succés + 12h00', 'timeLeft' => $timeLeft, 'extend' => $extend]);
+                    ->setJSON(['success' => true, 'jwt' => $renewedToken, 'message' => 'Session étendu avec succés + 12h00', 'timeLeft' => $timeLeft, 'extend' => $extend]);
             } else {
                 // Si le token n'est pas étendu, calculez simplement la durée restante du token actuel
                 $exp = $decoded->exp; // Timestamp d'expiration du token
-                $timeLeft = $exp - time(); // Durée restante en secondes
+                $timeLeft = $exp - time(); // Durée restante en s   econdes
 
                 // Renvoyer l'état du token actuel dans la réponse, sans le renouveler
                 return $this->response
@@ -75,15 +69,13 @@ class LoginController extends BaseController
             // Gérez les erreurs liées à un token invalide
             return $this->response
                 ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED)
-                ->setJSON(['success' => false, 'message' => 'Token invalide.']);
+                ->setJSON(['success' => false, 'message' => 'Session expiré.']);
         }
     }
 
     public function logout()
     {
-        // Supprime le cookie en définissant sa date d'expiration dans le passé
-        return $this->response->deleteCookie('token')
-            ->setStatusCode(ResponseInterface::HTTP_OK)
+        return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
             ->setJSON(['message' => 'Déconnexion réussie.']);
     }
 
@@ -118,8 +110,7 @@ class LoginController extends BaseController
             $jwt = JWT::encode($payload, $this->key, 'HS256');
 
             // Maintenant, $jwt contient votre token JWT généré
-            $response = service('response');
-            $response->setCookie('token', $jwt, $expTime); // Définit un cookie valide pour xx heure
+            // renvoyer au client pour qu'il le stocke dans localStorage
             $logData = ['jwt' => $jwt];
             return $this->response->setJSON($logData);
         } else {

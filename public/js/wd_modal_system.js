@@ -38,7 +38,7 @@ function showBanner(message, isSuccess) {
     banner.classList.remove('banner_update-visible');
     banner.classList.add('banner_update-exit');
     banner_txt.innerHTML = '';
-  }, 3500);
+  }, 3200);
 }
 
 function showSearch() {

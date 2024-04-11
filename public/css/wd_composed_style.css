@@ -2235,6 +2235,10 @@ video {
   align-items: stretch;
 }
 
+.justify-normal {
+  justify-content: normal;
+}
+
 .justify-start {
   justify-content: flex-start;
 }
@@ -6820,6 +6824,11 @@ body.dark .triangle.start.not-available {
 .hover\:text-primary-700:hover {
   --tw-text-opacity: 1;
   color: rgb(18 82 109 / var(--tw-text-opacity));
+}
+
+.hover\:text-red-200:hover {
+  --tw-text-opacity: 1;
+  color: rgb(254 202 202 / var(--tw-text-opacity));
 }
 
 .hover\:text-red-600:hover {

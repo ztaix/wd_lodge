@@ -42,8 +42,12 @@
                 </svg>
                 <span id="footer_loginLogout" class="ml-2"> Déconnexion </span>
             </a>
-            <a id="footer_ttl" href="#" class="group inline-flex items-center p-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-500">
-                Token non valide
+            <a href="#" class="group inline-flex items-center p-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-500">
+                <svg class="h-6 w-6 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4" />
+                </svg>
+
+                <span id="extend_ttl" class="text-base ml-2">Token non valide</span>
             </a>
         </div>
     </div>
@@ -62,6 +66,39 @@
     // Mobile Menu Slider:
 
     document.addEventListener('DOMContentLoaded', function() {
+
+        if (!localStorage.getItem('token') || localStorage.getItem('timeLeft') <= '0') {
+            document.getElementById('footer_loginLogout').innerText = "Connexion";
+        }
+        // Login check
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('session')) {
+            var bannerMessage = "";
+            var bannerBool = false;
+            switch (urlParams.get('session')) {
+                case "logout":
+                    bannerMessage = "Session terminé par l'utilisateur";
+                    break;
+                case "invalid":
+                    bannerMessage = "Session expirée, veuillez vous reconnecter";
+                    break;
+                case "null":
+                    bannerMessage = "Veuillez vous connecter";
+                    break;
+                case "valid":
+                    bannerMessage = "Vous êtes connectez";
+                    bannerBool = true;
+                    break;
+            }
+            if (bannerMessage) {
+                showBanner(bannerMessage, bannerBool);
+            }
+            // Nettoie l'URL après l'affichage de la bannière pour éviter les boucles de redirection
+            window.history.replaceState(null, '', window.location.pathname);
+        }
+
+
+
         //startTokenCountdown();
         const menuToggle = document.getElementById('menuToggle');
         const mobileMenu = document.getElementById('mobileMenu');
