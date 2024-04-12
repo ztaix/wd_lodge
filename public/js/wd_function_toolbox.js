@@ -703,16 +703,3 @@ function verifyToken(extend = false) {
     );
   });
 }
-
-// localStorage
-
-// Fonction pour sauvegarder les valeurs dans le localStorage
-function saveToLocalStorage(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
-// Fonction pour récupérer les valeurs depuis le localStorage
-function getFromLocalStorage(key) {
-  const value = localStorage.getItem(key);
-  return value ? JSON.parse(value) : null;
-}

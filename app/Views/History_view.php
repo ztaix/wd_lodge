@@ -103,6 +103,18 @@ $data['options_customers_id'] = $options_customers_id;
                                 var periodeTexts = <?php echo $jsonPeriodeNames; ?>;
 
                                 window.addEventListener('DOMContentLoaded', function() {
+                                    // localStorage
+
+                                    // Fonction pour sauvegarder les valeurs dans le localStorage
+                                    function saveToLocalStorage(key, value) {
+                                        localStorage.setItem(key, JSON.stringify(value));
+                                    }
+
+                                    // Fonction pour récupérer les valeurs depuis le localStorage
+                                    function getFromLocalStorage(key) {
+                                        const value = localStorage.getItem(key);
+                                        return value ? JSON.parse(value) : null;
+                                    }
                                     //Période to date
                                     var inputStartDate = document.getElementById('start-date');
                                     var inputEndDate = document.getElementById('end-date');
