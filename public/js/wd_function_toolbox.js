@@ -385,11 +385,11 @@ function periodeToDate(periode) {
   let start, end;
 
   switch (lowerPeriode) {
-    case "aujourd'hui":
+    case 'today':
       start = end = currentDate;
       break;
 
-    case 'cettesemaine':
+    case 'thisweek':
       let firstDayOfWeek =
         currentDate.getDate() -
         currentDate.getDay() +
@@ -399,7 +399,7 @@ function periodeToDate(periode) {
       end = new Date(currentDate.setDate(lastDayOfWeek));
       break;
 
-    case 'cemois':
+    case 'thismonth':
       let firstDayOfMonth = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth(),
@@ -414,7 +414,7 @@ function periodeToDate(periode) {
       end = lastDayOfMonth;
       break;
 
-    case 'derniermois':
+    case 'lastmonth':
       let firstDayOfLastMonth = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth() - 1,
@@ -429,26 +429,26 @@ function periodeToDate(periode) {
       end = lastDayOfLastMonth;
       break;
 
-    case 'cetteannee':
+    case 'thisyear':
       let firstDayOfYear = new Date(currentDate.getFullYear(), 0, 1);
       let lastDayOfYear = new Date(currentDate.getFullYear(), 11, 31);
       start = firstDayOfYear;
       end = lastDayOfYear;
       break;
 
-    case 'anneepassee':
+    case 'lastyear':
       let firstDayOfLastYear = new Date(currentDate.getFullYear() - 1, 0, 1);
       let lastDayOfLastYear = new Date(currentDate.getFullYear() - 1, 11, 31);
       start = firstDayOfLastYear;
       end = lastDayOfLastYear;
       break;
 
-    case 'entouttemps':
+    case 'all':
       start = new Date(currentDate.getFullYear() - 50, 0, 1); // Earliest date JavaScript can handle
       end = new Date(currentDate.getFullYear() + 50, 11, 31); // Latest date JavaScript can handle
       break;
 
-    case 'personnalise':
+    case 'custom':
       start = end = null;
       break;
 

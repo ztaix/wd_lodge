@@ -3,6 +3,17 @@
 </script>
 
 <?php
+$periodeName = [
+    "today" => "Aujourd'hui",
+    "thisweek" => "Cette semaine",
+    "thismonth" => "Ce mois",
+    "lastmonth" => "Dernier mois",
+    "thisyear" => "Cette année",
+    "lastyear" => "Année passée",
+    "all" => "En tout temps",
+    "custom" => "Personnalisé"
+];
+$jsonPeriodeNames = json_encode($periodeName);
 
 $options_customers_id = [];
 foreach ($customers_list as $customer) {
@@ -57,14 +68,13 @@ $data['options_customers_id'] = $options_customers_id;
                 <div class="w-full ">
                     <div class="relative">
                         <div class="flex">
-                            <button id="toggleButton1" class="toggleButton text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-base px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl">Période</button>
+                            <button name="periode" id="toggleButton1" class="toggleButton text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-base px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl">Période</button>
                             <button id="toggleButton2" disabled class="toggleButton text-gray-500 bg-gray-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-base px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600  focus:outline-none dark:focus:ring-gray-800 shadow-xl">Filtrer</button>
                             <button id="toggleButton3" disabled class="toggleButton text-gray-500 bg-gray-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-base px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600  focus:outline-none dark:focus:ring-gray-800 shadow-xl">Exporter</button>
                         </div>
-                        <div id="toggleDiv1" class="toggleDiv relative z-50 w-full bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg  mt-2 overflow-hidden" style="max-height: 0; transition: max-height 0.3s ease-out; opacity: 0; transition: opacity 0.3s;">
+                        <div id="toggleDiv1" class="toggleDiv absolute z-50 w-full bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg  mt-2 overflow-hidden" style="max-height: 0; transition: max-height 0.3s ease-out; opacity: 0; transition: opacity 0.3s;">
                             <div class="flex flex-col p-4">
-                                <div class="flex flex-col sm:flex-row sm:space-y-0 space-y-2">
-                                    <div class="flex flex-wrap -mx-3"></div>
+                                <div class="flex flex-col md:flex-row">
                                     <div class="w-full md:w-1/2 px-4">
                                         <label class="block uppercase tracking-wide text-gray-700 dark:text-gray-400 text-xs font-bold mb-2" for="start-date">
                                             Date de début
@@ -82,67 +92,73 @@ $data['options_customers_id'] = $options_customers_id;
                                             Période
                                         </label>
                                         <select class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="single-choice-list">
-                                            <option value="aujourd'hui">Aujourd'hui</option>
-                                            <option value="cettesemaine">Cette semaine</option>
-                                            <option value="cemois">Ce mois</option>
-                                            <option value="derniermois">Dernier mois</option>
-                                            <option value="cetteannee">Cette année</option>
-                                            <option value="anneepassee">Année passée</option>
-                                            <option value="entouttemps">En tout temps</option>
-                                            <option value="personnalise">Personnalisé</option>
+                                            <?php foreach ($periodeName as $key => $value) { ?>
+                                                <option value="<?= $key; ?>"><?= $value; ?></option>
+                                            <?php } ?>
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <script>
                                 //Période to date
+                                var inputStartDate = document.getElementById('start-date');
+                                var inputEndDate = document.getElementById('end-date');
+                                var selectPeriod = document.getElementById('single-choice-list');
+                                var togglePeriodButton = document.getElementById('toggleButton1');
                                 // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
                                 function updateDateFields(start, end) {
-                                    document.getElementById('start-date').value = start;
-                                    document.getElementById('start-date').dispatchEvent(new Event('change'));
-                                    document.getElementById('end-date').value = end;
-                                    document.getElementById('end-date').dispatchEvent(new Event('change'));
+                                    inputStartDate.value = start;
+                                    inputStartDate.dispatchEvent(new Event('change'));
+                                    inputEndDate.value = end;
+                                    inputEndDate.dispatchEvent(new Event('change'));
                                 }
+
+                                var periodeTexts = <?php echo $jsonPeriodeNames; ?>;
+
                                 // Récupérer les valeurs du localStorage lors du chargement de la page
                                 window.addEventListener('DOMContentLoaded', function() {
                                     const selectedPeriod = getFromLocalStorage('selectedPeriod');
                                     const startDate = getFromLocalStorage('startDate');
                                     const endDate = getFromLocalStorage('endDate');
-
                                     if (selectedPeriod && startDate && endDate) {
                                         // Mettre à jour les champs de date avec les valeurs récupérées
                                         updateDateFields(startDate, endDate);
 
                                         // Mettre à jour la valeur sélectionnée dans le menu déroulant
-                                        document.getElementById('single-choice-list').value = selectedPeriod;
+                                        selectPeriod.value = selectedPeriod;
+                                        if (togglePeriodButton) {
+                                            togglePeriodButton.innerHTML = 'Période <br><span class="font-bold text-xs">' + (periodeTexts[selectedPeriod] || "Non spécifié") + '</span>';
+                                        }
                                     }
                                 });
-                                document.getElementById('single-choice-list').addEventListener('change', function() {
+                                selectPeriod.addEventListener('change', function() {
                                     // Récupérer la valeur sélectionnée dans le menu déroulant
-                                    let selectedValue = this.value;
-                                    // alert('La valeur sélectionnée est ' + selectedValue);
+
+                                    let selectedPeriod = this.value;
+                                    //alert('La valeur sélectionnée est ' + selectedValue);
 
                                     // Appeler la fonction periodeToDate() avec la valeur sélectionnée
-                                    let dates = periodeToDate(selectedValue);
+                                    let dates = periodeToDate(selectedPeriod);
                                     updateDateFields(dates.start, dates.end);
                                     // Sauvegarder les valeurs dans le localStorage
-                                    saveToLocalStorage('selectedPeriod', selectedValue);
+                                    saveToLocalStorage('selectedPeriod', selectedPeriod);
                                     saveToLocalStorage('startDate', dates.start);
                                     saveToLocalStorage('endDate', dates.end);
                                     // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
-                                    let startDateInput = document.getElementById('start-date');
-                                    let endDateInput = document.getElementById('end-date');
 
                                     if (dates.start !== null) {
-                                        startDateInput.setAttribute('value', dates.start);
+                                        inputStartDate.setAttribute('value', dates.start);
                                     } else {
-                                        startDateInput.removeAttribute('value');
+                                        inputStartDate.removeAttribute('value');
                                     }
 
                                     if (dates.end !== null) {
-                                        endDateInput.setAttribute('value', dates.end);
+                                        inputEndDate.setAttribute('value', dates.end);
                                     } else {
-                                        endDateInput.removeAttribute('value');
+                                        inputEndDate.removeAttribute('value');
+                                    }
+                                    if (togglePeriodButton) {
+                                        togglePeriodButton.innerHTML = 'Période <br><span class="font-bold text-xs">' + (periodeTexts[selectedPeriod] || "Non spécifié") + '</span>';
                                     }
                                 });
 
@@ -163,8 +179,8 @@ $data['options_customers_id'] = $options_customers_id;
                                 document.addEventListener('click', function(event) {
                                     // Vérifier si le clic a été effectué à l'intérieur du toggleDiv ou sur le bouton de bascule
                                     var toggleDiv = document.getElementById('toggleDiv1');
-                                    var toggleButton = document.getElementById('toggleButton1');
-                                    if (!isDescendant(toggleDiv, event.target) && event.target !== toggleButton || event.target.tagName === 'OPTION') {
+
+                                    if (!isDescendant(toggleDiv, event.target) && event.target !== togglePeriodButton || event.target.tagName === 'OPTION') {
                                         // Cacher le toggleDiv
                                         toggleDiv.style.opacity = '0';
                                         setTimeout(function() {
