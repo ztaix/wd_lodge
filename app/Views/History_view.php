@@ -61,7 +61,7 @@ $data['options_customers_id'] = $options_customers_id;
                             <button id="toggleButton2" disabled class="toggleButton text-gray-500 bg-gray-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-base px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600  focus:outline-none dark:focus:ring-gray-800 shadow-xl">Filtrer</button>
                             <button id="toggleButton3" disabled class="toggleButton text-gray-500 bg-gray-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-base px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600  focus:outline-none dark:focus:ring-gray-800 shadow-xl">Exporter</button>
                         </div>
-                        <div id="toggleDiv1" class="toggleDiv absolute z-50 w-full bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg  mt-2" style="max-height: 0; transition: max-height 0.3s ease-out; opacity: 0; transition: opacity 0.3s;">
+                        <div id="toggleDiv1" class="toggleDiv relative z-50 w-full bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg  mt-2 overflow-hidden" style="max-height: 0; transition: max-height 0.3s ease-out; opacity: 0; transition: opacity 0.3s;">
                             <div class="flex flex-col p-4">
                                 <div class="flex flex-col sm:flex-row sm:space-y-0 space-y-2">
                                     <div class="flex flex-wrap -mx-3"></div>
@@ -169,7 +169,7 @@ $data['options_customers_id'] = $options_customers_id;
                                         toggleDiv.style.opacity = '0';
                                         setTimeout(function() {
                                             toggleDiv.style.maxHeight = '0';
-                                        }, 500); // Attendre la fin de la transition de l'opacité avant de définir la hauteur maximale sur 0
+                                        }, 300); // Attendre la fin de la transition de l'opacité avant de définir la hauteur maximale sur 0
                                     }
                                 });
                             </script>
@@ -201,7 +201,6 @@ $data['options_customers_id'] = $options_customers_id;
                                     divs[j].style.maxHeight = '0';
                                 }
                                 div.style.maxHeight = (div.scrollHeight) + 'px';
-                                div.style.height = (div.scrollHeight) + 'px';
                                 setTimeout(function() {
                                     div.style.opacity = '1';
                                 }, 50); // Wait for the max-height change to take effect before starting the opacity transition
