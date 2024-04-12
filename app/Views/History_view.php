@@ -100,93 +100,88 @@ $data['options_customers_id'] = $options_customers_id;
                                 </div>
                             </div>
                             <script>
-                                //Période to date
-                                var inputStartDate = document.getElementById('start-date');
-                                var inputEndDate = document.getElementById('end-date');
-                                var selectPeriod = document.getElementById('single-choice-list');
-                                var togglePeriodButton = document.getElementById('toggleButton1');
-                                // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
-                                function updateDateFields(start, end) {
-                                    inputStartDate.value = start;
-                                    inputStartDate.dispatchEvent(new Event('change'));
-                                    inputEndDate.value = end;
-                                    inputEndDate.dispatchEvent(new Event('change'));
-                                }
-
                                 var periodeTexts = <?php echo $jsonPeriodeNames; ?>;
 
-                                // Récupérer les valeurs du localStorage lors du chargement de la page
                                 window.addEventListener('DOMContentLoaded', function() {
-                                    const selectedPeriod = getFromLocalStorage('selectedPeriod');
-                                    const startDate = getFromLocalStorage('startDate');
-                                    const endDate = getFromLocalStorage('endDate');
+                                    //Période to date
+                                    var inputStartDate = document.getElementById('start-date');
+                                    var inputEndDate = document.getElementById('end-date');
+                                    var selectPeriod = document.getElementById('single-choice-list');
+                                    var togglePeriodButton = document.getElementById('toggleButton1');
+                                    var selectedPeriod = getFromLocalStorage('selectedPeriod') ? getFromLocalStorage('selectedPeriod') : null;
+                                    var startDate = getFromLocalStorage('startDate') ? getFromLocalStorage('startDate') : null;
+                                    var endDate = getFromLocalStorage('endDate') ? getFromLocalStorage('endDate') : null;
+                                    // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
+                                    function updateDateFields(start, end, periode) {
+                                        inputStartDate.value = start;
+                                        inputStartDate.dispatchEvent(new Event('change'));
+                                        inputEndDate.value = end;
+                                        inputEndDate.dispatchEvent(new Event('change'));
+                                        if (togglePeriodButton) {
+                                            selectPeriod.value = periode;
+                                            togglePeriodButton.innerHTML = 'Période <br><span class="font-bold text-xs">' + (periodeTexts[periode] || "Non spécifié") + '</span>';
+                                        }
+                                    }
+
                                     if (selectedPeriod && startDate && endDate) {
                                         // Mettre à jour les champs de date avec les valeurs récupérées
-                                        updateDateFields(startDate, endDate);
+                                        updateDateFields(startDate, endDate, selectedPeriod);
+                                    }
 
-                                        // Mettre à jour la valeur sélectionnée dans le menu déroulant
-                                        selectPeriod.value = selectedPeriod;
-                                        if (togglePeriodButton) {
-                                            togglePeriodButton.innerHTML = 'Période <br><span class="font-bold text-xs">' + (periodeTexts[selectedPeriod] || "Non spécifié") + '</span>';
+                                    selectPeriod.addEventListener('change', function() {
+                                        // Récupérer la valeur sélectionnée dans le menu déroulant
+                                        let selectedPeriodValue = this.value;
+
+                                        // Appeler la fonction periodeToDate() avec la valeur sélectionnée
+                                        let dates = periodeToDate(selectedPeriodValue);
+                                        updateDateFields(dates.start, dates.end, selectedPeriodValue);
+                                        // Sauvegarder les valeurs dans le localStorage
+                                        saveToLocalStorage('selectedPeriod', selectedPeriodValue);
+                                        saveToLocalStorage('startDate', dates.start);
+                                        saveToLocalStorage('endDate', dates.end);
+
+                                        // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
+                                        if (dates.start !== null) {
+                                            inputStartDate.setAttribute('value', dates.start);
+                                        } else {
+                                            inputStartDate.removeAttribute('value');
                                         }
-                                    }
-                                });
-                                selectPeriod.addEventListener('change', function() {
-                                    // Récupérer la valeur sélectionnée dans le menu déroulant
 
-                                    let selectedPeriod = this.value;
-                                    //alert('La valeur sélectionnée est ' + selectedValue);
-
-                                    // Appeler la fonction periodeToDate() avec la valeur sélectionnée
-                                    let dates = periodeToDate(selectedPeriod);
-                                    updateDateFields(dates.start, dates.end);
-                                    // Sauvegarder les valeurs dans le localStorage
-                                    saveToLocalStorage('selectedPeriod', selectedPeriod);
-                                    saveToLocalStorage('startDate', dates.start);
-                                    saveToLocalStorage('endDate', dates.end);
-                                    // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
-
-                                    if (dates.start !== null) {
-                                        inputStartDate.setAttribute('value', dates.start);
-                                    } else {
-                                        inputStartDate.removeAttribute('value');
-                                    }
-
-                                    if (dates.end !== null) {
-                                        inputEndDate.setAttribute('value', dates.end);
-                                    } else {
-                                        inputEndDate.removeAttribute('value');
-                                    }
-                                    if (togglePeriodButton) {
-                                        togglePeriodButton.innerHTML = 'Période <br><span class="font-bold text-xs">' + (periodeTexts[selectedPeriod] || "Non spécifié") + '</span>';
-                                    }
-                                });
-
-
-                                // Fonction pour vérifier si un élément est contenu dans un autre élément
-                                function isDescendant(parent, child) {
-                                    var node = child.parentNode;
-                                    while (node != null) {
-                                        if (node === parent) {
-                                            return true;
+                                        if (dates.end !== null) {
+                                            inputEndDate.setAttribute('value', dates.end);
+                                        } else {
+                                            inputEndDate.removeAttribute('value');
                                         }
-                                        node = node.parentNode;
-                                    }
-                                    return false;
-                                }
+                                    });
 
-                                // Ajouter un écouteur d'événements au document
-                                document.addEventListener('click', function(event) {
-                                    // Vérifier si le clic a été effectué à l'intérieur du toggleDiv ou sur le bouton de bascule
-                                    var toggleDiv = document.getElementById('toggleDiv1');
 
-                                    if (!isDescendant(toggleDiv, event.target) && event.target !== togglePeriodButton || event.target.tagName === 'OPTION') {
-                                        // Cacher le toggleDiv
-                                        toggleDiv.style.opacity = '0';
-                                        setTimeout(function() {
-                                            toggleDiv.style.maxHeight = '0';
-                                        }, 300); // Attendre la fin de la transition de l'opacité avant de définir la hauteur maximale sur 0
+                                    // Fonction pour vérifier si un élément est contenu dans un autre élément
+                                    function isDescendant(parent, child) {
+                                        var node = child.parentNode;
+                                        while (node != null) {
+                                            if (node === parent) {
+                                                return true;
+                                            }
+                                            node = node.parentNode;
+                                        }
+                                        return false;
                                     }
+
+                                    // Ajouter un écouteur d'événements au document
+                                    document.addEventListener('click', function(event) {
+
+                                        // Vérifier si le clic a été effectué à l'intérieur du toggleDiv ou sur le bouton de bascule
+                                        var toggleDiv = document.getElementById('toggleDiv1');
+
+                                        if (!isDescendant(toggleDiv, event.target) && event.target !== togglePeriodButton || event.target.tagName === 'OPTION') {
+                                            // Cacher le toggleDiv
+                                            toggleDiv.style.opacity = '0';
+                                            setTimeout(function() {
+                                                toggleDiv.style.maxHeight = '0';
+                                            }, 300); // Attendre la fin de la transition de l'opacité avant de définir la hauteur maximale sur 0
+                                        }
+                                    });
+
                                 });
                             </script>
                         </div>
@@ -205,6 +200,7 @@ $data['options_customers_id'] = $options_customers_id;
                 </div>
 
                 <script>
+                    // loop pour cacher chaque div pour chaque bouton
                     var buttons = document.getElementsByClassName('toggleButton');
                     var divs = document.getElementsByClassName('toggleDiv');
                     for (var i = 0; i < buttons.length; i++) {
@@ -369,18 +365,21 @@ $data['options_customers_id'] = $options_customers_id;
   `;
 
         // Boutons de numéro de page
-        for (let i = 1; i <= totalPages; i++) {
-            paginationHtml += `
+        if (totalPages < 1) {
+            paginationHtml = `<div class="flex justify-center items-center p-4" >Aucun résultat trouvé </div>`;
+        } else {
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHtml += `
       <li>
         <span class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 ${currentPage === i ? 'text-primary-600 bg-primary-50 border-primary-300' : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'}" onclick="showPage(${i})">
           ${i}
         </span>
       </li>
     `;
-        }
+            }
 
-        // Bouton suivant
-        paginationHtml += `
+            // Bouton suivant
+            paginationHtml += `
     <li>
         <span class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 ${currentPage === totalPages ? 'cursor-not-allowed' : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'}" onclick="${currentPage === totalPages ? '' : 'showPage(' + (currentPage + 1) + ')'}">
             <span class="sr-only">Suivant</span>
@@ -391,7 +390,8 @@ $data['options_customers_id'] = $options_customers_id;
     </li>
   `;
 
-        paginationHtml += '</ul></nav>';
+            paginationHtml += '</ul></nav>';
+        }
 
         document.getElementById('pagination-container').innerHTML = paginationHtml;
 
