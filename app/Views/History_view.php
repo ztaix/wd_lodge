@@ -37,9 +37,10 @@ $data['options_customers_id'] = $options_customers_id;
 
     <div class="mx-auto px-4">
         <!-- Start Container -->
-        <div class=" relative bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg overflow-hidden">
-            <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-                <div class="w-full md:w-1/2">
+        <div class="relative bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg ">
+            <div class="flex flex-col items-center space-y-3 p-4">
+
+                <div class="w-full ">
                     <form class="flex items-center">
                         <label for="simple-search" class="sr-only">Rechercher</label>
                         <div class="relative w-full">
@@ -52,48 +53,168 @@ $data['options_customers_id'] = $options_customers_id;
                         </div>
                     </form>
                 </div>
-                <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
 
-                    <div class="flex items-center space-x-3 w-full md:w-auto">
-
-                        <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown" class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-4 w-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-                            </svg>
-                            Filtre
-                            <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                            </svg>
-                        </button>
-                        <div id="filterDropdown" class="z-10 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 hidden  text-sm text-gray-700 dark:text-gray-200" style="position: absolute; margin-top: 6rem; right: 10px">
-                            <div>
-                                <span class="font-bold text-gray-900 dark:text-gray-300 block px-2">Services:</span>
-                                <ul class="p-3 space-y-1" aria-labelledby="filterDropdownButton">
-                                    <?php foreach ($services_list as $service) { ?>
-                                        <li class="flex items-center">
-                                            <input id="service_<?= $service['Service_id']; ?>" checked type="checkbox" value="service_<?= $service['Service_id']; ?>" class="filter-checkbox w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                            <label for="service_<?= $service['Service_id']; ?>" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                <span style="display: inline-block;width: 8px;height: 8px; background-color: <?= $service['Color']; ?>; border-radius: 50%;"></span> <?= $service['Title']; ?></label>
-                                        </li>
-                                    <?php } ?>
-                                </ul>
+                <div class="w-full ">
+                    <div class="relative">
+                        <div class="flex">
+                            <button id="toggleButton1" class="toggleButton text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-base px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 shadow-xl">Période</button>
+                            <button id="toggleButton2" disabled class="toggleButton text-gray-500 bg-gray-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-base px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600  focus:outline-none dark:focus:ring-gray-800 shadow-xl">Filtrer</button>
+                            <button id="toggleButton3" disabled class="toggleButton text-gray-500 bg-gray-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-base px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600  focus:outline-none dark:focus:ring-gray-800 shadow-xl">Exporter</button>
+                        </div>
+                        <div id="toggleDiv1" class="toggleDiv absolute z-50 w-full bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg  mt-2" style="max-height: 0; transition: max-height 0.3s ease-out; opacity: 0; transition: opacity 0.3s;">
+                            <div class="flex flex-col p-4">
+                                <div class="flex flex-col sm:flex-row sm:space-y-0 space-y-2">
+                                    <div class="flex flex-wrap -mx-3"></div>
+                                    <div class="w-full md:w-1/2 px-4">
+                                        <label class="block uppercase tracking-wide text-gray-700 dark:text-gray-400 text-xs font-bold mb-2" for="start-date">
+                                            Date de début
+                                        </label>
+                                        <input class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="start-date" type="date" placeholder="JJ/MM/AAAA">
+                                    </div>
+                                    <div class="w-full md:w-1/2 px-3">
+                                        <label class="block uppercase tracking-wide text-gray-700 dark:text-gray-400 text-xs font-bold mb-2" for="end-date">
+                                            Date de fin
+                                        </label>
+                                        <input class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white" id="end-date" type="date" placeholder="JJ/MM/AAAA">
+                                    </div>
+                                    <div class="w-full md:w-1/2 px-3">
+                                        <label class="block uppercase tracking-wide text-gray-700 dark:text-gray-400 text-xs font-bold mb-2" for="single-choice-list">
+                                            Période
+                                        </label>
+                                        <select class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="single-choice-list">
+                                            <option value="aujourd'hui">Aujourd'hui</option>
+                                            <option value="cettesemaine">Cette semaine</option>
+                                            <option value="cemois">Ce mois</option>
+                                            <option value="derniermois">Dernier mois</option>
+                                            <option value="cetteannee">Cette année</option>
+                                            <option value="anneepassee">Année passée</option>
+                                            <option value="entouttemps">En tout temps</option>
+                                            <option value="personnalise">Personnalisé</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <span class="font-bold text-gray-900 dark:text-gray-300 block px-2">Type de document:</span>
-                                <ul class="p-3 space-y-1">
-                                    <li class="flex items-center">
-                                        <input id="filter_facture" type="checkbox" value="Facture" class="doc-filter-checkbox w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" checked>
-                                        <label for="filter_facture" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Facture</label>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <input id="filter_devis" type="checkbox" value="Devis" class="doc-filter-checkbox w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" checked>
-                                        <label for="filter_devis" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Devis
-                                    </li>
-                                </ul>
+                            <script>
+                                //Période to date
+                                // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
+                                function updateDateFields(start, end) {
+                                    document.getElementById('start-date').value = start;
+                                    document.getElementById('start-date').dispatchEvent(new Event('change'));
+                                    document.getElementById('end-date').value = end;
+                                    document.getElementById('end-date').dispatchEvent(new Event('change'));
+                                }
+                                // Récupérer les valeurs du localStorage lors du chargement de la page
+                                window.addEventListener('DOMContentLoaded', function() {
+                                    const selectedPeriod = getFromLocalStorage('selectedPeriod');
+                                    const startDate = getFromLocalStorage('startDate');
+                                    const endDate = getFromLocalStorage('endDate');
+
+                                    if (selectedPeriod && startDate && endDate) {
+                                        // Mettre à jour les champs de date avec les valeurs récupérées
+                                        updateDateFields(startDate, endDate);
+
+                                        // Mettre à jour la valeur sélectionnée dans le menu déroulant
+                                        document.getElementById('single-choice-list').value = selectedPeriod;
+                                    }
+                                });
+                                document.getElementById('single-choice-list').addEventListener('change', function() {
+                                    // Récupérer la valeur sélectionnée dans le menu déroulant
+                                    let selectedValue = this.value;
+                                    // alert('La valeur sélectionnée est ' + selectedValue);
+
+                                    // Appeler la fonction periodeToDate() avec la valeur sélectionnée
+                                    let dates = periodeToDate(selectedValue);
+                                    updateDateFields(dates.start, dates.end);
+                                    // Sauvegarder les valeurs dans le localStorage
+                                    saveToLocalStorage('selectedPeriod', selectedValue);
+                                    saveToLocalStorage('startDate', dates.start);
+                                    saveToLocalStorage('endDate', dates.end);
+                                    // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
+                                    let startDateInput = document.getElementById('start-date');
+                                    let endDateInput = document.getElementById('end-date');
+
+                                    if (dates.start !== null) {
+                                        startDateInput.setAttribute('value', dates.start);
+                                    } else {
+                                        startDateInput.removeAttribute('value');
+                                    }
+
+                                    if (dates.end !== null) {
+                                        endDateInput.setAttribute('value', dates.end);
+                                    } else {
+                                        endDateInput.removeAttribute('value');
+                                    }
+                                });
+
+
+                                // Fonction pour vérifier si un élément est contenu dans un autre élément
+                                function isDescendant(parent, child) {
+                                    var node = child.parentNode;
+                                    while (node != null) {
+                                        if (node === parent) {
+                                            return true;
+                                        }
+                                        node = node.parentNode;
+                                    }
+                                    return false;
+                                }
+
+                                // Ajouter un écouteur d'événements au document
+                                document.addEventListener('click', function(event) {
+                                    // Vérifier si le clic a été effectué à l'intérieur du toggleDiv ou sur le bouton de bascule
+                                    var toggleDiv = document.getElementById('toggleDiv1');
+                                    var toggleButton = document.getElementById('toggleButton1');
+                                    if (!isDescendant(toggleDiv, event.target) && event.target !== toggleButton || event.target.tagName === 'OPTION') {
+                                        // Cacher le toggleDiv
+                                        toggleDiv.style.opacity = '0';
+                                        setTimeout(function() {
+                                            toggleDiv.style.maxHeight = '0';
+                                        }, 500); // Attendre la fin de la transition de l'opacité avant de définir la hauteur maximale sur 0
+                                    }
+                                });
+                            </script>
+                        </div>
+                        <!--
+                        <div id="toggleDiv2" class="toggleDiv absolute z-10 w-full bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg overflow-hidden mt-2" style="max-height: 0; transition: max-height 0.3s ease-out; opacity: 0; transition: opacity 0.3s;">
+                            <div class="flex flex-col p-4">
+                                <div class="flex items">item2</div>
                             </div>
                         </div>
+                        <div id="toggleDiv3" class="toggleDiv absolute z-10 w-full bg-white dark:bg-gray-800 border border-slate-100 dark:border-slate-900 shadow-md rounded-lg overflow-hidden mt-2" style="max-height: 0; transition: max-height 0.3s ease-out; opacity: 0; transition: opacity 0.3s;">
+                            <div class="flex flex-col p-4">
+                                <div class="flex items">item3</div>
+                            </div>
+                        </div>-->
                     </div>
                 </div>
+
+                <script>
+                    var buttons = document.getElementsByClassName('toggleButton');
+                    var divs = document.getElementsByClassName('toggleDiv');
+                    for (var i = 0; i < buttons.length; i++) {
+                        buttons[i].addEventListener('click', function() {
+                            var divId = this.id.replace('Button', 'Div');
+                            var div = document.getElementById(divId);
+                            if (div.style.maxHeight === '0px' || div.style.maxHeight === '') {
+                                for (var j = 0; j < divs.length; j++) {
+                                    divs[j].style.opacity = '0';
+                                    divs[j].style.maxHeight = '0';
+                                }
+                                div.style.maxHeight = (div.scrollHeight) + 'px';
+                                div.style.height = (div.scrollHeight) + 'px';
+                                setTimeout(function() {
+                                    div.style.opacity = '1';
+                                }, 50); // Wait for the max-height change to take effect before starting the opacity transition
+                            } else {
+                                div.style.opacity = '0';
+                                setTimeout(function() {
+                                    div.style.maxHeight = '0';
+                                }, 500); // Wait for the opacity transition to finish before setting max-height to 0
+                            }
+                        });
+                    }
+                </script>
+
             </div>
 
             <div class="overflow-x-auto">
@@ -124,11 +245,11 @@ $data['options_customers_id'] = $options_customers_id;
                                     <td class="px-4 py-3"> <?= $booking['service_title']; ?></td>
                                     <td class="px-4 py-3 text-center"> <?= countNights(sql_date_to_dmY($booking['start']), sql_date_to_dmY($booking['end'])) ?></td>
                                     <td class="px-4 py-3 inline-flex">
-                                        <?= sql_date_to_dmY($booking['start']); ?>
+                                        <span class="booking-start-date"><?= sql_date_to_dmY($booking['start']); ?></span>
                                         <svg class="w-3 h-3 mx-1 my-1 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
                                         </svg>
-                                        <?= sql_date_to_dmY($booking['end']); ?>
+                                        <span class="booking-end-date"><?= sql_date_to_dmY($booking['end']); ?></span>
                                     </td>
                                     <td class="px-3 py-3" onclick="deleteEvent(event, '<?= $booking['id']; ?>')">
                                         <svg class="w-4 h-4 text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -151,45 +272,47 @@ $data['options_customers_id'] = $options_customers_id;
 
 <script>
     //////////////////////////////////////////////////
-    document.addEventListener("DOMContentLoaded", function() {
-        // Trouver le bouton et le sous-menu
-        const button = document.getElementById('filterDropdownButton');
-        const dropdown = document.getElementById('filterDropdown');
 
-        // Ajouter un écouteur d'événements pour le clic
-        button.addEventListener('click', function() {
-            dropdown.classList.toggle('hidden');
+    // Periode filtre
+    function filterBookings() {
+        // Récupérer les valeurs des champs de date
+        let startDateValue = document.getElementById('start-date').value;
+        let startParts = startDateValue.split('-');
+        let startformattedDate = startParts[1] + '/' + startParts[2] + '/' + startParts[0];
+        let startDate = new Date(startformattedDate);
+
+        let endDateValue = document.getElementById('end-date').value;
+        let endParts = endDateValue.split('-');
+        let endformattedDate = endParts[1] + '/' + endParts[2] + '/' + endParts[0];
+        let endDate = new Date(endformattedDate);
+
+        // Parcourir tous les éléments du tableau
+        let bookingsRows = document.querySelectorAll('.ROW');
+        bookingsRows.forEach(function(row) {
+            // Récupérer les valeurs des cellules de date dans la ligne du tableau
+            let bookingStartDate = new Date(row.querySelector('.booking-start-date').innerText);
+
+            // Comparer les valeurs des champs de date avec celles du tableau
+            if (bookingStartDate >= startDate && bookingStartDate <= endDate) {
+                // Afficher l'élément du tableau s'il correspond aux critères de date
+                row.style.display = 'table-row';
+            } else {
+                // Masquer l'élément du tableau s'il ne correspond pas aux critères de date
+                row.style.display = 'none';
+            }
         });
-    });
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const checkboxes = document.querySelectorAll('.filter-checkbox');
-
-        checkboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                const serviceId = this.value;
-                const rows = document.querySelectorAll('.' + serviceId);
-                if (this.checked) {
-                    // Afficher les lignes
-                    rows.forEach(function(row) {
-                        row.style.display = '';
-                    });
-                } else {
-                    // Masquer les lignes
-                    rows.forEach(function(row) {
-                        row.style.display = 'none';
-                    });
-                }
-            });
-        });
-    });
-
+    }
 
     //pagination système
-    let currentPage = 1;
     const itemsPerPage = 8;
-    const all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
-    const totalPages = Math.ceil(all_bookings.length / itemsPerPage);
+    let currentPage = 1;
+    let all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
+    let totalPages = Math.ceil(all_bookings.length / itemsPerPage);
+
+    function loadPagination() {
+        let all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
+        let totalPages = Math.ceil(all_bookings.length / itemsPerPage);
+    }
 
     function showPage(page) {
         const start = (page - 1) * itemsPerPage;
@@ -278,7 +401,7 @@ $data['options_customers_id'] = $options_customers_id;
 
     function updateTable() {
         const query = document.getElementById('simple-search').value.toLowerCase();
-        const all_bookings = Array.from(document.querySelectorAll('.row_booking'));
+        const all_bookings = Array.from(document.querySelectorAll('.ROW'));
 
         all_bookings.forEach(row => {
             let text = row.textContent.toLowerCase();
@@ -294,9 +417,30 @@ $data['options_customers_id'] = $options_customers_id;
         });
     }
 
+    // Fonction pour synchroniser le filtrage par période avec la pagination
+    function filterAndPaginate() {
+        // Appliquer le filtre
+        filterBookings();
+
+        // Mettre à jour la liste des réservations visibles après filtrage
+        all_bookings = Array.from(document.querySelectorAll('.ROW')).filter(row => row.style.display !== 'none');
+
+        // Recalculer le nombre total de pages
+        totalPages = Math.ceil(all_bookings.length / itemsPerPage);
+
+        // Réinitialiser à la première page si le filtrage change le contenu
+        showPage(1);
+        updatePagination();
+    }
+
     // Affiche la première page et initialise la pagination
-    showPage(1);
-    updatePagination();
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('start-date').addEventListener('change', filterAndPaginate);
+        document.getElementById('end-date').addEventListener('change', filterAndPaginate);
+
+        showPage(1);
+        updatePagination();
+    });
 
 
 

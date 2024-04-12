@@ -360,6 +360,109 @@ function getDayOfWeek(dateString) {
 
   return days[dayOfWeek];
 }
+function formatDate(date, ISO = false) {
+  let day = String(date.getDate()).padStart(2, '0');
+  let month = String(date.getMonth() + 1).padStart(2, '0');
+  let year = date.getFullYear();
+  if (ISO === 'ISO 8601') {
+    return `${year}-${month}-${day}`;
+  } else {
+    return `${day}-${month}-${year}`;
+  }
+}
+
+/**
+ * Converts a given period into start and end dates.
+ * @param {string} periode - The period to convert.
+ * @returns {Object} - An object containing the start and end dates.
+ 
+
+*/
+function periodeToDate(periode) {
+  let lowerPeriode = periode.trim().toLowerCase();
+  let dates = {};
+  let currentDate = new Date();
+  let start, end;
+
+  switch (lowerPeriode) {
+    case "aujourd'hui":
+      start = end = currentDate;
+      break;
+
+    case 'cettesemaine':
+      let firstDayOfWeek =
+        currentDate.getDate() -
+        currentDate.getDay() +
+        (currentDate.getDay() === 0 ? -6 : 1); // Get the first day of the week (Monday)
+      let lastDayOfWeek = firstDayOfWeek + 6; // Get the last day of the week (Sunday)
+      start = new Date(currentDate.setDate(firstDayOfWeek));
+      end = new Date(currentDate.setDate(lastDayOfWeek));
+      break;
+
+    case 'cemois':
+      let firstDayOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1
+      );
+      let lastDayOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        0
+      );
+      start = firstDayOfMonth;
+      end = lastDayOfMonth;
+      break;
+
+    case 'derniermois':
+      let firstDayOfLastMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - 1,
+        1
+      );
+      let lastDayOfLastMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        0
+      );
+      start = firstDayOfLastMonth;
+      end = lastDayOfLastMonth;
+      break;
+
+    case 'cetteannee':
+      let firstDayOfYear = new Date(currentDate.getFullYear(), 0, 1);
+      let lastDayOfYear = new Date(currentDate.getFullYear(), 11, 31);
+      start = firstDayOfYear;
+      end = lastDayOfYear;
+      break;
+
+    case 'anneepassee':
+      let firstDayOfLastYear = new Date(currentDate.getFullYear() - 1, 0, 1);
+      let lastDayOfLastYear = new Date(currentDate.getFullYear() - 1, 11, 31);
+      start = firstDayOfLastYear;
+      end = lastDayOfLastYear;
+      break;
+
+    case 'entouttemps':
+      start = new Date(currentDate.getFullYear() - 50, 0, 1); // Earliest date JavaScript can handle
+      end = new Date(currentDate.getFullYear() + 50, 11, 31); // Latest date JavaScript can handle
+      break;
+
+    case 'personnalise':
+      start = end = null;
+      break;
+
+    default:
+      break;
+  }
+
+  dates = {
+    start: start === null ? null : formatDate(start, 'ISO 8601'),
+    end: end === null ? null : formatDate(end, 'ISO 8601'),
+  };
+
+  return dates;
+}
 
 //
 function updateCountdown(ttl) {
@@ -599,4 +702,17 @@ function verifyToken(extend = false) {
       }
     );
   });
+}
+
+// localStorage
+
+// Fonction pour sauvegarder les valeurs dans le localStorage
+function saveToLocalStorage(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+// Fonction pour récupérer les valeurs depuis le localStorage
+function getFromLocalStorage(key) {
+  const value = localStorage.getItem(key);
+  return value ? JSON.parse(value) : null;
 }
