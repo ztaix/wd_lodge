@@ -1035,6 +1035,8 @@ if (urlLocation() == 'history') {
 
   // Fonction pour synchroniser le filtrage par période avec la pagination
   function filterAndPaginate() {
+    const itemsPerPage = 8;
+
     // Appliquer le filtre
     filterBookings();
 
