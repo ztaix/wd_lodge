@@ -930,6 +930,7 @@ if (urlLocation() == 'history') {
     const itemsPerPage = 8;
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
+    let all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
 
     // Cacher tous les éléments
     all_bookings.forEach((booking) => (booking.style.display = 'none'));
