@@ -751,188 +751,198 @@ function createDayMarker({
 }
 
 //history
-
-window.addEventListener('DOMContentLoaded', function () {
-  //Période to date
-  var inputStartDate = document.getElementById('start-date');
-  var inputEndDate = document.getElementById('end-date');
-  var selectPeriod = document.getElementById('single-choice-list');
-  var togglePeriodButton = document.getElementById('toggleButton1');
-  var selectedPeriod = getFromLocalStorage('selectedPeriod')
-    ? getFromLocalStorage('selectedPeriod')
-    : null;
-  var startDate = getFromLocalStorage('startDate')
-    ? getFromLocalStorage('startDate')
-    : null;
-  var endDate = getFromLocalStorage('endDate')
-    ? getFromLocalStorage('endDate')
-    : null;
-  // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
-  function updateDateFields(start, end, periode) {
-    inputStartDate.value = start;
-    inputStartDate.dispatchEvent(new Event('change'));
-    inputEndDate.value = end;
-    inputEndDate.dispatchEvent(new Event('change'));
-    if (togglePeriodButton) {
-      selectPeriod.value = periode;
-      togglePeriodButton.innerHTML =
-        'Période <br><span class="font-bold text-xs">' +
-        (periodeTexts[periode] || 'Non spécifié') +
-        '</span>';
-    }
-  }
-
-  if (selectedPeriod && startDate && endDate) {
-    // Mettre à jour les champs de date avec les valeurs récupérées
-    updateDateFields(startDate, endDate, selectedPeriod);
-  }
-
-  selectPeriod.addEventListener('change', function () {
-    // Récupérer la valeur sélectionnée dans le menu déroulant
-    let selectedPeriodValue = this.value;
-
-    // Appeler la fonction periodeToDate() avec la valeur sélectionnée
-    let dates = periodeToDate(selectedPeriodValue);
-    updateDateFields(dates.start, dates.end, selectedPeriodValue);
-    // Sauvegarder les valeurs dans le localStorage
-    saveToLocalStorage('selectedPeriod', selectedPeriodValue);
-    saveToLocalStorage('startDate', dates.start);
-    saveToLocalStorage('endDate', dates.end);
-
+if (urlLocation() == 'history') {
+  window.addEventListener('DOMContentLoaded', function () {
+    //Période to date
+    var inputStartDate = document.getElementById('start-date');
+    var inputEndDate = document.getElementById('end-date');
+    var selectPeriod = document.getElementById('single-choice-list');
+    var togglePeriodButton = document.getElementById('toggleButton1');
+    var selectedPeriod = getFromLocalStorage('selectedPeriod')
+      ? getFromLocalStorage('selectedPeriod')
+      : null;
+    var startDate = getFromLocalStorage('startDate')
+      ? getFromLocalStorage('startDate')
+      : null;
+    var endDate = getFromLocalStorage('endDate')
+      ? getFromLocalStorage('endDate')
+      : null;
     // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
-    if (dates.start !== null) {
-      inputStartDate.setAttribute('value', dates.start);
-    } else {
-      inputStartDate.removeAttribute('value');
+    function updateDateFields(start, end, periode) {
+      inputStartDate.value = start;
+      inputStartDate.dispatchEvent(new Event('change'));
+      inputEndDate.value = end;
+      inputEndDate.dispatchEvent(new Event('change'));
+      if (togglePeriodButton) {
+        selectPeriod.value = periode;
+        togglePeriodButton.innerHTML =
+          'Période <br><span class="font-bold text-xs">' +
+          (periodeTexts[periode] || 'Non spécifié') +
+          '</span>';
+      }
     }
 
-    if (dates.end !== null) {
-      inputEndDate.setAttribute('value', dates.end);
-    } else {
-      inputEndDate.removeAttribute('value');
+    if (selectedPeriod && startDate && endDate) {
+      // Mettre à jour les champs de date avec les valeurs récupérées
+      updateDateFields(startDate, endDate, selectedPeriod);
     }
+
+    selectPeriod.addEventListener('change', function () {
+      // Récupérer la valeur sélectionnée dans le menu déroulant
+      let selectedPeriodValue = this.value;
+
+      // Appeler la fonction periodeToDate() avec la valeur sélectionnée
+      let dates = periodeToDate(selectedPeriodValue);
+      updateDateFields(dates.start, dates.end, selectedPeriodValue);
+      // Sauvegarder les valeurs dans le localStorage
+      console.log('save localstroage', selectedPeriodValue, dates.start);
+      saveToLocalStorage('selectedPeriod', selectedPeriodValue);
+      saveToLocalStorage('startDate', dates.start);
+      saveToLocalStorage('endDate', dates.end);
+
+      // Mettre à jour les champs de date dans le HTML avec les valeurs renvoyées
+      if (dates.start !== null) {
+        inputStartDate.setAttribute('value', dates.start);
+      } else {
+        inputStartDate.removeAttribute('value');
+      }
+
+      if (dates.end !== null) {
+        inputEndDate.setAttribute('value', dates.end);
+      } else {
+        inputEndDate.removeAttribute('value');
+      }
+    });
+
+    // Fonction pour vérifier si un élément est contenu dans un autre élément
+    function isDescendant(parent, child) {
+      var node = child.parentNode;
+      while (node != null) {
+        if (node === parent) {
+          return true;
+        }
+        node = node.parentNode;
+      }
+      return false;
+    }
+
+    // Ajouter un écouteur d'événements au document
+    document.addEventListener('click', function (event) {
+      // Vérifier si le clic a été effectué à l'intérieur du toggleDiv ou sur le bouton de bascule
+      var toggleDiv = document.getElementById('toggleDiv1');
+
+      if (
+        (!isDescendant(toggleDiv, event.target) &&
+          event.target !== togglePeriodButton) ||
+        event.target.tagName === 'OPTION'
+      ) {
+        // Cacher le toggleDiv
+        toggleDiv.style.opacity = '0';
+        setTimeout(function () {
+          toggleDiv.style.maxHeight = '0';
+        }, 300); // Attendre la fin de la transition de l'opacité avant de définir la hauteur maximale sur 0
+      }
+    });
   });
 
-  // Fonction pour vérifier si un élément est contenu dans un autre élément
-  function isDescendant(parent, child) {
-    var node = child.parentNode;
-    while (node != null) {
-      if (node === parent) {
-        return true;
+  // loop pour cacher chaque div pour chaque bouton
+  var buttons = document.getElementsByClassName('toggleButton');
+  var divs = document.getElementsByClassName('toggleDiv');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function () {
+      var divId = this.id.replace('Button', 'Div');
+      var div = document.getElementById(divId);
+      if (div.style.maxHeight === '0px' || div.style.maxHeight === '') {
+        for (var j = 0; j < divs.length; j++) {
+          divs[j].style.opacity = '0';
+          divs[j].style.maxHeight = '0';
+        }
+        div.style.maxHeight = div.scrollHeight + 'px';
+        setTimeout(function () {
+          div.style.opacity = '1';
+        }, 50); // Wait for the max-height change to take effect before starting the opacity transition
+      } else {
+        div.style.opacity = '0';
+        setTimeout(function () {
+          div.style.maxHeight = '0';
+        }, 500); // Wait for the opacity transition to finish before setting max-height to 0
       }
-      node = node.parentNode;
-    }
-    return false;
+    });
   }
 
-  // Ajouter un écouteur d'événements au document
-  document.addEventListener('click', function (event) {
-    // Vérifier si le clic a été effectué à l'intérieur du toggleDiv ou sur le bouton de bascule
-    var toggleDiv = document.getElementById('toggleDiv1');
+  //////////////////////////////////////////////////
 
-    if (
-      (!isDescendant(toggleDiv, event.target) &&
-        event.target !== togglePeriodButton) ||
-      event.target.tagName === 'OPTION'
-    ) {
-      // Cacher le toggleDiv
-      toggleDiv.style.opacity = '0';
-      setTimeout(function () {
-        toggleDiv.style.maxHeight = '0';
-      }, 300); // Attendre la fin de la transition de l'opacité avant de définir la hauteur maximale sur 0
-    }
-  });
-});
+  // Periode filtre
+  function filterBookings() {
+    // Récupérer les valeurs des champs de date
+    let startDateValue = document.getElementById('start-date').value;
+    let startParts = startDateValue.split('-');
+    let startformattedDate =
+      startParts[1] + '/' + startParts[2] + '/' + startParts[0];
+    let startDate = new Date(startformattedDate);
+    console.log('startDate', startDate);
+    let endDateValue = document.getElementById('end-date').value;
+    let endParts = endDateValue.split('-');
+    let endformattedDate = endParts[1] + '/' + endParts[2] + '/' + endParts[0];
+    let endDate = new Date(endformattedDate);
+    console.log('endDate', endDate);
 
-// loop pour cacher chaque div pour chaque bouton
-var buttons = document.getElementsByClassName('toggleButton');
-var divs = document.getElementsByClassName('toggleDiv');
-for (var i = 0; i < buttons.length; i++) {
-  buttons[i].addEventListener('click', function () {
-    var divId = this.id.replace('Button', 'Div');
-    var div = document.getElementById(divId);
-    if (div.style.maxHeight === '0px' || div.style.maxHeight === '') {
-      for (var j = 0; j < divs.length; j++) {
-        divs[j].style.opacity = '0';
-        divs[j].style.maxHeight = '0';
+    // Parcourir tous les éléments du tableau
+    let bookingsRows = document.querySelectorAll('.ROW');
+    bookingsRows.forEach(function (row) {
+      // TODO METTRE UNE FUNCTION DATE de convertion //
+      // Récupérer les valeurs des cellules de date dans la ligne du tableau
+      // Séparation de la chaîne en jour, mois et année
+      let dateString = row.querySelector('.booking-start-date').innerText;
+      let parts = dateString.split('-');
+      let day = parseInt(parts[0], 10);
+      let month = parseInt(parts[1], 10) - 1; // Mois est 0-indexé (0 = janvier)
+      let year = parseInt(parts[2], 10);
+      let bookingStartDate = new Date(year, month, day);
+
+      let bookingStartDateObj = new Date(bookingStartDate);
+      console.log('bookingStartDate', bookingStartDateObj);
+
+      // Comparer les valeurs des champs de date avec celles du tableau
+      if (bookingStartDateObj >= startDate && bookingStartDateObj <= endDate) {
+        // Afficher l'élément du tableau s'il correspond aux critères de date
+        row.style.display = 'table-row';
+      } else {
+        // Masquer l'élément du tableau s'il ne correspond pas aux critères de date
+        row.style.display = 'none';
       }
-      div.style.maxHeight = div.scrollHeight + 'px';
-      setTimeout(function () {
-        div.style.opacity = '1';
-      }, 50); // Wait for the max-height change to take effect before starting the opacity transition
-    } else {
-      div.style.opacity = '0';
-      setTimeout(function () {
-        div.style.maxHeight = '0';
-      }, 500); // Wait for the opacity transition to finish before setting max-height to 0
-    }
-  });
-}
+    });
+  }
 
-//////////////////////////////////////////////////
-
-// Periode filtre
-function filterBookings() {
-  // Récupérer les valeurs des champs de date
-  let startDateValue = document.getElementById('start-date').value;
-  let startParts = startDateValue.split('-');
-  let startformattedDate =
-    startParts[1] + '/' + startParts[2] + '/' + startParts[0];
-  let startDate = new Date(startformattedDate);
-
-  let endDateValue = document.getElementById('end-date').value;
-  let endParts = endDateValue.split('-');
-  let endformattedDate = endParts[1] + '/' + endParts[2] + '/' + endParts[0];
-  let endDate = new Date(endformattedDate);
-
-  // Parcourir tous les éléments du tableau
-  let bookingsRows = document.querySelectorAll('.ROW');
-  bookingsRows.forEach(function (row) {
-    // Récupérer les valeurs des cellules de date dans la ligne du tableau
-    let bookingStartDate = new Date(
-      row.querySelector('.booking-start-date').innerText
-    );
-
-    // Comparer les valeurs des champs de date avec celles du tableau
-    if (bookingStartDate >= startDate && bookingStartDate <= endDate) {
-      // Afficher l'élément du tableau s'il correspond aux critères de date
-      row.style.display = 'table-row';
-    } else {
-      // Masquer l'élément du tableau s'il ne correspond pas aux critères de date
-      row.style.display = 'none';
-    }
-  });
-}
-
-//pagination système
-const itemsPerPage = 8;
-let currentPage = 1;
-let all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
-let totalPages = Math.ceil(all_bookings.length / itemsPerPage);
-
-function loadPagination() {
+  //pagination système
+  const itemsPerPage = 8;
+  let currentPage = 1;
   let all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
   let totalPages = Math.ceil(all_bookings.length / itemsPerPage);
-}
 
-function showPage(page) {
-  const start = (page - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
+  function loadPagination() {
+    let all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
+    let totalPages = Math.ceil(all_bookings.length / itemsPerPage);
+  }
 
-  // Cacher tous les éléments
-  all_bookings.forEach((booking) => (booking.style.display = 'none'));
+  function showPage(page) {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
 
-  // Afficher les éléments pour la page actuelle
-  all_bookings
-    .slice(start, end)
-    .forEach((booking) => (booking.style.display = ''));
+    // Cacher tous les éléments
+    all_bookings.forEach((booking) => (booking.style.display = 'none'));
 
-  currentPage = page;
-  updatePagination(); // Ajoutez cette ligne
-}
+    // Afficher les éléments pour la page actuelle
+    all_bookings
+      .slice(start, end)
+      .forEach((booking) => (booking.style.display = ''));
 
-function updatePagination() {
-  let paginationHtml = `<nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
+    currentPage = page;
+    updatePagination(); // Ajoutez cette ligne
+  }
+
+  function updatePagination() {
+    let paginationHtml = `<nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
       <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
           Ligne
           <span class="font-semibold text-gray-900 dark:text-white">${currentPage * itemsPerPage - itemsPerPage + 1} à ${Math.min(currentPage * itemsPerPage, all_bookings.length)}</span>
@@ -942,8 +952,8 @@ function updatePagination() {
       <ul class="inline-flex items-stretch -space-x-px">
 `;
 
-  // Bouton précédent
-  paginationHtml += `
+    // Bouton précédent
+    paginationHtml += `
   <li>
       <span class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 ${currentPage === 1 ? 'cursor-not-allowed' : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'}" onclick="${currentPage === 1 ? '' : 'showPage(' + (currentPage - 1) + ')'}">
           <span class="sr-only">Précédent</span>
@@ -954,22 +964,22 @@ function updatePagination() {
   </li>
 `;
 
-  // Boutons de numéro de page
-  if (totalPages < 1) {
-    paginationHtml = `<div class="flex justify-center items-center p-4" >Aucun résultat trouvé </div>`;
-  } else {
-    for (let i = 1; i <= totalPages; i++) {
-      paginationHtml += `
+    // Boutons de numéro de page
+    if (totalPages < 1) {
+      paginationHtml = `<div class="flex justify-center items-center p-4" >Aucun résultat trouvé </div>`;
+    } else {
+      for (let i = 1; i <= totalPages; i++) {
+        paginationHtml += `
     <li>
       <span class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 ${currentPage === i ? 'text-primary-600 bg-primary-50 border-primary-300' : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'}" onclick="showPage(${i})">
         ${i}
       </span>
     </li>
   `;
-    }
+      }
 
-    // Bouton suivant
-    paginationHtml += `
+      // Bouton suivant
+      paginationHtml += `
   <li>
       <span class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 ${currentPage === totalPages ? 'cursor-not-allowed' : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'}" onclick="${currentPage === totalPages ? '' : 'showPage(' + (currentPage + 1) + ')'}">
           <span class="sr-only">Suivant</span>
@@ -980,76 +990,77 @@ function updatePagination() {
   </li>
 `;
 
-    paginationHtml += '</ul></nav>';
+      paginationHtml += '</ul></nav>';
+    }
+
+    document.getElementById('pagination-container').innerHTML = paginationHtml;
   }
 
-  document.getElementById('pagination-container').innerHTML = paginationHtml;
-}
+  document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('simple-search');
+    const table = document.getElementById('history_list');
+    const rows = table.querySelectorAll('tbody tr');
 
-document.addEventListener('DOMContentLoaded', function () {
-  const input = document.getElementById('simple-search');
-  const table = document.getElementById('history_list');
-  const rows = table.querySelectorAll('tbody tr');
+    input.addEventListener('input', function () {
+      const query = this.value.toLowerCase();
 
-  input.addEventListener('input', function () {
-    const query = this.value.toLowerCase();
-
-    rows.forEach((row) => {
-      let text = row.textContent.toLowerCase();
-      row.style.display = text.includes(query) ? '' : 'none';
+      rows.forEach((row) => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
     });
   });
-});
 
-function updateTable() {
-  const query = document.getElementById('simple-search').value.toLowerCase();
-  const all_bookings = Array.from(document.querySelectorAll('.ROW'));
+  function updateTable() {
+    const query = document.getElementById('simple-search').value.toLowerCase();
+    const all_bookings = Array.from(document.querySelectorAll('.ROW'));
 
-  all_bookings.forEach((row) => {
-    let text = row.textContent.toLowerCase();
-    const serviceId = row.className
-      .split(' ')
-      .find((className) => className.startsWith('service-'));
+    all_bookings.forEach((row) => {
+      let text = row.textContent.toLowerCase();
+      const serviceId = row.className
+        .split(' ')
+        .find((className) => className.startsWith('service-'));
 
-    const isCheckboxChecked = document.querySelector(
-      `.filter-checkbox[value="${serviceId}"]`
-    ).checked;
+      const isCheckboxChecked = document.querySelector(
+        `.filter-checkbox[value="${serviceId}"]`
+      ).checked;
 
-    if (isCheckboxChecked && text.includes(query)) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-    }
+      if (isCheckboxChecked && text.includes(query)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  // Fonction pour synchroniser le filtrage par période avec la pagination
+  function filterAndPaginate() {
+    // Appliquer le filtre
+    filterBookings();
+
+    // Mettre à jour la liste des réservations visibles après filtrage
+    all_bookings = Array.from(document.querySelectorAll('.ROW')).filter(
+      (row) => row.style.display !== 'none'
+    );
+
+    // Recalculer le nombre total de pages
+    totalPages = Math.ceil(all_bookings.length / itemsPerPage);
+
+    // Réinitialiser à la première page si le filtrage change le contenu
+    showPage(1);
+    updatePagination();
+  }
+
+  // Affiche la première page et initialise la pagination
+  document.addEventListener('DOMContentLoaded', function () {
+    document
+      .getElementById('start-date')
+      .addEventListener('change', filterAndPaginate);
+    document
+      .getElementById('end-date')
+      .addEventListener('change', filterAndPaginate);
+
+    showPage(1);
+    updatePagination();
   });
 }
-
-// Fonction pour synchroniser le filtrage par période avec la pagination
-function filterAndPaginate() {
-  // Appliquer le filtre
-  filterBookings();
-
-  // Mettre à jour la liste des réservations visibles après filtrage
-  all_bookings = Array.from(document.querySelectorAll('.ROW')).filter(
-    (row) => row.style.display !== 'none'
-  );
-
-  // Recalculer le nombre total de pages
-  totalPages = Math.ceil(all_bookings.length / itemsPerPage);
-
-  // Réinitialiser à la première page si le filtrage change le contenu
-  showPage(1);
-  updatePagination();
-}
-
-// Affiche la première page et initialise la pagination
-document.addEventListener('DOMContentLoaded', function () {
-  document
-    .getElementById('start-date')
-    .addEventListener('change', filterAndPaginate);
-  document
-    .getElementById('end-date')
-    .addEventListener('change', filterAndPaginate);
-
-  showPage(1);
-  updatePagination();
-});

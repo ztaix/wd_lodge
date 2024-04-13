@@ -503,25 +503,9 @@ class BookingController extends BaseController
     public function generatePDF($origine = 'booking', $id = 1, $show = true)
     {
 
-        // Nom du cookie où le token JWT est stocké
-        $cookieName = 'token';
-        // Récupérer le token JWT du cookie
-        $jwt = $this->request->getCookie($cookieName);
-
-        if (!$jwt) {
-            // Gérer l'absence de token
-            return $this->response->setStatusCode(401)->setBody('Token non fourni ++');
-        }
-        // Vérifier si $jwt est un objet ou un tableau, et obtenir la valeur du cookie comme chaîne de caractères
-        if (is_array($jwt) || is_object($jwt)) {
-            $jwt = $jwt['value'] ?? ''; // Ajustez la clé 'value' si nécessaire
-        }
-
         try {
             // Remplacer 'your_key' par votre clé secrète utilisée pour signer les tokens
             // Assurez-vous d'utiliser une clé secrète sécurisée et unique à votre application
-            $decoded = JWT::decode($jwt, new Key('votre_cle_secrete', 'HS256'));
-
             $entreprise = $this->ConfigModel->get_enteprise_name();
 
             if ($origine == 'booking') {
