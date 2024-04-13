@@ -921,11 +921,13 @@ if (urlLocation() == 'history') {
   let totalPages = Math.ceil(all_bookings.length / itemsPerPage);
 
   function loadPagination() {
+    const itemsPerPage = 8;
     let all_bookings = Array.from(document.querySelectorAll('.ROW')); // Chaque ligne du tableau a une classe 'row_booking'
-    let totalPages = Math.ceil(all_bookings.length / itemsPerPage);
+    totalPages = Math.ceil(all_bookings.length / itemsPerPage);
   }
 
   function showPage(page) {
+    const itemsPerPage = 8;
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
 
@@ -942,6 +944,7 @@ if (urlLocation() == 'history') {
   }
 
   function updatePagination() {
+    const itemsPerPage = 8;
     let paginationHtml = `<nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
       <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
           Ligne
